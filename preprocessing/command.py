@@ -15,7 +15,7 @@ def process_pdfs():
     parser = ArgumentParser(description="Epilepsy PDF data processing")
     parser.add_argument('pdf_folder_path')  # where the PDFs are
     parser.add_argument('keys_of_pdf_to_remove')  # add default later
-    parser.add_argument('--true', '-t', action='store_true')  
+    parser.add_argument('--true', '-t', action='store_true')
     # -t: future use to be able to run or omit a section of the code
     arguments = parser.parse_args()
 
