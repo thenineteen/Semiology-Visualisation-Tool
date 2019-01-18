@@ -8,20 +8,32 @@ running: Windows 10  Python 3.6.6 , Anaconda 1.9.6, Windows PowerShell
  
 *MetaData*
 
-*Files*
-
-*Installation*
-1. If you have new raw clinical .doc files, you will need to download this powershell script to convert them to .docx en batch:
+*Scripts/Files*
+1. doc_to_docx.ps1:
+   If you have new (e.g. neurophys docs) raw clinical .doc files, you will need to download this powershell script to convert them to .docx en batch by hand (prior to installation):
 download from https://github.com/Apoc70/Convert-WordDocument
 license: MIT License, Copyright (c) 2017 Thomas Stensitzki
-this is incorporated in this Epilepsy_Suergery_Project under doc_to_docx.ps1 script; however not available from PyPI so will need to be downloaded
+direct download reason: not python script and thus not available from PyPI so will need to be downloaded.
+Directly copy and paste the code in doc_to_docx.ps1 script onto powershell window (opened as administrator) -
+remember to update the directory paths in the script as required, before running.
+Advise use each folder in turn rather than recursive, as MS word can crash often and uses alot of the
+available RAM (upto 90% of my 32GB!).
+Completed 18th Jan 2019
 
-2. word_preprocess
-After converting .doc to .docx, word documents are preprocessed for text mining. 
+2. word_preprocess.py:
+After converting .doc to .docx, word documents are preprocessed for text mining.
+.rtf is also preprocessed.
+[] combine texts belonging to same person (append) from file name or name within .docx
+[] pop names and psuedononymise
+[] make them searchable (?regex)
 
-3. pdf_preprocess
+
+3. pdf_preprocess.py:
 Epilepsy PDFs were produced using Adobe LiveCycle, dynamic XML format. 
 Regular open source software and scripts are unable to read these (tested pdfminer.six, PyPDF2, and others)
+
+*Installation*
+
 
 *Running from command line cmd*
 
