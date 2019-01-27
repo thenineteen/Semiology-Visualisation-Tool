@@ -13,11 +13,13 @@ running: Windows 10  Python 3.6.6 , Anaconda 1.9.6, Windows PowerShell
    If you have new (e.g. neurophys docs) raw clinical .doc files, you will need to download this powershell script to convert them to .docx en batch by hand (prior to installation):
 download from https://github.com/Apoc70/Convert-WordDocument
 license: MIT License, Copyright (c) 2017 Thomas Stensitzki
-direct download reason: not python script and thus not available from PyPI so will need to be downloaded.
-Directly copy and paste the code in doc_to_docx.ps1 script onto powershell window (opened as administrator) -
+Direct download reason: not python script and thus not available from PyPI.
+
+Next, copy and paste the code in doc_to_docx.ps1 script onto powershell window (opened as administrator) -
 remember to update the directory paths in the script as required, before running.
-Advise use each folder in turn rather than recursive, as MS word can crash often and uses alot of the
-available RAM (upto 90% of my 32GB!).
+
+(Probably best for large numbers of documents to iterate each folder in turn rather than using the recursive option, as MS word can crash often and uses alot of the available RAM (upto 90% of my 32GB).
+
 Completed 18th Jan 2019
 
 2. word_preprocess.py:
