@@ -4,17 +4,13 @@ Epilepsy, read drugs table, remove sensitive data,
 pseudo-anonymise and store new popped text
 and original in separate folders
 
-example to call this function:
-path_to_doc = 'L:\word_docs\word_docx_folder\FILENAME.docx'
-pt_txt, pt_string_list, pt_meds_list =
-    epilepsy_docx(path_to_doc, 4, 7, read_tables=True)
-
 Ali Alim-Marvasti (c) Jan 2019
 """
 # below only works for docx
 # so first convert .doc to .docx via .ps1
 import docx
 import os.path
+import re
 
 
 def args_for_loop(*args):
@@ -36,6 +32,11 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
     Returns pt_txt and saves in L:\\word_docs\\texxts\\
     Returns pt_string_list as list of paragraphs.
     Returns pt_meds_list as list of the table - needs further cleanup.
+
+    example to call this function:
+    path_to_doc = 'L:\word_docs\word_docx_folder\FILENAME.docx'
+    pt_txt, pt_string_list, pt_meds_list =
+    epilepsy_docx(path_to_doc, 4, 7, read_tables=True)
     """
     document = docx.Document(path_to_doc)
 
@@ -99,3 +100,32 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
         f.write(pt_txt)
 
     return pt_txt, pt_string_list, pt_meds_list
+
+
+def anonymise_txt(pt_txt, silent=False):
+    """
+    finds first and surnames using regex and replaces them with
+    redact messages XXXfirstnameXXX and XXXsurnameXXX respectively.
+
+    If you want instead of the default redact message
+    to have a single space, use silent=True.
+    """
+    if silent:
+        redact_message_fname = ' '
+        redact_message_sname = ' '
+    else:
+        redact_message_fname = 'XXXfirstnameXXX'
+        redact_message_sname = 'XXXsurnameXXX'
+
+    name_pattern = r"Name[\s:]+\w+[\s+]\w+"
+    name_search = re.search(name_pattern, pt_txt)
+    name = name_search.group()
+    name = name.split()
+    firstname = name[1]
+    surname = name[2]
+
+    pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+    pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+        surname, redact_message_sname)
+
+    return pt_txt_sfnamefilter
