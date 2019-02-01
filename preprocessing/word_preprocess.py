@@ -49,20 +49,20 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
     if len(paragraphs) == 2:
         for n, p in enumerate(document.paragraphs):
             if n >= para_list[0] and n <= para_list[1]:
-                pt_txt = pt_txt + p.text
+                pt_txt = pt_txt + '\n' + p.text
                 pt_string_list.append(p.text)
                 print(p.text)
 
     elif len(paragraphs) == 1:
         for n, p in enumerate(document.paragraphs):
             if n >= 0 and n <= para_list[0]:
-                pt_txt = pt_txt + p.text
+                pt_txt = pt_txt + '\n' + p.text
                 pt_string_list.append(p.text)
                 print(p.text)
 
     else:
         for p in document.paragraphs:
-            pt_txt = pt_txt + p.text
+            pt_txt = pt_txt + '\n' + p.text
             pt_string_list.append(p.text)
             print(p.text)
 
