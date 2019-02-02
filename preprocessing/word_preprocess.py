@@ -21,7 +21,7 @@ def args_for_loop(*args):
 
 
 def update_txt_docx(pt_txt, pt_docx, p, clean):
-    pt_txt = pt_txt + p.text
+    pt_txt = pt_txt + '\n' + p.text
     pt_docx.append(p.text)
     print(p.text)
 
@@ -33,13 +33,20 @@ def update_txt_docx(pt_txt, pt_docx, p, clean):
 
 def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False):
     """
-    prints the text of .docx file. 
+    prints the text of .docx file.
+
     paragraphs: optional,
       reads between two paragraph numbers (inclusive).
       if not specified, or too many numbers specified, reads all paragraphs.
       if only one number specified, reads from paragraph 0
         to the number specified.
-    read_tables will read the tables as paragraphs, if True.
+
+    #read_tables will read the tables as paragraphs, if True.
+
+    clean if default false will print(pt_txt) in same format as seen in jupyter
+    if true will print(pt_txt) all new lines together with empty lines.
+    I prefer clean=True
+
     Returns pt_docx as list of paragraphs.
     Returns pt_meds_list as list of the table - needs further cleanup.
     """
