@@ -20,28 +20,33 @@ def args_for_loop(*args):
     return list
 
 
-def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
+def update_txt_docx(pt_txt, pt_docx, p, clean):
+    pt_txt = pt_txt + p.text
+    pt_docx.append(p.text)
+    print(p.text)
+
+    if clean:
+        pt_txt = pt_txt.strip()
+
+    return pt_txt, pt_docx
+
+
+def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False):
     """
-    prints the text of .docx file.
+    prints the text of .docx file. 
     paragraphs: optional,
       reads between two paragraph numbers (inclusive).
       if not specified, or too many numbers specified, reads all paragraphs.
       if only one number specified, reads from paragraph 0
         to the number specified.
     read_tables will read the tables as paragraphs, if True.
-    Returns pt_txt and saves in L:\\word_docs\\texxts\\
-    Returns pt_string_list as list of paragraphs.
+    Returns pt_docx as list of paragraphs.
     Returns pt_meds_list as list of the table - needs further cleanup.
-
-    example to call this function:
-    path_to_doc = 'L:\word_docs\word_docx_folder\FILENAME.docx'
-    pt_txt, pt_string_list, pt_meds_list =
-    epilepsy_docx(path_to_doc, 4, 7, read_tables=True)
     """
     document = docx.Document(path_to_doc)
 
     pt_txt = ''  # initialise text string
-    pt_string_list = []  # initialise patient's docx list
+    pt_docx = []  # initialise patient's docx list
     pt_meds_list = []  # initialise patient meds list
 
     if paragraphs:
@@ -50,22 +55,16 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
     if len(paragraphs) == 2:
         for n, p in enumerate(document.paragraphs):
             if n >= para_list[0] and n <= para_list[1]:
-                pt_txt = pt_txt + '\n' + p.text
-                pt_string_list.append(p.text)
-                print(p.text)
+                pt_txt, pt_docx = update_txt_docx(pt_txt, pt_docx, p, clean)
 
     elif len(paragraphs) == 1:
         for n, p in enumerate(document.paragraphs):
             if n >= 0 and n <= para_list[0]:
-                pt_txt = pt_txt + '\n' + p.text
-                pt_string_list.append(p.text)
-                print(p.text)
+                pt_txt, pt_docx = update_txt_docx(pt_txt, pt_docx, p, clean)
 
     else:
         for p in document.paragraphs:
-            pt_txt = pt_txt + '\n' + p.text
-            pt_string_list.append(p.text)
-            print(p.text)
+            pt_txt, pt_docx = update_txt_docx(pt_txt, pt_docx, p, clean)
 
     if read_tables:
         for t in document.tables:
@@ -77,11 +76,12 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
         # print (pt_meds_list)
 
     # this next part cleans to remove empty characters and spaces
-    pt_txt = pt_txt.replace('\t', ' ')
+    if clean:
+        pt_txt = pt_txt.replace('\t', ' ')
+        pt_txt = pt_txt.strip()
 
-    pt_string_list = [i.lower() for i in pt_string_list]
-    pt_string_list = [o for o in pt_string_list if o != '' and
-                      o != '\t' and o != ' ']
+    pt_docx = [i.lower() for i in pt_docx]
+    pt_docx = [o for o in pt_docx if o != '' and o != '\t' and o != ' ']
 
     pt_meds_list_clean_and_lower = [
         itm.lower() for itm in pt_meds_list if itm != '' and itm != '\t']
@@ -99,10 +99,10 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False):
     with open(complete_filename, "w") as f:
         f.write(pt_txt)
 
-    return pt_txt, pt_string_list, pt_meds_list
+    return pt_txt, pt_docx, pt_meds_list
 
 
-def anonymise_txt(pt_txt, silent=False):
+def anonymise_txt(pt_txt, silent=False, clean=False):
     """
     finds first and surnames using regex and replaces them with
     redact messages XXXfirstnameXXX and XXXsurnameXXX respectively.
@@ -116,6 +116,10 @@ def anonymise_txt(pt_txt, silent=False):
     else:
         redact_message_fname = 'XXXfirstnameXXX'
         redact_message_sname = 'XXXsurnameXXX'
+
+    if clean:
+        pt_txt = pt_txt.replace('\n', ' ')
+        pt_txt = pt_txt.replace('\t', ' ')
 
     name_pattern = r"Name[\s:]+\w+[\s+]\w+"
     name_search = re.search(name_pattern, pt_txt)
