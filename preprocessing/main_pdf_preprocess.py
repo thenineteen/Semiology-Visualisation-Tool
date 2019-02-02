@@ -18,7 +18,7 @@ pdfs_are_here = (
 keys_of_pdf_to_remove = 'Name'
 
 
-def main_preprocessing(pdf_folder_path=pdfs_are_here, k=keys_of_pdf_to_remove):
+def main_pdf_preprocess(pdf_folder_path=pdfs_are_here, k=keys_of_pdf_to_remove):
     """
     Opens all PDF files in directory, removes labels, writes json file.
     Returns number of PDF files.

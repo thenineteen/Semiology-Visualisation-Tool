@@ -25,6 +25,7 @@ Completed 18th Jan 2019
 2. word_preprocess.py:
 After converting .doc to .docx, word documents are preprocessed for text mining.
 .rtf is also preprocessed.
+Ensure you have created a new folder as specified in word_preprocess to avoid save errors.
 [] combine texts belonging to same person (append) from file name or name within .docx
 [] pop names and psuedononymise
 [] make them searchable (?regex)
