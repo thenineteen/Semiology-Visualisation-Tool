@@ -1,13 +1,19 @@
-from preprocessing.word_preprocess import *
+from preprocessing.word_preprocess import epilepsy_docx, epilepsy_docx_xml
+from preprocessing.word_preprocess import anonymise_txt, save_as_txt
 import os
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                          clean=False):
+    """
+    This runs the functions from word_preprocess.py
+    """
+
     for docx_file in path_to_folder:  # cycle through all pt files
         path_to_doc = os.path.join(path_to_folder, docx_file)
+
         pt_txt, pt_docx_list, pt_meds_list = epilepsy_docx(
-            path_to_doc, *paragraphs, read_tables=False, clean=False)
+            path_to_doc, *paragraphs, read_tables=False, clean=False)        
 
         try:  # sometimes there is no actual name after "Name:" in the file
             pt_txt = anonymise_txt(pt_txt)

@@ -23,6 +23,11 @@ import io
 
 
 def args_for_loop(*args):
+    """
+    factor function used by epilepsy_docx
+    makes a list of two numbers
+    """
+
     list = []
     for arg in args:
         list.append(arg)
@@ -30,6 +35,16 @@ def args_for_loop(*args):
 
 
 def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
+    """
+    This function is a factor function called by epilepsy_docx.
+
+    1. pt_txt and pt_docx_list are updated paragraph by paragraph.
+    2. p is the paragraph contents from docx Document class.
+    3. clean option strips the text
+    4. print_p_by_p is an option to print out the text as it is being read.
+
+    """
+
     pt_txt = pt_txt + '\n' + p.text
     pt_docx_list.append(p.text)
 
@@ -46,11 +61,15 @@ def save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\texxts\\"):
     """
     save as text file in chosen already created directory
     """
+    pt_txt = pt_txt.replace('\u03a8', 'Psych')
+    pt_txt = pt_txt.replace('\u2192', '>')
+    # otherwise gives charmap codec error
+
     save_filename = path_to_doc.split("\\")[-1].replace(
         '.docx', '')+".txt"  # takes name of docx file
     complete_filename = os.path.join(save_path, save_filename)
     with open(complete_filename, "w") as f:
-        f.write(pt_txt)
+        print(pt_txt, file=f)
 
 
 def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
@@ -60,6 +79,8 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
     Returns pt_docx_list as list of paragraphs.
     Returns pt_meds_list as list of the table - needs further cleanup.
     can also print the text of .docx file.
+
+    path_to_doc includes full folders and filename and extension.
 
     paragraphs: optional,
       reads between two paragraph numbers (inclusive).
@@ -136,7 +157,8 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
 def epilepsy_docx_xml(path):
     """
     Take the path of a docx file as argument, return the text in unicode.
-    Run this if epilepsy_docx() isn't able to read the name
+    Run this if epilepsy_docx() isn't able to read the name.
+    This should automatically read tables anyway.
     """
 
     WORD_NAMESPACE = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
@@ -167,7 +189,10 @@ def anonymise_txt(pt_txt, silent=False, xml=False):
 
     If you want instead of the default redact message
     to have a single space, use silent=True.
+
+    xml option's regex is required when text was read by epilepsy_docx_xml.
     """
+
     if silent:
         redact_message_fname = ' '
         redact_message_sname = ' '
