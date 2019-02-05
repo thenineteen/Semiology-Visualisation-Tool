@@ -63,6 +63,8 @@ def save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\texxts\\"):
     """
     pt_txt = pt_txt.replace('\u03a8', 'Psych')
     pt_txt = pt_txt.replace('\u2192', '>')
+    pt_txt = pt_txt.replace('\u03c8', '>')
+    pt_txt = pt_txt.replace('\u25ba', '>')
     # otherwise gives charmap codec error
 
     save_filename = path_to_doc.split("\\")[-1].replace(
