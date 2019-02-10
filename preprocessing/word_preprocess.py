@@ -68,7 +68,7 @@ def save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\texxts\\"):
     # otherwise gives charmap codec error
 
     save_filename = path_to_doc.split("\\")[-1].replace(
-        '.docx', '')+".txt"  # takes name of docx file
+        '.docx', '.txt')  # takes name of docx file
     complete_filename = os.path.join(save_path, save_filename)
     with open(complete_filename, "w") as f:
         print(pt_txt, file=f)
@@ -151,7 +151,7 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    save_as_txt(path_to_doc, pt_txt)
+    # save_as_txt(path_to_doc, pt_txt)
 
     return pt_txt, pt_docx_list, pt_meds_list
 
@@ -179,7 +179,7 @@ def epilepsy_docx_xml(path):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    save_as_txt(path, pt_txt_xml)
+    # save_as_txt(path, pt_txt_xml)
 
     return pt_txt_xml
 
@@ -240,30 +240,26 @@ def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
     """
 
     if xml:
-        try:
-            # DD/MM/YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+/[0-9]+/[0-9]+"
-            DOB_search = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_search.group()
+        try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
+            DOB_match = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_match.group()
 
-        except AttributeError:
-            # DD.MM.YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\.[0-9]+\.[0-9]+"
-            DOB_search = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_search.group()
+        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or /
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
+            DOB_match = re.search(DOB_pattern, txt)
+            DOB = DOB_match.group()
 
-    else: # currently same as above
-        try:
-            # DD/MM/YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+/[0-9]+/[0-9]+"
-            DOB_search = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_search.group()
+    else:  # currently same as above
+        try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
+            DOB_match = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_match.group()
 
-        except AttributeError:
-            # DD.MM.YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\.[0-9]+\.[0-9]+"
-            DOB_search = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_search.group()
+        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or /
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
+            DOB_match = re.search(DOB_pattern, txt)
+            DOB = DOB_match.group()
 
     pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
 
