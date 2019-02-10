@@ -184,7 +184,7 @@ def epilepsy_docx_xml(path):
     return pt_txt_xml
 
 
-def anonymise_txt(pt_txt, silent=False, xml=False):
+def anonymise_name_txt(pt_txt, silent=False, xml=False):
     """
     finds first and surnames using regex and replaces them with
     redact messages XXXfirstnameXXX and XXXsurnameXXX respectively.
@@ -223,3 +223,48 @@ def anonymise_txt(pt_txt, silent=False, xml=False):
         surname, redact_message_sname)
 
     return pt_txt_sfnamefilter
+
+
+def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
+    """
+    finds DOB using regex and replaces with
+    redact message 'XXX-DOB-XXX'.
+
+    If you want instead of the default redact message
+    to have anything else, specify.
+
+    If you want the pseudo-anonymised Pt ID to be there instead, use
+    redact_message = "IDP"
+
+    xml option's regex is required when text was read by epilepsy_docx_xml.
+    """
+
+    if xml:
+        try:
+            # DD/MM/YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+/[0-9]+/[0-9]+"
+            DOB_search = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_search.group()
+
+        except AttributeError:
+            # DD.MM.YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\.[0-9]+\.[0-9]+"
+            DOB_search = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_search.group()
+
+    else: # currently same as above
+        try:
+            # DD/MM/YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+/[0-9]+/[0-9]+"
+            DOB_search = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_search.group()
+
+        except AttributeError:
+            # DD.MM.YY(YY)
+            DOB_pattern = r"DOB[\s\t:]+[0-9]+\.[0-9]+\.[0-9]+"
+            DOB_search = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_search.group()
+
+    pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
+
+    return pt_txt_DOBfilter
