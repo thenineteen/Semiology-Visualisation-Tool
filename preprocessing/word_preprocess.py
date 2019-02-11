@@ -211,12 +211,18 @@ def anonymise_name_txt(pt_txt, silent=False, xml=False):
         surname = name[1]
 
     else:
-        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
-        name_search = re.search(name_pattern, pt_txt)
-        name = name_search.group()
-        name = name.split()
-        firstname = name[1]
-        surname = name[2]
+        try:
+            name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
+            name_search = re.search(name_pattern, pt_txt)
+            name = name_search.group()
+            name_list = name.split()
+            firstname = name_list[1]
+            surname = name_list[2]
+        except IndexError:
+            name = name.replace('Name:', '')
+            name_list = name.split()
+            firstname = name_list[0]
+            surname = name_list[1]
 
     pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
     pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
@@ -245,7 +251,7 @@ def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group()
 
-        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or /
+        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
             DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
             DOB_match = re.search(DOB_pattern, txt)
             DOB = DOB_match.group()
@@ -256,7 +262,8 @@ def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group()
 
-        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or /
+        # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
+        except AttributeError:
             DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
             DOB_match = re.search(DOB_pattern, txt)
             DOB = DOB_match.group()

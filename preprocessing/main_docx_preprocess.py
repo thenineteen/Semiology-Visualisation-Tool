@@ -18,6 +18,8 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
     n_xml = 0
     n_docx_name_anon = 0
     n_xml_name_anon = 0
+    n_DOB_anon = 0
+    n_xml_DOB_anon = 0
 
     for docx_file in os.listdir(path_to_folder):
         path_to_doc = os.path.join(path_to_folder, docx_file)
@@ -31,6 +33,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             pt_txt = anonymise_name_txt(pt_txt)
             n_docx_name_anon += 1
             pt_txt = anonymise_DOB_txt(pt_txt)
+            n_DOB_anon += 1
 
             save_as_txt(path_to_doc, pt_txt)
 
@@ -41,7 +44,14 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             pt_txt_xml = anonymise_name_txt(pt_txt_xml, xml=True)
             n_xml_name_anon += 1
             pt_txt_xml = anonymise_DOB_txt(pt_txt_xml)
+            n_xml_DOB_anon += 1
 
             save_as_txt(path_to_doc, pt_txt_xml)
 
-    return print(n_docx, n_docx_name_anon, n_xml, n_xml_name_anon)
+    return print('number of docx files read using epilepsy_docx() = \
+             \t{} \nof which number anonymise_name_txt(), DOB =\
+             \t{}, {}.\nnumber needing epilepsy_docx_xml()\
+             \t= \t\t{} \nof which number anonymise_name_txt(), DOB =\
+                 \t{}, {}.'
+                 .format(n_docx, n_docx_name_anon, n_DOB_anon, n_xml,
+                         n_xml_name_anon, n_xml_DOB_anon))
