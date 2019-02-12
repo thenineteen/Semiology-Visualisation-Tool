@@ -13,6 +13,7 @@ Ali Alim-Marvasti (c) Jan 2019
 # so first convert .doc to .docx via .ps1
 import docx
 import os.path
+import os
 import re
 try:
     from xml.etree.cElementTree import XML
@@ -37,12 +38,12 @@ def args_for_loop(*args):
 def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
     """
     This function is a factor function called by epilepsy_docx.
-
+    
     1. pt_txt and pt_docx_list are updated paragraph by paragraph.
     2. p is the paragraph contents from docx Document class.
     3. clean option strips the text
     4. print_p_by_p is an option to print out the text as it is being read.
-
+    
     """
 
     pt_txt = pt_txt + '\n' + p.text
@@ -57,7 +58,7 @@ def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
     return pt_txt, pt_docx_list
 
 
-def save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\texxts\\"):
+def save_as_txt(path_to_doc, pt_txt, save_path):
     """
     save as text file in chosen already created directory
     """
@@ -65,13 +66,27 @@ def save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\texxts\\"):
     pt_txt = pt_txt.replace('\u2192', '>')
     pt_txt = pt_txt.replace('\u03c8', '>')
     pt_txt = pt_txt.replace('\u25ba', '>')
+    pt_txt = pt_txt.replace('\uf0e0', 'X')
+    pt_txt = pt_txt.replace('\u03bc', 'mu')
+    pt_txt = pt_txt.replace('\u2264', '<=')
+    pt_txt = pt_txt.replace('\u2248', '~')
+    pt_txt = pt_txt.replace('\u03a6', 'PHI')
+    pt_txt = pt_txt.replace('\u2265', '>=')
+    pt_txt = pt_txt.replace('\u2193', 'down_arrow')
+    pt_txt = pt_txt.replace('\u2191', 'up_arrow')
+    pt_txt = pt_txt.replace('\u206d', 'up_arrow')
+
     # otherwise gives charmap codec error
 
-    save_filename = path_to_doc.split("\\")[-1].replace(
-        '.docx', '.txt')  # takes name of docx file
-    complete_filename = os.path.join(save_path, save_filename)
-    with open(complete_filename, "w") as f:
-        print(pt_txt, file=f)
+    try:
+        save_filename = path_to_doc.split("\\")[-1].replace(
+            '.docx', '')+".txt"  # takes name of docx file
+        complete_filename = os.path.join(save_path, save_filename)
+        with open(complete_filename, "w") as f:
+            print(pt_txt, file=f)
+    except UnicodeEncodeError:
+        with open(complete_filename, "w", errors='backslashreplace') as f:
+            f.write(pt_txt)
 
 
 def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
@@ -98,7 +113,6 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
 
     print_p_by_p will print paragraph by paragraph as reading the docx file
     """
-
     document = docx.Document(path_to_doc)
 
     pt_txt = ''  # initialise text string
@@ -151,7 +165,8 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    # save_as_txt(path_to_doc, pt_txt)
+    save_as_txt(path_to_doc, pt_txt,
+                save_path="L:\\word_docs\\test_epilepsy_docx\\")
 
     return pt_txt, pt_docx_list, pt_meds_list
 
@@ -179,12 +194,13 @@ def epilepsy_docx_xml(path):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    # save_as_txt(path, pt_txt_xml)
+    save_as_txt(path, pt_txt_xml,
+                save_path="L:\\word_docs\\test_epilepsy_xml\\")
 
     return pt_txt_xml
 
 
-def anonymise_name_txt(pt_txt, silent=False, xml=False):
+def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     """
     finds first and surnames using regex and replaces them with
     redact messages XXXfirstnameXXX and XXXsurnameXXX respectively.
@@ -195,40 +211,66 @@ def anonymise_name_txt(pt_txt, silent=False, xml=False):
     xml option's regex is required when text was read by epilepsy_docx_xml.
     """
 
-    if silent:
-        redact_message_fname = ' '
-        redact_message_sname = ' '
-    else:
-        redact_message_fname = 'XXXfirstnameXXX'
-        redact_message_sname = 'XXXsurnameXXX'
+    redact_message_fname = 'XXXfirstnameXXX'
+    redact_message_sname = 'XXXsurnameXXX'
 
     if xml:
         name_pattern = r"Name[\s\t:]?\w+[\s+]\w+"
         name_search = re.search(name_pattern, pt_txt)
+
         name = name_search.group()
         name = name.split()
         firstname = name[0]
         surname = name[1]
 
+        pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+        pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+            surname, redact_message_sname)
+        return pt_txt_sfnamefilter
+
     else:
         try:
             name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
             name_search = re.search(name_pattern, pt_txt)
+
             name = name_search.group()
             name_list = name.split()
             firstname = name_list[1]
             surname = name_list[2]
+
+            pt_txt_fnamefilter = pt_txt.replace(
+                firstname, redact_message_fname)
+            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                surname, redact_message_sname)
+            return pt_txt_sfnamefilter
+
         except IndexError:
             name = name.replace('Name:', '')
+
             name_list = name.split()
             firstname = name_list[0]
             surname = name_list[1]
 
-    pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
-    pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-        surname, redact_message_sname)
+            pt_txt_fnamefilter = pt_txt.replace(
+                firstname, redact_message_fname)
+            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                surname, redact_message_sname)
+            return pt_txt_sfnamefilter
 
-    return pt_txt_sfnamefilter
+        except AttributeError:
+            name_pattern = r"[A-Z]\w+[\s+][A-Z]\w+"
+            name_search = re.search(name_pattern, pt_txt)
+
+            name = name_search.group()
+            name_list = name.split()
+            firstname = name_list[0]
+            surname = name_list[1]
+
+            pt_txt_fnamefilter = pt_txt.replace(
+                firstname, redact_message_fname)
+            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                surname, redact_message_sname)
+            return pt_txt_sfnamefilter
 
 
 def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):

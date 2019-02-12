@@ -5,14 +5,17 @@ import os
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
-                         clean=False):
+                         clean=False, save_path="L:\\word_docs\\test_texxts_name\\"):
     """
     This runs the functions from word_preprocess.py
 
     run like this:
     path_to_folder = 'L:\\word_docs\\test_anonymise\\'
-    n_docx, n_docx_name_anon, n_xml, n_xml_name_anon =
-        main_docx_preprocess(path_to_folder, read_tables=True, clean=False)
+    
+    main_docx_preprocess(path_to_folder, read_tables=True, clean=False)
+    
+    Runs docx first. if this fails, runs epilepsy_docx_xml.
+    If both fail, gives error message. 
     """
     n_docx = 0
     n_xml = 0
@@ -29,24 +32,28 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
         n_docx += 1
 
+        # anonymise names first
         try:  # sometimes there is no actual name after "Name:" in the file
-            pt_txt = anonymise_name_txt(pt_txt)
+            pt_txt = anonymise_name_txt(pt_txt, path_to_doc)
             n_docx_name_anon += 1
-            pt_txt = anonymise_DOB_txt(pt_txt)
-            n_DOB_anon += 1
-
-            save_as_txt(path_to_doc, pt_txt)
 
         except AttributeError:
-            # if no name found, run the other docx text read function
-            pt_txt_xml = epilepsy_docx_xml(path_to_doc)
-            n_xml += 1
-            pt_txt_xml = anonymise_name_txt(pt_txt_xml, xml=True)
-            n_xml_name_anon += 1
-            pt_txt_xml = anonymise_DOB_txt(pt_txt_xml)
-            n_xml_DOB_anon += 1
+             # if no name found, run the other docx XML function
+            try:
+                pt_txt = epilepsy_docx_xml(path_to_doc)
+                n_xml += 1
+                pt_txt = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
+                n_xml_name_anon += 1
+            except:
+                print("anonymise_name (xml=True) failed for {}".format(path_to_doc))
+                continue
 
-            save_as_txt(path_to_doc, pt_txt_xml)
+        except:
+            print("anonymise_name_txt failed for {}".format(path_to_doc))
+            continue
+
+        finally:  # whether it did anonymise name or not, save the txt
+            save_as_txt(path_to_doc, pt_txt, save_path)
 
     return print('number of docx files read using epilepsy_docx() = \
              \t{} \nof which number anonymise_name_txt(), DOB =\
