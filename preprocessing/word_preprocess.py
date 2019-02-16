@@ -1,3 +1,5 @@
+#word_preprocess.py
+
 """
 Read word document texts for patients with
 Epilepsy, read drugs table, remove sensitive data,
@@ -21,6 +23,9 @@ except ImportError:
     from xml.etree.ElementTree import XML
 import zipfile
 import io
+import uuid
+import json
+import random
 
 
 def args_for_loop(*args):
@@ -28,7 +33,7 @@ def args_for_loop(*args):
     factor function used by epilepsy_docx
     makes a list of two numbers
     """
-
+    
     list = []
     for arg in args:
         list.append(arg)
@@ -45,10 +50,10 @@ def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
     4. print_p_by_p is an option to print out the text as it is being read.
     
     """
-
+    
     pt_txt = pt_txt + '\n' + p.text
     pt_docx_list.append(p.text)
-
+    
     if print_p_by_p:
         print(p.text)
 
@@ -75,9 +80,9 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
     pt_txt = pt_txt.replace('\u2193', 'down_arrow')
     pt_txt = pt_txt.replace('\u2191', 'up_arrow')
     pt_txt = pt_txt.replace('\u206d', 'up_arrow')
-
+    
     # otherwise gives charmap codec error
-
+    
     try:
         save_filename = path_to_doc.split("\\")[-1].replace(
             '.docx', '')+".txt"  # takes name of docx file
@@ -88,8 +93,7 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
         with open(complete_filename, "w", errors='backslashreplace') as f:
             f.write(pt_txt)
 
-
-def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
+def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=False,
                   print_p_by_p=False):
     """
     Returns pt_txt as text.
@@ -118,6 +122,7 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
     pt_txt = ''  # initialise text string
     pt_docx_list = []  # initialise patient's docx list
     pt_meds_list = []  # initialise patient meds list
+    pt_meds_dict = {}
 
     if paragraphs:
         para_list = args_for_loop(*paragraphs)
@@ -139,12 +144,15 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
             pt_txt, pt_docx_list = update_txt_docx(pt_txt, pt_docx_list, p,
                                                    clean, print_p_by_p)
 
+    meds_table_headings = ['current rx', 'max dose', 'previous rx', 'stopped/', 'comments', '', ' ']
     if read_tables:
         for t in document.tables:
             for row in t.rows:
                 for cell in row.cells:
                     for paragraph in cell.paragraphs:
-                        pt_meds_list.append(paragraph.text)
+                        if paragraph.text not in meds_table_headings:
+                            pt_meds_list.append(paragraph.text)
+                pt_meds_dict[row] = pt_meds_list
                         # print(paragraph.text)
         # print (pt_meds_list)
 
@@ -152,7 +160,7 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
     if clean:
         pt_txt = pt_txt.replace('\t', ' ')
         pt_txt = pt_txt.strip()
-
+        
     pt_docx_list = [i.lower() for i in pt_docx_list]
     pt_docx_list = [o for o in pt_docx_list if o != '' and
                     o != '\t' and o != ' ']
@@ -165,13 +173,12 @@ def epilepsy_docx(path_to_doc, *paragraphs, read_tables=False, clean=False,
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    save_as_txt(path_to_doc, pt_txt,
-                save_path="L:\\word_docs\\test_epilepsy_docx\\")
+    save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
 
-    return pt_txt, pt_docx_list, pt_meds_list
+    return pt_txt, pt_docx_list, pt_meds_dict
 
 
-def epilepsy_docx_xml(path):
+def epilepsy_docx_xml_to_txt(path):
     """
     Take the path of a docx file as argument, return the text in unicode.
     Run this if epilepsy_docx() isn't able to read the name.
@@ -194,8 +201,7 @@ def epilepsy_docx_xml(path):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    save_as_txt(path, pt_txt_xml,
-                save_path="L:\\word_docs\\test_epilepsy_xml\\")
+    save_as_txt(path, pt_txt_xml, save_path="L:\\word_docs\\test_epilepsy_xml_to_txt\\")
 
     return pt_txt_xml
 
@@ -214,63 +220,35 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     redact_message_fname = 'XXXfirstnameXXX'
     redact_message_sname = 'XXXsurnameXXX'
 
-    if xml:
-        name_pattern = r"Name[\s\t:]?\w+[\s+]\w+"
+    try:
+        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
         name_search = re.search(name_pattern, pt_txt)
 
         name = name_search.group()
-        name = name.split()
-        firstname = name[0]
-        surname = name[1]
+        name_list = name.split()
+        firstname = name_list[1]
+        surname = name_list[2]
 
         pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
         pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
             surname, redact_message_sname)
-        return pt_txt_sfnamefilter
 
-    else:
-        try:
-            name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
-            name_search = re.search(name_pattern, pt_txt)
+        names = [firstname, surname]
+        return pt_txt_sfnamefilter, names
 
-            name = name_search.group()
-            name_list = name.split()
-            firstname = name_list[1]
-            surname = name_list[2]
+    except IndexError:
+        name = name.replace('Name:', '')
 
-            pt_txt_fnamefilter = pt_txt.replace(
-                firstname, redact_message_fname)
-            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-                surname, redact_message_sname)
-            return pt_txt_sfnamefilter
+        name_list = name.split()
+        firstname = name_list[0]
+        surname = name_list[1]
 
-        except IndexError:
-            name = name.replace('Name:', '')
+        pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+        pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+            surname, redact_message_sname)
 
-            name_list = name.split()
-            firstname = name_list[0]
-            surname = name_list[1]
-
-            pt_txt_fnamefilter = pt_txt.replace(
-                firstname, redact_message_fname)
-            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-                surname, redact_message_sname)
-            return pt_txt_sfnamefilter
-
-        except AttributeError:
-            name_pattern = r"[A-Z]\w+[\s+][A-Z]\w+"
-            name_search = re.search(name_pattern, pt_txt)
-
-            name = name_search.group()
-            name_list = name.split()
-            firstname = name_list[0]
-            surname = name_list[1]
-
-            pt_txt_fnamefilter = pt_txt.replace(
-                firstname, redact_message_fname)
-            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-                surname, redact_message_sname)
-            return pt_txt_sfnamefilter
+        names = [firstname, surname]
+        return pt_txt_sfnamefilter, names
 
 
 def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
@@ -313,3 +291,47 @@ def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
     pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
 
     return pt_txt_DOBfilter
+
+
+def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid):
+    """
+    Find and replace hospital number with uuid.
+    
+    main_docx_preprocess stores it as key to name values from anonymise_name_txt
+    
+    redact_hosp_no is the pseudononymised uuid key
+    MRN is the actual hospital number innerkey
+    
+    i.e.:
+    psuedo_anon_dict: {MRN:[names]}
+    
+    returns pt_txt without mrn and also the above keys
+    """
+#     rd = random.Random()
+#     rd.seed(uuid_rd_seed)  # make it reproducible
+#     uuid_no = str(uuid.UUID(int=rd.getrandbits(128)))  # redact_hosp_no_message
+
+    try:
+        #MRN_pattern = r"Hosp[\.\s\t]?N|n?o?[\.:\s\t]?[A-Za-z]{0,4}[\s]?\d{5,8}"
+        MRN_pattern = r"[A-Za-z]{0,4}[\s]?\d{5,8}"
+        MRN_search = re.search(MRN_pattern, pt_txt)
+
+        MRN = MRN_search.group()
+        MRN = MRN.split()
+        MRN = MRN[-1]
+
+        uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+        pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+        n_uuid += 1
+
+    except AttributeError:
+        print("MRN pattern not found for {}\n".format(path_to_doc))
+        MRN = "MRN_ERROR"
+        return pt_txt, MRN, n_uuid
+
+    except:
+        print("major uncaught error in anon_hosp_no function for {}\n".format(path_to_doc))
+        MRN = "MRN_ERROR"
+        return pt_txt, MRN, n_uuid
+
+    return pt_txt, MRN, n_uuid
