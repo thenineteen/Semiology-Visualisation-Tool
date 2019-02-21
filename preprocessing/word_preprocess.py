@@ -1,5 +1,3 @@
-#word_preprocess.py
-
 """
 Read word document texts for patients with
 Epilepsy, read drugs table, remove sensitive data,
@@ -26,6 +24,7 @@ import io
 import uuid
 import json
 import random
+import datetime
 
 
 def args_for_loop(*args):
@@ -33,7 +32,7 @@ def args_for_loop(*args):
     factor function used by epilepsy_docx
     makes a list of two numbers
     """
-    
+
     list = []
     for arg in args:
         list.append(arg)
@@ -50,10 +49,10 @@ def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
     4. print_p_by_p is an option to print out the text as it is being read.
     
     """
-    
+
     pt_txt = pt_txt + '\n' + p.text
     pt_docx_list.append(p.text)
-    
+
     if print_p_by_p:
         print(p.text)
 
@@ -80,9 +79,9 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
     pt_txt = pt_txt.replace('\u2193', 'down_arrow')
     pt_txt = pt_txt.replace('\u2191', 'up_arrow')
     pt_txt = pt_txt.replace('\u206d', 'up_arrow')
-    
+
     # otherwise gives charmap codec error
-    
+
     try:
         save_filename = path_to_doc.split("\\")[-1].replace(
             '.docx', '')+".txt"  # takes name of docx file
@@ -93,8 +92,9 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
         with open(complete_filename, "w", errors='backslashreplace') as f:
             f.write(pt_txt)
 
+
 def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=False,
-                  print_p_by_p=False):
+                         print_p_by_p=False):
     """
     Returns pt_txt as text.
     Returns pt_docx_list as list of paragraphs.
@@ -144,7 +144,8 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
             pt_txt, pt_docx_list = update_txt_docx(pt_txt, pt_docx_list, p,
                                                    clean, print_p_by_p)
 
-    meds_table_headings = ['current rx', 'max dose', 'previous rx', 'stopped/', 'comments', '', ' ']
+    meds_table_headings = ['current rx', 'max dose',
+                           'previous rx', 'stopped/', 'comments', '', ' ']
     if read_tables:
         for t in document.tables:
             for row in t.rows:
@@ -153,14 +154,14 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
                         if paragraph.text not in meds_table_headings:
                             pt_meds_list.append(paragraph.text)
                 pt_meds_dict[row] = pt_meds_list
-                        # print(paragraph.text)
+                # print(paragraph.text)
         # print (pt_meds_list)
 
     # this next part cleans to remove empty characters and spaces
     if clean:
         pt_txt = pt_txt.replace('\t', ' ')
         pt_txt = pt_txt.strip()
-        
+
     pt_docx_list = [i.lower() for i in pt_docx_list]
     pt_docx_list = [o for o in pt_docx_list if o != '' and
                     o != '\t' and o != ' ']
@@ -173,12 +174,13 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
+    save_as_txt(path_to_doc, pt_txt,
+                save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
 
     return pt_txt, pt_docx_list, pt_meds_dict
 
 
-def epilepsy_docx_xml_to_txt(path):
+def epilepsy_docx_xml_to_txt(path, n_xml):
     """
     Take the path of a docx file as argument, return the text in unicode.
     Run this if epilepsy_docx() isn't able to read the name.
@@ -201,9 +203,11 @@ def epilepsy_docx_xml_to_txt(path):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    save_as_txt(path, pt_txt_xml, save_path="L:\\word_docs\\test_epilepsy_xml_to_txt\\")
+    save_as_txt(path, pt_txt_xml,
+                save_path="L:\\word_docs\\test_epilepsy_docx_xml_to_txt\\")
 
-    return pt_txt_xml
+    n_xml += 1
+    return pt_txt_xml, n_xml
 
 
 def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
@@ -221,13 +225,16 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     redact_message_sname = 'XXXsurnameXXX'
 
     try:
-        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+"
+        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+[\s-]?\w+"
         name_search = re.search(name_pattern, pt_txt)
 
         name = name_search.group()
         name_list = name.split()
         firstname = name_list[1]
-        surname = name_list[2]
+        if name_list[-1] != 'Age' and name_list[-1] != 'age':
+            surname = name_list[-1]
+        else:
+            surname = name_list[2]
 
         pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
         pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
@@ -251,65 +258,81 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         return pt_txt_sfnamefilter, names
 
 
-def anonymise_DOB_txt(pt_txt, redact_message='XXX-DOB-XXX', xml=False):
+def anonymise_DOB_txt(pt_txt, n_DOB_anon, change_DOB=True):
     """
     finds DOB using regex and replaces with
-    redact message 'XXX-DOB-XXX'.
+    pseudoanon DOB or redact message 'XXX-DOB-XXX'.
 
-    If you want instead of the default redact message
-    to have anything else, specify.
-
-    If you want the pseudo-anonymised Pt ID to be there instead, use
-    redact_message = "IDP"
-
-    xml option's regex is required when text was read by epilepsy_docx_xml.
+    If you want the pseudo-anonymised DOB to be there as default, use
+    change_DOB = True (default). 
+    Output format will be : 'XXX anonymised DOB = ddmm/yy'
+    
+    If you want redact message 'XXX-DOB-XXX',
+    then use change_DOB = False.
     """
 
-    if xml:
-        try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
-            DOB_match = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_match.group()
+    redact_message = 'XXX-DOB-XXX'
 
-        except AttributeError:  # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
+    try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
+        DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
+        DOB_match = re.search(DOB_pattern, pt_txt)
+        DOB = DOB_match.group().split()[-1]
+
+    # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
+    except AttributeError:
+        try:
             DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
-            DOB_match = re.search(DOB_pattern, txt)
-            DOB = DOB_match.group()
-
-    else:  # currently same as above
-        try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
             DOB_match = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_match.group()
-
-        # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
+            DOB = DOB_match.group().split()[-1]
         except AttributeError:
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
-            DOB_match = re.search(DOB_pattern, txt)
-            DOB = DOB_match.group()
+            DOB_pattern = r"DOB[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+            DOB_match = re.search(DOB_pattern, pt_txt)
+            DOB = DOB_match.group().split()[-1]
 
-    pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
+    if change_DOB:  # alter DOB so can still trace pt if required
 
-    return pt_txt_DOBfilter
+        # turn DOB into 3 integers and alter
+        DOB_digits = list(
+            map(lambda x: int(x)+1, (re.compile(r"/?\.?-?").split(DOB))))
+        # turn this back to string
+        DOB_str = [str(x) for x in DOB_digits]
+        # and use this message:
+        DOB_anon = 'XXX anonymised DOB = ' + \
+            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
+
+        pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
+        n_DOB_anon += 1
+
+    else:  # use redact_message
+        pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
+        n_DOB_anon += 1
+
+    return pt_txt_DOBfilter, n_DOB_anon
 
 
-def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid):
+def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
     """
     Find and replace hospital number with uuid.
     
+    pt_txt is .txt file. path_to_doc is the full pathname and file name. 
     main_docx_preprocess stores it as key to name values from anonymise_name_txt
     
-    redact_hosp_no is the pseudononymised uuid key
+    uuid_no_message is the pseudononymised key
     MRN is the actual hospital number innerkey
     
     i.e.:
     psuedo_anon_dict: {MRN:[names]}
     
     returns pt_txt without mrn and also the above keys
+    n_uuid counts number of successful hosp no anonymisations
+    
+    sometimes the document doesn't contain hosp no so this function checks if the
+    name of the file contains an MRN/hosp number
     """
 #     rd = random.Random()
 #     rd.seed(uuid_rd_seed)  # make it reproducible
 #     uuid_no = str(uuid.UUID(int=rd.getrandbits(128)))  # redact_hosp_no_message
+    mrn_error_message = False
 
     try:
         #MRN_pattern = r"Hosp[\.\s\t]?N|n?o?[\.:\s\t]?[A-Za-z]{0,4}[\s]?\d{5,8}"
@@ -325,13 +348,29 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid):
         n_uuid += 1
 
     except AttributeError:
-        print("MRN pattern not found for {}\n".format(path_to_doc))
-        MRN = "MRN_ERROR"
-        return pt_txt, MRN, n_uuid
+        try:  # try getting hosp number from document name
+            name_of_doc = path_to_doc.split('\\')[-1]
+
+            MRN_pattern = r"[A-Za-z]{0,3}[\s]?\d{5,8}"
+            MRN_search = re.search(MRN_pattern, name_of_doc)
+
+            MRN = MRN_search.group()
+            MRN = MRN.split()
+            MRN = MRN[-1]
+
+            uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+            pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+            n_uuid_name_of_doc += 1
+
+        except:
+            mrn_error_message = True
+            MRN = "XXX MRN_ERROR XXX"
+            return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
 
     except:
-        print("major uncaught error in anon_hosp_no function for {}\n".format(path_to_doc))
-        MRN = "MRN_ERROR"
-        return pt_txt, MRN, n_uuid
+        print("major uncaught error in anon_hosp_no function for \t\t{}\n".format(
+            path_to_doc))
+        MRN = "XXX MRN_ERROR XXX"
+        return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
 
-    return pt_txt, MRN, n_uuid
+    return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message

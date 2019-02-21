@@ -1,4 +1,4 @@
-from preprocessing.word_preprocess import epilepsy_docx, epilepsy_docx_xml
+from preprocessing.word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt
 from preprocessing.word_preprocess import anonymise_name_txt, save_as_txt
 from preprocessing.word_preprocess import anonymise_DOB_txt
 import os
@@ -31,11 +31,16 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         n_docx_name_anon = 0
         n_xml_name_anon = 0
         n_DOB_anon = 0
-        n_xml_DOB_anon = 0
+        n_DOB_anon_xml = 0  # same DOB function but xml to read DOB first
         uuid_no = 0  # pseudononymised replacement for MRN
         n_uuid = 0  # number MRNs found and replaced
+        n_uuid_name_of_doc = 0  # MRNs extracted from document name
 
         for docx_file in os.listdir(path_to_folder):
+            name_error_message = False
+            DOB_error_message = False
+            mrn_error_message = False
+
             path_to_doc = os.path.join(path_to_folder, docx_file)
 
             pt_txt, pt_docx_list, pt_meds_dict = epilepsy_docx_to_txt(
@@ -53,35 +58,71 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                  # if no name found, run the other docx XML function
 
                 try:
-                    pt_txt = epilepsy_docx_xml_to_txt(path_to_doc)
-                    n_xml += 1
+                    pt_txt, n_xml = epilepsy_docx_xml_to_txt(
+                        path_to_doc, n_xml)
                     pt_txt, names = anonymise_name_txt(
                         pt_txt, path_to_doc, xml=True)
                     n_xml_name_anon += 1
                 except:
-                    print("anonymise_name and xml=true failed for {}.".format(
-                        path_to_doc))
-                    print(
-                        "May not have \"Name\" field or this may not be a presurgical MDT file\n")
+                    name_error_message = True
+                    # only prints name_error if both above under try: clause fail
                     names = ['No Name', 'No Name']
-                    continue
+
+                    # continue here skips the ones with no names
 
             except:
-                print("major uncaught exception: anonymise_name_txt failed even before xml try, for {}\n ".format(
-                    path_to_doc))
+                print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
+                    docx_file))
                 names = ['No Name', 'No Name']
                 continue
 
             # whether it did anonymise name or not,
-                # hosp no anonymise uuid
-                # save the name and hosp anon txt
-            pt_txt, MRN, n_uuid = anon_hosp_no(
-                pt_txt, path_to_doc, uuid_no, n_uuid)
-            save_as_txt(path_to_doc, pt_txt + str(pt_meds_dict), save_path)
-            MRN_dict[MRN] = names
-            pseudo_anon_dict[uuid_no] = MRN_dict[MRN]
+            # anonymise hosp no
+            # anon_DOB
+            # save the name and hosp no txt
 
-        try:
+            # anonymise hosp number
+            pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message =\
+                anon_hosp_no(pt_txt, path_to_doc, uuid_no,
+                             n_uuid, n_uuid_name_of_doc)
+
+            # now anonymise DOB
+            try:
+                pt_txt, n_DOB_anon = anonymise_DOB_txt(pt_txt, n_DOB_anon)
+
+            except:
+                # if no DOB found, run the other docx XML function
+                try:
+                    pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(
+                        path_to_doc, n_xml)
+                    pt_txt_xml_DOB, n_DOB_anon_xml = anonymise_DOB_txt(
+                        pt_txt_xml, n_DOB_anon_xml)
+                    pt_txt = pt_txt_xml_DOB
+
+                except:
+                    DOB_error_message = True
+
+            #save the .txt file
+            # save with medications list appended
+            save_as_txt(path_to_doc, pt_txt + str(pt_meds_dict), save_path)
+
+            #store the dictionary of keys for this patient
+            pseudo_anon_dict[uuid_no] = {MRN: names}
+
+            if name_error_message or DOB_error_message or mrn_error_message:
+                print("\n{}".format(docx_file))
+            if name_error_message:
+                print("anonymise_name and xml=true failed for above.")
+                print(
+                    "May not have \"Name\" field or this may not be a presurgical MDT file")
+            if DOB_error_message:
+                print("DOB not found for \t\t{}".format(docx_file))
+            if mrn_error_message:
+                print("MRN pattern not found for \t\t{}\n".format(path_to_doc))
+
+            # end of loop
+
+        try:  # store key of all MRN and names
             with open('L:\\word_docs\\word_keys.json', 'w') as file:
 
                 file.seek(0)  # rewind
@@ -100,13 +141,14 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 #             #json.dump(pseudo_anon_dict, file)
 #             file.write(json.dumps(pseudo_anon_dict))
 
-        print('# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_docx))
+        print('\n\n# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_docx))
         print('of which anonymise_name_txt() = \t\t{}'.format(n_docx_name_anon))
         print('of which #anonymise_DOB() = \t\t\t{}'.format(n_DOB_anon))
         print('# epilepsy_docx_xml_to_txt = \t\t\t{}'.format(n_xml))
         print('of which anonymise_name_txt(xml) = \t\t{}'.format(n_xml_name_anon))
-        print('of which anonymise_DOB() = \t\t\t{}'.format(n_xml_DOB_anon))
+        print('of which anonymise-DOB() = \t\t\t{}'.format(n_DOB_anon_xml))
         print('# of hosp_no MRNs found and replaced = \t\t{}/{}'.format(n_uuid, uuid_no))
+        print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))
 
     else:  # only read the txt files from folder given
         for RTF_file in os.listdir(path_to_folder):
