@@ -26,6 +26,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
     *paragraphs is redundant - can specify which paragraph numbers to read from.
     initially was useful in obtaining structure for regex.
 
+    main_docx_preprocess stores sensitive data as dictionary in .json file.
+    (MRN is the actual hospital number innerkey)
+    i.e.:
+    psuedo_anon_dict: {"MRN": MRN, "Names": [names], "DOB": DOB_actual}
+
     Ali Alim-Marvasti (c) Jan-Feb 2019
     """
 
@@ -95,36 +100,33 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
             # now anonymise DOB
             try:
-                pt_txt, n_DOB_anon = anonymise_DOB_txt(pt_txt, n_DOB_anon)
+                pt_txt, n_DOB_anon, DOB_actual = anonymise_DOB_txt(pt_txt, n_DOB_anon)
 
             except:
                 # if no DOB found, run the other docx XML function
                 try:
-                    #                     pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(path_to_doc, n_xml)
-                    #                     pt_txt_xml_DOB, n_DOB_anon_xml = anonymise_DOB_txt(pt_txt_xml, n_DOB_anon_xml)
-                    #                     pt_txt = pt_txt_xml_DOB
                     pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(
                         path_to_doc, n_xml)
-                    DOB_anon_message, n_DOB_anon_xml = anonymise_DOB_txt(
+                    DOB_anon_message, n_DOB_anon_xml, DOB_actual = anonymise_DOB_txt(
                         pt_txt_xml, n_DOB_anon_xml, xml=True)
                     pt_txt = pt_txt.replace("DOB", DOB_anon_message)
 
                 except AttributeError:
                     DOB_error_message = True
+                    DOB_actual = "XX/XX/XX"
 
-            #save the .txt file
-            # save (with medications list appended: change to pt_txt + str(pt_meds_dict) )
+            # save the .txt file
+            # save (with meds list appended: change to pt_txt + str(pt_meds_dict))
             save_as_txt(path_to_doc, pt_txt, save_path)
 
-            #store the dictionary of keys for this patient
-            pseudo_anon_dict[uuid_no] = {MRN: names}
+            # store the dictionary of keys for this patient
+            pseudo_anon_dict[uuid_no] = {"MRN": MRN, "Name": names, "DOB": DOB_actual}
 
             if name_error_message or DOB_error_message or mrn_error_message:
                 print("\n{}".format(docx_file))
             if name_error_message:
                 print("*anonymise_name and xml=true failed for above.")
-                print(
-                    "May not have \"Name\" field or this may not be a presurgical MDT file")
+                print("May not have \"Name\" field or this may not be a presurgical MDT file")
             if DOB_error_message:
                 print("**DOB not found for \t\t{}".format(docx_file))
             if mrn_error_message:
@@ -133,7 +135,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             # end of loop over all docx files
 
         try:  # store key of all MRN and names
-            with open('L:\\word_docs\\word_keys.json', 'w') as file:
+            with open('L:\\word_docs\\word_keys2.json', 'w') as file:
 
                 file.seek(0)  # rewind
 

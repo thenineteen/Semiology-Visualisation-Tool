@@ -24,8 +24,6 @@ import zipfile
 import io
 import uuid
 import json
-import random
-import datetime
 
 def args_for_loop(*args):
     """
@@ -283,6 +281,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
     DOB = re.sub("[^0-9/\.-]", "", DOB)
+    DOB_actual = DOB
 
     # turn DOB into 3 integers and alter
     # alter DOB so can still trace pt if required
@@ -294,8 +293,8 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     if xml:
         DOB_anon = '\nXXX anonymised DOB = ' + \
             DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
-        n_DOB_anon += 1
-        return DOB_anon, n_DOB_anon
+        n_DOB_anon += 1 
+        return DOB_anon, n_DOB_anon, DOB_actual
 
     else:
         # and use this message:
@@ -303,7 +302,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
             DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
         pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
         n_DOB_anon += 1
-        return pt_txt_DOBfilter, n_DOB_anon
+        return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
 
 
 def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
@@ -320,10 +319,10 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         this function uses MRN in name of file and uses it instead. 
         This argument counts the number of MRNs redacted via this method.
 
-    main_docx_preprocess stores MRN and uuid as dictionary in .json file.
+    main_docx_preprocess stores sensitive data as dictionary in .json file.
     (MRN is the actual hospital number innerkey)
     i.e.:
-    psuedo_anon_dict: {MRN:[names]}
+    psuedo_anon_dict: {"MRN": MRN, "Names": [names], "DOB": DOB_actual}
 
     returns pt_txt without mrn and also the above keys 
     replacing MRN with uuid_no_message

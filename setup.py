@@ -1,5 +1,5 @@
 """
-use "Process_Epilepsy_PDFs" in terminal to run.
+use "Process_Epilepsy_Docx" in terminal to run.
 """
 
 from setuptools import setup, find_packages
@@ -17,9 +17,9 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['*tests']),
     install_requires=['argparse', 'PyYaml', 'PyPDF2', 'scikit-learn',
-                      'json', 'copy', 'uuid', 'docx'],
+                      'json', 'copy', 'uuid', 'docx', 'os', 're', 'zipfile'],
     entry_points={
         'console_scripts': [
-            'Process_Epilepsy_PDFs = Preprocessing_PDFs.command:process_pdfs'
+            'Process_Epilepsy_Docx = preprocessing.command:main_docx_preprocess'
         ]}
 )
