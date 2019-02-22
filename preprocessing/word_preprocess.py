@@ -1,13 +1,14 @@
 """
 Read word document texts for patients with
 Epilepsy, read drugs table, remove sensitive data,
-pseudo-anonymise and store new popped text
-and original in separate folders.
+pseudo-anonymise and store keys of personal data in json file
+in encrypted environment.
+
 Need to already have created new directory.
 
 This contains all the functions called by main_docx_preprocess
 
-Ali Alim-Marvasti (c) Jan 2019
+Ali Alim-Marvasti (c) Jan-Feb 2019
 """
 # below only works for docx
 # so first convert .doc to .docx via .ps1
@@ -26,13 +27,12 @@ import json
 import random
 import datetime
 
-
 def args_for_loop(*args):
     """
     factor function used by epilepsy_docx
     makes a list of two numbers
     """
-
+    
     list = []
     for arg in args:
         list.append(arg)
@@ -49,10 +49,10 @@ def update_txt_docx(pt_txt, pt_docx_list, p, clean, print_p_by_p=False):
     4. print_p_by_p is an option to print out the text as it is being read.
     
     """
-
+    
     pt_txt = pt_txt + '\n' + p.text
     pt_docx_list.append(p.text)
-
+    
     if print_p_by_p:
         print(p.text)
 
@@ -79,9 +79,9 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
     pt_txt = pt_txt.replace('\u2193', 'down_arrow')
     pt_txt = pt_txt.replace('\u2191', 'up_arrow')
     pt_txt = pt_txt.replace('\u206d', 'up_arrow')
-
+    
     # otherwise gives charmap codec error
-
+    
     try:
         save_filename = path_to_doc.split("\\")[-1].replace(
             '.docx', '')+".txt"  # takes name of docx file
@@ -92,9 +92,8 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
         with open(complete_filename, "w", errors='backslashreplace') as f:
             f.write(pt_txt)
 
-
 def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=False,
-                         print_p_by_p=False):
+                  print_p_by_p=False):
     """
     Returns pt_txt as text.
     Returns pt_docx_list as list of paragraphs.
@@ -144,8 +143,7 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
             pt_txt, pt_docx_list = update_txt_docx(pt_txt, pt_docx_list, p,
                                                    clean, print_p_by_p)
 
-    meds_table_headings = ['current rx', 'max dose',
-                           'previous rx', 'stopped/', 'comments', '', ' ']
+    meds_table_headings = ['current rx', 'max dose', 'previous rx', 'stopped/', 'comments', '', ' ']
     if read_tables:
         for t in document.tables:
             for row in t.rows:
@@ -154,14 +152,14 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
                         if paragraph.text not in meds_table_headings:
                             pt_meds_list.append(paragraph.text)
                 pt_meds_dict[row] = pt_meds_list
-                # print(paragraph.text)
+                        # print(paragraph.text)
         # print (pt_meds_list)
 
     # this next part cleans to remove empty characters and spaces
     if clean:
         pt_txt = pt_txt.replace('\t', ' ')
         pt_txt = pt_txt.strip()
-
+        
     pt_docx_list = [i.lower() for i in pt_docx_list]
     pt_docx_list = [o for o in pt_docx_list if o != '' and
                     o != '\t' and o != ' ']
@@ -174,8 +172,7 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    save_as_txt(path_to_doc, pt_txt,
-                save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
+    save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
 
     return pt_txt, pt_docx_list, pt_meds_dict
 
@@ -203,22 +200,20 @@ def epilepsy_docx_xml_to_txt(path, n_xml):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    save_as_txt(path, pt_txt_xml,
-                save_path="L:\\word_docs\\test_epilepsy_docx_xml_to_txt\\")
+    save_as_txt(path, pt_txt_xml, save_path="L:\\word_docs\\test_epilepsy_docx_xml_to_txt\\")
 
     n_xml += 1
     return pt_txt_xml, n_xml
-
 
 def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     """
     finds first and surnames using regex and replaces them with
     redact messages XXXfirstnameXXX and XXXsurnameXXX respectively.
 
-    If you want instead of the default redact message
-    to have a single space, use silent=True.
-
-    xml option's regex is required when text was read by epilepsy_docx_xml.
+    >pt_txt is a string
+    >path_to_doc is full filename path including extension
+    >xml option's regex is required when text was read by epilepsy_docx_xml.
+        This option is currently not being used.
     """
 
     redact_message_fname = 'XXXfirstnameXXX'
@@ -258,20 +253,16 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         return pt_txt_sfnamefilter, names
 
 
-def anonymise_DOB_txt(pt_txt, n_DOB_anon, change_DOB=True):
+def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
     finds DOB using regex and replaces with
-    pseudoanon DOB or redact message 'XXX-DOB-XXX'.
+    pseudoanon DOB e.g. "XXX anonymised DOB = 31/4/63"
 
-    If you want the pseudo-anonymised DOB to be there as default, use
-    change_DOB = True (default). 
-    Output format will be : 'XXX anonymised DOB = ddmm/yy'
-    
-    If you want redact message 'XXX-DOB-XXX',
-    then use change_DOB = False.
+    >pt_txt is a string.
+    >n_DOB_anon counts number of successfull DOB redactions.
+
+    main_docx_preprocess uses two forms to keep a tally of DOB's needing xml to read.
     """
-
-    redact_message = 'XXX-DOB-XXX'
 
     try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
         DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
@@ -289,45 +280,53 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, change_DOB=True):
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group().split()[-1]
 
-    if change_DOB:  # alter DOB so can still trace pt if required
+    # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
+    # e.g. potential error comes from xml reading DOB where no space between : and DOB
+    DOB = re.sub("[^0-9/\.-]", "", DOB)
 
-        # turn DOB into 3 integers and alter
-        DOB_digits = list(
-            map(lambda x: int(x)+1, (re.compile(r"/?\.?-?").split(DOB))))
-        # turn this back to string
-        DOB_str = [str(x) for x in DOB_digits]
+    # turn DOB into 3 integers and alter
+    # alter DOB so can still trace pt if required
+    DOB_digits = list(
+        map(lambda x: int(x)+1, (re.compile(r"/?\.?-?").split(DOB))))
+    # turn this back to string
+    DOB_str = [str(x) for x in DOB_digits]
+
+    if xml:
+        DOB_anon = '\nXXX anonymised DOB = ' + \
+            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
+        n_DOB_anon += 1
+        return DOB_anon, n_DOB_anon
+
+    else:
         # and use this message:
         DOB_anon = 'XXX anonymised DOB = ' + \
             DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
-
         pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
         n_DOB_anon += 1
-
-    else:  # use redact_message
-        pt_txt_DOBfilter = pt_txt.replace(DOB, redact_message)
-        n_DOB_anon += 1
-
-    return pt_txt_DOBfilter, n_DOB_anon
+        return pt_txt_DOBfilter, n_DOB_anon
 
 
 def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
     """
-    Find and replace hospital number with uuid.
-    
-    pt_txt is .txt file. path_to_doc is the full pathname and file name. 
-    main_docx_preprocess stores it as key to name values from anonymise_name_txt
-    
-    uuid_no_message is the pseudononymised key
-    MRN is the actual hospital number innerkey
-    
+    Find and replace hospital number (=MRN) with uuid.
+
+    >pt_txt is a string. 
+    >path_to_doc is the full pathname and file name with ext.
+    >uuid_no is the pseudononymised file number - main_docx passes this argument
+    >n_uuid counts number of successful hosp no anonymisations
+
+    >n_uuid_name_of_doc:
+        sometimes the document doesn't contain hosp no,
+        this function uses MRN in name of file and uses it instead. 
+        This argument counts the number of MRNs redacted via this method.
+
+    main_docx_preprocess stores MRN and uuid as dictionary in .json file.
+    (MRN is the actual hospital number innerkey)
     i.e.:
     psuedo_anon_dict: {MRN:[names]}
-    
-    returns pt_txt without mrn and also the above keys
-    n_uuid counts number of successful hosp no anonymisations
-    
-    sometimes the document doesn't contain hosp no so this function checks if the
-    name of the file contains an MRN/hosp number
+
+    returns pt_txt without mrn and also the above keys 
+    replacing MRN with uuid_no_message
     """
 #     rd = random.Random()
 #     rd.seed(uuid_rd_seed)  # make it reproducible

@@ -7,19 +7,26 @@ import os
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                          clean=False, save_path="L:\\word_docs\\test_anon_name_mrn\\", DOCX=True):
     """
-    This runs the functions from word_preprocess.py in an entire folder. 
+    This runs the functions from word_preprocess.py in an entire folder.
 
-    run like this:
-    path_to_folder = 'L:\\word_docs\\test_anonymise\\'
-    
-    main_docx_preprocess(path_to_folder, read_tables=True, clean=False)
-    
-    Runs docx first. if this fails, runs epilepsy_docx_xml.
-    If both fail, gives error message. 
-    
-    TXT is when converting files that are already in .txt format
-    Originally from the RTF files but then also can be sued for any even docx's which
-    have been converted to .txt to avoid using original docx.
+    run using these two lines like this:
+    path_to_folder = 'L:\\word_docs\\test\\'
+    main_docx_preprocess(path_to_folder, read_tables=False, clean=False, save_path="L:\\word_docs\\texxts\\")
+
+    Runs epilepsy_docx_to_txt converter first. 
+    If this fails to obtain name or DOB, runs epilepsy_docx_xml_to_txt.
+    If both fail, gives error message wrt name or DOB. (MRN doesn't use xml)
+
+    (The format of the output of epilepsy_docx_to_txt is better than xml's -
+    But xml can read the medication tables and some DOB which the other can't).
+
+    DOCX False is future option when converting files that are already in .txt format
+    i.e. skip the docx to txt conversion e.g. for RTF files.
+
+    *paragraphs is redundant - can specify which paragraph numbers to read from.
+    initially was useful in obtaining structure for regex.
+
+    Ali Alim-Marvasti (c) Jan-Feb 2019
     """
 
     pseudo_anon_dict = {}  # uuid pseudononymisation to hosp no (mrn)
@@ -93,18 +100,21 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             except:
                 # if no DOB found, run the other docx XML function
                 try:
+                    #                     pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(path_to_doc, n_xml)
+                    #                     pt_txt_xml_DOB, n_DOB_anon_xml = anonymise_DOB_txt(pt_txt_xml, n_DOB_anon_xml)
+                    #                     pt_txt = pt_txt_xml_DOB
                     pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(
                         path_to_doc, n_xml)
-                    pt_txt_xml_DOB, n_DOB_anon_xml = anonymise_DOB_txt(
-                        pt_txt_xml, n_DOB_anon_xml)
-                    pt_txt = pt_txt_xml_DOB
+                    DOB_anon_message, n_DOB_anon_xml = anonymise_DOB_txt(
+                        pt_txt_xml, n_DOB_anon_xml, xml=True)
+                    pt_txt = pt_txt.replace("DOB", DOB_anon_message)
 
-                except:
+                except AttributeError:
                     DOB_error_message = True
 
             #save the .txt file
-            # save with medications list appended
-            save_as_txt(path_to_doc, pt_txt + str(pt_meds_dict), save_path)
+            # save (with medications list appended: change to pt_txt + str(pt_meds_dict) )
+            save_as_txt(path_to_doc, pt_txt, save_path)
 
             #store the dictionary of keys for this patient
             pseudo_anon_dict[uuid_no] = {MRN: names}
@@ -112,15 +122,15 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             if name_error_message or DOB_error_message or mrn_error_message:
                 print("\n{}".format(docx_file))
             if name_error_message:
-                print("anonymise_name and xml=true failed for above.")
+                print("*anonymise_name and xml=true failed for above.")
                 print(
                     "May not have \"Name\" field or this may not be a presurgical MDT file")
             if DOB_error_message:
-                print("DOB not found for \t\t{}".format(docx_file))
+                print("**DOB not found for \t\t{}".format(docx_file))
             if mrn_error_message:
-                print("MRN pattern not found for \t\t{}\n".format(path_to_doc))
+                print("***MRN pattern not found for \t\t{}\n".format(path_to_doc))
 
-            # end of loop
+            # end of loop over all docx files
 
         try:  # store key of all MRN and names
             with open('L:\\word_docs\\word_keys.json', 'w') as file:
@@ -142,11 +152,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 #             file.write(json.dumps(pseudo_anon_dict))
 
         print('\n\n# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_docx))
-        print('of which anonymise_name_txt() = \t\t{}'.format(n_docx_name_anon))
-        print('of which #anonymise_DOB() = \t\t\t{}'.format(n_DOB_anon))
+        print('\tof which anonymise_name_txt() = \t{}'.format(n_docx_name_anon))
+        print('\tof which #anonymise_DOB() = \t\t{}'.format(n_DOB_anon))
         print('# epilepsy_docx_xml_to_txt = \t\t\t{}'.format(n_xml))
-        print('of which anonymise_name_txt(xml) = \t\t{}'.format(n_xml_name_anon))
-        print('of which anonymise-DOB() = \t\t\t{}'.format(n_DOB_anon_xml))
+        print('\tof which anonymise_name_txt(xml) = \t{}'.format(n_xml_name_anon))
+        print('\tof which anonymise_DOB(xml) = \t\t{}'.format(n_DOB_anon_xml))
         print('# of hosp_no MRNs found and replaced = \t\t{}/{}'.format(n_uuid, uuid_no))
         print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))
 
