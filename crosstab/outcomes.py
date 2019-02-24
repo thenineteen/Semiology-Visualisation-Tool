@@ -46,9 +46,4 @@ def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB
     df_had_surgery = df_outcomes.loc[df_outcomes.Gold_outcome == False]
     had_surgery_MRNs = list(df_had_surgery.index.values)
 
-<<<<<<< HEAD
     return gold_outcomes_MRNs, had_surgery_MRNs
-    
-=======
-    return gold_outcomes_MRNs, had_surgery_MRNs
->>>>>>> json_dictionary

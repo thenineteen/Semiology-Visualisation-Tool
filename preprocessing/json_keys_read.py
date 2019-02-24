@@ -50,4 +50,3 @@ def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
                 file.truncate()
 
     return sensitive_data
-
