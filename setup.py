@@ -17,7 +17,8 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['*tests']),
     install_requires=['argparse', 'PyYaml', 'PyPDF2', 'scikit-learn',
-                      'json', 'copy', 'uuid', 'docx', 'os', 're', 'zipfile'],
+                      'json', 'copy', 'uuid', 'docx', 'os', 're', 'zipfile',
+                      'pandas'],
     entry_points={
         'console_scripts': [
             'Process_Epilepsy_Docx = preprocessing.command:main_docx_preprocess'

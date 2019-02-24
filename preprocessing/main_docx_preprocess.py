@@ -115,7 +115,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                     DOB_error_message = True
                     DOB_actual = "XX/XX/XX"
 
-            # save the .txt file
+            # save the .txt file with names/DOB/MRN redacted
             # save (with meds list appended: change to pt_txt + str(pt_meds_dict))
             save_as_txt(path_to_doc, pt_txt, save_path)
 
@@ -134,7 +134,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
             # end of loop over all docx files
 
-        try:  # store key of all MRN and names
+
+
+        # store keys of all MRNs, names and DOB
+        # write all keys to json dictionary file
+        try:
             with open('L:\\word_docs\\word_keys2.json', 'w') as file:
 
                 file.seek(0)  # rewind
@@ -147,11 +151,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         except TypeError:
             print("dict keys not string for {}".format(docx_file))
 
-        # write all keys to json dictionary file
 
-#         with open('L:\\word_docs\\word_keys.json', 'w') as file:
-#             #json.dump(pseudo_anon_dict, file)
-#             file.write(json.dumps(pseudo_anon_dict))
 
         print('\n\n# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_docx))
         print('\tof which anonymise_name_txt() = \t{}'.format(n_docx_name_anon))
