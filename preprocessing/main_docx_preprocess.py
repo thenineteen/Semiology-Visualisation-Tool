@@ -31,6 +31,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
     i.e.:
     psuedo_anon_dict: {"MRN": MRN, "Names": [names], "DOB": DOB_actual}
 
+
+    keys are stored in:
+    'L:\\word_docs\\word_keys2.json' for DOCX
+    L:\\word_docs\\word_RTF_keys.json for TXT
+
     Ali Alim-Marvasti (c) Jan-Feb 2019
     """
 
@@ -162,10 +167,111 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         print('# of hosp_no MRNs found and replaced = \t\t{}/{}'.format(n_uuid, uuid_no))
         print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))
 
-    else:  # only read the txt files from folder given
-        for RTF_file in os.listdir(path_to_folder):
-            path_to_doc = os.path.join(path_to_folder, RTF_file)
-            with open(path_to_doc) as f:
-                pt_txt = f.read()
 
-        #do above again
+
+    else:  # only read the txt files from folder given
+        n_txt = 0
+        #n_xml = 0
+        n_TXT_name_anon = 0
+        #n_xml_name_anon = 0
+        n_DOB_anon = 0
+        n_DOB_anon_xml = 0  # same DOB function but xml to read DOB first
+        uuid_no = 0  # pseudononymised replacement for MRN
+        n_uuid = 0  # number MRNs found and replaced
+        n_uuid_name_of_doc = 0  # MRNs extracted from document name
+
+        for TXT_file in os.listdir(path_to_folder):
+            path_to_doc = os.path.join(path_to_folder, TXT_file)
+
+            name_error_message = False
+            DOB_error_message = False
+            mrn_error_message = False
+
+            with open(path_to_doc, "r", errors='backslashreplace') as f:
+                pt_txt = f.read()
+                
+                n_txt += 1
+                uuid_no += 1
+
+                # now anonymise names
+                try:  # sometimes there is no actual name after "Name:" in the file
+                    pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc)
+                    n_TXT_name_anon += 1
+
+                except AttributeError:
+                    name_error_message = True
+                    names = ['No Name', 'No Name']
+
+                except:
+                    print("major uncaught exception: anonymise_name_txt failed for this TXT file: \t\t{}\n ".format(
+                        TXT_file))
+                    names = ['No Name', 'No Name']
+                    continue  # continue here skips the ones with no names
+
+                # whether it did anonymise name or not,
+                # anonymise hosp no
+                # anon_DOB
+                # save the name and hosp no txt
+
+                # anonymise hosp number
+                pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message =\
+                    anon_hosp_no(pt_txt, path_to_doc, uuid_no,
+                                n_uuid, n_uuid_name_of_doc)
+
+                # now anonymise DOB
+                try:
+                    pt_txt, n_DOB_anon, DOB_actual = anonymise_DOB_txt(pt_txt, n_DOB_anon)
+
+                except:
+                    # if no DOB found, run with xml option = True
+                    try:
+                        DOB_anon_message, n_DOB_anon_xml, DOB_actual = anonymise_DOB_txt(
+                            pt_txt, n_DOB_anon_xml, xml=True)
+                        pt_txt = pt_txt.replace("DOB", DOB_anon_message)
+
+                    except AttributeError:
+                        DOB_error_message = True
+                        DOB_actual = "XX/XX/XX"
+
+                    # except IndexError:
+                    #     print ('DOB[0,1,2] indexError for {}'.format(TXT_file))
+
+                # save the .txt file with names/DOB/MRN redacted
+                save_as_txt(path_to_doc, pt_txt, save_path)
+
+                # store the dictionary of keys for this patient
+                pseudo_anon_dict[uuid_no] = {"MRN": MRN, "Name": names, "DOB": DOB_actual}
+
+                if name_error_message or DOB_error_message or mrn_error_message:
+                    print("\n{}".format(TXT_file))
+                if name_error_message:
+                    print("*anonymise_name failed for above.")
+                    print("May not have \"Name\" field or this may not be a presurgical MDT file")
+                if DOB_error_message:
+                    print("**DOB not found for \t\t{}".format(TXT_file))
+                if mrn_error_message:
+                    print("***MRN pattern not found for \t\t{}\n".format(path_to_doc))
+
+                # end of loop over all docx files
+
+        # store keys of all MRNs, names and DOB
+        # write all keys to json dictionary file
+        try:
+            with open('L:\\word_docs\\word_RTF_keys.json', 'w') as file:
+
+                file.seek(0)  # rewind
+
+                json.dump(pseudo_anon_dict, file)
+                #file.write(json.dumps(pseudo_anon_dict))
+
+                file.truncate()
+
+        except TypeError:
+            print("dict keys not string for {}".format(docx_file))
+
+        print('\n\n# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_txt))
+        print('\tof which anonymise_name_txt() = \t{}'.format(n_TXT_name_anon))
+        print('\tof which #anonymise_DOB() = \t\t{}'.format(n_DOB_anon))
+        print('\tof which anonymise_DOB(xml) = \t\t{}'.format(n_DOB_anon_xml))
+        print('# of hosp_no MRNs found and replaced = \t\t{}/{}'.format(n_uuid, uuid_no))
+        print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))

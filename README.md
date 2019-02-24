@@ -41,3 +41,13 @@ Regular open source software and scripts are unable to read these (tested pdfmin
 *Running from command line cmd*
 
 *Syntax and Exceptions*
+
+# 1. run main_docx_preprocess()
+# 2. check results (output, 3 folders, json)
+folder1: docx to txt output
+folder2: docx_xml function to txt output
+folder3: txt with redacted name,DOB,MRN output
+json dictionary: with all sensitive data keys 
+# 3. add outcomes using find_MRN_label_outcomes()
+creates new json dictionary and adds the keys to the above
+I think you must have already made the json file for it to work

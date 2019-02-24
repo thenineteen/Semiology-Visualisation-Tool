@@ -291,19 +291,32 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     DOB_str = [str(x) for x in DOB_digits]
 
     if xml:
-        DOB_anon = '\nXXX anonymised DOB = ' + \
-            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
-        n_DOB_anon += 1 
-        return DOB_anon, n_DOB_anon, DOB_actual
+        try:
+            DOB_anon = '\nXXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
+            n_DOB_anon += 1 
+            return DOB_anon, n_DOB_anon, DOB_actual
+
+        except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
+            DOB_anon = '\nXXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]+'\n'
+            n_DOB_anon += 1 
+            return DOB_anon, n_DOB_anon, DOB_actual
 
     else:
         # and use this message:
-        DOB_anon = 'XXX anonymised DOB = ' + \
-            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
-        pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
-        n_DOB_anon += 1
-        return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
-
+        try:
+            DOB_anon = 'XXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
+            pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
+            n_DOB_anon += 1
+            return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
+        except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
+            DOB_anon = 'XXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]
+            pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
+            n_DOB_anon += 1
+            return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
 
 def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
     """
