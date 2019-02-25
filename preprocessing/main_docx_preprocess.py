@@ -114,7 +114,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                         path_to_doc, n_xml)
                     DOB_anon_message, n_DOB_anon_xml, DOB_actual = anonymise_DOB_txt(
                         pt_txt_xml, n_DOB_anon_xml, xml=True)
-                    pt_txt = pt_txt.replace("DOB", DOB_anon_message)
+                    pt_txt = pt_txt.replace(DOB_actual, DOB_anon_message)
 
                 except AttributeError:
                     DOB_error_message = True
@@ -233,8 +233,10 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                         DOB_error_message = True
                         DOB_actual = "XX/XX/XX"
 
-                    # except IndexError:
-                    #     print ('DOB[0,1,2] indexError for {}'.format(TXT_file))
+                    except IndexError:
+                        DOB_error_message = True
+                        print ('DOB[0,1,2] indexError for {}'.format(TXT_file))
+                        DOB_actual = "XX/XX/XX"
 
                 # save the .txt file with names/DOB/MRN redacted
                 save_as_txt(path_to_doc, pt_txt, save_path)

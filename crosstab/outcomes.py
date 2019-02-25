@@ -1,7 +1,7 @@
 
 import pandas as pd
 
-def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB_Statistics_YAY_2019.xlsx')
+def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB_Statistics_YAY_2019.xlsx'):
     """
     Creates the list of Gold_standard post-operative ILAE 1 at all follow up years MRNs.
     Also returns had_surgery list of MRNs.
@@ -47,4 +47,3 @@ def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB
     had_surgery_MRNs = list(df_had_surgery.index.values)
 
     return gold_outcomes_MRNs, had_surgery_MRNs
-    

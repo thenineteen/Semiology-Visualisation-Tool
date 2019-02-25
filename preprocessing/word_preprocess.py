@@ -249,6 +249,25 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
         names = [firstname, surname]
         return pt_txt_sfnamefilter, names
+    
+    except AttributeError:  # maybe name is Ali O'Marvasti
+        name_pattern = r"Name[\s\t:]+\w+[\s+][A-Z’]+[\s-]?\w+"
+        name_search = re.search(name_pattern, pt_txt)
+
+        name = name_search.group()
+        name_list = name.split()
+        firstname = name_list[1]
+        if name_list[-1] != 'Age' and name_list[-1] != 'age':
+            surname = name_list[-1]
+        else:
+            surname = name_list[2]
+
+        pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+        pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+            surname, redact_message_sname)
+
+        names = [firstname, surname]
+        return pt_txt_sfnamefilter, names
 
 
 def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
@@ -280,7 +299,8 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
 
     # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
-    DOB = re.sub("[^0-9/\.-]", "", DOB)
+    
+    DOB = re.sub("[^0-9/\.-]", "", DOB)  # if 25/Feb/19, then this is removed: 25/19
     DOB_actual = DOB
 
     # turn DOB into 3 integers and alter
@@ -299,7 +319,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
 
         except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
             DOB_anon = '\nXXX anonymised DOB = ' + \
-                DOB_str[0]+'/'+DOB_str[1]+'\n'
+                str(DOB_str) + '\n'
             n_DOB_anon += 1 
             return DOB_anon, n_DOB_anon, DOB_actual
 
@@ -311,6 +331,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
             pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
             n_DOB_anon += 1
             return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
+
         except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
             DOB_anon = 'XXX anonymised DOB = ' + \
                 DOB_str[0]+'/'+DOB_str[1]
