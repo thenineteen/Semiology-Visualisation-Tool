@@ -216,6 +216,8 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     redact_message_fname = 'XXXfirstnameXXX'
     redact_message_sname = 'XXXsurnameXXX'
+    not_pt_names = ['Age', 'age']
+    regex_notnames = re.compile(r"Hosp.*")
 
     try:
         name_pattern = r"Name[\s\t:]+\w+[\s+]\w+[\s-]?\w+"
@@ -224,7 +226,8 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         name = name_search.group()
         name_list = name.split()
         firstname = name_list[1]
-        if name_list[-1] != 'Age' and name_list[-1] != 'age':
+
+        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
             surname = name_list[-1]
         else:
             surname = name_list[2]
@@ -257,7 +260,8 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         name = name_search.group()
         name_list = name.split()
         firstname = name_list[1]
-        if name_list[-1] != 'Age' and name_list[-1] != 'age':
+
+        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
             surname = name_list[-1]
         else:
             surname = name_list[2]
