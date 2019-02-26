@@ -1,6 +1,8 @@
+import json
+
 def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
              list_MRNs_surgery_not_gold_standard,
-             json_file = "L:\\word_docs\\word_keys2.json",
+             json_file_to_use = "L:\\word_docs\\word_keys2.json",
              save_new_json_dict = "L:\\word_docs\\word_keys_outcomes.json"):
 
     """
@@ -17,7 +19,7 @@ def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
     sensitive_data_outcomes = find_MRN_label_outcomes(Gold_MRNs, had_surgery)
     """
     # open json key
-    with open(json_file) as f:
+    with open(json_file_to_use) as f:
         sensitive_data = json.load(f)
 
 # for testing and creating list of MRNs:
@@ -57,7 +59,6 @@ def outcomes_count(json_file = "L:\\word_docs\\RTF_done\\3.5 RTF_keys_outcomes.j
     Give this function the .json file key with outcomes, and it will count number of outcomes
     in this key for 'Gold ILAE 1', 'Resection' and 'No surgery'
     """
-
     with open(json_file) as f:
         rtf_keys = json.load(f)
 
@@ -67,6 +68,7 @@ def outcomes_count(json_file = "L:\\word_docs\\RTF_done\\3.5 RTF_keys_outcomes.j
     for pseudoanonkey in rtf_keys.keys():
         if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'Gold ILAE 1':
             m += 1
+            print (pseudoanonkey, rtf_keys[pseudoanonkey])
         if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'Resection':
             n += 1
         if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'No surgery':

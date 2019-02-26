@@ -12,18 +12,18 @@ Ali Alim-Marvasti (c) Jan-Feb 2019
 """
 # below only works for docx
 # so first convert .doc to .docx via .ps1
-import docx
-import os.path
-import os
-import re
-try:
-    from xml.etree.cElementTree import XML
-except ImportError:
-    from xml.etree.ElementTree import XML
-import zipfile
-import io
-import uuid
-import json
+# import docx
+# import os.path
+# import os
+# import re
+# try:
+#     from xml.etree.cElementTree import XML
+# except ImportError:
+#     from xml.etree.ElementTree import XML
+# import zipfile
+# import io
+# import uuid
+# import json
 
 def args_for_loop(*args):
     """

@@ -41,8 +41,11 @@ Regular open source software and scripts are unable to read these (tested pdfmin
 *Running from command line cmd*
 
 *Syntax and Exceptions*
-
+# 0. convert .doc to docx and .rtf to .txt and .pdf to pdf readable/docx/txt
 # 1. run main_docx_preprocess()
+writes .txt files to three folders which need checking as below.
+creates a json dictionary with sensitive personalised data and keys.
+This json dictinary is updated ni step 3.
 # 2. check results (output, 3 folders, json)
 folder1: docx to txt output
 folder2: docx_xml function to txt output
@@ -52,3 +55,18 @@ json dictionary: with all sensitive data keys
 After main_docx_preprocess, run the gold_outcomes_MRNs() function in outcomes.py to get list of labels
 and add the labels to the above keys using the find_MRN_label_outcomes() function in json_keys_read.py.
 Creates new json dictionary and adds the keys to the above keys created when running the main function. 
+# 4. outcomes_count()
+Now count the number of Gold ILAE 1, non-gold standard resections and #s of patients who didn't
+have surgery in the keys produced above. Doesn't change any files, prints results. 
+
+##From Jupyter Notebook, can run after importing like this:
+import sys
+
+sys.path.insert(0, r"C:\Users\ali_m\AnacondaProjects\PhD\Epilepsy_Surgery_Project\preprocessing")
+
+from json_keys_read import find_MRN_label_outcomes, outcomes_count
+from main_docx_preprocess import main_docx_preprocess
+from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
+from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
+from Epilepsy_Surgery_Project.crosstab import outcomes

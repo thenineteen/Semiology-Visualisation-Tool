@@ -1,17 +1,19 @@
-from preprocessing.word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt
-from preprocessing.word_preprocess import anonymise_name_txt, save_as_txt
-from preprocessing.word_preprocess import anonymise_DOB_txt
-import os
+# from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
+# from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+# from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
+# import os
+# import json
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
-                         clean=False, save_path="L:\\word_docs\\test_anon_name_mrn\\", DOCX=True):
+                         clean=False, save_path="L:\\word_docs\\texxts\\",
+                         json_dictionary_file = 'L:\\word_docs\\keys.json', DOCX=True):
     """
     This runs the functions from word_preprocess.py in an entire folder.
 
     run using these two lines like this:
     path_to_folder = 'L:\\word_docs\\test\\'
-    main_docx_preprocess(path_to_folder, read_tables=False, clean=False, save_path="L:\\word_docs\\texxts\\")
+    main_docx_preprocess(path_to_folder, read_tables=False, clean=False, json_dictionary_file = , save_path="L:\\word_docs\\texxts\\")
 
     Runs epilepsy_docx_to_txt converter first. 
     If this fails to obtain name or DOB, runs epilepsy_docx_xml_to_txt.
@@ -20,7 +22,9 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
     (The format of the output of epilepsy_docx_to_txt is better than xml's -
     But xml can read the medication tables and some DOB which the other can't).
 
-    DOCX False is future option when converting files that are already in .txt format
+    >json_dictionary_file determines where to save the keys:values of sensitive data.
+
+    >DOCX False is future option when converting files that are already in .txt format
     i.e. skip the docx to txt conversion e.g. for RTF files.
 
     *paragraphs is redundant - can specify which paragraph numbers to read from.
@@ -147,7 +151,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         # store keys of all MRNs, names and DOB
         # write all keys to json dictionary file
         try:
-            with open('L:\\word_docs\\word_keys2.json', 'w') as file:
+            with open(json_dictionary_file, 'w') as file:
 
                 file.seek(0)  # rewind
 
@@ -262,7 +266,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         # store keys of all MRNs, names and DOB
         # write all keys to json dictionary file
         try:
-            with open('L:\\word_docs\\word_RTF_keys.json', 'w') as file:
+            with open(json_dictionary_file, 'w') as file:
 
                 file.seek(0)  # rewind
 
