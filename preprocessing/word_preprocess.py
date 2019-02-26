@@ -216,18 +216,27 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     redact_message_fname = 'XXXfirstnameXXX'
     redact_message_sname = 'XXXsurnameXXX'
+    not_pt_names = ['Age', 'age', 'DOB']
+    regex_notnames = re.compile(r"(Hosp).?")
+    regex_notnames_2 = re.compile(r"\s*:\s*")
 
     try:
-        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+[\s-]?\w+"
+        name_pattern = r"Name[\s\t:]+\w+\s+\w+[\s-]?\w+"
         name_search = re.search(name_pattern, pt_txt)
 
         name = name_search.group()
         name_list = name.split()
-        firstname = name_list[1]
-        if name_list[-1] != 'Age' and name_list[-1] != 'age':
+        
+        if name_list[1] not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
+            firstname = name_list[1]
+        else:
+            firstname = name_list[2]
+ 
+
+        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
             surname = name_list[-1]
         else:
-            surname = name_list[2]
+            surname = name_list[name_list.index(firstname) + 1]  # add 1 to the index of the list from firstname
 
         pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
         pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
@@ -242,6 +251,26 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         name_list = name.split()
         firstname = name_list[0]
         surname = name_list[1]
+
+        pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+        pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+            surname, redact_message_sname)
+
+        names = [firstname, surname]
+        return pt_txt_sfnamefilter, names
+    
+    except AttributeError:  # maybe name is Ali O'Marvasti
+        name_pattern = r"Name[\s\t:]+\w+\s+[A-Z’]+[\s-]?\w+"
+        name_search = re.search(name_pattern, pt_txt)
+
+        name = name_search.group()
+        name_list = name.split()
+        firstname = name_list[1]
+
+        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+            surname = name_list[-1]
+        else:
+            surname = name_list[2]
 
         pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
         pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
@@ -280,7 +309,8 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
 
     # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
-    DOB = re.sub("[^0-9/\.-]", "", DOB)
+    
+    DOB = re.sub("[^0-9/\.-]", "", DOB)  # if 25/Feb/19, then this is removed: 25/19
     DOB_actual = DOB
 
     # turn DOB into 3 integers and alter
@@ -291,19 +321,33 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     DOB_str = [str(x) for x in DOB_digits]
 
     if xml:
-        DOB_anon = '\nXXX anonymised DOB = ' + \
-            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
-        n_DOB_anon += 1 
-        return DOB_anon, n_DOB_anon, DOB_actual
+        try:
+            DOB_anon = '\nXXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]+'\n'
+            n_DOB_anon += 1 
+            return DOB_anon, n_DOB_anon, DOB_actual
+
+        except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
+            DOB_anon = '\nXXX anonymised DOB = ' + \
+                str(DOB_str) + '\n'
+            n_DOB_anon += 1 
+            return DOB_anon, n_DOB_anon, DOB_actual
 
     else:
         # and use this message:
-        DOB_anon = 'XXX anonymised DOB = ' + \
-            DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
-        pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
-        n_DOB_anon += 1
-        return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
+        try:
+            DOB_anon = 'XXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]+'/'+DOB_str[2]
+            pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
+            n_DOB_anon += 1
+            return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
 
+        except IndexError:  # when the month is spelled and not a number i.e. now only 2 items in list
+            DOB_anon = 'XXX anonymised DOB = ' + \
+                DOB_str[0]+'/'+DOB_str[1]
+            pt_txt_DOBfilter = pt_txt.replace(DOB, DOB_anon)
+            n_DOB_anon += 1
+            return pt_txt_DOBfilter, n_DOB_anon, DOB_actual
 
 def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
     """
@@ -341,7 +385,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         MRN = MRN.split()
         MRN = MRN[-1]
 
-        uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+        uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
         pt_txt = pt_txt.replace(MRN, (uuid_no_message))
         n_uuid += 1
 
@@ -356,14 +400,28 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
             MRN = MRN.split()
             MRN = MRN[-1]
 
-            uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+            uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
             pt_txt = pt_txt.replace(MRN, (uuid_no_message))
             n_uuid_name_of_doc += 1
 
         except:
-            mrn_error_message = True
-            MRN = "XXX MRN_ERROR XXX"
-            return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
+            try:  # U/AB1234 hosp no style
+                MRN_pattern = r"[A-Z]/[A-Z]{2}[0-9]{4}"
+                MRN_search = re.search(MRN_pattern, pt_txt)
+
+                MRN = MRN_search.group()
+                MRN = MRN.split()
+                MRN = MRN[-1]
+
+                uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
+                pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+                n_uuid += 1
+                
+            
+            except:  # admit defeat
+                mrn_error_message = True
+                MRN = "XXX MRN_ERROR XXX"
+                return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
 
     except:
         print("major uncaught error in anon_hosp_no function for \t\t{}\n".format(
