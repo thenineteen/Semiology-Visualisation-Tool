@@ -1,8 +1,8 @@
-# from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
-# from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
-# from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
-# import os
-# import json
+from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
+from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
+import os
+import json
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
