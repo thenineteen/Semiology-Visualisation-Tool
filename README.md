@@ -27,7 +27,7 @@ After converting .doc to .docx, word documents are preprocessed for text mining.
 .rtf is also preprocessed.
 Ensure you have created a new folder as specified in word_preprocess to avoid save errors.
 [] combine texts belonging to same person (append) from file name or name within .docx
-[] pop names and psuedononymise
+[/] pop names and psuedononymise - Feb 2019
 [] make them searchable (?regex)
 
 
@@ -49,5 +49,6 @@ folder2: docx_xml function to txt output
 folder3: txt with redacted name,DOB,MRN output
 json dictionary: with all sensitive data keys 
 # 3. add outcomes using find_MRN_label_outcomes()
-creates new json dictionary and adds the keys to the above
-I think you must have already made the json file for it to work
+After main_docx_preprocess, run the gold_outcomes_MRNs() function in outcomes.py to get list of labels
+and add the labels to the above keys using the find_MRN_label_outcomes() function in json_keys_read.py.
+Creates new json dictionary and adds the keys to the above keys created when running the main function. 

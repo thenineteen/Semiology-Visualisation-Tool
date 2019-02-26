@@ -216,21 +216,27 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     redact_message_fname = 'XXXfirstnameXXX'
     redact_message_sname = 'XXXsurnameXXX'
-    not_pt_names = ['Age', 'age']
-    regex_notnames = re.compile(r"Hosp.*")
+    not_pt_names = ['Age', 'age', 'DOB']
+    regex_notnames = re.compile(r"(Hosp).?")
+    regex_notnames_2 = re.compile(r"\s*:\s*")
 
     try:
-        name_pattern = r"Name[\s\t:]+\w+[\s+]\w+[\s-]?\w+"
+        name_pattern = r"Name[\s\t:]+\w+\s+\w+[\s-]?\w+"
         name_search = re.search(name_pattern, pt_txt)
 
         name = name_search.group()
         name_list = name.split()
-        firstname = name_list[1]
+        
+        if name_list[1] not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
+            firstname = name_list[1]
+        else:
+            firstname = name_list[2]
+ 
 
-        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
             surname = name_list[-1]
         else:
-            surname = name_list[2]
+            surname = name_list[name_list.index(firstname) + 1]  # add 1 to the index of the list from firstname
 
         pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
         pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
@@ -254,7 +260,7 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         return pt_txt_sfnamefilter, names
     
     except AttributeError:  # maybe name is Ali O'Marvasti
-        name_pattern = r"Name[\s\t:]+\w+[\s+][A-Z’]+[\s-]?\w+"
+        name_pattern = r"Name[\s\t:]+\w+\s+[A-Z’]+[\s-]?\w+"
         name_search = re.search(name_pattern, pt_txt)
 
         name = name_search.group()
@@ -379,7 +385,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         MRN = MRN.split()
         MRN = MRN[-1]
 
-        uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+        uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
         pt_txt = pt_txt.replace(MRN, (uuid_no_message))
         n_uuid += 1
 
@@ -394,14 +400,28 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
             MRN = MRN.split()
             MRN = MRN[-1]
 
-            uuid_no_message = 'XXX pseudo_anon_dict ' + str(uuid_no) + ' XXX'
+            uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
             pt_txt = pt_txt.replace(MRN, (uuid_no_message))
             n_uuid_name_of_doc += 1
 
         except:
-            mrn_error_message = True
-            MRN = "XXX MRN_ERROR XXX"
-            return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
+            try:  # U/AB1234 hosp no style
+                MRN_pattern = r"[A-Z]/[A-Z]{2}[0-9]{4}"
+                MRN_search = re.search(MRN_pattern, pt_txt)
+
+                MRN = MRN_search.group()
+                MRN = MRN.split()
+                MRN = MRN[-1]
+
+                uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
+                pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+                n_uuid += 1
+                
+            
+            except:  # admit defeat
+                mrn_error_message = True
+                MRN = "XXX MRN_ERROR XXX"
+                return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
 
     except:
         print("major uncaught error in anon_hosp_no function for \t\t{}\n".format(

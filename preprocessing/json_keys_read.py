@@ -51,3 +51,26 @@ def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
 
     return sensitive_data
 
+
+def outcomes_count(json_file = "L:\\word_docs\\RTF_done\\3.5 RTF_keys_outcomes.json"):
+    """
+    Give this function the .json file key with outcomes, and it will count number of outcomes
+    in this key for 'Gold ILAE 1', 'Resection' and 'No surgery'
+    """
+
+    with open(json_file) as f:
+        rtf_keys = json.load(f)
+
+    m = 0
+    n = 0
+    o = 0
+    for pseudoanonkey in rtf_keys.keys():
+        if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'Gold ILAE 1':
+            m += 1
+        if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'Resection':
+            n += 1
+        if rtf_keys[pseudoanonkey]['MDT_Surgery_Outcome'] == 'No surgery':
+            o += 1
+    print('Gold ILAE 1 = \t\t{}'.format(m))
+    print('Resection = \t\t{}'.format(n))
+    print('No surgery = \t\t{}'.format(o))

@@ -36,6 +36,9 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
     'L:\\word_docs\\word_keys2.json' for DOCX
     L:\\word_docs\\word_RTF_keys.json for TXT
 
+    Afterwards, run the gold_outcomes_MRNs() function in outcomes.py to get list of labels
+    and add the labels to the above keys using the find_MRN_label_outcomes() function in json_keys_read.py.
+
     Ali Alim-Marvasti (c) Jan-Feb 2019
     """
 
