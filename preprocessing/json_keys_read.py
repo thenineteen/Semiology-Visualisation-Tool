@@ -52,8 +52,6 @@ def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
                 file.truncate()
 
     return sensitive_data
-<<<<<<< HEAD
-=======
 
 
 def outcomes_count(json_file = "L:\\word_docs\\RTF_done\\3.5 RTF_keys_outcomes.json"):
@@ -78,4 +76,3 @@ def outcomes_count(json_file = "L:\\word_docs\\RTF_done\\3.5 RTF_keys_outcomes.j
     print('Gold ILAE 1 = \t\t{}'.format(m))
     print('Resection = \t\t{}'.format(n))
     print('No surgery = \t\t{}'.format(o))
->>>>>>> json_dictionary

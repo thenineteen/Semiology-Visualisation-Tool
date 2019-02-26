@@ -260,25 +260,51 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
         return pt_txt_sfnamefilter, names
     
     except AttributeError:  # maybe name is Ali O'Marvasti
-        name_pattern = r"Name[\s\t:]+\w+\s+[A-Z’]+[\s-]?\w+"
-        name_search = re.search(name_pattern, pt_txt)
+        try:
+            name_pattern = r"Name[\s\t:]+\w+\s+[A-Z’]+[\s-]?\w+"
+            name_search = re.search(name_pattern, pt_txt)
 
-        name = name_search.group()
-        name_list = name.split()
-        firstname = name_list[1]
+            name = name_search.group()
+            name_list = name.split()
+            firstname = name_list[1]
 
-        if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
-            surname = name_list[-1]
-        else:
-            surname = name_list[2]
+            if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+                surname = name_list[-1]
+            else:
+                surname = name_list[2]
 
-        pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
-        pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-            surname, redact_message_sname)
+            pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                surname, redact_message_sname)
 
-        names = [firstname, surname]
-        return pt_txt_sfnamefilter, names
+            names = [firstname, surname]
+            return pt_txt_sfnamefilter, names
 
+        except AttributeError:  # some docx have "surname: firstname ..."
+            name_pattern = r"surname[\s\t:]*\w+\s"
+            name_search = re.search(name_pattern, pt_txt.lower())
+            name = name_search.group()
+            name_list = name.split()
+
+            if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+                surname = name_list[-1]
+            
+            name_pattern2 = r"(?<!r)(name)[\s\t:]*\w+\s"  # negative look behind
+            name_search2 = re.search(name_pattern2, pt_txt.lower())
+            name2 = name_search2.group()
+            name_list2 = name2.split()
+
+            if name_list2[-1] not in not_pt_names and not regex_notnames.search(name_list2[-1]):
+                firstname = name_list2[-1]
+
+            pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                surname, redact_message_sname)
+
+            names = [firstname, surname]
+            # print ("\nused firstname and surname as specified by the file contents {}".format(path_to_doc))
+            # print ("firstname is {} and surname is {}".format(firstname, surname))
+            return pt_txt_sfnamefilter, names
 
 def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
@@ -292,7 +318,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
 
     try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-        DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
+        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
         DOB_match = re.search(DOB_pattern, pt_txt)
         DOB = DOB_match.group().split()[-1]
 
@@ -303,9 +329,15 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group().split()[-1]
         except AttributeError:
-            DOB_pattern = r"DOB[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
-            DOB_match = re.search(DOB_pattern, pt_txt)
-            DOB = DOB_match.group().split()[-1]
+            try:
+                DOB_pattern = r"DOB[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+                DOB_match = re.search(DOB_pattern, pt_txt)
+                DOB = DOB_match.group().split()[-1]
+            
+            except:
+                DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+                DOB_match = re.search(DOB_pattern, pt_txt)
+                DOB = DOB_match.group().split()[-1]
 
     # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
@@ -378,7 +410,8 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
 
     try:
         #MRN_pattern = r"Hosp[\.\s\t]?N|n?o?[\.:\s\t]?[A-Za-z]{0,4}[\s]?\d{5,8}"
-        MRN_pattern = r"[A-Za-z]{0,4}[\s]?\d{5,8}"
+        MRN_pattern = r"[A-Za-z]{0,3}[\s]?\d{5,8}(?!\d)"  
+        # needs forward lookahead to avoid catching 2002 telemetry date and appending first part of mrn to synthesise made up mrn.
         MRN_search = re.search(MRN_pattern, pt_txt)
 
         MRN = MRN_search.group()

@@ -126,6 +126,10 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 except AttributeError:
                     DOB_error_message = True
                     DOB_actual = "XX/XX/XX"
+                except ValueError:
+                    DOB_error_message = True
+                    DOB_actual = "XX/XX/XX"
+
 
             # save the .txt file with names/DOB/MRN redacted
             # save (with meds list appended: change to pt_txt + str(pt_meds_dict))
