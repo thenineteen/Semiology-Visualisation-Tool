@@ -366,10 +366,25 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
                 DOB_match = re.search(DOB_pattern, pt_txt)
                 DOB = DOB_match.group().split()[-1]
             
-            except:
-                DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
-                DOB_match = re.search(DOB_pattern, pt_txt)
-                DOB = DOB_match.group().split()[-1]
+            except AttributeError:
+                try:
+                    DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+                    DOB_match = re.search(DOB_pattern, pt_txt)
+                    DOB = DOB_match.group().split()[-1]
+
+                except AttributeError:  # finds DOB following hosp number: QDS12345|12345678 dd/mm/yy
+                    try:
+                        DOB_pattern = r"([A-Z]{3}[0-9]{5}|[0-9]{8})\s?\t?[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
+                        DOB_match = re.search(DOB_pattern, pt_txt)
+                        DOB = DOB_match.group().split()[-1]
+                    
+                    except AttributeError:  # this uses findall instead of search and uses the second one as first is date of meeting
+                        DOB_pattern = r"[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
+                        DOB_findall = re.findall(DOB_pattern, pt_txt)
+                        if len(DOB_findall)>1:
+                            DOB = DOB_findall[1]
+                        else:
+                            DOB = DOB_findall
 
     # sometimes DOB = "DOB:21/1/64" so only keep numbers and / . or -
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
@@ -450,7 +465,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         MRN = MRN.split()
         MRN = MRN[-1]
 
-        uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
+        uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
         pt_txt = pt_txt.replace(MRN, (uuid_no_message))
         n_uuid += 1
 
@@ -465,7 +480,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
             MRN = MRN.split()
             MRN = MRN[-1]
 
-            uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
+            uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
             pt_txt = pt_txt.replace(MRN, (uuid_no_message))
             n_uuid_name_of_doc += 1
 
@@ -478,7 +493,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
                 MRN = MRN.split()
                 MRN = MRN[-1]
 
-                uuid_no_message = 'XXX pseudo_anon_dict_RTF ' + str(uuid_no) + ' XXX'
+                uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
                 pt_txt = pt_txt.replace(MRN, (uuid_no_message))
                 n_uuid += 1
                 
