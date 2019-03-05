@@ -1,5 +1,6 @@
 from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
 from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+from word_preprocess import name_pattern_regex, pt_txt_replace
 from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
 import os
 import json
@@ -79,26 +80,29 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 n_docx_name_anon += 1
 
             except AttributeError:
-                 # if no name found, run the other docx XML function
-
+                # before running other xml reader:
                 try:
-                    pt_txt, n_xml = epilepsy_docx_xml_to_txt(
-                        path_to_doc, n_xml)
-                    pt_txt, names = anonymise_name_txt(
-                        pt_txt, path_to_doc, xml=True)
-                    n_xml_name_anon += 1
-                except:
-                    name_error_message = True
-                    # only prints name_error if both above under try: clause fail
-                    names = ['No Name', 'No Name']
+                    pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
+                    n_docx_name_anon += 1
+                    print('using the anonymise_name xml=true without docx_xml reader for {}'.format(docx_file))
 
-                    # continue here skips the ones with no names
+                except AttributeError:
+                    # if no name found, run the other docx XML function
+                    try:
+                        pt_txt, n_xml = epilepsy_docx_xml_to_txt(path_to_doc, n_xml)
+                        pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
+                        n_xml_name_anon += 1
 
-            # except:
-            #     print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
-            #         docx_file))
-            #     names = ['No Name', 'No Name']
-            #     # continue
+                    except:  # admit anon_name defeat
+                        name_error_message = True
+                        # only prints name_error if both above under try: clause fail
+                        names = ['No Name', 'No Name']
+
+            except:  # so it doesn't stop iterating for loop
+                print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
+                    docx_file))
+                name_error_message = True
+                names = ['No Name', 'No Name']
 
             # whether it did anonymise name or not,
             # anonymise hosp no
@@ -107,8 +111,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
             # anonymise hosp number
             pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message =\
-                anon_hosp_no(pt_txt, path_to_doc, uuid_no,
-                             n_uuid, n_uuid_name_of_doc)
+                anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc)
 
             # now anonymise DOB
             try:
@@ -129,7 +132,9 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 except ValueError:
                     DOB_error_message = True
                     DOB_actual = "XX/XX/XX"
-
+                except TypeError:
+                    DOB_error_message = True
+                    DOB_actual = "XX/XX/XX"
 
             # save the .txt file with names/DOB/MRN redacted
             # save (with meds list appended: change to pt_txt + str(pt_meds_dict))
@@ -180,7 +185,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
 
 
-    else:  # only read the txt files from folder given
+    else:  # only read the .txt files from folder given
         n_txt = 0
         #n_xml = 0
         n_TXT_name_anon = 0
