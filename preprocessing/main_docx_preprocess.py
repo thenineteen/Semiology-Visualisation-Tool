@@ -94,11 +94,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
                     # continue here skips the ones with no names
 
-            except:
-                print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
-                    docx_file))
-                names = ['No Name', 'No Name']
-                continue
+            # except:
+            #     print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
+            #         docx_file))
+            #     names = ['No Name', 'No Name']
+            #     # continue
 
             # whether it did anonymise name or not,
             # anonymise hosp no
@@ -217,7 +217,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                     print("major uncaught exception: anonymise_name_txt failed for this TXT file: \t\t{}\n ".format(
                         TXT_file))
                     names = ['No Name', 'No Name']
-                    continue  # continue here skips the ones with no names
+                    #continue  # continue here skips the ones with no names
 
                 # whether it did anonymise name or not,
                 # anonymise hosp no

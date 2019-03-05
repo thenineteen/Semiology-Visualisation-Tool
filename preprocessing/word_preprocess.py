@@ -216,7 +216,7 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     redact_message_fname = 'XXXfirstnameXXX'
     redact_message_sname = 'XXXsurnameXXX'
-    not_pt_names = ['Age', 'age', 'DOB']
+    not_pt_names = ['Age', 'age', 'DOB', 'Grand', 'Round', 'Telemetry', 'Meeting']
     regex_notnames = re.compile(r"(Hosp).?")
     regex_notnames_2 = re.compile(r"\s*:\s*")
 
@@ -281,30 +281,62 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
             return pt_txt_sfnamefilter, names
 
         except AttributeError:  # some docx have "surname: firstname ..."
-            name_pattern = r"surname[\s\t:]*\w+\s"
-            name_search = re.search(name_pattern, pt_txt.lower())
-            name = name_search.group()
-            name_list = name.split()
+            try:
+                name_pattern = r"surname[\s\t:]*\w+\s"
+                name_search = re.search(name_pattern, pt_txt.lower())
+                name = name_search.group()
+                name_list = name.split()
 
-            if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
-                surname = name_list[-1]
-            
-            name_pattern2 = r"(?<!r)(name)[\s\t:]*\w+\s"  # negative look behind
-            name_search2 = re.search(name_pattern2, pt_txt.lower())
-            name2 = name_search2.group()
-            name_list2 = name2.split()
+                if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+                    surname = name_list[-1]
+                
+                name_pattern2 = r"(?<!r)(name)[\s\t:]*\w+\s"  # negative look behind
+                name_search2 = re.search(name_pattern2, pt_txt.lower())
+                name2 = name_search2.group()
+                name_list2 = name2.split()
 
-            if name_list2[-1] not in not_pt_names and not regex_notnames.search(name_list2[-1]):
-                firstname = name_list2[-1]
+                if name_list2[-1] not in not_pt_names and not regex_notnames.search(name_list2[-1]):
+                    firstname = name_list2[-1]
 
-            pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
-            pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
-                surname, redact_message_sname)
+                pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+                pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(
+                    surname, redact_message_sname)
 
-            names = [firstname, surname]
-            # print ("\nused firstname and surname as specified by the file contents {}".format(path_to_doc))
-            # print ("firstname is {} and surname is {}".format(firstname, surname))
-            return pt_txt_sfnamefilter, names
+                names = [firstname, surname]
+                # print ("\nused firstname and surname as specified by the file contents {}".format(path_to_doc))
+                # print ("firstname is {} and surname is {}".format(firstname, surname))
+                return pt_txt_sfnamefilter, names
+
+            except AttributeError:  # some have Surname|SURNAME, Firstname
+                try:    
+                    surname_pattern = r"(?!Grand|Round|Telemetry|Meeting|Date)([A-Z]{1,}[a-z]*,?\s[A-Z]{1}[a-zA-Z]*)"
+                    #  negative lookahead to exclude these words
+                    name_search = re.search(surname_pattern, pt_txt)
+                    name_search.group()
+                    name = name_search.group()
+                    name_list = name.split()
+                    surname = name_list[0].strip(',')
+                    firstname = name_list[-1]
+
+                    names = [firstname, surname]
+                    pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+                    pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(surname, redact_message_sname)
+                    return pt_txt_sfnamefilter, names
+                
+                except AttributeError:  # Firstname SURNAME
+                    name_pattern = r"[A-Z]{1}[a-z]+,?\s?\t?([A-Z]+)"  
+                    name_search = re.search(name_pattern, pt_txt)
+                    name_search.group()
+                    name = name_search.group()
+                    name_list = name.split()
+                    firstname = name_list[0]
+                    surname = name_list[-1]
+
+                    names = [firstname, surname]
+                    pt_txt_fnamefilter = pt_txt.replace(firstname, redact_message_fname)
+                    pt_txt_sfnamefilter = pt_txt_fnamefilter.replace(surname, redact_message_sname)
+                    return pt_txt_sfnamefilter, names
+
 
 def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
