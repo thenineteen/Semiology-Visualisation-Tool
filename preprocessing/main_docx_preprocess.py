@@ -1,9 +1,18 @@
-from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
-from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
-from word_preprocess import name_pattern_regex, pt_txt_replace
-from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
+
 import os
 import json
+import re
+
+try:
+    from word_preprocess import args_for_loop, update_txt_docx, save_as_txt
+    from word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+    from word_preprocess import name_pattern_regex, pt_txt_replace
+    from word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
+except:
+    from .word_preprocess import args_for_loop, update_txt_docx, save_as_txt
+    from .word_preprocess import epilepsy_docx_to_txt, epilepsy_docx_xml_to_txt 
+    from .word_preprocess import name_pattern_regex, pt_txt_replace
+    from .word_preprocess import anonymise_name_txt, anonymise_DOB_txt, anon_hosp_no
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
@@ -54,6 +63,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         n_docx = 0
         n_xml = 0
         n_docx_name_anon = 0
+        n_docx_p_name_anonxml = 0  # using xml = true for first few paragraphs
         n_xml_name_anon = 0
         n_DOB_anon = 0
         n_DOB_anon_xml = 0  # same DOB function but xml to read DOB first
@@ -69,7 +79,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             path_to_doc = os.path.join(path_to_folder, docx_file)
 
             pt_txt, pt_docx_list, pt_meds_dict = epilepsy_docx_to_txt(
-                path_to_doc, *paragraphs, read_tables=True, clean=False)
+                path_to_doc, *paragraphs, read_tables=False, clean=False)
 
             n_docx += 1
             uuid_no += 1
@@ -82,9 +92,26 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             except AttributeError:
                 # before running other xml reader:
                 try:
-                    pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
-                    n_docx_name_anon += 1
-                    print('using the anonymise_name xml=true without docx_xml reader for {}'.format(docx_file))
+                    # read first few paragraphs only:
+                    pt_txt_beginning, pt_docx_list, pt_meds_dict = epilepsy_docx_to_txt(
+                        path_to_doc, 0,5, read_tables=False, clean=False)
+
+                    if re.search(r"telemetry\s*report", pt_txt_beginning.lower()):
+                        print('VT/Neurophys report?: {}\nThis file was skipped.'.format(docx_file))
+                        # reset the counters
+                        n_docx -= 1
+                        uuid_no -= 1  
+                        continue  # continue with next file
+
+                    else:
+                        # try to find name in first few paragraphs:
+                        pt_txt_beginning_anon, names = anonymise_name_txt(pt_txt_beginning, path_to_doc, xml=True)
+                        # use [names] to redact names in the original pt_txt which didn't use paragraphs option
+                        pt_txt_sfnamefilter, names = pt_txt_replace (names[0], names[1], pt_txt)
+                        pt_txt = pt_txt_sfnamefilter
+                        n_docx_p_name_anonxml += 1
+
+                        print('\nUsed anonymise_name xml=true for 5 paragraphs without docx_xml for {}'.format(docx_file))
 
                 except AttributeError:
                     # if no name found, run the other docx XML function
@@ -176,10 +203,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
         print('\n\n# epilepsy_docx_to_txt() = \t\t\t{}'.format(n_docx))
         print('\tof which anonymise_name_txt() = \t{}'.format(n_docx_name_anon))
-        print('\tof which #anonymise_DOB() = \t\t{}'.format(n_DOB_anon))
+        print('\t anon_name_xml=True on 5 paragraphs = \t{}'.format(n_docx_p_name_anonxml))
+        print('\tof which #anonymise_DOB() = \t\t{}\n'.format(n_DOB_anon))
         print('# epilepsy_docx_xml_to_txt = \t\t\t{}'.format(n_xml))
         print('\tof which anonymise_name_txt(xml) = \t{}'.format(n_xml_name_anon))
-        print('\tof which anonymise_DOB(xml) = \t\t{}'.format(n_DOB_anon_xml))
+        print('\tof which anonymise_DOB(xml) = \t\t{}\n'.format(n_DOB_anon_xml))
         print('# of hosp_no MRNs found and replaced = \t\t{}/{}'.format(n_uuid, uuid_no))
         print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))
 

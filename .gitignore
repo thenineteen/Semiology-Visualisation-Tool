@@ -3,3 +3,5 @@ preprocessing/__pycache__/
 preprocessing/tests/__pycache__/
 .vscode/
 .pytest_cache/
+.__pycache__/
+crosstab/__pycache__/
