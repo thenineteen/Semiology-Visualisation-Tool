@@ -106,6 +106,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                     else:
                         # try to find name in first few paragraphs:
                         pt_txt_beginning_anon, names = anonymise_name_txt(pt_txt_beginning, path_to_doc, xml=True)
+
                         # use [names] to redact names in the original pt_txt which didn't use paragraphs option
                         pt_txt_sfnamefilter, names = pt_txt_replace (names[0], names[1], pt_txt)
                         pt_txt = pt_txt_sfnamefilter
@@ -130,6 +131,11 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                     docx_file))
                 name_error_message = True
                 names = ['No Name', 'No Name']
+
+
+
+            
+
 
             # whether it did anonymise name or not,
             # anonymise hosp no

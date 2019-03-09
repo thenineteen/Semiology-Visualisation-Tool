@@ -258,48 +258,68 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
                     ]
     regex_notnames = re.compile(r"(Hosp).?")
     regex_notnames_2 = re.compile(r"\s*:\s*")
+    NLA = r"(?!Grand|Round|Telemetry|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)"
+    # NLB = r"(?<![QSABCDEMCVP])"  #  negative lookbehind
+    # NLB = r"(?<!Telemetry)"
+
 
     if xml:
     # new regex to find names for DOCX - files that don't have names may catch incorrect names
     # some have Surname|SURNAME, Firstname - but must ensure name is there i.e. xml=TRUE
         try:    
-            name_pattern = r"(?!Grand|Round|Telemetry|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)[A-Z]{1,}[a-z]*,?\s[A-Z]{1}[a-zA-Z]*(?=[QSABCDEMCVP]{0,3})" #(?(?=regex)then|else)
+            name_pattern = r"%s([A-Z]{1,}[a-z]*,?\s[A-Z]{1}[a-zA-Z]*)"%(NLA) #(?(?=regex)then|else)
             #  negative lookahead to exclude these words
             #  Surname|SURNAME, Firstname
             name_list = name_pattern_regex(name_pattern, pt_txt)
             
             if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
                 surname = name_list[0].strip(',')
+                surname = surname.strip()
+                # clean up any name that picked up suffixes due to xml reader
+                surname = re.sub(r"QSA|QSB|QSC|QSD|Telemetry", "", surname)
+                
             else: raise AttributeError
             if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
                 firstname = name_list[-1]
+                firstname = firstname.strip()
+                # clean up any name that picked up suffixes due to xml reader
+                firstname = re.sub(r"QSA|QSB|QSC|QSD|Telemetry", "", firstname)
+                
             else: raise AttributeError
+
+    
 
             pt_txt_sfnamefilter, names = pt_txt_replace (firstname, surname, pt_txt)
 
             return pt_txt_sfnamefilter, names                    
         
-        except AttributeError:  
+        except AttributeError:
+            raise AttributeError
             # Firstname|FIRSTNAME SURNAME            
-            try:
-                name_pattern = r"([A-Z]{1}[a-z]+)|([A-Z]{1,}),?\s?\t?([A-Z]+)"  
-                name_list = name_pattern_regex(name_pattern, pt_txt)
-                if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
-                    firstname = name_list[0]
-                elif name_list[1] not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
-                    firstname = name_list[1]
-                else: raise AttributeError
+            # try:
+            #     name_pattern = r"([A-Z]{1}[a-z]+)|([A-Z]{1,}),?\s?\t?([A-Z]+)"  
+            #     name_list = name_pattern_regex(name_pattern, pt_txt)
+            #     if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
+            #         firstname = name_list[0]
+            #     elif name_list[1] not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
+            #         firstname = name_list[1]
+            #     else: raise AttributeError
 
-                if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
-                    surname = name_list[-1]
-                else: raise AttributeError
+            #     if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
+            #         surname = name_list[-1]
+            #     else: raise AttributeError
 
-                pt_txt_sfnamefilter, names = pt_txt_replace (firstname, surname, pt_txt)
+            #     surname2 = re.sub(r"QSA|QSB|QSC|Telemetry|\d", "", surname)
+            #     surname2 = surname2.strip()
+            #     firstname2 = re.sub(r"QSA|QSB|QSC|Telemetry|\d", "", firstname)
+            #     firstname2 = firstname2.strip()
+                
+            #     pt_txt_sfnamefilter, names = pt_txt_replace (firstname2, surname2, pt_txt)
 
-                return pt_txt_sfnamefilter, names
+            #     return pt_txt_sfnamefilter, names
             
-            except IndexError:
-                raise AttributeError
+            # except IndexError:
+            #     raise AttributeError
 
 
     else: # if not xml
@@ -388,31 +408,31 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
 
     try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+[0-9]{1,2}\s?/?\.?-?\s?[0-9]{1,2}\s?/?\.?-?\s?[0-9]{2,4}"
+        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+([0-9]{1,2}\s?/?\.?-?\s?[0-9]{1,2}\s?/?\.?-?\s?[0-9]{2,4})"
         DOB_match = re.search(DOB_pattern, pt_txt)
         DOB = DOB_match.group().split()[-1]
 
-    # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
+    # DDrd FEB YY(YY) or DDth-Feb-YY or . or / or combinations
     except AttributeError:
         try:
-            DOB_pattern = r"DOB[\s\t:]+[0-9]{1,2}((st)?(th)?(nd)?(rd)?)\s?/?\.?-?\s?[0-9]{0,2}\w*\s?/?\.?-?\s?[0-9]{2,4}"
+            DOB_pattern = r"DOB[\s\t:]+([0-9]{1,2}[st]?[th]?[nd]?[rd]?\s?/?\.?-?\s?[0-9]{0,2}\w*\s?/?\.?-?\s?[0-9]{2,4})"
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group().split()[-1]
         except AttributeError:
             try:
-                DOB_pattern = r"DOB[\s\t:]?[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
+                DOB_pattern = r"DOB[\s\t:]?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
                 DOB_match = re.search(DOB_pattern, pt_txt)
                 DOB = DOB_match.group().split()[-1]
             
             except AttributeError:
                 try:
-                    DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+                    DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
                     DOB_match = re.search(DOB_pattern, pt_txt)
                     DOB = DOB_match.group().split()[-1]
 
-                except AttributeError:  # finds DOB following hosp number: QDS12345|12345678 dd/mm/yy
+                except AttributeError:  # finds DOB following hosp number: QDS12345|12345678 dd/mm/yy using positive lookbehind to avoid capture
                     try:
-                        DOB_pattern = r"([A-Z]{3}[0-9]{5}|[0-9]{8})\s?\t?[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
+                        DOB_pattern = r"(?<=[A-Z]{3}[0-9]{5}|[0-9]{8})\s?\t?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
                         DOB_match = re.search(DOB_pattern, pt_txt)
                         DOB = DOB_match.group().split()[-1]
                     
@@ -429,16 +449,16 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     
     DOB = re.sub("[^0-9/\.-]", "", DOB)  # if 25/Feb/19, then this is removed: 25/19
 
-    if len((re.compile(r"/?\.?-?").split(DOB))[0].strip()) > 2:  
-        # if it has somehow accidentally taken DOB as 1234513/01/88
-        # then keep last two digits(here type are characters) from day
-        DOB_dd = re.compile(r"/?\.?-?").split(DOB)[0][-2] + re.compile(r"/?\.?-?").split(DOB)[0][-1]
-        try:
-            DOB_mm = re.compile(r"/?\.?-?").split(DOB)[1]
-            DOB_yy = re.compile(r"/?\.?-?").split(DOB)[2]
-            DOB = DOB_dd + '/' + DOB_mm + '/' + DOB_yy
-        except:
-            pass
+    # if len((re.compile(r"/?\.?-?").split(DOB))[0].strip()) > 2:  
+    #     # if it has somehow accidentally taken DOB as 1234513/01/88
+    #     # then keep last two digits(here type are characters) from day
+    #     DOB_dd = re.compile(r"/?\.?-?").split(DOB)[0][-2] + re.compile(r"/?\.?-?").split(DOB)[0][-1]
+    #     try:
+    #         #DOB_mm = re.compile(r"/?\.?-?").split(DOB)[1]
+    #         DOB_yy = re.compile(r"/?\.?-?").split(DOB)[-1]
+    #         DOB = DOB_dd + '/' + DOB_yy
+    #     except ValueError:
+    #         pass
 
     DOB_actual = DOB
 
@@ -506,14 +526,27 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
     mrn_error_message = False
 
     try:
-        #MRN_pattern = r"Hosp[\.\s\t]?N|n?o?[\.:\s\t]?[A-Za-z]{0,4}[\s]?\d{5,8}"
-        MRN_pattern = r"[QSABCDEMCVP]{0,3}[\s]?(M/)?\d{5,8}((?=\d{2}[\.-/])|(?!\d))"  # exclude X as used in XXX redact messages
-        # QSA QSB QSC QSD MCV MVP E
-        # negative lookahead: (?!\d) to avoid catching 2002 telemetry date and appending first part of mrn to synthesise made up mrn.
-        # i.e. Telemetry date 2002 12345678 will catch 12345678 rather than 20021234
-        # however, some files (see pytest complex DOB) are like 1234567810/01/1985 and this messes up to: 34567810 as MRN
-        # so try instead: (?(?=regex)then|else) or (?(?=condition)(then1|then2|then3)|(else1|else2|else3))
-        # (?=\d{1,2}[\.-/])
+        
+        # MRN_pattern = r"[QSABCDEMCVP]{0,3}[\s]?(M/)?\d{5,8}((?=\d{2}[\.-/])|(?!\d))"  # exclude X as used in XXX redact messages
+        
+        # # QSA QSB QSC QSD MCV MVP E
+        # # negative lookahead NLA: (?!\d) to avoid catching 2002 telemetry date and appending first part of mrn to synthesise made up mrn.
+        # # i.e. Telemetry date 2002 12345678 will catch 12345678 rather than 20021234
+        # # however, some files (see pytest complex DOB) are like 1234567810/01/1985 and this messes up to: 34567810 as MRN
+        # # so try instead: (?(?=regex)then|else) or (?(?=condition)(then1|then2|then3)|(else1|else2|else3))
+        # # (?=\d{1,2}[\.-/])
+
+
+
+# # trying #1 to fix QSD1234507 where 07 is DOB dd
+#         MRN_pattern = r"([QSABCDMCVP]{3}[\s]?\d{5})|((M/)[\s]?\d{6})|(E[\s]?\d{7})|([\s]?\d{8})" 
+#         # fixes error but now again the other error where 2002 date is taken as first four MRN: ie need NLA
+
+# trying #2
+        MRN_pattern = r"([QSABCDMCVP]{3}[\s]?\d{5})|((M/)[\s]?\d{6})|(E[\s]?\d{7})|([\s]?\d{8})((?=\d{2}[\.-/])|(?!\d))" 
+        # this works! finally. it does multiple regexes as | ORs and if it doesn't find the first one then tries second
+        # the final one has a PLF to find two digits before DOB otherwise it read the MRN until end of digits. 
+
 
         MRN_search = re.search(MRN_pattern, pt_txt.upper())
 
