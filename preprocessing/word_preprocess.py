@@ -260,10 +260,10 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     regex_notnames_2 = re.compile(r"\s*:\s*")
 
     if xml:
-    # new regex to find names for DOCX - files that don't have names will catch incorrect names
+    # new regex to find names for DOCX - files that don't have names may catch incorrect names
     # some have Surname|SURNAME, Firstname - but must ensure name is there i.e. xml=TRUE
         try:    
-            name_pattern = r"(?!Grand|Round|Telemetry|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)([A-Z]{1,}[a-z]*,?\s[A-Z]{1}[a-zA-Z]*)"
+            name_pattern = r"(?!Grand|Round|Telemetry|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)[A-Z]{1,}[a-z]*,?\s[A-Z]{1}[a-zA-Z]*(?=[QSABCDEMCVP]{0,3})" #(?(?=regex)then|else)
             #  negative lookahead to exclude these words
             #  Surname|SURNAME, Firstname
             name_list = name_pattern_regex(name_pattern, pt_txt)
@@ -388,19 +388,19 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
 
     try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]+\s?/?\.?-?\s?[0-9]+"
+        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+[0-9]{1,2}\s?/?\.?-?\s?[0-9]{1,2}\s?/?\.?-?\s?[0-9]{2,4}"
         DOB_match = re.search(DOB_pattern, pt_txt)
         DOB = DOB_match.group().split()[-1]
 
     # DD FEB YY(YY) or DD-Feb-YY or . or / or combinations
     except AttributeError:
         try:
-            DOB_pattern = r"DOB[\s\t:]+[0-9]+\s?/?\.?-?\s?[0-9]*\w*\s?/?\.?-?\s?[0-9]+"
+            DOB_pattern = r"DOB[\s\t:]+[0-9]{1,2}((st)?(th)?(nd)?(rd)?)\s?/?\.?-?\s?[0-9]{0,2}\w*\s?/?\.?-?\s?[0-9]{2,4}"
             DOB_match = re.search(DOB_pattern, pt_txt)
             DOB = DOB_match.group().split()[-1]
         except AttributeError:
             try:
-                DOB_pattern = r"DOB[\s\t:]?[0-9]+/[0-9]+/[0-9]+"
+                DOB_pattern = r"DOB[\s\t:]?[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
                 DOB_match = re.search(DOB_pattern, pt_txt)
                 DOB = DOB_match.group().split()[-1]
             
@@ -428,6 +428,18 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     # e.g. potential error comes from xml reading DOB where no space between : and DOB
     
     DOB = re.sub("[^0-9/\.-]", "", DOB)  # if 25/Feb/19, then this is removed: 25/19
+
+    if len((re.compile(r"/?\.?-?").split(DOB))[0].strip()) > 2:  
+        # if it has somehow accidentally taken DOB as 1234513/01/88
+        # then keep last two digits(here type are characters) from day
+        DOB_dd = re.compile(r"/?\.?-?").split(DOB)[0][-2] + re.compile(r"/?\.?-?").split(DOB)[0][-1]
+        try:
+            DOB_mm = re.compile(r"/?\.?-?").split(DOB)[1]
+            DOB_yy = re.compile(r"/?\.?-?").split(DOB)[2]
+            DOB = DOB_dd + '/' + DOB_mm + '/' + DOB_yy
+        except:
+            pass
+
     DOB_actual = DOB
 
     # turn DOB into 3 integers and alter
@@ -495,9 +507,15 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
 
     try:
         #MRN_pattern = r"Hosp[\.\s\t]?N|n?o?[\.:\s\t]?[A-Za-z]{0,4}[\s]?\d{5,8}"
-        MRN_pattern = r"[A-WYZa-wyz]{0,3}[\s]?(M/)?\d{5,8}(?!\d)"  # exclude X as used in XXX redact messages
-        # forward lookahead to avoid catching 2002 telemetry date and appending first part of mrn to synthesise made up mrn.
-        MRN_search = re.search(MRN_pattern, pt_txt)
+        MRN_pattern = r"[QSABCDEMCVP]{0,3}[\s]?(M/)?\d{5,8}((?=\d{2}[\.-/])|(?!\d))"  # exclude X as used in XXX redact messages
+        # QSA QSB QSC QSD MCV MVP E
+        # negative lookahead: (?!\d) to avoid catching 2002 telemetry date and appending first part of mrn to synthesise made up mrn.
+        # i.e. Telemetry date 2002 12345678 will catch 12345678 rather than 20021234
+        # however, some files (see pytest complex DOB) are like 1234567810/01/1985 and this messes up to: 34567810 as MRN
+        # so try instead: (?(?=regex)then|else) or (?(?=condition)(then1|then2|then3)|(else1|else2|else3))
+        # (?=\d{1,2}[\.-/])
+
+        MRN_search = re.search(MRN_pattern, pt_txt.upper())
 
         MRN = MRN_search.group()
         MRN = MRN.split()
@@ -511,15 +529,16 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         try:  # try getting hosp number from document name
             name_of_doc = path_to_doc.split('\\')[-1]
 
-            MRN_pattern = r"[A-Za-z]{0,3}[\s]?\d{5,8}"
+            MRN_pattern = r"[A-Za-z]{0,3}[\s]?\d{5,8}(?!\d)"
             MRN_search = re.search(MRN_pattern, name_of_doc)
 
             MRN = MRN_search.group()
             MRN = MRN.split()
             MRN = MRN[-1]
 
+            # here need to add the hospital name to the contents of the pt_txt string as it was extracted from document name:
             uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
-            pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+            pt_txt = uuid_no_message + pt_txt
             n_uuid_name_of_doc += 1
 
         except:

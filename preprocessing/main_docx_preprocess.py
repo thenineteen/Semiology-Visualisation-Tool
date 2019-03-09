@@ -98,7 +98,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
                     if re.search(r"telemetry\s*report", pt_txt_beginning.lower()):
                         print('VT/Neurophys report?: {}\nThis file was skipped.'.format(docx_file))
-                        # reset the counters
+                        # take back the counters
                         n_docx -= 1
                         uuid_no -= 1  
                         continue  # continue with next file

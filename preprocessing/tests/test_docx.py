@@ -24,10 +24,10 @@ def test_anonymise_single(path_to_folder = 'L:\\word_docs\\pytest\\test_anonymis
 
     main_docx_preprocess(path_to_folder, read_tables=False,
                      clean=False, save_path="L:\\word_docs\\pytest\\test_texxts\\",
-                     json_dictionary_file = 'L:\\word_docs\\pytest\\test_keys.json',
+                     json_dictionary_file = 'L:\\word_docs\\pytest\\test_keys_single.json',
                      DOCX=True)
 
-    with open ('L:\\word_docs\\pytest\\test_keys.json') as tk:
+    with open ('L:\\word_docs\\pytest\\test_keys_single.json') as tk:
         test_json_data = json.load(tk)
     fixture = read_fixture(filename='fixture_anonymise_single.json')
 
@@ -46,6 +46,45 @@ def test_skipNeurophysVTreports_and_anonnamexmlTrue():
     fixture = read_fixture(filename='fixture_name_anon_xml_True.json')
 
     assert test_json_data == fixture
+
+
+def test_write_MRN_from_filename_to_topoftxt():
+    # run the scripts on the folder:
+    path_to_folder = 'L:\\word_docs\\pytest\\test_write_MRN_from_filename_to_topoftxt\\'
+    main_docx_preprocess(path_to_folder, read_tables=False,
+                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_MRNtopoffile\\",
+                        json_dictionary_file = 'L:\\word_docs\\pytest\\test_write_MRN_from_filename_to_topoftxt.json',
+                        DOCX=True)
+
+    # open the json dict and get all the keys:
+    # read the first line of the .txt file and assert it is same as above:
+    with open('L:\\word_docs\\pytest\\test_write_MRN_from_filename_to_topoftxt.json') as f:
+        data = json.load(f)
+        path_to_txt_folder = "L:\\word_docs\\pytest\\test_texxts_MRNtopoffile\\"
+        for key, txt_file in zip(data.keys(), os.listdir(path_to_txt_folder)):
+            uuid_no = key
+            uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
+
+            path_to_doc = os.path.join(path_to_txt_folder, txt_file)
+            with open(path_to_doc, 'r') as txt_f:
+                first_line = txt_f.readline()
+
+            assert first_line.strip() == uuid_no_message
+
+
+def test_complex_DOB(path_to_folder = 'L:\\word_docs\\pytest\\test_complex_DOB\\'):
+    # due to the order of MRN then DOB anonymisation in main_docx_preprocess, the third file here actually tests correct MRN anon
+    # if fails, could be that instead of hosp no 12345678 it is 34567812 where 12 is the dd from DOB
+    main_docx_preprocess(path_to_folder, read_tables=False,
+                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_complex_DOB\\",
+                        json_dictionary_file = 'L:\\word_docs\\pytest\\test_complex_DOB.json',
+                        DOCX=True)
+    with open('L:\\word_docs\\pytest\\test_complex_DOB.json') as f:
+        data = json.load(f)
+    fixture = read_fixture(filename='fixture_complex_DOB.json')
+
+    assert data == fixture
+
 
 
 def test_failures():  # blank and ward template docx
