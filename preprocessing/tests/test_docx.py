@@ -72,6 +72,21 @@ def test_write_MRN_from_filename_to_topoftxt():
             assert first_line.strip() == uuid_no_message
 
 
+def test_MRN_funny(path_to_folder = 'L:\\word_docs\\pytest\\test_MRN_funny\\'):
+
+    main_docx_preprocess(path_to_folder, read_tables=False,
+                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_MRN_funny\\",
+                        json_dictionary_file = 'L:\\word_docs\\pytest\\test_MRN_funny.json',
+                        DOCX=True)
+
+    with open('L:\\word_docs\\pytest\\test_MRN_funny.json') as f:
+        data = json.load(f)
+    fixture = read_fixture(filename='fixture_MRN_funny.json')
+
+    assert data == fixture
+
+
+
 def test_complex_DOB(path_to_folder = 'L:\\word_docs\\pytest\\test_complex_DOB\\'):
     # due to the order of MRN then DOB anonymisation in main_docx_preprocess, the third file here actually tests correct MRN anon
     # if fails, could be that instead of hosp no 12345678 it is 34567812 where 12 is the dd from DOB
@@ -105,5 +120,4 @@ def test_failures_name_xml():  # ensure the many alternative regex and xml readi
             path_to_doc = os.path.join(path_to_folder, docx)
             pt_txt, _, _ = epilepsy_docx_to_txt(path_to_doc)
             pt_txt_anon_name, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
-
 

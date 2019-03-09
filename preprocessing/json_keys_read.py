@@ -1,5 +1,7 @@
 import json
 
+# CHECK THIS: M/328217 same as 03062393
+
 def find_MRN_label_outcomes(list_MRNs_surgery_ILAE_1_all_follow_up_years,
              list_MRNs_surgery_not_gold_standard,
              json_file_to_use = "L:\\word_docs\\word_keys2.json",

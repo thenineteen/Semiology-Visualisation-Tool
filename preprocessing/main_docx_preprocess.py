@@ -218,7 +218,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
         print('# of MRNs extracted from document name = \t{}/{}'.format(n_uuid_name_of_doc, uuid_no))
 
 
-
+# doesn't really work - revert to the RTF branch
     else:  # only read the .txt files from folder given
         n_txt = 0
         #n_xml = 0
@@ -248,15 +248,56 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                     pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc)
                     n_TXT_name_anon += 1
 
+
+
+
                 except AttributeError:
+                    # before running other xml reader:
+                    try:
+                        # read first few paragraphs only:
+                        pt_txt_beginning = f.read(5)
+
+                        if re.search(r"telemetry\s*report", pt_txt_beginning.lower()):
+                            print('VT/Neurophys report?: {}\nThis file was skipped.'.format(docx_file))
+                            # take back the counters
+                            n_docx -= 1
+                            uuid_no -= 1  
+                            continue  # continue with next file
+
+                        else:
+                            # try to find name in first few paragraphs:
+                            pt_txt_beginning_anon, names = anonymise_name_txt(pt_txt_beginning, path_to_doc, xml=True)
+
+                            # use [names] to redact names in the original pt_txt which didn't use paragraphs option
+                            pt_txt_sfnamefilter, names = pt_txt_replace (names[0], names[1], pt_txt)
+                            pt_txt = pt_txt_sfnamefilter
+                            n_docx_p_name_anonxml += 1
+
+                            print('\nUsed anonymise_name xml=true for 5 lines without docx_xml for {}'.format(docx_file))
+
+                    except AttributeError:
+                        # if no name found, run the other docx XML function
+                        try:
+                            
+                            pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
+                            n_xml_name_anon += 1
+
+                        except:  # admit anon_name defeat
+                            name_error_message = True
+                            # only prints name_error if both above under try: clause fail
+                            names = ['No Name', 'No Name']
+
+                except:  # so it doesn't stop iterating for loop
+                    print("major uncaught exception: anonymise_name_txt failed even before xml try, for \t\t{}\n ".format(
+                        docx_file))
                     name_error_message = True
                     names = ['No Name', 'No Name']
 
-                except:
-                    print("major uncaught exception: anonymise_name_txt failed for this TXT file: \t\t{}\n ".format(
-                        TXT_file))
-                    names = ['No Name', 'No Name']
-                    #continue  # continue here skips the ones with no names
+
+
+
+
+
 
                 # whether it did anonymise name or not,
                 # anonymise hosp no
