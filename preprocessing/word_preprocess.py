@@ -92,7 +92,7 @@ def save_as_txt(path_to_doc, pt_txt, save_path):
             f.write(pt_txt)
 
 def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=False,
-                  print_p_by_p=False):
+                  print_p_by_p=False, docx_to_txt_save_path="L:\\word_docs\\epilepsy_docx_to_txt\\"):
     """
     Returns pt_txt as text.
     Returns pt_docx_list as list of paragraphs.
@@ -171,12 +171,12 @@ def epilepsy_docx_to_txt(path_to_doc, *paragraphs, read_tables=False, clean=Fals
         'phenytoin ', 'phenytoin') for med in pt_meds_list_clean_phenytoin]
     pt_meds_list = pt_meds_list_clean_phenytoin  # simpler rename
 
-    save_as_txt(path_to_doc, pt_txt, save_path="L:\\word_docs\\test_epilepsy_docx_to_txt\\")
+    save_as_txt(path_to_doc, pt_txt, docx_to_txt_save_path)
 
     return pt_txt, pt_docx_list, pt_meds_dict
 
 
-def epilepsy_docx_xml_to_txt(path, n_xml):
+def epilepsy_docx_xml_to_txt(path, n_xml, docx_xml_to_txt_save_path="L:\\word_docs\\epilepsy_docx_xml_to_txt\\"):
     """
     Take the path of a docx file as argument, return the text in unicode.
     Run this if epilepsy_docx() isn't able to read the name.
@@ -199,7 +199,7 @@ def epilepsy_docx_xml_to_txt(path, n_xml):
             paragraphs.append(''.join(texts))
 
     pt_txt_xml = '\n\n'.join(paragraphs)
-    save_as_txt(path, pt_txt_xml, save_path="L:\\word_docs\\test_epilepsy_docx_xml_to_txt\\")
+    save_as_txt(path, pt_txt_xml, docx_xml_to_txt_save_path)
 
     n_xml += 1
     return pt_txt_xml, n_xml
@@ -254,7 +254,8 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     """
     not_pt_names = ['Age', 'age', 'DOB', 'Grand', 'Round', 'Telemetry', 'Meeting', 'Name', 'Name:', ':',
                     'AED', 'Rx', 'XX', 'xx', 'Antecedent', 'Hx', 'telemetry', 'meeting', 'summary', 'ED',
-                    'Namexx', 'NamexxAge', 'Hxxx', 'Hx', 'xxx', 'Video', 'video'
+                    'Namexx', 'NamexxAge', 'Hxxx', 'Hx', 'xxx', 'Video', 'video', 'QSA', 'QSB', 'QSC', 'QSD',
+                    'Early', 'Development', 'Date'
                     ]
     regex_notnames = re.compile(r"(Hosp).?")
     regex_notnames_2 = re.compile(r"\s*:\s*")
