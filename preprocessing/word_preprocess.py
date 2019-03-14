@@ -574,21 +574,21 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
             pt_txt = uuid_no_message + pt_txt
             n_uuid_name_of_doc += 1
 
-        except:
-            try:  # U/AB1234 hosp no style
-                MRN_pattern = r"[A-WYZ]/[A-WYZ]{2}[0-9]{4}"
+        except AttributeError:
+            try:  # U/AB1234 hosp no style | MV 52301
+                MRN_pattern = r"([A-WYZ]/[A-WYZ]{2}[0-9]{4})|(MV\s\d{5})"
                 MRN_search = re.search(MRN_pattern, pt_txt)
 
                 MRN = MRN_search.group()
-                MRN = MRN.split()
-                MRN = MRN[-1]
+                #MRN = MRN.split()  # this will change "MV 12345" to two groups"MV" and "12345"
+                #MRN = MRN[-1]
 
                 uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
                 pt_txt = pt_txt.replace(MRN, (uuid_no_message))
                 n_uuid += 1
                 
             
-            except:  # admit defeat
+            except AttributeError:  # admit defeat
                 mrn_error_message = True
                 MRN = "XXX MRN_ERROR XXX"
                 return pt_txt, MRN, n_uuid, n_uuid_name_of_doc, mrn_error_message
