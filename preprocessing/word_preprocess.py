@@ -409,7 +409,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
     """
 
     try:  # DD/MM/YY(YY) or DD.MM.YY(YY) or DD - MM - YY(YY)
-        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]+([0-9]{1,2}\s?/?\.?-?\s?[0-9]{1,2}\s?/?\.?-?\s?[0-9]{2,4})"
+        DOB_pattern = r"D\.?O\.?B\.?[\s\t:]{0,3}([0-9]{1,2}[\s/\.-]?\s?[0-9]{1,2}[\s/\.-]?\s?[0-9]{2,4})"
         DOB_match = re.search(DOB_pattern, pt_txt)
         DOB = DOB_match.group().split()[-1]
 
@@ -438,6 +438,7 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
                         DOB = DOB_match.group().split()[-1]
                     
                     except AttributeError:  # this uses findall instead of search and uses the second one as first is date of meeting
+                    # note does not catch dd/mm/yyyy when on its own new line - not reqd 
                         DOB_pattern = r"[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
                         DOB_findall = re.findall(DOB_pattern, pt_txt)
                         if len(DOB_findall)>1:
