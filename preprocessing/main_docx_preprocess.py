@@ -16,7 +16,7 @@ except:
 
 
 def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
-                         clean=False, save_path="L:\\word_docs\\texxts\\",
+                         clean=False, save_path_anon="L:\\word_docs\\texxts\\",
                          json_dictionary_file = 'L:\\word_docs\\keys.json', DOCX=True,
                          docx_to_txt_save_path="L:\\word_docs\\epilepsy_docx_to_txt\\",
                          docx_xml_to_txt_save_path="L:\\word_docs\\epilepsy_docx_xml_to_txt\\"):
@@ -173,7 +173,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
             # save the .txt file with names/DOB/MRN redacted
             # save (with meds list appended: change to pt_txt + str(pt_meds_dict))
-            save_as_txt(path_to_doc, pt_txt, docx_to_txt_save_path)
+            save_as_txt(path_to_doc, pt_txt, save_path_anon)
 
             # store the dictionary of keys for this patient
             pseudo_anon_dict[uuid_no] = {"MRN": MRN, "Name": names, "DOB": DOB_actual}
@@ -332,7 +332,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                         DOB_actual = "XX/XX/XX"
 
                 # save the .txt file with names/DOB/MRN redacted
-                save_as_txt(path_to_doc, pt_txt, docx_to_txt_save_path)
+                save_as_txt(path_to_doc, pt_txt, save_path_anon)
 
                 # store the dictionary of keys for this patient
                 pseudo_anon_dict[uuid_no] = {"MRN": MRN, "Name": names, "DOB": DOB_actual}

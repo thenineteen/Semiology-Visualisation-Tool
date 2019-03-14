@@ -23,7 +23,7 @@ def read_fixture(filename):
 def test_anonymise_single(path_to_folder = 'L:\\word_docs\\pytest\\test_anonymise_single\\'):
 
     main_docx_preprocess(path_to_folder, read_tables=False,
-                     clean=False, save_path="L:\\word_docs\\pytest\\test_texxts\\",
+                     clean=False, save_path_anon="L:\\word_docs\\pytest\\test_texxts\\",
                      json_dictionary_file = 'L:\\word_docs\\pytest\\test_keys_single.json',
                      DOCX=True,
                      docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
@@ -39,7 +39,7 @@ def test_anonymise_single(path_to_folder = 'L:\\word_docs\\pytest\\test_anonymis
 def test_skipNeurophysVTreports_and_anonnamexmlTrue():
     path_to_folder = 'L:\\word_docs\\pytest\\test_anon_name_xml_True\\'
     main_docx_preprocess(path_to_folder, read_tables=False,
-                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts\\",
+                        clean=False, save_path_anon="L:\\word_docs\\pytest\\test_texxts\\",
                         json_dictionary_file = 'L:\\word_docs\\pytest\\test_keys.json',
                         DOCX=True,
                         docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
@@ -56,7 +56,7 @@ def test_write_MRN_from_filename_to_topoftxt():
     # run the scripts on the folder:
     path_to_folder = 'L:\\word_docs\\pytest\\test_write_MRN_from_filename_to_topoftxt\\'
     main_docx_preprocess(path_to_folder, read_tables=False,
-                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_MRNtopoffile\\",
+                        clean=False, save_path_anon="L:\\word_docs\\pytest\\test_texxts_MRNtopoffile\\",
                         json_dictionary_file = 'L:\\word_docs\\pytest\\test_write_MRN_from_filename_to_topoftxt.json',
                         DOCX=True,
                         docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
@@ -81,7 +81,7 @@ def test_write_MRN_from_filename_to_topoftxt():
 def test_MRN_funny(path_to_folder = 'L:\\word_docs\\pytest\\test_MRN_funny\\'):
 
     main_docx_preprocess(path_to_folder, read_tables=False,
-                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_MRN_funny\\",
+                        clean=False, save_path_anon="L:\\word_docs\\pytest\\test_texxts_MRN_funny\\",
                         json_dictionary_file = 'L:\\word_docs\\pytest\\test_MRN_funny.json',
                         DOCX=True,
                         docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
@@ -99,7 +99,7 @@ def test_complex_DOB(path_to_folder = 'L:\\word_docs\\pytest\\test_complex_DOB\\
     # due to the order of MRN then DOB anonymisation in main_docx_preprocess, the third file here actually tests correct MRN anon
     # if fails, could be that instead of hosp no 12345678 it is 34567812 where 12 is the dd from DOB
     main_docx_preprocess(path_to_folder, read_tables=False,
-                        clean=False, save_path="L:\\word_docs\\pytest\\test_texxts_complex_DOB\\",
+                        clean=False, save_path_anon="L:\\word_docs\\pytest\\test_texxts_complex_DOB\\",
                         json_dictionary_file = 'L:\\word_docs\\pytest\\test_complex_DOB.json',
                         DOCX=True,
                         docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
