@@ -255,11 +255,11 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     not_pt_names = ['Age', 'age', 'DOB', 'Grand', 'Round', 'Telemetry', 'Meeting', 'Name', 'Name:', ':',
                     'AED', 'Rx', 'XX', 'xx', 'Antecedent', 'Hx', 'telemetry', 'meeting', 'summary', 'ED',
                     'Namexx', 'NamexxAge', 'Hxxx', 'Hx', 'xxx', 'Video', 'video', 'QSA', 'QSB', 'QSC', 'QSD',
-                    'Early', 'Development', 'Date'
+                    'Early', 'Development', 'Date', 'TELEMETRY', 'MEETING', 'QS'
                     ]
     regex_notnames = re.compile(r"(Hosp).?")
     regex_notnames_2 = re.compile(r"\s*:\s*")
-    NLA = r"(?!Grand|Round|Telemetry|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)"
+    NLA = r"(?!Grand|Round|Telemetry|TELEMETRY|MEETING|Meeting|Date|Course|Current|Attacks|Previous|EEG|Imaging|Onset|Risk|Factors|xx|AED|Rx|Hxxx)"
     # NLB = r"(?<![QSABCDEMCVP])"  #  negative lookbehind
     # NLB = r"(?<!Telemetry)"
 
@@ -325,7 +325,7 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     else: # if not xml
         try:
-            name_pattern = r"Name[\s\t:]+\w+\s+\w+[\s-]?\w+"    
+            name_pattern = r"Name[\s\t:]+[a-zA-Z]+\s+[a-zA-Z]+[\s-]?[a-zA-Z]+"    
             name_list = name_pattern_regex(name_pattern, pt_txt)
 
             if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
@@ -421,24 +421,24 @@ def anonymise_DOB_txt(pt_txt, n_DOB_anon, xml=False):
             DOB = DOB_match.group().split()[-1]
         except AttributeError:
             try:
-                DOB_pattern = r"DOB[\s\t:]?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
+                DOB_pattern = r"DOB[\s\t:]?([0-9]{1,2}[\s/\.-]{1}[0-9]{1,2}[\s/\.-]{1}[0-9]{2,4})"
                 DOB_match = re.search(DOB_pattern, pt_txt)
                 DOB = DOB_match.group().split()[-1]
             
             except AttributeError:
                 try:
-                    DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
+                    DOB_pattern = r"(DATE).?(OF).?(BIRTH).?[\s\t:]*([0-9]{1,2}[\s/\.-]?\s?[0-9]{1,2}[\s/\.-]?\s?[0-9]{2,4})"
                     DOB_match = re.search(DOB_pattern, pt_txt)
                     DOB = DOB_match.group().split()[-1]
 
                 except AttributeError:  # finds DOB following hosp number: QDS12345|12345678 dd/mm/yy using positive lookbehind to avoid capture
                     try:
-                        DOB_pattern = r"(?<=[A-Z]{3}[0-9]{5}|[0-9]{8})\s?\t?([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})"
+                        DOB_pattern = r"(?<=[A-Z]{3}[0-9]{5}|[0-9]{8})\s?\t?([0-9]{1,2}[\s/\.-]{1}[0-9]{1,2}[\s/\.-]{1}[0-9]{2,4})"
                         DOB_match = re.search(DOB_pattern, pt_txt)
                         DOB = DOB_match.group().split()[-1]
                     
                     except AttributeError:  # this uses findall instead of search and uses the second one as first is date of meeting
-                    # note does not catch dd/mm/yyyy when on its own new line - not reqd 
+                    # note does not catch dd/mm/yyyy when on its own new line  
                         DOB_pattern = r"[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}"
                         DOB_findall = re.findall(DOB_pattern, pt_txt)
                         if len(DOB_findall)>1:

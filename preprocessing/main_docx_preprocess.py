@@ -19,7 +19,8 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                          clean=False, save_path_anon="L:\\word_docs\\texxts\\",
                          json_dictionary_file = 'L:\\word_docs\\keys.json', DOCX=True,
                          docx_to_txt_save_path="L:\\word_docs\\epilepsy_docx_to_txt\\",
-                         docx_xml_to_txt_save_path="L:\\word_docs\\epilepsy_docx_xml_to_txt\\"):
+                         docx_xml_to_txt_save_path="L:\\word_docs\\epilepsy_docx_xml_to_txt\\",
+                         Suppress_messages=False):
     """
     This runs the functions from word_preprocess.py in an entire folder.
 
@@ -36,8 +37,13 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
     >json_dictionary_file determines where to save the keys:values of sensitive data.
 
-    >DOCX False is future option when converting files that are already in .txt format
-    i.e. skip the docx to txt conversion e.g. for RTF files.
+    >DOCX False is option when converting files that are already in .txt format
+    i.e. skip the docx to txt conversion e.g. for RTF files. revert to RTF branch for working condition.
+
+    >Suppress_messages: if True, will only print important messages. 
+
+    >docx_to_txt_save_path and docx_xml_to_txt_save_path are intermediate folder paths to store outcome of related function on .docx 
+    i.e. before anonymisation
 
     *paragraphs is redundant - can specify which paragraph numbers to read from.
     initially was useful in obtaining structure for regex.
@@ -114,7 +120,8 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                         pt_txt = pt_txt_sfnamefilter
                         n_docx_p_name_anonxml += 1
 
-                        print('\nUsed anonymise_name xml=true for 5 paragraphs without docx_xml for {}'.format(docx_file))
+                        if not Suppress_messages:
+                            print('\nUsed anonymise_name xml=true for 5 paragraphs without docx_xml for {}'.format(docx_file))
 
                 except AttributeError:
                     # if no name found, run the other docx XML function
@@ -177,14 +184,14 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
 
             # store the dictionary of keys for this patient
             pseudo_anon_dict[uuid_no] = {"MRN": MRN, "Name": names, "DOB": DOB_actual}
-
-            if name_error_message or DOB_error_message or mrn_error_message:
-                print("\n{}".format(docx_file))
-            if name_error_message:
-                print("*anonymise_name and xml=true failed for above.")
-                print("May not have \"Name\" field or this may not be a presurgical MDT file")
-            if DOB_error_message:
-                print("**DOB not found for \t\t{}".format(docx_file))
+            if not Suppress_messages:
+                if name_error_message or DOB_error_message or mrn_error_message:
+                    print("\n{}".format(docx_file))
+                if name_error_message:
+                    print("*anonymise_name and xml=true failed for above.")
+                    print("May not have \"Name\" field or this may not be a presurgical MDT file")
+                if DOB_error_message:
+                    print("**DOB not found for \t\t{}".format(docx_file))
             if mrn_error_message:
                 print("***MRN pattern not found for \t\t{}\n".format(path_to_doc))
 
