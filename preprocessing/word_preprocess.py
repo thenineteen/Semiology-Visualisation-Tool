@@ -252,10 +252,12 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
     2. regex variations on common words
     3. negative lookahead regex
     """
-    not_pt_names = ['Age', 'age', 'DOB', 'Grand', 'Round', 'Telemetry', 'Meeting', 'Name', 'Name:', ':',
+    not_pt_names = ['Age', 'age', 'DOB', 'Grand', 'Round', 'Telemetry', 'Meeting', 'Name', 'Name:', ':', 'NAME'
                     'AED', 'Rx', 'XX', 'xx', 'Antecedent', 'Hx', 'telemetry', 'meeting', 'summary', 'ED',
                     'Namexx', 'NamexxAge', 'Hxxx', 'Hx', 'xxx', 'Video', 'video', 'QSA', 'QSB', 'QSC', 'QSD',
-                    'Early', 'Development', 'Date', 'TELEMETRY', 'MEETING', 'QS'
+                    'Early', 'Development', 'Date', 'TELEMETRY', 'MEETING', 'QS', 'Aged', 'FH', 'No',
+                    'Discharge', 'DISCHARGE', 'Summary', 'SUMMARY', 'Family', 'FAMILY', 'No', 'FC', 'ITU'
+                    'Referred', 'JD', 'Dr', 'DATE'
                     ]
     regex_notnames = re.compile(r"(Hosp).?")
     regex_notnames_2 = re.compile(r"\s*:\s*")
@@ -273,14 +275,14 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
             #  Surname|SURNAME, Firstname
             name_list = name_pattern_regex(name_pattern, pt_txt)
             
-            if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
+            if name_list[0].strip() not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
                 surname = name_list[0].strip(',')
                 surname = surname.strip()
                 # clean up any name that picked up suffixes due to xml reader
                 surname = re.sub(r"QSA|QSB|QSC|QSD|Telemetry", "", surname)
                 
             else: raise AttributeError
-            if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
+            if name_list[-1].strip() not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
                 firstname = name_list[-1]
                 firstname = firstname.strip()
                 # clean up any name that picked up suffixes due to xml reader
@@ -325,16 +327,16 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
     else: # if not xml
         try:
-            name_pattern = r"Name[\s\t:]+[a-zA-Z]+\s+[a-zA-Z]+[\s-]?[a-zA-Z]+"    
+            name_pattern = r"((Name|NAME)[\s\t:]*[\s\t]*)([a-zA-Z]+\s+[a-zA-Z]+[\s-]?[a-zA-Z]+)"    
             name_list = name_pattern_regex(name_pattern, pt_txt)
 
-            if name_list[0] not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
+            if name_list[0].strip() not in not_pt_names and not regex_notnames.search(name_list[0]) and not regex_notnames_2.search(name_list[0]):
                 firstname = name_list[0]
-            elif name_list[1] not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
+            elif name_list[1].strip() not in not_pt_names and not regex_notnames.search(name_list[1]) and not regex_notnames_2.search(name_list[1]):
                 firstname = name_list[1]
             else:
                 firstname = name_list[2]
-            if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
+            if name_list[-1].strip() not in not_pt_names and not regex_notnames.search(name_list[-1]) and not regex_notnames_2.search(name_list[-1]):
                 surname = name_list[-1]
             else:
                 surname = name_list[name_list.index(firstname) + 1]  # add 1 to the index of the list from firstname
@@ -345,10 +347,10 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
 
         except IndexError:
             name_list = name_pattern_regex(name_pattern, pt_txt, IndError=True)
-            if name_list[0] not in not_pt_names:
+            if name_list[0].strip() not in not_pt_names:
                 firstname = name_list[0]
             else: raise AttributeError
-            if name_list[1] not in not_pt_names:
+            if name_list[1].strip() not in not_pt_names:
                 surname = name_list[1]
             else: raise AttributeError
             pt_txt_sfnamefilter, names = pt_txt_replace(firstname, surname, pt_txt)
@@ -361,9 +363,9 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
                 name_list = name_pattern_regex(name_pattern, pt_txt)
                 firstname = name_list[1]
 
-                if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+                if name_list[-1].strip() not in not_pt_names and not regex_notnames.search(name_list[-1]):
                     surname = name_list[-1]
-                elif name_list[2] not in not_pt_names and not regex_notnames.search(name_list[2]):
+                elif name_list[2].strip() not in not_pt_names and not regex_notnames.search(name_list[2]):
                     surname = name_list[2]
                 else: raise AttributeError
 
@@ -375,7 +377,7 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
                 name_pattern = r"surname[\s\t:\n]*[a-z]+\s"
                 name_list = name_pattern_regex(name_pattern, pt_txt.lower())
 
-                if name_list[-1] not in not_pt_names and not regex_notnames.search(name_list[-1]):
+                if name_list[-1].strip() not in not_pt_names and not regex_notnames.search(name_list[-1]):
                     surname = name_list[-1]
                 else:
                     print("check this surname out in file {}",format(path_to_doc))
@@ -384,7 +386,7 @@ def anonymise_name_txt(pt_txt, path_to_doc, xml=False):
                 name_pattern2 = r"(?<!r)(name)[\s\t:\n]*[a-z]+\s"  # negative look behind
                 name_list2 = name_pattern_regex(name_pattern, pt_txt.lower())
 
-                if name_list2[-1] not in not_pt_names and not regex_notnames.search(name_list2[-1]):
+                if name_list2[-1].strip() not in not_pt_names and not regex_notnames.search(name_list2[-1]):
                     firstname = name_list2[-1]
                 else:
                     print("check this firstname out in file {}",format(path_to_doc))
@@ -556,7 +558,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
         MRN = MRN[-1]
 
         uuid_no_message = 'XXX pseudo_anon_dict_DOCX ' + str(uuid_no) + ' XXX'
-        pt_txt = pt_txt.replace(MRN, (uuid_no_message))
+        pt_txt = pt_txt.upper().replace(MRN, (uuid_no_message))  # .upper otherwise won't replace!
         n_uuid += 1
 
     except AttributeError:

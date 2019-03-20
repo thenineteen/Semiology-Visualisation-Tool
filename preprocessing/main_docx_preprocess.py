@@ -87,7 +87,8 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
             path_to_doc = os.path.join(path_to_folder, docx_file)
 
             pt_txt, pt_docx_list, pt_meds_dict = epilepsy_docx_to_txt(
-                path_to_doc, *paragraphs, read_tables=False, clean=False)
+                path_to_doc, *paragraphs, read_tables=False, clean=False,
+                docx_to_txt_save_path=docx_to_txt_save_path)
 
             n_docx += 1
             uuid_no += 1
@@ -102,7 +103,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 try:
                     # read first few paragraphs only:
                     pt_txt_beginning, pt_docx_list, pt_meds_dict = epilepsy_docx_to_txt(
-                        path_to_doc, 0,5, read_tables=False, clean=False)
+                        path_to_doc, 0,5, read_tables=False, clean=False, docx_to_txt_save_path=docx_to_txt_save_path)
 
                     if re.search(r"telemetry\s*report", pt_txt_beginning.lower()):
                         print('VT/Neurophys report?: {}\nThis file was skipped.'.format(docx_file))
@@ -126,7 +127,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 except AttributeError:
                     # if no name found, run the other docx XML function
                     try:
-                        pt_txt, n_xml = epilepsy_docx_xml_to_txt(path_to_doc, n_xml)
+                        pt_txt, n_xml = epilepsy_docx_xml_to_txt(path_to_doc, n_xml, docx_xml_to_txt_save_path=docx_xml_to_txt_save_path)
                         pt_txt, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
                         n_xml_name_anon += 1
 
@@ -163,7 +164,7 @@ def main_docx_preprocess(path_to_folder, *paragraphs, read_tables=False,
                 # if no DOB found, run the other docx XML function
                 try:
                     pt_txt_xml, n_xml = epilepsy_docx_xml_to_txt(
-                        path_to_doc, n_xml)
+                        path_to_doc, n_xml, docx_xml_to_txt_save_path=docx_xml_to_txt_save_path)
                     DOB_anon_message, n_DOB_anon_xml, DOB_actual = anonymise_DOB_txt(
                         pt_txt_xml, n_DOB_anon_xml, xml=True)
                     pt_txt = pt_txt.replace(DOB_actual, DOB_anon_message)

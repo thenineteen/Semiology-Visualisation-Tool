@@ -192,3 +192,19 @@ def test_failures_name_xml():  # ensure the many alternative regex and xml readi
             pt_txt, _, _ = epilepsy_docx_to_txt(path_to_doc)
             pt_txt_anon_name, names = anonymise_name_txt(pt_txt, path_to_doc, xml=True)
 
+
+@pytest.mark.xfail
+def test_yet_to_fix(path_to_folder = 'L:\\word_docs\\pytest\\test_xfail\\'):
+
+    main_docx_preprocess(path_to_folder, read_tables=False,
+                        clean=False, save_path_anon="L:\\word_docs\\pytest\\empty\\",
+                        json_dictionary_file = 'L:\\word_docs\\pytest\\test_xfail.json',
+                        DOCX=True,
+                        docx_to_txt_save_path="L:\\word_docs\\pytest\\docx_to_txt\\",
+                        docx_xml_to_txt_save_path="L:\\word_docs\\pytest\\docx_xml_to_txt\\")
+
+    with open('L:\\word_docs\\pytest\\test_xfail.json') as f:
+        data = json.load(f)
+    fixture = read_fixture(filename='fixture_xfail.json')
+
+    assert data == fixture
