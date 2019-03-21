@@ -4,13 +4,14 @@ from nltk.stem import *
 from nltk.stem.porter import *
 from nltk.stem.snowball import SnowballStemmer
 
-from b_1_filter_and_tokenise import *
+from NLP.b_1_filter_and_tokenise import *
 
 stemmer = SnowballStemmer("english")
 
 
 def stem_all_txts(path_to_folder="L:\\word_docs\\NLP\\filtered_tokenised\\test\\",
                   save_path_stemmed="L:\\word_docs\\NLP\\stemming\\",
+                  nltk_stopword=False, # False as already done change to true if not with filter and tokenise
                   future_option=False):
 
 
@@ -24,13 +25,31 @@ def stem_all_txts(path_to_folder="L:\\word_docs\\NLP\\filtered_tokenised\\test\\
         pt_txt = open_txt_file(path_to_doc)
 
         # need to toeknise the text again otherwise looking at individual characters
-        tokenised_txt = filter_and_tokenise(pt_txt, nltk_stopword=False) # False as already done
+        tokenised_txt = filter_and_tokenise(pt_txt, nltk_stopword) # False as already done
 
-        for word in tokenised_txt:
-            stemmed_pt_txt = stemmed_pt_txt + " " + stemmer.stem(word) #?.lower()
+        if nltk_stopword:
+            for word in tokenised_txt:
+                stemmed_pt_txt = stemmed_pt_txt + stemmer.stem(word) #?.lower()
+        
+        else:
+            for word in tokenised_txt:
+                stemmed_pt_txt = stemmed_pt_txt + " " + stemmer.stem(word) #?.lower()
         
         # save the stemmed_pt_txt
         save_filtered_txt_file(path_to_doc, stemmed_pt_txt, save_path_stemmed)
+
+
+
+def count_tokens(txt_to_tokenise_and_count):
+    """
+    stores all counts, prints top 10. 
+    """
+
+    txt_tokens = nltk.word_tokenize(txt_to_tokenise_and_count)    
+    counts = Counter(txt_tokens)
+
+    print (counts.most_common(10))
+    return counts
 
 
 def amalgamate_all_txts_into_one(path_to_folder=\
@@ -57,6 +76,7 @@ def amalgamate_all_txts_into_one(path_to_folder=\
     save_filtered_txt_file("made_up\\all_txt_stem.txt", all_txt_stem, save_path_all_txt)
     
     # in order to count, use tokens   
-    all_txt_stem_tokens = nltk.word_tokenize(all_txt_stem)    
-    count = Counter(all_txt_stem_tokens)
-    print (count.most_common(10))
+    counts = count_tokens(all_txt_stem)
+    
+
+

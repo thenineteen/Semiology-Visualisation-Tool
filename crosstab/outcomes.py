@@ -44,10 +44,10 @@ def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB
 
     # now to access all the Gold_outcome True:
     df_gold_outcomes = df_outcomes3.loc[df_outcomes3.Gold_outcome == True]  # gives a  DataFrame of all MRNs and outcome Trues (n= 346 as repeat MRNs)
-    gold_outcomes_MRNs = list(df_gold_outcomes.index.values)     # list of just MRNs for use in find_MRN_label_outcomes()
+    gold_outcomes_list = list(df_gold_outcomes.index.values)     # list of just MRNs for use in find_MRN_label_outcomes()
 
     # the false dataframe index values gives all patients who had surgery without gold outcome
     df_had_surgery = df_outcomes3.loc[df_outcomes3.Gold_outcome == False]
     had_surgery_MRNs = list(df_had_surgery.index.values)
 
-    return gold_outcomes_MRNs, had_surgery_MRNs
+    return gold_outcomes_list, had_surgery_MRNs
