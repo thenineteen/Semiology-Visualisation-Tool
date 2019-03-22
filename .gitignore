@@ -5,3 +5,4 @@ preprocessing/tests/__pycache__/
 .pytest_cache/
 .__pycache__/
 crosstab/__pycache__/
+.NLP/__pycache__
