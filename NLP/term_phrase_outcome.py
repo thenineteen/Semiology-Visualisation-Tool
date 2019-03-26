@@ -195,17 +195,8 @@ def term_phrase_outcome(
     print("proportion of Non-Gold files with {} term = {}/{} = {}\n\n\n".format(term_or_precise_phrase, no_No_Surgery+no_Resections, total_non_gold_files, proportion_non_gold))
 
 
-    obs = np.array([
-                    [no_Gold, no_No_Surgery + no_Resections], 
-                    [no_Gold_absent_term, no_No_Surgery_absent_term + no_Resections_absent_term]
-                    ])
-    print("Chi-Squared Yates correction: chi2-stat, p-value, DOF, expected ndarray same shape as contingency table")
-    print(chi2_contingency(obs))
-    chi_sq, p_value, dof, exp_arr = chi2_contingency(obs)
-    if p_value <0.05:
-        print("STATISTICALLY SIGNIFICANT")
-    else:
-        print("statistically not significant")
+
+    
 
     # end of for loop through list of terms_phrases
     
