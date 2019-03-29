@@ -549,7 +549,7 @@ def anon_hosp_no(pt_txt, path_to_doc, uuid_no, n_uuid, n_uuid_name_of_doc):
 # trying #2
         MRN_pattern = r"([QSABCDMCVP]{3}\s?\d{5})|((M/)[\s]?\d{6})|(E[\s]?\d{7})|([\s]?\d{8})((?=\d{2}[\.-/])|(?!\d))" 
         # this works! finally. it does multiple regexes as | ORs and if it doesn't find the first one then tries second
-        # the final one has a PLF to find two digits before DOB otherwise it read the MRN until end of digits. 
+        # the final one has a PLF to find two digits before DOB otherwise it reads the MRN until end of digits. 
 
         MRN_search = re.search(MRN_pattern, pt_txt.upper())
 

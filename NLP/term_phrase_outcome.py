@@ -5,10 +5,15 @@ import re
 import json
 from scipy.stats import chi2_contingency
 
-from NLP.b_1_filter_and_tokenise import *
-from NLP.c_stemming import *
+try:
+    from NLP.b_1_filter_and_tokenise import *
+    from NLP.c_stemming import *
+    from crosstab.outcomes import *
+except:
+    from .b_1_filter_and_tokenise import *
+    from .c_stemming import *
+    from ..crosstab.outcomes import *
 
-from crosstab.outcomes import *
 
 
 # def counter_file_outcome(json_file):
@@ -43,8 +48,16 @@ def term_phrase_outcome(
     term_or_precise_phrase, # ensure term exists in the files e.g. don't use a full word on stemmed texts
     path_to_folder,  # files to look in for the term
     outcomes_json_file_specified=False,
-    stemmed=False):
+    stemmed=False,
+    suppress_print_cycle=False,
+    positive_files=[],
+    negative_files=[]):
 
+    """
+    Use a term or semiology to find the files it occurs in and find the outcomes of those files it occurs in. 
+    Also print outcomes of files which the term doesn't occur in for comparison e.g. for a frequency chi-sq test (see contingency_table)
+    suppress_print_cycle is option to cycle through many terms and avoid printing
+    """
 
     rtf_origin=False
     no_file = 0
@@ -59,6 +72,8 @@ def term_phrase_outcome(
     no_No_Surgery_absent_term = 0
     no_Resections_absent_term = 0
     no_Gold_absent_term = 0
+
+    # positive_files = []
 
 
     for txt_file in os.listdir(path_to_folder):
@@ -97,7 +112,7 @@ def term_phrase_outcome(
             uuid_no = uuid_no.group().split()[-1]
         
         except AttributeError:
-            print("AttributeError in file {} rtf_origin status: {}".format(txt_file, rtf_origin))
+            print("Pseudo_anon uuid AttributeError in file {} rtf_origin status: {}".format(txt_file, rtf_origin))
             continue  # skip this file but don't reverse counting the file no_file
 
 
@@ -123,33 +138,58 @@ def term_phrase_outcome(
 
         # now add outcome to list of their own
        
-        #search for the term: if not found, count the outcome of this term-non-occurance-file and then move to next file
-        if not re.search(term_or_precise_phrase, pt_txt) and not re.search(term_or_precise_phrase, pt_txt.lower()):      
-            if outcome=="No surgery":
-                no_No_Surgery_absent_term += 1
-            elif outcome=="Resection":
-                no_Resections_absent_term += 1
-            elif outcome=="Gold ILAE 1":
-                no_Gold_absent_term += 1
-            continue  # skip this file but don't reverse counting the file no_file
 
-        elif re.search(term_or_precise_phrase, pt_txt):   # term is found in this file
-            # FIND FREQ OF OCCURANCE IN THIS FILE TOO:
+        # SEARCH for the term: if not found, count the outcome of this term-non-occurance-file and then move to next file
+        if path_to_doc not in positive_files:  
+        # if positive_files is an empty list then run this, otherwise using a cycle and hence already...
+        # ...counted the absent_terms 
+            if not re.search(term_or_precise_phrase, pt_txt) and not re.search(term_or_precise_phrase, pt_txt.lower()):      
+                if outcome=="No surgery":
+                    no_No_Surgery_absent_term += 1
+                elif outcome=="Resection":
+                    no_Resections_absent_term += 1
+                elif outcome=="Gold ILAE 1":
+                    no_Gold_absent_term += 1
+
+                while path_to_doc not in negative_files:               
+                    negative_files.append(path_to_doc)
+                continue  # skip this file but don't reverse counting the file no_file
+        
+
+            elif re.search(term_or_precise_phrase, pt_txt):   # term is found in this file
+                # FIND FREQ OF OCCURANCE IN THIS FILE TOO:
+                findall_term = re.findall(term_or_precise_phrase, pt_txt)
+                findall_term = list(findall_term)
+                freq_term_in_this_file = len(findall_term)
+                freq_in_all_files = freq_in_all_files + freq_term_in_this_file
+                # check: should be able to replace freq above with nltk.FreqDist()
+
+                if outcome=="No surgery":
+                    no_No_Surgery += 1
+                elif outcome=="Resection":
+                    no_Resections += 1
+                elif outcome=="Gold ILAE 1":
+                    no_Gold += 1
+
+                positive_files.append(path_to_doc)
+
+                # if prev this file was included in negative files, remove it
+                while path_to_doc in negative_files:
+                    negative_files.remove(path_to_doc)
+            
+    
+            elif re.search(term_or_precise_phrase, pt_txt.lower()): # in stemmed files this shouldn't make a difference. 
+                print("Modify regex search term or phrase: lower case searches found {} term in file: {}".format(term_or_precise_phrase, txt_file))
+
+
+        # this file already has an equivalent semiology term: don't duplicate all increments
+        elif path_to_doc in positive_files:
+            # FIND FREQ OF OCCURANCE IN THIS FILE TOO (EVEN IF ALREADY IN POSITIVE_FILE):
             findall_term = re.findall(term_or_precise_phrase, pt_txt)
             findall_term = list(findall_term)
             freq_term_in_this_file = len(findall_term)
             freq_in_all_files = freq_in_all_files + freq_term_in_this_file
-            # check: should be able to replace freq above with nltk.FreqDist()
 
-            if outcome=="No surgery":
-                no_No_Surgery += 1
-            elif outcome=="Resection":
-                no_Resections += 1
-            elif outcome=="Gold ILAE 1":
-                no_Gold += 1
-    
-        elif re.search(term_or_precise_phrase, pt_txt.lower()): # in stemmed files this shouldn't make a difference. 
-            print("Modify regex search term or phrase: lower case searches found {} term in file: {}".format(term_or_precise_phrase, txt_file))
 
 
 
@@ -167,42 +207,53 @@ def term_phrase_outcome(
 
     # print results
     total_number_occurances = no_Gold + no_Resections + no_No_Surgery
-    print("number of files = {}".format(no_file))
-    print("this term \"{}\" occurs in {} out of {} of the files (total of {} occurances/repetitions)".format(term_or_precise_phrase, total_number_occurances, no_file, freq_in_all_files))
-    print("\n{} times in files with Gold ILAE 1 outcome. {} Gold outcome files without this term. \n\t(Number of all Gold patients {})".format(no_Gold, no_Gold_absent_term, total_Gold))
-    print("{} times in files with Resections otherwise. {} Resection outcome files without this term. \n\t(Number of all (non-Gold) Resections {})".format(no_Resections, no_Resections_absent_term, total_resection))
-    print("{} times in files with no surgery. {} no surgery files without this term.".format(no_No_Surgery, no_No_Surgery_absent_term))
-    print("\nfreq analysis: {} occurs {} in Gold files vs {} in non-Gold files".format(term_or_precise_phrase, no_Gold, no_No_Surgery + no_Resections))
+    if not suppress_print_cycle:
+        print("number of files = {}".format(no_file))
+        print("this term \"{}\" occurs in {} out of {} of the files (total of {} occurances/repetitions)".format(term_or_precise_phrase, total_number_occurances, no_file, freq_in_all_files))
+        print("\n{} times in files with Gold ILAE 1 outcome. {} Gold outcome files without this term. \n\t(Number of all Gold patients {})".format(no_Gold, no_Gold_absent_term, total_Gold))
+        print("{} times in files with Resections otherwise. {} Resection outcome files without this term. \n\t(Number of all (non-Gold) Resections {})".format(no_Resections, no_Resections_absent_term, total_resection))
+        print("{} times in files with no surgery. {} no surgery files without this term.".format(no_No_Surgery, no_No_Surgery_absent_term))
+        print("\nfreq analysis: {} occurs {} in Gold files vs {} in non-Gold files".format(term_or_precise_phrase, no_Gold, no_No_Surgery + no_Resections))
     
-    check_assertion = ((no_Gold + no_Gold_absent_term + no_No_Surgery + no_No_Surgery_absent_term + no_Resections + no_Resections_absent_term)==no_file )
-    print("\ncheck assertion: {}".format(check_assertion))
-    if check_assertion==False:
-        print("\tno_Gold", no_Gold) 
-        print("\tno_Gold_absent_term", no_Gold_absent_term) 
-        print("\tno_No_Surgery", no_No_Surgery)
-        print("\tno_No_Surgery_absent_term", no_No_Surgery_absent_term)
-        print("\tno_Resections", no_Resections) 
-        print("\tno_Resections_absent_term", no_Resections_absent_term)
-        total_files = no_Gold+no_Gold_absent_term+no_No_Surgery+no_No_Surgery_absent_term+no_Resections+no_Resections_absent_term
-        print("\t{} != {}".format(total_files, no_file))
+        check_assertion = ((no_Gold + no_Gold_absent_term + no_No_Surgery + no_No_Surgery_absent_term + no_Resections + no_Resections_absent_term)==no_file )
+        print("\ncheck assertion: {}".format(check_assertion))
+    
+        if check_assertion==False:
+            print("\tno_Gold", no_Gold) 
+            print("\tno_Gold_absent_term", no_Gold_absent_term) 
+            print("\tno_No_Surgery", no_No_Surgery)
+            print("\tno_No_Surgery_absent_term", no_No_Surgery_absent_term)
+            print("\tno_Resections", no_Resections) 
+            print("\tno_Resections_absent_term", no_Resections_absent_term)
+            total_files = no_Gold+no_Gold_absent_term+no_No_Surgery+no_No_Surgery_absent_term+no_Resections+no_Resections_absent_term
+            print("\t{} != {}".format(total_files, no_file))
+
     # pos_control = ((1+2)==3)
     # print("1+2 ==3 {}".format(pos_control))
 
     total_gold_files = no_Gold + no_Gold_absent_term
-    print("\nproportion of Gold files with {} term = {}/{} = {}".format(term_or_precise_phrase, no_Gold, total_gold_files, round(no_Gold/total_gold_files,2) ))
+    if not suppress_print_cycle:
+        print("\nproportion of Gold files with {} term = {}/{} = {}".format(term_or_precise_phrase, no_Gold, total_gold_files, round(no_Gold/total_gold_files,2) ))
     total_non_gold_files = no_No_Surgery + no_Resections + no_No_Surgery_absent_term + no_Resections_absent_term
     proportion_non_gold = round((no_No_Surgery+no_Resections)/total_non_gold_files,2)
-    print("proportion of Non-Gold files with {} term = {}/{} = {}\n\n\n".format(term_or_precise_phrase, no_No_Surgery+no_Resections, total_non_gold_files, proportion_non_gold))
+    if not suppress_print_cycle:
+        print("proportion of Non-Gold files with {} term = {}/{} = {}\n\n\n".format(term_or_precise_phrase, no_No_Surgery+no_Resections, total_non_gold_files, proportion_non_gold))
 
 
 
     
 
     # end of for loop through list of terms_phrases
-    
-    return(term_or_precise_phrase, no_file, freq_in_all_files, \
-           no_Gold, no_Resections, no_No_Surgery,\
-           no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term)
-    #return (no_file, no_Gold, no_Resections, no_No_Surgery, freq_in_all_files)
+
+    if suppress_print_cycle:
+        return(term_or_precise_phrase, no_file, freq_in_all_files, \
+            no_Gold, no_Resections, no_No_Surgery,\
+            no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+            positive_files)
+    else:    
+        return(term_or_precise_phrase, no_file, freq_in_all_files, \
+            no_Gold, no_Resections, no_No_Surgery,\
+            no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term)
+        #return (no_file, no_Gold, no_Resections, no_No_Surgery, freq_in_all_files)
 
     

@@ -1,0 +1,13 @@
+    # semiology_key: ['semiology_term1', 'semiology_term2']
+
+"semiology":
+  "temporal": auras["epigastric"]
+  "auras":
+    "epigastric": ["epigastric", "abdominal", "rising",  "abdo[a-z]* aura",  "abdo.* (sensation)?"]
+    "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful",  "anxiety", "anxious"]
+    "experiential": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation"]
+    "olfactory-gustatory": ["olfactory", "smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste"]
+    "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative"]
+    "non-specific": ["non-?.?specific (aura)?", "vague (aura)?"]
+
+

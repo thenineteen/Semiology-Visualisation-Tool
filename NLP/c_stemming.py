@@ -4,7 +4,10 @@ from nltk.stem import *
 from nltk.stem.porter import *
 from nltk.stem.snowball import SnowballStemmer
 
-from NLP.b_1_filter_and_tokenise import *
+try:
+    from NLP.b_1_filter_and_tokenise import *
+except:
+    from .b_1_filter_and_tokenise import *
 
 stemmer = SnowballStemmer("english")
 
