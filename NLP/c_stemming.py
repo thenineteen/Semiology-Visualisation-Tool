@@ -55,10 +55,10 @@ def count_tokens(txt_to_tokenise_and_count):
     return counts
 
 
-def amalgamate_all_txts_into_one(path_to_folder=\
-                    "L:\\word_docs\\NLP\\stemming\\",
-                    save_path_all_txt="L:\\word_docs\\NLP\\",
-                    future_option=False):
+def amalgamate_all_txts_into_one(
+    path_to_folder="L:\\word_docs\\NLP\\stemming\\combinedRTFDOCX\\",
+    save_path_all_txt="L:\\word_docs\\NLP\\",
+    future_option=False):
     """
     Appends as string all texts in to one .txt file and print the 10 most common tokens. 
     """
@@ -76,7 +76,7 @@ def amalgamate_all_txts_into_one(path_to_folder=\
 
         # save all_txt
     
-    save_filtered_txt_file("made_up\\all_txt_stem.txt", all_txt_stem, save_path_all_txt)
+    save_filtered_txt_file("made_up\\all_txt_stemmed2.txt", all_txt_stem, save_path_all_txt)
     
     # in order to count, use tokens   
     counts = count_tokens(all_txt_stem)

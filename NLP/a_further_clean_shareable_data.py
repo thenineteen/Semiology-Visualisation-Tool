@@ -1,5 +1,9 @@
 # already removed addresses and tel numbers by hand (latter only cause had to do former by hand)
 # 0. check addresses, NHS numbers and post codes have been removed:
+
+from .b_1_filter_and_tokenise import *
+
+
 def open_txt_file(path_to_doc):
     with open(path_to_doc, 'r') as f:
         pt_txt = f.read()
@@ -41,6 +45,25 @@ def check_addresses_NHSnos_postcodes_removed():
 
 # 1. remove unicode invalid characters such as bullet points from word
     # \uf0ae\uf020, uf0b7,
+def replace_fancy_quotes(
+        path_to_folder="L:\\word_docs\\NLP\\both_done_copy\\",
+        save_path="L:\\word_docs\\NLP\\a_further_clean_replace_quotes\\"):
+    """
+    Changes “funny feeling”, “butterflies” to "funny feeling" etc as these quotes are not easily readable
+    """
+
+    for txt_file in os.listdir(path_to_folder):
+        path_to_doc = os.path.join(path_to_folder, txt_file)
+        quotes_txt = open_txt_file(path_to_doc)
+
+        #print('\n'+quotes_txt)
+            
+        quotes_txt = quotes_txt.replace("“", "\"")
+        quotes_txt = quotes_txt.replace("”", "\"")
+
+        save_filtered_txt_file(path_to_doc, quotes_txt, save_path)
+        #print('\n\n'+quotes_txt)
+
 
 # 2. normalise phrases/terms (before stemming)
     # change "º" to "no"

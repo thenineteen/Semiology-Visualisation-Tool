@@ -6,8 +6,8 @@ import os
 from scipy.stats import chi2_contingency
 
 def chi_squared_yates(
-                      no_Gold, no_No_Surgery, no_Resections,
-                      no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+                      no_Gold, no_Resections, no_No_Surgery,
+                      no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term
                       two_outcomes=True, print_numbers=False
                       ):
     """
@@ -136,8 +136,8 @@ def contingency_table_two_outcomes(term,
 
 
 def contingency_table_three_outcomes(term,
-                      no_Gold, no_No_Surgery, no_Resections,
-                      no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+                      no_Gold, no_Resections, no_No_Surgery,
+                      no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
                       print_numbers=False,
                       eps=False):

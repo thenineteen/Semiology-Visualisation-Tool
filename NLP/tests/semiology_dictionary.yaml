@@ -1,13 +1,32 @@
     # semiology_key: ['semiology_term1', 'semiology_term2']
+    # not all regex features work in a yaml file. 
+      # e.g. \s is just instead a " ". "\s?" == " ?" 
+      # for NLA, (?!exam) works for exam[inations]*
+
+
+      # if in doubt, make more items in list. 
+      # test the terms in regex_read_entire_match_line here
+      # negative lookaheads: (?!exam|normal|NAD)
+      # non capturing group: (?:odd)? smell
+
+
+      # changed the fancy quotes unreadable in yaml/regex/python or replace with ''
+      # negatives not requiring catching as positives only used: "abdomen:  SNT" , "abdomen soft,?"
 
 "semiology":
   "temporal": auras["epigastric"]
   "auras":
-    "epigastric": ["epigastric", "abdominal", "rising",  "abdo[a-z]* aura",  "abdo.* (sensation)?"]
-    "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful",  "anxiety", "anxious"]
+    "epigastric": ["epigastric sensation", ".*epigastric rising", "rising epigastric", "epigastric aura", "epigastric feeling",
+                  "characteristics epigatric pain", "Epigastric or cephalic sensation", "epigastric disturbance sensation",
+                  "(?:aura of)? epigastric (?:& chest)? discomfort", "epigastric \"funny feeling\"",
+                  "epigastric tightness", "rising sensation", "epigastric warning", "epigastric \"fluttering\"",
+                  "epigastric ?/ ?",
+                  "(abdo[a-z]* aura)|(abdo.* ((sens[a-z]*)|(feeling)))",
+                  "(butterfly (feel|sens|in stomach))", "butterfly-like", "butterflies"]
+    "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious"] 
     "experiential": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation"]
-    "olfactory-gustatory": ["olfactory", "smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste"]
+    "olfactory-gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
+                            "odd taste"]
     "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative"]
     "non-specific": ["non-?.?specific (aura)?", "vague (aura)?"]
-
 
