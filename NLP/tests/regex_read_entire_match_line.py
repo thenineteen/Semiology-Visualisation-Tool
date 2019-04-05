@@ -22,7 +22,7 @@ def regex_read_entire_match_line(
     with open(single_large_combined_txt_file) as f:
         txt = f.read()
  
-    regex_pattern = "(?i)" + r".*" + regex_pattern + r".*"
+    regex_pattern = "(?i)" + regex_pattern 
     regex_pattern = re.compile(regex_pattern)
     findall = re.findall(regex_pattern, txt)
     findall_list = list(findall)

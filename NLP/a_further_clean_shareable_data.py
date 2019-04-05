@@ -2,7 +2,7 @@
 # 0. check addresses, NHS numbers and post codes have been removed:
 
 from .b_1_filter_and_tokenise import *
-
+import re
 
 def open_txt_file(path_to_doc):
     with open(path_to_doc, 'r') as f:
@@ -11,12 +11,14 @@ def open_txt_file(path_to_doc):
     return pt_txt
 
 
-def check_addresses_NHSnos_postcodes_removed():
-    regex = r"NHS"
+def check_addresses_NHSnos_postcodes_removed(
+    path_to_folder='L:\\word_docs\\DOCX_done\\4. anonymised_without_addresses_telephones_edited\\'
+):
+    regex1 = r"NHS"
     regex2 = r"Address"
     regex_postcode = r"([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})"
 
-    path_to_folder='L:\\word_docs\\DOCX_done\\4. anonymised_without_addresses_telephones_edited\\'
+    
 
 
     for txt_file in os.listdir(path_to_folder):
@@ -67,6 +69,7 @@ def replace_fancy_quotes(
 
 # 2. normalise phrases/terms (before stemming)
     # change "º" to "no"
+    # change C2H5OH
     # change "yo"|"years old"|"yrs.*"|"years"|"yr old"|"y.o."|\d\s?+y to "yrs-old"
     # \d//[day, wk, month, yr] to \d per [day,wk,month,yr]
     # men. > meningitis

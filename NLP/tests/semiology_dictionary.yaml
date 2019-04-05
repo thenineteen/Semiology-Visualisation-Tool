@@ -24,9 +24,14 @@
                   "(abdo[a-z]* aura)|(abdo.* ((sens[a-z]*)|(feeling)))",
                   "(butterfly (feel|sens|in stomach))", "butterfly-like", "butterflies"]
     "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious"] 
-    "experiential": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation"]
+    "experiential": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation",
+                    "dreamy-? ?state"]
     "olfactory-gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
                             "odd taste"]
-    "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative"]
+    "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative", 
+                              "palpitations", "tachycardia", 
+                              "hyper-?ventilation", "heavy-? ?breathing", "rapid-? ?breathing", "tachypnoea", "rapid respiratory", "respiratory rate",
+                              "pilo-?erection", "hair-? ?sticking", "fuzzy (?:sensation|feeling)",
+                              "sweating", "hyper-? ?hydrosis"]
     "non-specific": ["non-?.?specific (aura)?", "vague (aura)?"]
 

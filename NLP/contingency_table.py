@@ -7,9 +7,8 @@ from scipy.stats import chi2_contingency
 
 def chi_squared_yates(
                       no_Gold, no_Resections, no_No_Surgery,
-                      no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term
-                      two_outcomes=True, print_numbers=False
-                      ):
+                      no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
+                      two_outcomes=True, print_numbers=False):
     """
     "Chi-Squared Yates correction: chi2-stat, p-value, DOF, expected ndarray same shape as contingency table"
     Returns text to add to contingency table. 
@@ -57,12 +56,16 @@ def chi_squared_yates(
     return table_chi_sq_text, stats_string
 
 
-def contingency_table_two_outcomes(term,
+def contingency_table_two_outcomes(term, 
                       no_Gold, no_No_Surgery, no_Resections,
                       no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
                       print_numberss=False,
-                      eps=False):
+                      eps=False,
+                      term_regex_str=""):
+
+    if not term_regex_str:
+        term_regex_str = "term"
 
     conf_arr = np.array([
                         [no_Gold, no_No_Surgery + no_Resections], 
@@ -71,7 +74,7 @@ def contingency_table_two_outcomes(term,
 
     df_cm = pd.DataFrame(conf_arr, 
                     index = ['present', 'absent'],
-                    columns = ['Entirely Seizure-Free', 'Not Seizure-Free'])
+                    columns = ['Entirely Seizure-Free', 'Other'])
 
     fig = plt.figure()
 
@@ -84,9 +87,9 @@ def contingency_table_two_outcomes(term,
 
     res = sn.heatmap(df_cm, annot=True, vmin=0.0, vmax=100.0, fmt='.0f')
 
-    plt.yticks([0.5,1.5], ['term present', 'term absent'],va='center')
+    plt.yticks([0.5,1.5], [term_regex_str + ' present', 'absent'], va='center')
 
-    plt.title('''Contingency Table \n Gold vs non-Gold \n Term: {} 
+    plt.title('''Contingency Table \n Term: {} 
             '''.format(term))
     
     # add chi-squared test *'s to the top left cell in 2 by 2 table
@@ -140,7 +143,8 @@ def contingency_table_three_outcomes(term,
                       no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
                       print_numbers=False,
-                      eps=False):
+                      eps=False,
+                      term_regex_str=""):
     
     conf_arr = np.array([
                         [no_Gold, no_Resections, no_No_Surgery], 
@@ -162,9 +166,9 @@ def contingency_table_three_outcomes(term,
 
     res = sn.heatmap(df_cm, annot=True, vmin=0.0, vmax=100.0, fmt='.0f')
 
-    plt.yticks([0.5,1.5], ['term present', 'term absent'],va='center')
+    plt.yticks([0.5,1.5], [term_regex_str + ' present', 'absent'],va='center')
 
-    plt.title('''Contingency Table \n Gold vs Resections vs No Surgery \n Term: {} 
+    plt.title('''Contingency Table \n Term: {} 
             '''.format(term))
     
     # add chi-squared *'s to the top left cell in 2 by 2 table
