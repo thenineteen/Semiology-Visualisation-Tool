@@ -10,28 +10,73 @@
       # non capturing group: (?:odd)? smell
 
 
-      # changed the fancy quotes unreadable in yaml/regex/python or replace with ''
+      # changed the fancy quotes unreadable in yaml/regex/python, replaced with ''
       # negatives not requiring catching as positives only used: "abdomen:  SNT" , "abdomen soft,?"
+      # ignore findall freq of occurence in files when using items from a list as can find many iterations of "epigastric rising sensation"
+
+
+# in ontology need to have occurant ictal, postictal properties
 
 "semiology":
   "temporal": auras["epigastric"]
-  "auras":
+
+  auras:
     "epigastric": ["epigastric sensation", ".*epigastric rising", "rising epigastric", "epigastric aura", "epigastric feeling",
                   "characteristics epigatric pain", "Epigastric or cephalic sensation", "epigastric disturbance sensation",
                   "(?:aura of)? epigastric (?:& chest)? discomfort", "epigastric \"funny feeling\"",
                   "epigastric tightness", "rising sensation", "epigastric warning", "epigastric \"fluttering\"",
-                  "epigastric ?/ ?",
+                  "epigastric ?/ ?", "visceral",
                   "(abdo[a-z]* aura)|(abdo.* ((sens[a-z]*)|(feeling)))",
                   "(butterfly (feel|sens|in stomach))", "butterfly-like", "butterflies"]
-    "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious"] 
+    "fear/anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious",
+                    "impending (?:sensation)? ?doom", "affective"] 
     "experiential": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation",
                     "dreamy-? ?state"]
-    "olfactory-gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
-                            "odd taste"]
-    "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative", 
+    "autonomous-vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative", "autonomic aura",
                               "palpitations", "tachycardia", 
                               "hyper-?ventilation", "heavy-? ?breathing", "rapid-? ?breathing", "tachypnoea", "rapid respiratory", "respiratory rate",
                               "pilo-?erection", "hair-? ?sticking", "fuzzy (?:sensation|feeling)",
-                              "sweating", "hyper-? ?hydrosis"]
-    "non-specific": ["non-?.?specific (aura)?", "vague (aura)?"]
+                              "sweating", "hyper-? ?hydrosis",
+                              "ictal emeticus", "ictal vomiting", "vomit",
+                              "ictal urinary urge", "urinary urge", "urgency aura", "aura of (:?urinary)? ?urge" ]
+    "olfactory-gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
+                            "odd taste"]
+    "auditory": ["auditory (?:hallucination)?(?:illusion)?", "hears? "]
+    "visual": ["visual aura", "(?:flashing)?(?:colou?r.{0,2}) lights?"]
+    "somatosensory": ["somato-?sensory", "sensory aura", "positive sensory", "(?:aura)? parasthesias? (?:aura)?", "tingling auar",
+                      "aura:? ?sensation", "pins (&|and|+) ?needles (warning|aura)?"]
+    "vestibular": ["vertigo", "vertiginous", "dizzy", "dizziness", "spinning"]
+    "non-specific": ["non-?.?specific (aura)?", "vague (aura)?", "unspecified aura", "unclear aura", "somesthetic", "alice in wonder"]
 
+
+
+  motor:
+    simple:
+      "head turn": ["head turn", "turn(?:s|ed)? to the (?:right)?(?:left)?(?:R|L)?"]
+      "head version": ["head version", "versive", "turn over shoulder", "head deviation"]
+      "eye version": ["eye version", "eye deviation", "gaze deviation"]
+      "tonic": ["tonic limb posturing", "tonic posturing", "tonic posture", "dystonic", "contraction"]
+      "clonic": ["clonic", "jerking", "asymmetric(?:al)? clonic"]
+      "tonic-clonic": []
+      "myoclonic": []
+    complex:
+      "fencing": ["asymmetric tonic", "fencing", "extension [a-z]* ?[a-z]* ?flexion", "extension [a-z]* ?[a-z]* ?flexion"]
+      "figure of 4": []
+      "hypermotor": ["hypermotor", "hyperkinetic"]
+      "hypomotor": ["unilateral ictal paresis", "relative ictal immobility", "behaviour(?:al)? arrest"]
+      automatisms:
+        "oral automatisms": ["oro-?alimentary", "oral automatisms?", "lip-?smack(?:ing)?" ]
+        "upper limb automatisms": ["hand automatisms?", "unilateral hand automatism", "unilateral automatism", "fiddling",
+                                   "stereotypy(?:ed)?", "stereotypical (?:move|motor)"]
+        "lower limb automatisms": ["leg automatism", "lower-? limb automatism"]
+        "blink": ["eye-? blink", "blink(?:ing)?"]
+        "cough": ["ictal cough", "cough seizure"]
+        "nose-wiping": ["nose-?wiping", "post-?ictal nose-?wiping", "nose wipe"]
+        "spitting": ["spit", "spitting"]
+        "whistling": ["whistle", "whistling"]
+        "drinking": ["ictal drink", "sip"]
+        "gelastic": ["laughter", "laughing", "laugh", "gelastic"]
+        "dacrystic": ["cry(?:ing)?", "tear(?:ful)?", "dacrystic"]
+        "Ictal Pout": ["chapeau", "ictal pout"]
+  
+  speech:

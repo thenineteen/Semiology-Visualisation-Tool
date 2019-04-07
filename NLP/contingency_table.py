@@ -57,8 +57,8 @@ def chi_squared_yates(
 
 
 def contingency_table_two_outcomes(term, 
-                      no_Gold, no_No_Surgery, no_Resections,
-                      no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+                      no_Gold, no_Resections, no_No_Surgery,
+                      no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
                       print_numberss=False,
                       eps=False,
@@ -94,8 +94,8 @@ def contingency_table_two_outcomes(term,
     
     # add chi-squared test *'s to the top left cell in 2 by 2 table
     table_chi_sq_text, stats_string = chi_squared_yates(                     
-                                          no_Gold, no_No_Surgery, no_Resections,
-                                          no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+                                          no_Gold, no_Resections, no_No_Surgery,
+                                          no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                                           print_numbers=print_numberss)
     left, width = .25, .5
     bottom, height = .25, .5
@@ -173,8 +173,8 @@ def contingency_table_three_outcomes(term,
     
     # add chi-squared *'s to the top left cell in 2 by 2 table
     table_chi_sq_text, stats_string = chi_squared_yates(                     
-                                          no_Gold, no_No_Surgery, no_Resections,
-                                          no_Gold_absent_term, no_No_Surgery_absent_term, no_Resections_absent_term,
+                                          no_Gold, no_Resections, no_No_Surgery,
+                                          no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                                           two_outcomes=False, print_numbers=print_numbers)
     left, width = .25, .5
     bottom, height = .25, .5
