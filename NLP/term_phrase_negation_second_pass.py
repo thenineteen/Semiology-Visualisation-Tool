@@ -17,12 +17,16 @@ def term_phrase_negation_second_pass(
     term_phrase_negation_second_pass_=True):
     """
     After term_phrase_outcome(), finds the matches and prints them.
-    After inspection of results, add the negation sentences ("no epigastric aura" "denies rising abdominal aura") 
-        to semiology_negations.
-    Then use this function to remove these and reverse the counts. 
-        - preferably intergrate into the cycle_many_terms function but maybe hard.
+    After inspection of results, objective was to 
+    
+        (add the negation sentences ("no epigastric aura" "denies rising abdominal aura") 
+        to semiology_negations. Then use this function to remove these and reverse the counts. 
+        - Preferably intergrate into the cycle_many_terms function but maybe hard.
+        Ensure no positive in the negatives phrases)
 
-    ensure no positive in the negatives phrases
+    But easier to just visually inspect printouts and alter the dataframe /excel file manually. 
+
+
     """
     term_or_precise_phrase = r"(?i).*" + term_or_precise_phrase + r".*"
     term_or_precise_phrase, no_file, freq_in_all_files, \

@@ -47,6 +47,7 @@ def chi_squared_yates(
         print("DOF =\t{}".format(dof))
         print("expected ndarray same shape as contingency table = \n{}".format(exp_arr))
     
+
     stats_string = "chi2-stat = " + str(round(chi_sq,3)) +\
         "\np-value = " + str(round(p_value,9)) +\
         "\nDOF = " + str(dof) +\
@@ -142,7 +143,7 @@ def contingency_table_three_outcomes(term,
                       no_Gold, no_Resections, no_No_Surgery,
                       no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
-                      print_numbers=False,
+                      print_numberss=False,
                       eps=False,
                       term_regex_str=""):
     
@@ -175,7 +176,7 @@ def contingency_table_three_outcomes(term,
     table_chi_sq_text, stats_string = chi_squared_yates(                     
                                           no_Gold, no_Resections, no_No_Surgery,
                                           no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
-                                          two_outcomes=False, print_numbers=print_numbers)
+                                          two_outcomes=False, print_numbers=print_numberss)
     left, width = .25, .5
     bottom, height = .25, .5
     right = left + width
@@ -190,7 +191,7 @@ def contingency_table_three_outcomes(term,
 
     # add subplot with only text of stats read out
     ax2 = fig.add_subplot(122)
-    plt.title('''Chi-Squared with Yates correction''')
+    plt.title('''Chi-Squared''')
     ax2.text(0.4*(left+right), 0.8*(bottom+top), stats_string,
              horizontalalignment='center',
              verticalalignment='center',

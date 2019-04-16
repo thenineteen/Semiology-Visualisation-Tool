@@ -11,6 +11,10 @@ def gold_outcomes_MRNs(directory = 'L:\\', filename = 'All_Epilepsy_Ops_CROSSTAB
     gold_outcomes_MRNs, had_surgery_MRNs = gold_outcomes_MRNs()
 
     For use by find_MRN_label_outcomes() in json_keys_read.py
+
+    Note this doesn't give accurate outcomes for patients with outcome 8 (no follow up data) 
+        this is dealt with separately by updating the json files - see jupyter notebook:
+        Semiology_Crosstab_Workflow_add_feature_values
     """
     excel_file = os.path.join(directory, filename)
 

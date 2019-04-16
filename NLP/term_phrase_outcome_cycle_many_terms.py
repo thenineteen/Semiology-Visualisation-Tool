@@ -11,7 +11,8 @@ except:
 
 
 def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
-    """cycle through the list of equivalent semiology terms"""
+    """cycle through the list of equivalent/synonymous semiology terms
+    Update the ['auras'] to relevant keys"""
 
     # initialise term_present (=positive_files) and negatives folders
     # they update when running term_phrase_outcome()
@@ -31,7 +32,8 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
     ## open .py semiology_lookarounds to go with the above yaml: defunct as un maintainable, use semiology_negations instead
     #NLA, NLB = _semiology_lookarounds()
 
-    for semiology_term in yaml_file['semiology']['auras'][semiology_key]:
+    # for semiology_term in yaml_file['semiology']['auras'][semiology_key]:
+    for semiology_term in yaml_file['semiology']['motor']['simple'][semiology_key]:
         #semiology_term = NLB[semiology_key] + semiology_term
         semiology_term_caseins = r"(?i)" + semiology_term   # lower case regex
         term_or_precise_phrase = re.compile(semiology_term_caseins)
@@ -74,9 +76,12 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
                     No_Surgery_semiology,\
                     Gold_absent_term_semiology,\
                     Resections_absent_term_semiology,\
-                    No_Surgery_absent_term_semiology)
+                    No_Surgery_absent_term_semiology,\
+                    positive_files_cycle, negative_files_cycle)
 
     return(return_tuple)
+
+
 
 
 
@@ -92,7 +97,7 @@ def term_phrase_outcome_cycle_semiology_fixture(
     path_to_folder_="L:\\word_docs\\NLP\\tests\\"):
     
     """
-    Cycle through many terms and run term_phrase_outcome.py
+    Cycle through many non-synonymous terms and run term_phrase_outcome.py
     Also use this for the pytest
     """
 

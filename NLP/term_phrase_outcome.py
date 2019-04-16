@@ -59,12 +59,17 @@ def term_phrase_outcome(
     no_Gold_absent_term=0,
     no_Resections_absent_term=0,
     no_No_Surgery_absent_term=0,
+    no_skipped_Resection_No_Data=0,
     term_phrase_negation_second_pass_=False):
 
     """
     Use a term or semiology to find the files it occurs in and find the outcomes of those files it occurs in. 
     Also print outcomes of files which the term doesn't occur in for comparison e.g. for a frequency chi-sq test (see contingency_table)
-    suppress_print_cycle is option to cycle through many terms and avoid printing
+    suppress_print_cycle is option to cycle through many terms and avoid printing.
+
+    Need to correct the positive and negative files outcomes by cycling through the files in each,
+    then finding MRN and ensuring not belong to same pt. Or can just use the Semioogy_Corsstab_workflow jupyter notebook
+    which makes dataframes then analyse the dataframes. 
     """
     if term_phrase_negation_second_pass_:
         #search_result = []
@@ -132,9 +137,9 @@ def term_phrase_outcome(
         if outcomes_json_file_specified:  # if user defined which json file to use, use that!
             json_file = outcomes_json_file_specified
         elif rtf_origin:
-            json_file = 'L:\\word_docs\\NLP\\4.5 word_RTF_keys_12_13_14_manual_outcomes.json'
+            json_file = 'L:\\word_docs\\NLP\\5 word_RTF_keys_12_13_14_manual_outcomes_exclude_no_outcomes.json'
         else:
-            json_file = 'L:\\word_docs\\NLP\\4 manually_handled_keys_outcomes_edited.json'
+            json_file = 'L:\\word_docs\\NLP\\5 manually_handled_keys_outcomes_edited_exclude_no_outcomes.json'
         
         with open(json_file) as f:
             data=json.load(f)
@@ -158,10 +163,15 @@ def term_phrase_outcome(
              # already in negativefiles so don't count again
                 if outcome=="No surgery":
                     no_No_Surgery_absent_term += 1
+                    # print("no surgery absent term" + path_to_doc) # debuggin
                 elif outcome=="Resection":
                     no_Resections_absent_term += 1
                 elif outcome=="Gold ILAE 1":
                     no_Gold_absent_term += 1
+                elif outcome=="Resection No Data":
+                    #print("Resected but No Data on outcomes, file skipped: {}", format(txt_file))
+                    no_skipped_Resection_No_Data += 1
+                    continue
                 negative_files.append(path_to_doc)
                 continue  # skip the rest for this file but don't reverse counting the file no_file
             else:
@@ -191,11 +201,15 @@ def term_phrase_outcome(
                     no_Resections += 1
                 elif outcome=="Gold ILAE 1":
                     no_Gold += 1
+                elif outcome=="Resection No Data":
+                    #print("Resected but No Data on outcomes, file skipped: {}", format(txt_file))
+                    no_skipped_Resection_No_Data += 1
+                    continue
                 positive_files.append(path_to_doc)
                 continue
 
             # if prev this file was included in negative files, remove it and reverse counters and add to other counters
-            if path_to_doc in negative_files:
+            elif path_to_doc in negative_files:
                 negative_files.remove(path_to_doc)
                 positive_files.append(path_to_doc)
                 if outcome=="No surgery":
@@ -207,6 +221,10 @@ def term_phrase_outcome(
                 elif outcome=="Gold ILAE 1":
                     no_Gold_absent_term -= 1
                     no_Gold += 1
+                elif outcome=="Resection No Data":
+                    #print("Resected but No Data on outcomes, file skipped: {}", format(txt_file))
+                    no_skipped_Resection_No_Data += 1
+                    continue
                 continue
     
         elif re.search(term_or_precise_phrase, pt_txt.lower()): # in stemmed files this shouldn't make a difference. 
@@ -236,7 +254,7 @@ def term_phrase_outcome(
         print("{} times in files with no surgery. {} no surgery files without this term.".format(no_No_Surgery, no_No_Surgery_absent_term))
         print("\nfreq analysis: {} occurs {} in Gold files vs {} in non-Gold files".format(term_or_precise_phrase, no_Gold, no_No_Surgery + no_Resections))
     
-        check_assertion = ((no_Gold + no_Gold_absent_term + no_No_Surgery + no_No_Surgery_absent_term + no_Resections + no_Resections_absent_term)==no_file )
+        check_assertion = ((no_Gold + no_Gold_absent_term + no_No_Surgery + no_No_Surgery_absent_term + no_Resections + no_Resections_absent_term + no_skipped_Resection_No_Data)==no_file )
         print("\ncheck assertion: {}".format(check_assertion))
     
         if check_assertion==False:
@@ -246,7 +264,8 @@ def term_phrase_outcome(
             print("\tno_No_Surgery_absent_term", no_No_Surgery_absent_term)
             print("\tno_Resections", no_Resections) 
             print("\tno_Resections_absent_term", no_Resections_absent_term)
-            total_files = no_Gold+no_Gold_absent_term+no_No_Surgery+no_No_Surgery_absent_term+no_Resections+no_Resections_absent_term
+            print("\tno_skipped_Resection_No_Data", no_skipped_Resection_No_Data)
+            total_files = no_Gold+no_Gold_absent_term+no_No_Surgery+no_No_Surgery_absent_term+no_Resections+no_Resections_absent_term + no_skipped_Resection_No_Data
             print("\t{} != {}".format(total_files, no_file))
 
     # pos_control = ((1+2)==3)

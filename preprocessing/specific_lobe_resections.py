@@ -83,9 +83,9 @@ def specific_lobe_resections(path_to_folder,
 
     # check the pseudo_anon_key's corresponding MRN from the json dict
         if rtf_origin:
-            json_file = 'L:\\word_docs\\NLP\\4.5 word_RTF_keys_12_13_14_manual_outcomes.json'
+            json_file = 'L:\\word_docs\\NLP\\5 word_RTF_keys_12_13_14_manual_outcomes_exclude_no_outcomes.json'
         else:
-            json_file = 'L:\\word_docs\\NLP\\4 manually_handled_keys_outcomes_edited.json'
+            json_file = 'L:\\word_docs\\NLP\\5 manually_handled_keys_outcomes_edited_exclude_no_outcomes.json'
             
         with open(json_file) as f:
             data=json.load(f)

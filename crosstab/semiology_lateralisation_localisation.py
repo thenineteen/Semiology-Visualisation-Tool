@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 try:
-    from crosstab.all_localisations import all_localisations
+    from crosstab.semiology_all_localisations import all_localisations
 except:
-    from .crosstab.all_localisations import all_localisations
+    from .crosstab.semiology_all_localisations import all_localisations
 
 
 
