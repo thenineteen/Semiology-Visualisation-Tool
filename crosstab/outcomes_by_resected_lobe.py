@@ -7,7 +7,7 @@ def outcomes_by_resected_lobe(directory='L:\\', filename='All_Epilepsy_Ops_CROSS
     Creates the list of Gold_standard post-operative ILAE 1 at all follow up years MRNs in patients who had only 
     specific lobe resections.
     
-    lobes = chose from this list:
+    lobes = chose from this list NBOTE THE SPACES:
     ['CCx', 'F Lesx', 'F Lesx ', 'F Lx', 'F T Lx', 'Hx', 'Hx ', 'MST', 'O Lesx', 'O Lx', 
     'O P Lx', 'P Lesx', 'P Lx', 'T F Lx', 'T Lesx', 'T Lx', 'T O Lesx', 'T P Lesx', 'T P Lx']
 

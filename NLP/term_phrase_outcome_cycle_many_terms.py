@@ -12,7 +12,10 @@ except:
 
 def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
     """cycle through the list of equivalent/synonymous semiology terms
-    Update the ['auras'] to relevant keys"""
+    Update the line 
+    "for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]" to relevant keys
+        only change the keys prior to [semioogy_key]
+    """
 
     # initialise term_present (=positive_files) and negatives folders
     # they update when running term_phrase_outcome()
@@ -33,7 +36,9 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
     #NLA, NLB = _semiology_lookarounds()
 
     # for semiology_term in yaml_file['semiology']['auras'][semiology_key]:
-    for semiology_term in yaml_file['semiology']['motor']['simple'][semiology_key]:
+    # for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]:
+    for semiology_term in yaml_file['negations'][semiology_key]:
+
         #semiology_term = NLB[semiology_key] + semiology_term
         semiology_term_caseins = r"(?i)" + semiology_term   # lower case regex
         term_or_precise_phrase = re.compile(semiology_term_caseins)

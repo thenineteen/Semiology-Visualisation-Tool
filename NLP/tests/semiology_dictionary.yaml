@@ -17,6 +17,9 @@
 
 # in ontology need to have occurant ictal, postictal properties
 
+
+# updated tonic
+
 "semiology":
   "temporal": auras["epigastric"]
 
@@ -58,7 +61,7 @@
       "Head Version": ["head version", "versive", "turns? over shoulder", "head deviation", "extreme head turn"]
       "Eye Version": ["eye version", "eye deviation", "gaze deviation"]
       "Tonic": [" tonic limb posturing", "(?<!asymmetric) tonic posturing", " tonic posture", "posturing", "contraction", "contracture",
-                " tonic (?!-?clonic)", "flexion", "extension"]
+                " tonic (?!-?clonic)", "flexion", "stiffening"]
       "Asymmetric Tonic": ["asymmetric tonic"]
       "Dystonic": ["dystonic", "twisted posture", "twisting", "supinat"]
       "Clonic": ["((?<!)c |-) clonic", "jerking", "asymmetric(?:al)? clonic"]
@@ -68,41 +71,47 @@
     complex:
       "Fencing": ["fenc", "fencing", "extension [a-z]* ?[a-z]* ?flexion", "flexion [a-z]* ?[a-z]* ?extension"]
       "Figure of 4": ["figure of 4", "figure of four", "fig of 4"]
-      "Hypermotor": ["hypermotor", "hyperkinetic", "leg cycling", "head banging"]
-      "Hypomotor": ["unilateral ictal paresis", "relative ictal immobility", "behaviour(?:al)? arrest", "paresis"]
-      "Atonic": ["atonic"]
-      "Astatic": ["astatic", "collapse", "falls to floor", "falls to ground"]
+      "Hypermotor": ["hypermotor", "hyperkinetic", "leg cycling", "head banging", "leg cycle", "proximal leg"]
+      "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "paresis"]
+      "Atonic": ["atonic", "flaccid", "loss of tone"]
+      "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground"]
       "Other Complex Motor": ["complex motor", "complicated motor"]
     automatisms:
-      "Oral Automatisms": ["oro-?alimentary", "oral automatisms?", "lip-?smack(?:ing)?", "chewing" ]
-      "Upper Limb Automatisms": ["hand automatisms?", "unilateral hand automatism", "unilateral automatism", "fiddling",
+      "Oral Automatisms": ["oro-?alimentary", "oral automatisms?", "lip-?smack(?:ing)?", "chewing", "sucking"]
+      "Upper Limb Automatism": ["hand automatisms?", "unilateral hand automatism", "unilateral automatism", "fiddling",
                                   "stereotypy(?:ed)?", "stereotypical (?:move|motor)", "hand rubbing",
-                                  "distal automotor", "automotor"]
-      "Lower Limb Automatisms": ["leg automatism", "lower-? limb automatism", "lower limb automotor", "leg automotor"]
-      "Blink": ["eye-? blink", "blink(?:ing)?"]
+                                  "distal automotor", "automotor", "manual automat", "fumbl"]
+      "Lower Limb Automatism": ["leg automatism", "lower-? limb automatism", "lower limb automotor", "leg automotor"]
+      "Blink": ["eye-? blink", "blink(?:ing)?", "blink"]
       "Cough": ["ictal cough", "cough seizure"]
-      "Nose-Wiping": ["nose-?wiping", "post-?ictal nose-?wiping", "nose wipe"]
-      "Spitting": ["spit", "spitting"]
+      "Nose-wiping": ["nose-?wiping", "post-?ictal nose-?wiping", "nose wipe"]
+      "Spitting": [" spit", "spitting"]
       "Whistling": ["whistle", "whistling"]
-      "Drinking": ["ictal drink", "sip"]
+      "Drinking": ["ictal drink", " sip[ping]? ", "ictal swallow"]
       "Gelastic": ["laughter", "laughing", "laugh", "gelastic"]
       "Dacrystic": ["cry(?:ing)?", "tear(?:ful)?", "dacrystic"]
-      "Ictal Pout": ["chapeau", "ictal pout"]
+      "Ictal Pout": ["chapeau", "ictal pout", "pout"]
       "Grimace": ["grimace", "grimacing"]
-      "Other Automatism": ["automatism", "other automatism", "complex automatism"]
+      "Other Automatism": ["automatism", "other automatism", "complex automatism", "other automotor"]
   
   speech:
-    "Vocalisation": ["ictal vocalisation", "grunt", "none-? ?sense", "none? ?-?sensical"]
-    "Aphasia": ["aphasia", "mute", "no speech", "unable to speak", "unable to talk"]
-    "Dysphasia": ["dysphasia", "difficulty speak(?:ing)?", "difficulty talk(?:ing)?", "speech"]
-    "Pallilalia": ["pallilalia", "palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition"]
+    "Vocalisation": ["ictal vocalis?z?ation", "grunt", "none-? ?sense", "none? ?-?sensical", "vocalis?z?e", "mumble", "humming"]
+    "Aphasia": ["aphasia", "mute", "no speech", "unable to speak", "unable to talk", "non-? ?verbal"]
+    "Dysphasia": ["dysphasia", "difficulty speak(?:ing)?", "difficulty talk(?:ing)?", "speech", "ictal talk", "ictal speech"]
+    "Pallilalia": ["pallilalia", "palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
+                  "repeating (?:himself|herself)"]
     "Aphemia": ["aphemia", "inarticulate", "articulation", "articulatory"]
-    "Corprolalia": ["corprolalia", "swear"]
+    "Corprolalia": ["corprolalia", "swear", "shit", "fuck", "offensive"]
   
   consciousness:
     "Dialeptic": ["dialeptic", "blank", "stare", "gaze", "unresponsive", "absent", "absence"]
-    "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness"] # usually associated with other semiological features and not in isolation.
-    "LOC": [" LOC ", "loss of consciouesness"]
+    "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
+    "LOC": [" LOC ", "loss of consciouesness", "unconscious", "knocked out"]
+
+
+
+negations:
+  "No": [" no ", "none", "denies?", "deny", "absent", "without"]
 
     # CONTENTIONS
     # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic
@@ -111,4 +120,4 @@
     # if dizziness comes up alot useful to go into it and separate groups ?epigastric, ?unfocused ?partial LOA, ?hypotension
     # may need to retract head turn and version as prior to 2010 not standardised use. HT 60-70% IPSIL. Version more lateralising.  
         # run with and without
-    # keep twisted posturing as dystonic. posturing as tonic.
+    # keep twisted posturing as dystonic. posturing as tonic. 
