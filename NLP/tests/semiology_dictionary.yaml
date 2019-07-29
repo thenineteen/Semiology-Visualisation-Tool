@@ -72,7 +72,7 @@
       "Fencing": ["fenc", "fencing", "extension [a-z]* ?[a-z]* ?flexion", "flexion [a-z]* ?[a-z]* ?extension"]
       "Figure of 4": ["figure of 4", "figure of four", "fig of 4"]
       "Hypermotor": ["hypermotor", "hyperkinetic", "leg cycling", "head banging", "leg cycle", "proximal leg"]
-      "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "paresis"]
+      "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "paresis", "akinetic"]
       "Atonic": ["atonic", "flaccid", "loss of tone"]
       "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground"]
       "Other Complex Motor": ["complex motor", "complicated motor"]
@@ -100,14 +100,15 @@
     "Dysphasia": ["dysphasia", "difficulty speak(?:ing)?", "difficulty talk(?:ing)?", "speech", "ictal talk", "ictal speech"]
     "Pallilalia": ["pallilalia", "palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
                   "repeating (?:himself|herself)"]
-    "Aphemia": ["aphemia", "inarticulate", "articulation", "articulatory"]
+    "Aphemia": ["aphemia", "inarticulate", "articulation", "articulatory", "anarthria"]
     "Corprolalia": ["corprolalia", "swear", "shit", "fuck", "offensive"]
   
   consciousness:
-    "Dialeptic": ["dialeptic", "blank", "stare", "gaze", "unresponsive", "absent", "absence"]
-    "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
+    "Dialeptic/LOA": ["dialeptic", "blank", "stare", "distant gaze", "unresponsive", "absent", "absence", "dyscognitive",
+                      "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"]
+    # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC": [" LOC ", "loss of consciouesness", "unconscious", "knocked out"]
-
+    "TEST": ["and"]
 
 
 negations:
@@ -121,3 +122,6 @@ negations:
     # may need to retract head turn and version as prior to 2010 not standardised use. HT 60-70% IPSIL. Version more lateralising.  
         # run with and without
     # keep twisted posturing as dystonic. posturing as tonic. 
+
+    # 18/6/19: BD and Gloria
+    # LOA and dyscognitive and Dialeptic and loss of contact is the same

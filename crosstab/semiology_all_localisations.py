@@ -1,7 +1,7 @@
 import pandas as pd
 
-def all_localisations(file="C:\\Users\\ali_m\\Downloads\\Marvasti crosstab (2).xlsx",
-                      localisation_columns="R:CG"):
+def all_localisations(file="C:\\Downloads\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx",
+                      localisation_columns="R:CN"):
     """
     Import the excel spreadsheet of 1,171 journal paper reviews and return a list of the anatomical brain region terms. 
     Used as default when importing the spreadsheet in semiology_lateralisation_localisation.

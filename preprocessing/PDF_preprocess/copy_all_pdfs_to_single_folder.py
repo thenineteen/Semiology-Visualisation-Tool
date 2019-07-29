@@ -2,7 +2,7 @@ import os
 import shutil
 
 def copy_all_pdfs_to_single_folder(source_folder='L:\\PDF\\Original Copy',
-                                    destination_folder='L:\\PDF\\AnalysisDir'):
+                                    destination_folder='L:\\PDF\\All_PDFs'):
     """
     Copy all PDFs from lots of subfolders and mixtures of some non-pdf files (e.g. EEG neurophys files)
     to a single target directory for subsequent XFA/XML data extraction using Greg Scott's Matlab/Java tools.
