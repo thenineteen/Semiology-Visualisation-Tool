@@ -54,7 +54,6 @@
                     "non-localised aura", "flash feeling", "electric"]
 
 
-
   motor:
     simple:
       "Head Turn": ["head turn", "turn(?:s|ed)?(?: to the )?(?:right)?(?:left)?(?:R|L|side)?"]
@@ -108,11 +107,11 @@
                       "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC": [" LOC ", "loss of consciouesness", "unconscious", "knocked out"]
-    "TEST": ["and"]
+    # "TEST": ["and"]
 
 
-negations:
-  "No": [" no ", "none", "denies?", "deny", "absent", "without"]
+# negations:
+#   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
 
     # CONTENTIONS
     # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic

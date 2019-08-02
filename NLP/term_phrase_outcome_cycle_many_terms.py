@@ -14,7 +14,7 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
     """cycle through the list of equivalent/synonymous semiology terms
     Update the line 
     "for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]" to relevant keys
-        only change the keys prior to [semioogy_key]
+        only change the keys prior to [semiology_key]
     """
 
     # initialise term_present (=positive_files) and negatives folders
