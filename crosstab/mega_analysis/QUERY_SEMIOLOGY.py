@@ -102,7 +102,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
 
     ---
     df is the MegaAnalysis DataFrame 
-    semiology_term is the query (can be a user-defined list e.g. ["epigastric aura", "rising sensation"])
+    semiology_term is the query (can be a user-defined list e.g. ["epigastric aura", "rising sensation"]) - treated as "OR"
     ignore_case: ignores case using a regular expression
     use_semiology_dictionary uses the yaml dictionary of equivalent terms, cycles through all equivalent terms and appends  
         results to the output df before removing duplicates 

@@ -1,5 +1,6 @@
 from crosstab.mega_analysis.QUERY_SEMIOLOGY import *
 import numpy as np
+import pandas as pd
 
 def exclusions(df, 
                 POST_ictals=True,

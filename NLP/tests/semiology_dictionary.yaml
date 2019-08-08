@@ -34,7 +34,7 @@
     "Fear-Anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious",
                     "impending (?:sensation)? ?doom", "doom"] 
     "Psychic": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation",
-                    "dreamy-? ?state", "negative emotion", "affective expression", "experiential", "affective"] #déjà vu
+                "negative emotion", "affective expression", "experiential", "affective"] #déjà vu
     "Autonomous-Vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative", "autonomic aura",
                               "palpitations", "ictal tachycardia", "ictal bradycardia", "ictal (?:sinoatrial)? arrest", "ictal hypertension", "ictal hypotension", "ictal asystole", "lightheadedness",
                               "hyper-?ventilation", "heavy-? ?breathing", "rapid-? ?breathing", "tachypnoea", "rapid respiratory", "respiratory rate", "hypopnoea",
@@ -104,7 +104,8 @@
   
   consciousness:
     "Dialeptic/LOA": ["dialeptic", "blank", "stare", "distant gaze", "unresponsive", "absent", "absence", "dyscognitive",
-                      "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"]
+                      "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it",
+                      "dreamy-? ?state"]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC": [" LOC ", "loss of consciouesness", "unconscious", "knocked out"]
     # "TEST": ["and"]
@@ -124,3 +125,5 @@
 
     # 18/6/19: BD and Gloria
     # z 
+
+    # 8/8/19: moved dreamy state from psychich to dialeptic
