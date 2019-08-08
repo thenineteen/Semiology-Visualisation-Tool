@@ -6,7 +6,10 @@ def progress_stats(df):
     """
     Progress stats from the df by ground truths.
     If error, check the column names.
-    Ali Alim-Marvasti July 2019
+
+    Ground Truth: looks at concordance, sEEG/stimulation and seizure-free inclusion criteria
+
+    Ali Alim-Marvasti July, August 2019
     """
 
     # initialise: first three are the excel file column names
@@ -125,7 +128,8 @@ def progress_venn(df_ground_truths, method=None):
 
     # set a tuple
     numbers = (sz_excl, conc_excl, sz_conc, sEEG_excl, sEEG_ES_sz, sEEG_ES_conc, all_three)
-
+    a = [int(n) for n in numbers]
+    numbers = tuple(a)
     # plot
     venn3(subsets = (numbers), set_labels = ('Seizure-Free', 'Concordant', 'sEEG/ES'))
     titre = method + ' by Ground Truth'

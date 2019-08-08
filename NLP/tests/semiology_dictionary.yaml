@@ -34,7 +34,7 @@
     "Fear-Anxiety": ["fear", "frighten(ed)?", "scare(d)?", "fearful sensation",  "anxiety", "anxious",
                     "impending (?:sensation)? ?doom", "doom"] 
     "Psychic": ["de.?ja.?vu", "jamais.?vu", "erotic", "sexual", "psychic", "de-?personali[sz]ation", "de-?reali[sz]ation",
-                    "dreamy-? ?state", "negative emotion", "affective expression", "experiential", "affective"]
+                    "dreamy-? ?state", "negative emotion", "affective expression", "experiential", "affective"] #déjà vu
     "Autonomous-Vegetative": ["vegetative ((?=)(aura)|(?<=)(aura))", "autonomous-?.?vegetative", "autonomic aura",
                               "palpitations", "ictal tachycardia", "ictal bradycardia", "ictal (?:sinoatrial)? arrest", "ictal hypertension", "ictal hypotension", "ictal asystole", "lightheadedness",
                               "hyper-?ventilation", "heavy-? ?breathing", "rapid-? ?breathing", "tachypnoea", "rapid respiratory", "respiratory rate", "hypopnoea",
@@ -123,4 +123,4 @@
     # keep twisted posturing as dystonic. posturing as tonic. 
 
     # 18/6/19: BD and Gloria
-    # LOA and dyscognitive and Dialeptic and loss of contact is the same
+    # z 
