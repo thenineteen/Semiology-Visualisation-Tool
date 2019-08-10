@@ -3,10 +3,27 @@ import yaml
 import re
 
 
-def dictionary_key_recursion_(dictionary, n=0, all_keys=[], all_values=[]):
+def make_simple_list(allv, allv_simple_list = []):
+    """
+    turns a nested list into one simple list
+    Alim-Marvasti Aug 2019
+
+    allv is the list of lists
+    """
+    for item in allv:
+        if isinstance(item, list):
+            make_simple_list(item, allv_simple_list=allv_simple_list)
+        else:
+            allv_simple_list.append(item)
+            
+    return allv_simple_list
+
+
+def dictionary_key_recursion_(dictionary, all_keys=[], all_values=[]):
     # only initialise for first function run, not nested calls
     """
     return all keys and values in a nested dictionary. 
+    values may be a list of lists hence the use of the make_simple_list function to open nested lists.
     Ali Alim-Marvasti Aug 2019
 
     """
@@ -15,31 +32,48 @@ def dictionary_key_recursion_(dictionary, n=0, all_keys=[], all_values=[]):
         all_keys.append(k)
 
         if isinstance(v, dict):
-            all_keys, all_values = dictionary_key_recursion_(v, n=1, all_keys=all_keys, all_values=all_values)
+            all_keys, all_values = dictionary_key_recursion_(v, all_keys=all_keys, all_values=all_values)
 
-        else:
+        else:  # this returns a list of lists
             all_values.append(v)
             continue
 
+    # this returns a single list of single items and removes the nested lists
+    all_values = make_simple_list(all_values, allv_simple_list = [])
     return all_keys, all_values
 
 
 def dictionary_key_recursion_2(dictionary, semiology_key):
     """
-    return the value of the key, no matter how nested the key is within the dictionary. 
+    return the value(s) of a particular key, no matter how nested the key is within the dictionary. 
     Ali Alim-Marvasti Aug 2019
 
     """
-    for k, v in dictionary.items():
-        if k == semiology_key:
-            yield v
-        elif isinstance(v, dict):
-            for result in dictionary_key_recursion_2(dictionary[v], semiology_key):
-                yield result
+    if isinstance(dictionary, list):
+        print('No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural \"s\" or a hyphen?')
+        yield
 
-        # I don't this the below is required or necessary?
-        elif isinstance(v, list):
-            return v
+    for k, v in dictionary.items():
+        if re.search(k, semiology_key):
+        # if k == semiology_key:
+            print('dictionary_key_recursion_2 found values of key')
+            if isinstance(v, list):
+                yield v
+                break
+            elif isinstance(v, dict):
+                # for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
+                #     yield result
+                allk, allv = dictionary_key_recursion_(v, all_keys=[], all_values=[])
+                yield allv
+                break
+    
+        else:
+            print('searching for nested key...')
+            if isinstance(v, dict):
+                # for kk, vv in v.items():
+                for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
+                    yield result
+
 
 
 
@@ -64,21 +98,25 @@ def use_semiology_dictionary_(semiology_term):
     
     # if it does, then use the list of values of this key:
     elif re.search(semiology_key, str(all_keys), re.IGNORECASE):
-        print('...key found in semiology_dictionary using REGEX...')
+        print('...\"%s\" key definitely exists in semiology_dictionary using REGEX...'%semiology_key)
 
     # find the key, values in first key layers: pretty sure we can skip this and just use dictionary_key_recursion_2 
-    dict_comprehension = {key: values for (key, values) in semiology_dictionary['semiology'].items() if key.lower()==semiology_key.lower()}
+    dict_comprehension = {key:values for (key, values) in semiology_dictionary['semiology'].items() if key.lower()==semiology_key.lower()}
     if dict_comprehension:
         print('dict_comprehension = \n', dict_comprehension)
         _, values = dictionary_key_recursion_(dict_comprehension)
+        # # this returns a single list of single items and removes the nested lists
+        # values = make_simple_list(values)
+        
         print('values from dictionary_key_recursion_(dict_comprehension): \n', values)
         return values
 
     # if the key wasn't found then it is nested:
     elif not dict_comprehension:
-        # lowercase_dict = {key.lower(): value for (key, value) in semiology_dictionary.items()}
         values = dictionary_key_recursion_2(semiology_dictionary['semiology'], semiology_key)
-        print('nested key; values is of type:', type(values))
+        # convert generator to a simple list (list(values) makes a list of lists)
+        values = make_simple_list(list(values), allv_simple_list = [])
+
     # if not re.search(semiology_key, str(semiology_dictionary['semiology'].keys()), re.IGNORECASE):
     #     values = dictionary_key_recursion_2(semiology_dictionary['semiology'], semiology_key)
     #     print('values is of type:', type(values))
@@ -89,6 +127,16 @@ def use_semiology_dictionary_(semiology_term):
 
     return values
 
+
+
+def regex_ignore_case(term_values):
+    """
+    turn items in list "term_values" to regexes with ignore case
+    """
+    output=[]
+    for item in term_values:
+        output.append(r'(?i)'+item)
+    return output
 
 
 
@@ -126,9 +174,6 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     #     return inspect_result
 
 
-
-
-
     # main body of function
     if isinstance(semiology_term, list):
         if ignore_case:
@@ -151,8 +196,16 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         if isinstance(values_dict_or_list, list):
             values = values_dict_or_list
         elif isinstance(values_dict_or_list, dict):
+            print("this shouldn't occur: use_semiology_dictionary_ has returned a dict. Attempted to correct... ")
             # when the semiology_term used in the dictionary refers to a top level key which is itself a dictionary
             _, values = dictionary_key_recursion_(values_dict_or_list)
+            values = make_simple_list(values)
+        else:
+            print('What just happened? Neither dict nor list.')
+            return
+        # turn these values to regexes too:
+        values = regex_ignore_case(values)
+
 
     for term in values:
         inspect_result = inspect_result.append(

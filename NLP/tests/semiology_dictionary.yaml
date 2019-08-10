@@ -21,7 +21,7 @@
 # updated tonic
 
 "semiology":
-  "temporal": auras["epigastric"]
+  # "temporal": auras["epigastric"]
 
   auras:
     "Epigastric": ["epigastric sensation", ".*epigastric rising", "rising epigastric", "epigastric aura", "epigastric feeling",
@@ -41,27 +41,33 @@
                               "pilo-?erection", "hair-? ?sticking", "fuzzy (?:sensation|feeling)",
                               "sweating", "hyper-? ?hydrosis", "hyper-? ?salivation", "drool(ing)?",
                               "ictal emeticus", "ictal vomiting", "vomit", "borborygmi", "encoparesis", "burp(?:ing)",
-                              "ictal urinary urge", "urinary urge", "urgency aura", "aura of (:?urinary)? ?urge" ]
+                              "ictal urinary urge", "urinary urge", "urgency aura", "aura of (:?urinary)? ?urge",
+                              "autonomic" ]
     "Olfactory-Gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
-                            "odd taste", "taste", "disgusting"]
+                            "odd taste", "taste", "disgusting",
+                            "gustatory"]
     "Auditory": ["auditory (?:hallucination)?(?:illusion)?", "hears? ", "voices? illusion", "voices in head"]
     "Visual": ["visual aura", "(?:flashing)?(?:colou?r.{0,2}) lights?", "blurr(?:y)?(?:ed)? vision", "scotoma", "vision (?:is)? not right", "tunnel vision",
               "visual", "brightness", "disturbed vision"]
     "Somatosensory": ["somato-?sensory", "sensory aura", "positive sensory", "(?:aura)? parasthesias? (?:aura)?", "tingling aura", "tingling",
                       "aura:? ?sensation", "pins [&+]?(?:and)? ?needles (warning|aura)?", "sensory"]
-    "Vestibular": ["vertigo", "vertiginous", "dizzy", "dizziness", "spinning", "rocking-? ?boat"]
+    "Vestibular": ["vertigo", "vertiginous", "dizzy", "dizziness", "spinning", "rocking-? ?boat",
+                  "vestibular"]
     "Non-Specific Aura": ["non-?.?specific (aura)?", "vague (aura)?", "unspecified aura", "unclear aura", "somesthetic", "alice in wonder",
-                    "non-localised aura", "flash feeling", "electric"]
+                    "non-localised aura", "flash feeling", "electric",
+                    "indefinable sensation", "indefinable feeling",
+                    "aura"]
 
 
   motor:
     simple:
       "Head Turn": ["head turn", "turn(?:s|ed)?(?: to the )?(?:right)?(?:left)?(?:R|L|side)?"]
-      "Head Version": ["head version", "versive", "turns? over shoulder", "head deviation", "extreme head turn"]
+      "Head Version": ["head version", "versive", "turns? over shoulder", "head deviation", "extreme head turn",
+                      "version"]
       "Eye Version": ["eye version", "eye deviation", "gaze deviation"]
       "Tonic": [" tonic limb posturing", "(?<!asymmetric) tonic posturing", " tonic posture", "posturing", "contraction", "contracture",
                 " tonic (?!-?clonic)", "flexion", "stiffening"]
-      "Asymmetric Tonic": ["asymmetric tonic"]
+      "Asymmetric Tonic": ["asymmetric tonic", "asymetric tonic", "assymetric tonic", "assymmetric tonic"]
       "Dystonic": ["dystonic", "twisted posture", "twisting", "supinat"]
       "Clonic": ["((?<!)c |-) clonic", "jerking", "asymmetric(?:al)? clonic"]
       "Tonic-Clonic": ["tonic-? ?clonic", "GTCS?", "SGTCS", "tonic and clonic"]
@@ -76,7 +82,8 @@
       "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground"]
       "Other Complex Motor": ["complex motor", "complicated motor"]
     automatisms:
-      "Oral Automatisms": ["oro-?alimentary", "oral automatisms?", "lip-?smack(?:ing)?", "chewing", "sucking"]
+      "Oral Automatisms": ["oro-?alimentary", "oral automatisms?", "lip-?smack(?:ing)?", "chewing", "sucking",
+                            "oro-? ?facial"]
       "Upper Limb Automatism": ["hand automatisms?", "unilateral hand automatism", "unilateral automatism", "fiddling",
                                   "stereotypy(?:ed)?", "stereotypical (?:move|motor)", "hand rubbing",
                                   "distal automotor", "automotor", "manual automat", "fumbl"]
@@ -91,7 +98,8 @@
       "Dacrystic": ["cry(?:ing)?", "tear(?:ful)?", "dacrystic"]
       "Ictal Pout": ["chapeau", "ictal pout", "pout"]
       "Grimace": ["grimace", "grimacing"]
-      "Other Automatism": ["automatism", "other automatism", "complex automatism", "other automotor"]
+      "Other Automatism": ["automatism", "other automatism", "complex automatism", "other automotor",
+                            "automotor"]
   
   speech:
     "Vocalisation": ["ictal vocalis?z?ation", "grunt", "none-? ?sense", "none? ?-?sensical", "vocalis?z?e", "mumble", "humming"]
@@ -126,4 +134,12 @@
     # 18/6/19: BD and Gloria
     # z 
 
-    # 8/8/19: moved dreamy state from psychich to dialeptic
+    # 8/8/19: moved dreamy state from psychic to dialeptic
+    #         added orofacial to automatisms
+    #           "indefinable sensation", "indefinable feeling", "aura" added to non-specific aura
+    #           "autonomic" added to Autonomous-Vegetative
+    #           "gustatory" added to olfactory-gustatory
+    #           "vestibular" added to vestibular
+    #           "asymetric tonic", "assymetric tonic", "assymmetric tonic" added to Asymmetric Tonic
+    #           "version" added to head version
+    #           "automotor" added to other automatisms
