@@ -72,6 +72,11 @@ def MEGA_ANALYSIS(
     # 2. checking for missing labels e.g. Semiology Categories Labels:
     print('\n2. Checking for missing values for columns')
     missing_columns(df)
+    print('\n Checking for dtypes:')
+        for col in df:
+            for val in df[col]:
+                if ( type(val) != (np.float) ) & ( type(val) != (np.int) ):
+                    print(type(val), col, val)
     
     # 3 ffill References:
     df.Reference.fillna(method='ffill', inplace=True)
