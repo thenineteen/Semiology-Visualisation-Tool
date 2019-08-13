@@ -198,7 +198,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     
     # get rid of negative values
     print_counter = 0
-    for col in range(0, len(pivot_result_intensities.columns)-1):
+    for col in range(0, len(pivot_result_intensities.columns)):
         if pivot_result_intensities.iloc[0, col] < 0:
             pivot_result_intensities.iloc[0, col] = 0
             if print_counter == 0: 

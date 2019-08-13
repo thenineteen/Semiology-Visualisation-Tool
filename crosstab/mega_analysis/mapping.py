@@ -50,7 +50,8 @@ def big_map():
     return one_map
 
 
-def pivot_result_to_one_map(pivot_result, one_map):
+
+def pivot_result_to_one_map(pivot_result, one_map, raw_pt_numbers_string='pt #s'):
     """
     2. for each col in pivot_result, find the mapping col numbers, dropna axis rows.
     3. then make new col and add the ~pt numbers and pixel intensity for all i.e. ffill-like using slicing
@@ -73,12 +74,13 @@ def pivot_result_to_one_map(pivot_result, one_map):
     for col in individual_cols:
         col_gifs = one_map[[col]].dropna(axis='rows', how='all')
         # add the ~pts numbers:
-        col_gifs.loc[:, 'pt #s'] = int(pivot_result[col].values)
+        col_gifs.loc[:, raw_pt_numbers_string] = int(pivot_result[col].values)
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
     # stack the resulting all_gifs (values are in 3rd column)
-    all_gifs = all_gifs.melt(var_name='localisation', value_name='gif parcellations')  # df
-    all_gifs = all_gifs.dropna(axis='rows', how='any')  # required as melted
+    all_gifs = all_gifs.melt(id_vars = raw_pt_numbers_string,
+                             var_name='Localisation', value_name='Gif Parcellations')  # df
+    all_gifs = all_gifs.dropna(axis='rows', how='any')
 #     all_gifs = all_gifs.stack()  #  gives a series
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
@@ -86,4 +88,11 @@ def pivot_result_to_one_map(pivot_result, one_map):
     all_gifs.insert(0, 'Semiology Term', np.nan)
     all_gifs.loc[0, 'Semiology Term'] = str(list(pivot_result.index.values))
     
+    
+    # reorder the columns:
+    all_gifs = all_gifs.reindex(columns=['Semiology Term',
+                                        'Localisation',
+                                        'Gif Parcellations',
+                                        raw_pt_numbers_string])
+
     return all_gifs
