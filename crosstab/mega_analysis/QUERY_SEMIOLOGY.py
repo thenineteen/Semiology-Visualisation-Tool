@@ -54,7 +54,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
         yield
 
     for k, v in dictionary.items():
-        if re.search(k, semiology_key):
+        if re.search(k, semiology_key, re.IGNORECASE):
         # if k == semiology_key:
             print('dictionary_key_recursion_2 found values of key')
             if isinstance(v, list):

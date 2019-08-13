@@ -9,6 +9,8 @@ def progress_stats(df):
 
     Ground Truth: looks at concordance, sEEG/stimulation and seizure-free inclusion criteria
 
+    note in pandas 0.24+ .nonzero() needs to be replaced with .to_numpy().nonzero() 
+
     Ali Alim-Marvasti July, August 2019
     """
 

@@ -87,7 +87,7 @@ def exclusions(df,
 
     # concordance after dropping columns, otherwise would drop this column
     if CONCORDANCE:
-        df[concordant] = np.nan
+        df.loc[:, concordant] = np.nan 
         print('\nEntirely replaced concordant column with nans')
 
 

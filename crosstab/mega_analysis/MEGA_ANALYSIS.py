@@ -46,6 +46,25 @@ def MEGA_ANALYSIS(
                     #index_col=[4,0]  # only if you want multi-index
                     )
 
+
+# 7. Exclusions
+    if exclude_data:
+        print('\n\n0. Excluding certain data based on ground truths')
+        if not kwargs:
+            df = exclusions(df, 
+                POST_ictals=True,
+                PET_hypermetabolism=True,
+                SPECT_PET=False,
+                CONCORDANCE=False)
+        elif kwargs:
+            df = exclusions(df, 
+                POST_ictals=kwargs['POST_ictals'],
+                PET_hypermetabolism=kwargs['PET_hypermetabolism'],
+                SPECT_PET=kwargs['SPECT_PET'],
+                CONCORDANCE=kwargs['CONCORDANCE'])
+
+        print('\ndf.shape after exclusions: ', df.shape)
+
     # 1. CLEANUPS: remove empty rows and columns
     df = cleaning(df)
     print('\n1. DataFrame pre-processed and cleaned.')
@@ -72,12 +91,14 @@ def MEGA_ANALYSIS(
     print('Number of localising datapoints:', df.Localising.sum())
 
     df_ground_truth = progress_stats(df)
+
     # plot progress by ground truth
     progress_venn(df_ground_truth, method='Lateralising')
     progress_venn(df_ground_truth, method='Localising')
 
 
     # 6. plot progress by study type (CS, SS, ET, Other)
+    print("6. Venn diagrams by patients selection study type priors")
     df_study_type = progress_study_type(df)
     progress_venn_2(df_study_type, method='Lateralising')
     progress_venn_2(df_study_type, method='Localising')
@@ -89,22 +110,6 @@ def MEGA_ANALYSIS(
                                                     df_study_type.loc['OTHER', ('Localising Datapoints', 'Exclusive')] )
     
 
-    # 7. Exclusions
-    if exclude_data:
-        print('\n\nExcluding certain data based on ground truths')
-        if not kwargs:
-            df = exclusions(df, 
-                POST_ictals=True,
-                PET_hypermetabolism=True,
-                SPECT_PET=False,
-                CONCORDANCE=False)
-        elif kwargs:
-            df = exclusions(df, 
-                POST_ictals=kwargs['POST_ictals'],
-                PET_hypermetabolism=kwargs['PET_hypermetabolism'],
-                SPECT_PET=kwargs['SPECT_PET'],
-                CONCORDANCE=kwargs['CONCORDANCE'])
-
-        print('\ndf.shape after exclusions: ', df.shape)
+    
 
     return df, df_ground_truth, df_study_type

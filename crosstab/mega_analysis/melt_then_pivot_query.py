@@ -7,6 +7,7 @@ def melt_then_pivot_query(df, inspect_result, semiology_term):
 
         ---
         inspect_result is a df
+    Ali Alim-Marvasti July 2019
     """
 
     # find all localisation columns present:
@@ -37,5 +38,8 @@ def melt_then_pivot_query(df, inspect_result, semiology_term):
     # PIVOT_TABLE
     inspect_result_melted['pivot_by_column'] = semiology_term
     pivot_result = inspect_result_melted.pivot_table(index='pivot_by_column', columns='melted_variable', values='melted_numbers', aggfunc='sum')
+
+    # sort the columns of the pivot_table by ascending value:
+    pivot_result.sort_values(by=semiology_term, axis=1, inplace=True, ascending=False)
 
     return pivot_result
