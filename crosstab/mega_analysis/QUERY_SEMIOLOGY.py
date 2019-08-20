@@ -78,7 +78,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
 
 
 def use_semiology_dictionary_(semiology_term):
-    print('using option use_semiology_dictionary as a thesaurus')
+    print('using option use_semiology_dictionary as taxonomy replacement')
     # define the key rather than the terms
     
     semiology_key = semiology_term
@@ -155,6 +155,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     use_semiology_dictionary uses the yaml dictionary of equivalent terms, cycles through all equivalent terms and appends  
         results to the output df before removing duplicates 
         (instead of using user defined semiology_term lists, uses pre-defined yaml dictionary)
+        keyword-based user queries are mapped to ontology entities 
 
     returns a DataFrame subset of df input containing all the results from the df - no melting or pivoting.
     

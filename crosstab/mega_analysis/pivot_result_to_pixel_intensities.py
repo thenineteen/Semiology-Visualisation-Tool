@@ -6,6 +6,13 @@ from scipy.stats import skewnorm, chi2
 
 
 def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result):
+    """
+    instead of using query subset of data, use entire df for fitting quantile transformer.
+    Then transform the query subset data.
+    Called by pivot_result_to_pixel_intensities
+    Ali Alim-Marvasti Aug 2019
+
+    """
     pivot_result_intensities = pd.DataFrame().reindex_like(pivot_result)
     method = 'QuantileTransformer'
     scale_factor = 10
@@ -86,6 +93,8 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     """
     EpiNav(R) requirement is for pixel intensities to be between 0-100.
     This will conver the pt #s in the localisation to pixel intensities. 
+
+    pivot_result is from melt_then_pivot_query
     
     100 max will be taken as the max number of pts in any single localisation.
     0 will be np.nan/ zero
@@ -93,7 +102,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     
     ---
     Arguments:
-    pivot_result is the final DataFrame output of a specific query.
+    pivot_result is the final DataFrame output of a specific query (melt_then_pivot_query).
     df is the overall mega analysis DataFrame required for calibrating the max 100 intensity if use_main_df_calibration==True.
         otherwise, pivot_result itself will be used for calibration.
     method is 'non-linear' by default: uses sklearn.preprocessing.quantiletransformer 'normal'

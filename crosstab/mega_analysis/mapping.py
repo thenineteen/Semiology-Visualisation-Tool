@@ -3,7 +3,7 @@ import pandas as pd
 def mapping(excel_file = "D:\\Ali USB Backup\\1 PhD\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx"):
     """
     Uses Ali and Gloria's brain reported localisation in literature to GIF parcellations,
-    using their mapping.
+    using Ali and Gloria's mapping.
     
     # These are the maps for each lobe
     #     mapping_FL = map_df_dict['GIF FL']
@@ -37,7 +37,7 @@ def mapping(excel_file = "D:\\Ali USB Backup\\1 PhD\\4. SystReview Single Table 
 
 def big_map():
     """
-    Appends all the localisation to gif mapping DataFrames into one big DataFrame.
+    Appends all the localisation-to-gif-mapping-DataFrames into one big DataFrame.
     """
 
     map_df_dict = mapping()
@@ -53,10 +53,15 @@ def big_map():
 
 def pivot_result_to_one_map(pivot_result, one_map, raw_pt_numbers_string='pt #s'):
     """
-    2. for each col in pivot_result, find the mapping col numbers, dropna axis rows.
-    3. then make new col and add the ~pt numbers and pixel intensity for all i.e. ffill-like using slicing
+    Run after pivot_result_to_pixel_intensities.
+    This is the Final Step.
 
-    Makes a dataframe as it goes along appending all the mappings.
+    * for each col in pivot_result, find the mapping col numbers, dropna axis rows.
+    * then make new col and add the ~pt numbers and pixel intensity for all i.e. ffill-like using slicing
+    * note that if you use pivot_result, all_gifs gives you the map with the pt #s. Instead, if you use
+        pivot_result_intensities, all_gifs output returns the same but instead of pt #s, intensities from the previous step. 
+
+    Makes a dataframe as it goes along, appending all the mappings.
     """
     
     # checks
@@ -74,7 +79,7 @@ def pivot_result_to_one_map(pivot_result, one_map, raw_pt_numbers_string='pt #s'
     for col in individual_cols:
         col_gifs = one_map[[col]].dropna(axis='rows', how='all')
         # add the ~pts numbers:
-        col_gifs.loc[:, raw_pt_numbers_string] = int(pivot_result[col].values)
+        col_gifs.loc[:, raw_pt_numbers_string] = round(pivot_result[col].values)
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
     # stack the resulting all_gifs (values are in 3rd column)
@@ -94,5 +99,12 @@ def pivot_result_to_one_map(pivot_result, one_map, raw_pt_numbers_string='pt #s'
                                         'Localisation',
                                         'Gif Parcellations',
                                         raw_pt_numbers_string])
+
+    # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
+    fixed = all_gifs.pivot_table(columns='Gif Parcellations', values=raw_pt_numbers_string, aggfunc='sum')
+    fixed2 = fixed.melt()
+    fixed2.insert(0, 'Semiology Term', np.nan)
+    fixed2.loc[0, 'Semiology Term'] = str( list(pivot_result.index.values) )
+    all_gifs = fixed2
 
     return all_gifs

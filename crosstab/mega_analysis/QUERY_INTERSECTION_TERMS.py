@@ -30,7 +30,8 @@ def QUERY_INTERSECTION_TERMS(df, *args):
         # ans is df of the intersection of the above two, keep the index otherwise it is reset
         inspect_combined_result = query_inspection.reset_index().merge(inspect_combined_result, how="inner").set_index('index')
         if inspect_combined_result.empty:
-            print('No results combining all those terms, breaking')
+            print('No results combining ALL of those keyword terms, breaking. Try reducing number of terms or respelling.',
+                 'Note no semiology dictionary is used.')
             break
 
     # clean up all nan columns
