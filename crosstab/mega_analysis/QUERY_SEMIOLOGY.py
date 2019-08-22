@@ -210,10 +210,10 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
 
     for term in values:
         inspect_result = inspect_result.append(
-            df.loc[df[col1].str.contains(term, na=False)]
+            df.loc[df[col1].str.contains(term, na=False)], sort=False
         )
         inspect_result = inspect_result.append(
-            df.loc[df[col2].str.contains(term, na=False)]
+            df.loc[df[col2].str.contains(term, na=False)], sort=False
         )
             
     inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
@@ -230,4 +230,4 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         print('Lateralising Datapoints relevant to query: ', inspect_result['Lateralising'].sum())
     except:
         print('Lateralising Datapoints relevant to query: 0')
-    return inspect_result
+    return inspect_result.sort_index()

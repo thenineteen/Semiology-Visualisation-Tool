@@ -2,10 +2,12 @@
 
 from sklearn.preprocessing import QuantileTransformer
 import seaborn as sns
-from scipy.stats import skewnorm, chi2
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.stats import skewnorm, chi2, norm
 
 
-def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result):
+def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor):
     """
     instead of using query subset of data, use entire df for fitting quantile transformer.
     Then transform the query subset data.
@@ -15,10 +17,10 @@ def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result):
     """
     pivot_result_intensities = pd.DataFrame().reindex_like(pivot_result)
     method = 'QuantileTransformer'
-    scale_factor = 10
-    print('Using sklearn.preprocessing QuantileTransformer, with scale_factor: ', scale_factor)
+    scale_factor = scale_factor
+    print('Using QuantileTransformer in use_df_to_transform_pivot_result, with scale_factor: ', scale_factor)
 
-    QT = QuantileTransformer(n_quantiles=10, output_distribution='normal')
+    QT = QuantileTransformer(n_quantiles=quantiles, output_distribution='normal')
     QT.fit(df_or_pivot_result.values.reshape(-1,1))
     QT_array = QT.transform(pivot_result.values.reshape(-1,1))
     
@@ -32,10 +34,8 @@ def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result):
 
 
 
-
-
-def intensities_factor(df_or_pivot_result,
-                      method='non-linear',
+def intensities_factor(df_or_pivot_result, quantiles=10,
+                      method='non-linear', scale_factor=10
                       ):
     """
     normalises values in pivot_result_intensities to between 0-100 for EpiNav visualisation,
@@ -44,11 +44,11 @@ def intensities_factor(df_or_pivot_result,
     Called by pivot_result_to_pixel_intensities. 
     Ali Alim-Marvasti Aug 2019
     """
-
     
-    # initialise empty dataframe with same dimensions as target
+    # initialise empty dataframe with same dimensions as target: 
     pivot_result_intensities = pd.DataFrame().reindex_like(df_or_pivot_result)
 
+        
     #linear 
     if method == 'linear':
         
@@ -66,29 +66,30 @@ def intensities_factor(df_or_pivot_result,
            #  pivot_result_intensities.loc[:, col] = scale_factor*round( normalsied_std )
 
     
-    elif method != 'linear':
+    elif (method == 'non-linear')|(method == 'nonlinear'):
         
         method = 'QuantileTransformer'
-        scale_factor = 10
+        scale_factor = scale_factor
         print('Using sklearn.preprocessing QuantileTransformer, with scale_factor: ', scale_factor)
 
-        QT = QuantileTransformer(n_quantiles=10, output_distribution='normal')
+        QT = QuantileTransformer(n_quantiles=quantiles, output_distribution='normal')
         QT_array = QT.fit_transform(df_or_pivot_result.values.reshape(-1,1))
-        
-        n = 0
-        for col in pivot_result_intensities:  # col names are the same
-            pivot_result_intensities.loc[:, col] = 10*QT_array[n]
-            n +=1
-                
-    
-    
+        # n = 0
+        # for col in pivot_result_intensities:  # col names are the same
+        #     pivot_result_intensities.loc[:, col] = scale_factor * QT_array[n]
+        #     n +=1
+        # new way to do it faster than above iterating:
+        QT_array = QT_array.reshape(-1,)
+        pivot_result_intensities.iloc[0, :] = scale_factor * QT_array
+
     return pivot_result_intensities
+    
     
     
     
 
 def pivot_result_to_pixel_intensities(pivot_result, df, 
-                                      method='non-linear', scale_factor=10,
+                                      method='non-linear', scale_factor=10, quantiles=10,
                                       use_main_df_calibration=False):
     """
     EpiNav(R) requirement is for pixel intensities to be between 0-100.
@@ -123,15 +124,21 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
 
     # checks:
     if pivot_result.shape[0] > 1:   
-        print('CAN NOT PROCEED: pivot_result has more than one row after pivoting - please check and try again')
-        return
+        if 'pt #s' in pivot_result.columns:
+            print('It seems instead of pivot_result we are using all_combined_gifs DataFrame from...')
+            print('...QUERY_LATERALISATION. In which case, use all_combined_gifs[[\'pt #s\']].T as arg for pivot_result')
+            print('Or better, use query_lateralisation_to_pixel_intensities from laterlised_intensities.')
+            return
+        else:
+            print('CAN NOT PROCEED: pivot_result has more than one row after pivoting - please check and try again')
+            return
     
     # look at distribution of pivot_result
     print('Check distribution of pivot_results, skewnormal & transformation:')
     fig, axes = plt.subplots(2, 3, figsize=(15,5)) 
     a = sns.distplot(pivot_result, fit=skewnorm, kde=True, ax=axes[0, 0])
     a.set_title('pivot_result skewnorm')
-    a.set(xlabel='# pts', ylabel='proportion')
+    a.set(xlabel='pt #s', ylabel='proportion')
 
     data = skewnorm.rvs(pivot_result)
     b = sns.distplot(data, fit=skewnorm, kde=False, ax=axes[0, 1])
@@ -149,7 +156,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     print('Main df, skewnormal & transformation:')
     c = sns.distplot(df[localisation_labels].sum(), fit=skewnorm, kde=True, ax=axes[1,0])
     c.set_title('entire df skewnorm')
-    c.set(xlabel='# pts', ylabel='proportion')
+    c.set(xlabel='pt #s', ylabel='proportion')
 
     data2 = skewnorm.rvs(df[localisation_labels].sum()) 
     d = sns.distplot(data2, fit=skewnorm, kde=False, ax=axes[1,1] )
@@ -168,14 +175,14 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     # plot the QuantileTransformed entire df:
     #innitialise the entire df
     df_or_pivot_result = pd.DataFrame(df[localisation_labels].sum(axis='rows')).T.sort_values(by = 0, axis=1, inplace=False, ascending=False)
-    pivot_result_intensities = intensities_factor(df_or_pivot_result, method=method)
+    pivot_result_intensities = intensities_factor(df_or_pivot_result, quantiles, method=method, scale_factor=scale_factor)
     # plot df
     df_or_pivot_str = 'entire DataFrame: '
     data = pivot_result_intensities
     e = sns.distplot(data, fit=norm, kde=False, ax=axes[1,2], color=color_df)
     titre = extra_title_df +'Transform of '+ str(df_or_pivot_str) + str(method)
     e.set_title(titre)
-    xlabeltitre = '# pts '+str(method)+' * '+ str(scale_factor)
+    xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
     e.set(xlabel=xlabeltitre)
     
 
@@ -186,14 +193,14 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
         color = 'r'
     #plot
     df_or_pivot_result = pivot_result
-    pivot_result_intensities = intensities_factor(df_or_pivot_result, method=method)
+    pivot_result_intensities = intensities_factor(df_or_pivot_result, quantiles, method=method, scale_factor=scale_factor)
     # plot pivot_result transformation
     df_or_pivot_str = 'pivot_result: '
     data = pivot_result_intensities
     e = sns.distplot(data, fit=norm, kde=False, ax=axes[0,2], color=color)
     titre = extra_title_pivot+'Transform of '+ str(df_or_pivot_str) + str(method)
     e.set_title(titre)
-    xlabeltitre = '# pts '+str(method)+' * '+ str(scale_factor)
+    xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
     e.set(xlabel=xlabeltitre)
 
     fig.tight_layout()
@@ -202,7 +209,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     # after all the plotting, use the fitted QT to transform the data:
     if now_transform_pivot_result_using_QT_from_df:
         df_or_pivot_result = pd.DataFrame(df[localisation_labels].sum(axis='rows')).T.sort_values(by = 0, axis=1, inplace=False, ascending=False)
-        pivot_result_intensities = use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result)
+        pivot_result_intensities = use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor)
 
     
     # get rid of negative values
@@ -217,7 +224,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
             print('Intensity might saturate as ', col, 'on its own has intensity value:', pivot_result_intensities.iloc[0, col])
     
     pivot_result_intensities.index.name = 'intensities (0-100)'
-    return pivot_result_intensities
+    return pivot_result_intensities.round()
 
     
 

@@ -1,4 +1,6 @@
 import pandas as pd
+from crosstab.mega_analysis.group_columns import full_id_vars, lateralisation_vars, anatomical_regions
+
 
 def melt_then_pivot_query(df, inspect_result, semiology_term):
 
@@ -11,22 +13,15 @@ def melt_then_pivot_query(df, inspect_result, semiology_term):
     """
 
     # find all localisation columns present:
-    localisation_labels = df.columns[17:72]
+    localisation_labels = anatomical_regions(df)
     relevant_localisations = [cols for cols in inspect_result.columns if cols in localisation_labels]
 
 
     # MELT
-    #first determine id_vars:
-    full_id_vars = ['Reference', 'Relevant Tot Sample', 'Tot Pt included',
-                    'Reported Semiology', 'Semiology Category', 'Ground truth description',
-                    'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)',
-                'Concordant Neurophys & Imaging (MRI, PET, SPECT)',
-                'sEEG and/or ES',
-                'Lateralising', 'CL', 'IL', 'BL (Non-lateralising)', 'DomH', 'NonDomH',
-                'Localising',
-                    '# tot pt in the paper', '# pt excluded', '# pt sz free post-surg',
-                'Spontaneous Semiology (SS)', 'Epilepsy Topology (ET)', 'Cortical Stimulation (CS)', 'Other (e.g. Abs)']
-    id_vars_present_in_query = [cols for cols in inspect_result.columns if cols in full_id_vars]
+    #first determine id_vars: in this case we don't use lateralisation add that too
+    full_id_cols = full_id_vars() + lateralisation_vars()
+
+    id_vars_present_in_query = [cols for cols in inspect_result.columns if cols in full_id_cols]
 
     inspect_result_melted = inspect_result.melt(id_vars=id_vars_present_in_query, value_vars=relevant_localisations, 
                                 var_name='melted_variable', value_name='melted_numbers')

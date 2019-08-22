@@ -143,7 +143,7 @@ def progress_venn_2(df_study_type, method=None):
     numbers = tuple(a)
     # plot
     venn3(subsets = (numbers), set_labels = ('Stimulation', 'Semiological', 'Topological'))
-    titre = method + ' by Study Patient Selection Type'
+    titre = method + ' by Patient Selection Priors (Study Type)'
     plt.title(titre)
     plt.show()
 

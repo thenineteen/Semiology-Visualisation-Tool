@@ -47,9 +47,13 @@ def MEGA_ANALYSIS(
                     )
 
 
-# 7. Exclusions
+# 0. CLEANUPS: remove empty rows and columns
+    print('\n0. DataFrame pre-processing and cleaning:')
+    df = cleaning(df)
+
+# 1. Exclusions
     if exclude_data:
-        print('\n\n0. Excluding certain data based on ground truths')
+        print('\n\n1. Excluding some data based on ground truths')
         if not kwargs:
             df = exclusions(df, 
                 POST_ictals=True,
@@ -64,19 +68,18 @@ def MEGA_ANALYSIS(
                 CONCORDANCE=kwargs['CONCORDANCE'])
 
         print('\ndf.shape after exclusions: ', df.shape)
+    else:
+        print('1. No Exclusions.')
 
-    # 1. CLEANUPS: remove empty rows and columns
-    df = cleaning(df)
-    print('\n1. DataFrame pre-processed and cleaned.')
-
-    # 2. checking for missing labels e.g. Semiology Categories Labels:
+# 2. checking for missing labels e.g. Semiology Categories Labels:
     print('\n2. Checking for missing values for columns')
     missing_columns(df)
     print('\n Checking for dtypes:')
-        for col in df:
-            for val in df[col]:
-                if ( type(val) != (np.float) ) & ( type(val) != (np.int) ):
-                    print(type(val), col, val)
+    localisation_labels = df.columns[17:72]
+    for col in df[localisation_labels]:
+        for val in df[col]:
+            if ( type(val) != (np.float) ) & ( type(val) != (np.int) ):
+                print(type(val), col, val)
     
     # 3 ffill References:
     df.Reference.fillna(method='ffill', inplace=True)
@@ -103,7 +106,7 @@ def MEGA_ANALYSIS(
 
 
     # 6. plot progress by study type (CS, SS, ET, Other)
-    print("6. Venn diagrams by patients selection study type priors")
+    print("6. Venn diagrams by patient selection priors (study type)")
     df_study_type = progress_study_type(df)
     progress_venn_2(df_study_type, method='Lateralising')
     progress_venn_2(df_study_type, method='Localising')

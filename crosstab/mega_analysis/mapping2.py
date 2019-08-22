@@ -52,11 +52,11 @@ def big_map():
 
 
 
-def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s',
+def pivot_result_to_one_map2(pivot_result, *one_map, raw_pt_numbers_string='pt #s',
                             suppress_prints=False):
     """
-    Run after pivot_result_to_pixel_intensities - unless being called as part of QUERY_LATERALISATION.
-    This is the Final Step without lateralisation.
+    Run after pivot_result_to_pixel_intensities.
+    This is the Final Step.
 
     * for each col in pivot_result, find the mapping col numbers, dropna axis rows.
     * then make new col and add the ~pt numbers and pixel intensity for all i.e. ffill-like using slicing
@@ -66,8 +66,8 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
     Makes a dataframe as it goes along, appending all the mappings.
     """
     if not one_map:
-        one_map = big_map()
-        # one_map = one_map[0]
+        one_map[0] = big_map()
+        one_map = one_map[0]
     if isinstance(one_map, tuple):
         one_map = one_map[0]
     
@@ -90,17 +90,11 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
         col_gifs.loc[:, raw_pt_numbers_string] = int(pivot_result[col].values)
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
-
-    try:
-        # stack the resulting all_gifs (values are in 3rd column)
-        all_gifs = all_gifs.melt(id_vars = raw_pt_numbers_string,
-                                var_name='Localisation', value_name='Gif Parcellations')  # df
-        all_gifs = all_gifs.dropna(axis='rows', how='any')
-    #     all_gifs = all_gifs.stack()  #  gives a series
-    except KeyError:
-        print('\nKeyError. all_gifs=', all_gifs)
-        print('CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
-        
+    # stack the resulting all_gifs (values are in 3rd column)
+    all_gifs = all_gifs.melt(id_vars = raw_pt_numbers_string,
+                             var_name='Localisation', value_name='Gif Parcellations')  # df
+    all_gifs = all_gifs.dropna(axis='rows', how='any')
+#     all_gifs = all_gifs.stack()  #  gives a series
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
     # this is for Rachel Sparks's requirement:
