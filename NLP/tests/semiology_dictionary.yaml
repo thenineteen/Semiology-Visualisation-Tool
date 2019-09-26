@@ -68,9 +68,9 @@
       "Tonic": [" tonic limb posturing", "(?<!asymmetric) tonic posturing", " tonic posture", "posturing", "contraction", "contracture",
                 " tonic (?!-?clonic)", "flexion", "stiffening"]
       "Asymmetric Tonic": ["asymmetric tonic", "asymetric tonic", "assymetric tonic", "assymmetric tonic"]
-      "Dystonic": ["dystonic", "twisted posture", "twisting", "supinat"]
+      "Dystonic": ["dystonic", "twisted posture", "twisting"] #"supinat"]
       "Clonic": ["((?<!)c |-) clonic", "jerking", "asymmetric(?:al)? clonic"]
-      "Tonic-Clonic": ["tonic-? ?clonic", "GTCS?", "SGTCS", "tonic and clonic"]
+      "Tonic-Clonic": ["tonic-? ?clonic", "GTCS?", "SGTCS", "tonic and clonic", "generalised tonic-?clonic"]
       "Myoclonic": ["myo-?clonic", "myo-?clonus"]
       "Other Simple Motor": ["simple motor", "((?<!)complex ?|non-)motor seizure"]
     complex:
@@ -108,12 +108,12 @@
     "Pallilalia": ["pallilalia", "palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
                   "repeating (?:himself|herself)"]
     "Aphemia": ["aphemia", "inarticulate", "articulation", "articulatory", "anarthria"]
-    "Corprolalia": ["corprolalia", "swear", "shit", "fuck", "offensive"]
+    "Corprolalia": ["corprolalia", "swear", "shit", "fuck", "offensive", "expletive"]
   
   consciousness:
     "Dialeptic/LOA": ["dialeptic", "blank", "stare", "distant gaze", "unresponsive", "absent", "absence", "dyscognitive",
                       "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it",
-                      "dreamy-? ?state"]
+                      "dreamy-? ?state", "day-? ?dreaming", "trance", "loss of contact"]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC": [" LOC ", "loss of consciouesness", "unconscious", "knocked out"]
     # "TEST": ["and"]
@@ -121,6 +121,14 @@
 
 # negations:
 #   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
+
+
+Hippocampal Sclerosis:
+  ["hippocampal sclerosis", " HS ", "hipp?o[camp] scl[erosis]", "mesial sclerosis", "temporal sclerosis",
+  "mTL scl[erosis]"]
+
+
+
 
     # CONTENTIONS
     # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic
@@ -143,3 +151,4 @@
     #           "asymetric tonic", "assymetric tonic", "assymmetric tonic" added to Asymmetric Tonic
     #           "version" added to head version
     #           "automotor" added to other automatisms
+                # "day-? ?dreaming", "trance", "loss of contact" added to dialeptic 27th Aug 2019

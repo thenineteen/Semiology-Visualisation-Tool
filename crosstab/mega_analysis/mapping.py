@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def mapping(excel_file = "D:\\Ali USB Backup\\1 PhD\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx"):
+def mapping(excel_file = "D:\\Ali USB Backup\\1 PhD\\Mega Analysis\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx"):
     """
     Uses Ali and Gloria's brain reported localisation in literature to GIF parcellations,
     using Ali and Gloria's mapping.

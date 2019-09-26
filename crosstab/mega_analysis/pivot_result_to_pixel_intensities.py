@@ -1,10 +1,11 @@
 # 1. convert the localising numbers in pivot_result to 0-100 parcellation intensities:
 
-from sklearn.preprocessing import QuantileTransformer
+from sklearn.preprocessing import QuantileTransformer, MinMaxScaler
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import skewnorm, chi2, norm
+import scipy.stats
 
 
 def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor):
@@ -81,6 +82,20 @@ def intensities_factor(df_or_pivot_result, quantiles=10,
         # new way to do it faster than above iterating:
         QT_array = QT_array.reshape(-1,)
         pivot_result_intensities.iloc[0, :] = scale_factor * QT_array
+
+    elif method == 'min_max':
+        scaler = MinMaxScaler(feature_range=(1,100))
+        minmax_array = scaler.fit_transform(df_or_pivot_result.values.reshape(-1,1))
+        minmax_array = minmax_array.reshape(-1,)
+        pivot_result_intensities.iloc[0, :] = minmax_array
+
+    elif method == 'chi2':  # doesn't work yet
+        # https://stackoverflow.com/questions/6620471/fitting-empirical-distribution-to-theoretical-ones-with-scipy-python
+        dist_names = ['chi2']
+        for dist_name in dist_names:
+            dist = getattr(scipy.stats, dist_name)
+            chi_squared_dist = dist.fit_transform(df_or_pivot_result.values.reshape(-1,1))
+            pivot_result_intensities.iloc[0, :] = chi_squared_dist
 
     return pivot_result_intensities
     

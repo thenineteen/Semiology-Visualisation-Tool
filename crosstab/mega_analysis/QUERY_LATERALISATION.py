@@ -13,7 +13,7 @@ def gifs_lat():
     factor function. opens the right/left gif parcellations from excel and extracts the right/left gifs as series/list.
     """
 
-    excel_file = "D:\\Ali USB Backup\\1 PhD\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx"
+    excel_file = "D:\\Ali USB Backup\\1 PhD\\Mega Analysis\\4. SystReview Single Table (NEW CROSSTAB) 25 July_ last.xlsx"
     gif_lat_file = pd.read_excel(excel_file, 
     #                            nrows=n_rows, 
     #                            usecols=usecols, 
@@ -207,7 +207,7 @@ def QUERY_LATERALISATION(inspect_result, df,
         
         
         # now should be able to use above to lateralise the localising gif parcellations:
-        # if there are 100 localisations in on row, and only 1 IL And 3 CL, it would be too much
+        # if there are 100 localisations in one row, and only 1 IL And 3 CL, it would be too much
         # to say the IL side gets one third of the CL side as number of lat is too low
         # hence normalise by dividing by proportion_lateralising (which is between (0,1])
         
