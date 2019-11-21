@@ -141,7 +141,9 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
         sns.heatmap(corr, annot=kwargs.get('annot',False), fmt=kwargs.get('fmt','.2f'), cmap='YlOrRd')
         
         if title_auto:
-            title = 'Categorical Correlation: Theil\'s U for top X%s of Diagnoses\n\%d Patients, %d Diagnoses'%("%", dataset.shape[0], dataset.shape[1])
+            # title = 'Categorical Correlation: Theil\'s U for top X%s of Diagnoses\n\%d Patients, %d Diagnoses'%("%", dataset.shape[0], dataset.shape[1])
+            title = 'Categorical Correlation: Theil\'s U Native Semiology, EZ, HS \n%d patients, %dfeatures'%(dataset.shape[0], dataset.shape[1])
+
         else:
             title = 'Title'
         plt.title(title)
@@ -149,8 +151,12 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
         plt.yticks(np.arange(len(dataset.columns)), dataset.columns, fontsize=6)
         
         if savefigure:
-            plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps', 
-                        format='eps', bbox_inches='tight', dpi=1200)
+            # plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps', 
+            #             format='eps', bbox_inches='tight', dpi=1200)
+
+            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\TheilsU_UNmerged_semio_EZ_HS.jpg', 
+                        format='jpg', bbox_inches='tight', dpi=1200)
+
         plt.show()
     if return_results:
         return corr

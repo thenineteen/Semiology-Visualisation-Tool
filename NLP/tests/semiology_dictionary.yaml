@@ -25,7 +25,7 @@
 
   auras:
     "Epigastric": ["epigastric sensation", ".*epigastric rising", "rising epigastric", "epigastric aura", "epigastric feeling",
-                  "characteristics epigatric pain", "Epigastric or (?:cephalic) sensation", "epigastric disturbance sensation",
+                  "characteristics? epigatric pain", "Epigastric or (?:cephalic) sensation", "epigastric disturbance sensation",
                   "(?:aura of)? epigastric (?:& chest)? discomfort", "epigastric \"funny feeling\"",
                   "epigastric tightness", "rising sensation", "epigastric warning", "epigastric \"fluttering\"",
                   "epigastric ?/ ?", "visceral",
@@ -46,17 +46,19 @@
     "Olfactory-Gustatory": ["olfactory", "(?:odd)? smell", "burn(ing)? (aura|sens[a-z]*)", "(metallic)?.?taste",
                             "odd taste", "taste", "disgusting",
                             "gustatory"]
-    "Auditory": ["auditory (?:hallucination)?(?:illusion)?", "hears? ", "voices? illusion", "voices in head"]
+    "Auditory": ["auditory (?:hallucination)?(?:illusion)?", "altered hearing", "voices? illusion", 
+                  "voices? in head", "noises? in head", "sounds? in head",
+                  "hears? voices", "hear(?:ing)? voices", "auditory phenomena", "distorted hearing",
+                  "hears? (?:vague)? sounds?", "hears? echoe?s?", "hears? noises?"]
     "Visual": ["visual aura", "(?:flashing)?(?:colou?r.{0,2}) lights?", "blurr(?:y)?(?:ed)? vision", "scotoma", "vision (?:is)? not right", "tunnel vision",
-              "visual", "brightness", "disturbed vision"]
+              "brightness", "disturbed vision"]
     "Somatosensory": ["somato-?sensory", "sensory aura", "positive sensory", "(?:aura)? parasthesias? (?:aura)?", "tingling aura", "tingling",
                       "aura:? ?sensation", "pins [&+]?(?:and)? ?needles (warning|aura)?", "sensory"]
     "Vestibular": ["vertigo", "vertiginous", "dizzy", "dizziness", "spinning", "rocking-? ?boat",
                   "vestibular"]
     "Non-Specific Aura": ["non-?.?specific (aura)?", "vague (aura)?", "unspecified aura", "unclear aura", "somesthetic", "alice in wonder",
                     "non-localised aura", "flash feeling", "electric",
-                    "indefinable sensation", "indefinable feeling",
-                    "aura"]
+                    "indefinable sensation", "indefinable feeling"]
 
 
   motor:
@@ -65,8 +67,9 @@
       "Head Version": ["head version", "versive", "turns? over shoulder", "head deviation", "extreme head turn",
                       "version"]
       "Eye Version": ["eye version", "eye deviation", "gaze deviation"]
-      "Tonic": [" tonic limb posturing", "(?<!asymmetric) tonic posturing", " tonic posture", "posturing", "contraction", "contracture",
-                " tonic (?!-?clonic)", "flexion", "stiffening"]
+      "Tonic": ["(?<!asymmetric) tonic limb posturing", "(?<!asymmetric) tonic posturing", "(?<!asymmetric) tonic posture", 
+                "(?<!asymmetric) posturing", "contraction", "contracture",
+                " tonic (?!-?clonic)", "flexion (?!extension)", "stiffening"]
       "Asymmetric Tonic": ["asymmetric tonic", "asymetric tonic", "assymetric tonic", "assymmetric tonic"]
       "Dystonic": ["dystonic", "twisted posture", "twisting"] #"supinat"]
       "Clonic": ["((?<!)c |-) clonic", "jerking", "asymmetric(?:al)? clonic"]
@@ -76,9 +79,14 @@
     complex:
       "Fencing": ["fenc", "fencing", "extension [a-z]* ?[a-z]* ?flexion", "flexion [a-z]* ?[a-z]* ?extension"]
       "Figure of 4": ["figure of 4", "figure of four", "fig of 4"]
-      "Hypermotor": ["hypermotor", "hyperkinetic", "leg cycling", "head banging", "leg cycle", "proximal leg"]
-      "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "paresis", "akinetic"]
-      "Atonic": ["atonic", "flaccid", "loss of tone"]
+      "Hypermotor": ["hypermotor", "hyperkinetic", "leg cycling", "head banging", "leg cycle", "proximal leg",
+                      "kicking of legs?", "kicking movement", "leg kick", "thrash", "pelvic thrust",
+                      "cycling movement", "cycling leg",
+                      "legs? rock", "body rock", "rocks leg", "rocks? body", "rocking", "rocks? back", "rocks head", "head rock",
+                      "rocks from side"]
+      "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "paresis", "akinetic",
+                    "hypomotor"]
+      "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
       "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground"]
       "Other Complex Motor": ["complex motor", "complicated motor"]
     automatisms:
@@ -88,7 +96,9 @@
                                   "stereotypy(?:ed)?", "stereotypical (?:move|motor)", "hand rubbing",
                                   "distal automotor", "automotor", "manual automat", "fumbl"]
       "Lower Limb Automatism": ["leg automatism", "lower-? limb automatism", "lower limb automotor", "leg automotor"]
-      "Blink": ["eye-? blink", "blink(?:ing)?", "blink"]
+      "Blink": ["eye-? blink", "blink(?:ing)?", "blink", "eyelid flicker", "eye flicker", "eye flutter", "eyelid flutter",
+                "flicker eye", "flutter eye", "eyelid blink", "flutter of the eyelid",
+                "eyel?i?d? twitch", "eyel?i?d? myoclon", "twitch eye"]
       "Cough": ["ictal cough", "cough seizure"]
       "Nose-wiping": ["nose-?wiping", "post-?ictal nose-?wiping", "nose wipe"]
       "Spitting": [" spit", "spitting"]
@@ -102,16 +112,19 @@
                             "automotor"]
   
   speech:
-    "Vocalisation": ["ictal vocalis?z?ation", "grunt", "none-? ?sense", "none? ?-?sensical", "vocalis?z?e", "mumble", "humming"]
-    "Aphasia": ["aphasia", "mute", "no speech", "unable to speak", "unable to talk", "non-? ?verbal"]
-    "Dysphasia": ["dysphasia", "difficulty speak(?:ing)?", "difficulty talk(?:ing)?", "speech", "ictal talk", "ictal speech"]
+    "Vocalisation": ["ictal vocalis?z?ation", "grunt", "none-? ?sense", "none? ?-?sensical", "vocalis?z?e", "mumble", "humming", " hum "]
+    "Aphasia": ["(?<!no) aphasia", "mute", "no speech (?!disorder|disturbance|deficit|problem)", "unable to speak", "unable to talk", "non-? ?verbal",
+                "(?<!no) speech arrest"]
+    "Dysphasia": ["(?<!no) dysphasia", "(?<!no) difficulty speak(?:ing)?", "(?<!no) difficulty talk(?:ing)?", "ictal talk", "(?<!no) ictal speech",
+                  "speech difficult", "difficult speech", "(?<!no) distortion of speech", "(?<!no) speech disturbance", "(?<!no) garbled speech",
+                  "(?<!no) speech production problem", "(?<!no) incomprehensible speech", "(?<!no) incoherent speech"]
     "Pallilalia": ["pallilalia", "palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
                   "repeating (?:himself|herself)"]
     "Aphemia": ["aphemia", "inarticulate", "articulation", "articulatory", "anarthria"]
     "Corprolalia": ["corprolalia", "swear", "shit", "fuck", "offensive", "expletive"]
   
   consciousness:
-    "Dialeptic/LOA": ["dialeptic", "blank", "stare", "distant gaze", "unresponsive", "absent", "absence", "dyscognitive",
+    "Dialeptic/LOA": ["dialeptic", "blank", "stare", "distant gaze", "unresponsive", "absence (?!of)", "dyscognitive",
                       "loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it",
                       "dreamy-? ?state", "day-? ?dreaming", "trance", "loss of contact"]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
@@ -143,7 +156,7 @@ Hippocampal Sclerosis:
     # z 
 
     # 8/8/19: moved dreamy state from psychic to dialeptic
-    #         added orofacial to automatisms
+    #         added orofacial to automatisms 
     #           "indefinable sensation", "indefinable feeling", "aura" added to non-specific aura
     #           "autonomic" added to Autonomous-Vegetative
     #           "gustatory" added to olfactory-gustatory
@@ -152,3 +165,35 @@ Hippocampal Sclerosis:
     #           "version" added to head version
     #           "automotor" added to other automatisms
                 # "day-? ?dreaming", "trance", "loss of contact" added to dialeptic 27th Aug 2019
+
+
+                # 20/11/19: deleted "visual" from Visual  (checked these on the all_txt_in_single_file_not_stemmed)
+                # added following to blink : "eyelid flicker", "eye flicker", "eye flutter", "eyelid flutter""
+                    # singifiantly expanded blink
+                # altered Auditory: "hears? " removed. added:
+                  # "noises? in head", "sounds? in head",
+                  # "hears? voices", "hear(?:ing)? voices", "auditory phenomena", "distorted hearing",
+                  # "hears? sounds?", "hears? echoe?s?", "hears? noises?"
+                  # "altered hearing",
+                # removed 'aura' from non specific aura 
+                # added the following as prefix to all relevant terms in Tonic:
+                    # (?<!asymmetric)
+                    # ?!extension added after "flexion"
+                # added to hypermotor:
+                    # "kicking of legs?", "kicking movement", "leg kick", "thrash", "pelvic thrust",
+                      # "cycling movement", "cycling leg",
+                      # "legs? rock", "body rock", "rocks leg", "rocks? body", "rocking", "rocks? back", "rocks head", "head rock",
+                      # "rocks from side"
+                # added hypomotor to hypomotor
+                #(# added jelly to atonic - doesn't occur in our EHRs)
+                
+                # added " hum " to vocalization
+                # Aphasia: added "(?!disorder|disturbance)" as suffix to no speech. 
+                    # "speech arrest"
+                # Dysphasia: added (?<!no) prefices. 
+                # Dialeptic/LOA":
+                    # deleted "absent". 
+                    # (?!of) added after absence. mainly absences. absent episodes. absence-like, absence attacks, absence seizure
+                
+
+                # note the semantic overlap between loss of contact (dialeptic/LOA) and derealisation/depersonalisation in psychic. 

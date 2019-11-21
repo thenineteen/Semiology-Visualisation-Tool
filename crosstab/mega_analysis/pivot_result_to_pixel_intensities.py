@@ -43,6 +43,9 @@ def intensities_factor(df_or_pivot_result, quantiles=10,
     using either the entire df or pivot_result subset.
     
     Called by pivot_result_to_pixel_intensities. 
+    Currently this is called appropriately when using lateralisation.
+    If ignoring lateralisation and using it as part of a symmetric localisation pipeline subsequent to 
+        QUEREY_SEMIOLOGY or QUERY_INTERSECTION, then it is problematic: it looks at the distribution of the regions before gif parcellations. 
     Ali Alim-Marvasti Aug 2019
     """
     
@@ -84,6 +87,7 @@ def intensities_factor(df_or_pivot_result, quantiles=10,
         pivot_result_intensities.iloc[0, :] = scale_factor * QT_array
 
     elif method == 'min_max':
+        print('Using sklearn.preprocessing MinMaxScaler')
         scaler = MinMaxScaler(feature_range=(1,100))
         minmax_array = scaler.fit_transform(df_or_pivot_result.values.reshape(-1,1))
         minmax_array = minmax_array.reshape(-1,)

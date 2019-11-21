@@ -37,7 +37,8 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
 
     # for semiology_term in yaml_file['semiology']['auras'][semiology_key]:
     # for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]:
-    for semiology_term in yaml_file[semiology_key]:
+    for semiology_term in yaml_file['semiology']['consciousness'][semiology_key]:
+    # for semiology_term in yaml_file[semiology_key]:
 
         #semiology_term = NLB[semiology_key] + semiology_term
         semiology_term_caseins = r"(?i)" + semiology_term   # lower case regex
