@@ -7,6 +7,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import entropy
 
+
+# note for Theils u the given is the x or columns. so entropy of (y|x)
 def conditional_entropy(x, y):
     """
     Calculates the conditional entropy of x given y: S(x|y)
@@ -142,7 +144,7 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
         
         if title_auto:
             # title = 'Categorical Correlation: Theil\'s U for top X%s of Diagnoses\n\%d Patients, %d Diagnoses'%("%", dataset.shape[0], dataset.shape[1])
-            title = 'Categorical Correlation: Theil\'s U Native Semiology, EZ, HS \n%d patients, %dfeatures'%(dataset.shape[0], dataset.shape[1])
+            title = 'Categorical Correlation: Theil\'s U Semiology, EZ, HS \n%d ground-truth patients, %dfeatures'%(dataset.shape[0], dataset.shape[1])
 
         else:
             title = 'Title'
@@ -154,7 +156,7 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
             # plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps', 
             #             format='eps', bbox_inches='tight', dpi=1200)
 
-            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\TheilsU_UNmerged_semio_EZ_HS.jpg', 
+            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\fix data paper 1\\TheilsU_UNmerged_GOLD_semio_EZ_HS_126.jpg', 
                         format='jpg', bbox_inches='tight', dpi=1200)
 
         plt.show()
