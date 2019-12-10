@@ -36,9 +36,12 @@ def cycle_semiology_terms(path_to_yaml_file, semiology_key, path_to_folder_):
     #NLA, NLB = _semiology_lookarounds()
 
     # for semiology_term in yaml_file['semiology']['auras'][semiology_key]:
-    # for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]:
-    for semiology_term in yaml_file['semiology']['consciousness'][semiology_key]:
-    # for semiology_term in yaml_file[semiology_key]:
+    # for semiology_term in yaml_file['semiology']['motor']['simple'][semiology_key]:
+    # for semiology_term in yaml_file['semiology']['motor']['complex'][semiology_key]:
+    for semiology_term in yaml_file['semiology']['motor']['automatisms'][semiology_key]:
+    # for semiology_term in yaml_file['semiology']['speech'][semiology_key]:
+    # for semiology_term in yaml_file['semiology']['consciousness'][semiology_key]:
+    # for semiology_term in yaml_file[semiology_key]:  # use this for hippocampal sclerosis
 
         #semiology_term = NLB[semiology_key] + semiology_term
         semiology_term_caseins = r"(?i)" + semiology_term   # lower case regex

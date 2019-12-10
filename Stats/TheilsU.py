@@ -144,7 +144,8 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
         
         if title_auto:
             # title = 'Categorical Correlation: Theil\'s U for top X%s of Diagnoses\n\%d Patients, %d Diagnoses'%("%", dataset.shape[0], dataset.shape[1])
-            title = 'Categorical Correlation: Theil\'s U Semiology, EZ, HS \n%d ground-truth patients, %dfeatures'%(dataset.shape[0], dataset.shape[1])
+            # title = 'Categorical Correlation: Theil\'s U Semiology, HS, EZ \n%d TEST patients, %d variables'%(dataset.shape[0], dataset.shape[1])
+            title = 'Categorical Correlation: Cramer\'s V Semiology, HS, EZ \n%d TEST patients, %d variables'%(dataset.shape[0], dataset.shape[1])
 
         else:
             title = 'Title'
@@ -156,9 +157,23 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
             # plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps', 
             #             format='eps', bbox_inches='tight', dpi=1200)
 
-            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\fix data paper 1\\TheilsU_UNmerged_GOLD_semio_EZ_HS_126.jpg', 
+            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\fixed fully\\Cramers V 126.jpg', 
                         format='jpg', bbox_inches='tight', dpi=1200)
 
         plt.show()
     if return_results:
         return corr
+
+
+
+def Theils_sisgnificant_above_threshold(corr, threshold=0.5):
+    """
+    corr from associations above.
+
+    """
+    # for the 126 ground truth unmerged cases pruned:
+
+    for semio1 in list(corr.columns):   # semio 1 is the given
+        for semio2 in list(corr.columns):
+            if (semio1 != semio2) &(corr[semio1][semio2] >threshold):
+                print ("("+semio2,"|", semio1+")",corr[semio1][semio2])

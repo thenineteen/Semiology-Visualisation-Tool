@@ -42,11 +42,6 @@ def openpickle(path_to_file):
 
 
 
-# path_to_file2 = 'L:\\word_docs\\NLP\\Data Pickles\\gold_outcomes_list.pickle'
-# path_to_file3 = 'L:\\word_docs\\NLP\\Data Pickles\\had_surgery_exclusions.pickle'
-# path_to_file4 = 'L:\\word_docs\\NLP\\Data Pickles\\updated dataframes\\df.pickle'
-# path_to_file5 = 'L:\\word_docs\\NLP\\Data Pickles\\updated dataframes\\df_No_surgery.pickle'
-
 def imports():
     path_to_file2 = 'L:\\word_docs\\NLP\\Data Pickles\\gold_outcomes_list.pickle'
     path_to_file3 = 'L:\\word_docs\\NLP\\Data Pickles\\had_surgery_exclusions.pickle'
