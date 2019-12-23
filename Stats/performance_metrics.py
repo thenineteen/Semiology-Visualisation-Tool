@@ -1,17 +1,25 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import chi2, chisquare, fisher_exact, chi2_contingency
+from sklearn.metrics import matthews_corrcoef
+from Stats.TheilsU import *
 
 def performance_metrics(df, col, target):
     """
     Setting Univariate Benchmarks using DataFrame
-    col = feature we are intersted in
-    target = what we are predicting (col of df)
+    col = feature we are intersted in (str)
+    target = what we are predicting 
+        - col of df as str
+        - or can be of type pd.series/np.array
     df: rows= patients, cols = features
 
-    Marvasti Dec 2020
+    Marvasti Dec 2019
     """
 
+    if type(target) != str:
+        df[target.name] = np.nan
+        df.loc[target.index, target.name] = target
+        target=target.name
 
     no_of_pts_with_semiology_and_target_outcome = df.loc[df[col]==1, target].sum()
     total_with_semio = df.loc[df[col]==1, target].count()
@@ -65,10 +73,18 @@ def performance_metrics(df, col, target):
 
     ACCURACY_simple = (col_y_target_y+col_n_target_n)/(col_y_target_y+col_n_target_n+col_y_target_n+col_n_target_y)
 
+    MCC = matthews_corrcoef(df[target], df[col])
+
+    corr_test = associations(df[[col, target]], 
+                          nominal_columns='all', mark_columns=False, Theils_U=True, plot=False,
+                          return_results = True, 
+                          savefigure=False,
+                          title_auto=False)
+    THEILSU = corr_test[col][target]
   
     metrics_OR = {'OR_fisher': OR_fisher, 'OR_chi':OR_chi ,  'OR_manual': OR_manual}
     metrics_classic = {'SENS':SENS, 'SPEC':SPEC, 'PPV':PPV, 'NPV':NPV, 'F1_MACRO':F1_MACRO,  'BAL_ACC':BAL_ACC, 
-        'ACCURACY_simple':ACCURACY_simple}
+        'ACCURACY_simple':ACCURACY_simple, 'Matthews Correlation Coefficient':MCC, 'Theils U': THEILSU}
 
     for i in metrics_OR.keys():
         print(i, metrics_OR[i])

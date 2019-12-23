@@ -166,7 +166,7 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
 
 
 
-def Theils_sisgnificant_above_threshold(corr, threshold=0.5):
+def Theils_significant_above_threshold(corr, threshold=0.5):
     """
     corr from associations above.
 
