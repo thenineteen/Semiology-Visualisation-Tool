@@ -45,20 +45,21 @@ def get_scores(
         symptoms_side='R',
         dominant_hemisphere='L',
         output_path=None,
+        method='min_max'
         ):
-
-
+    """
+    Methods can be:
+    Ali says:
+    # I reconmend minmaxscaler. The previous example used non-linear which you have the visualisations for (Rachel did)
+    method = 'non-linear'
+    method = 'min_max'
+    method = 'linear'
+    method = 'chi2-dist'
+    """
     # I recommend keep this to True
     use_semiology_dictionary = True
 
     # # LATERALISATION initilisation
-
-    # I reconmend minmaxscaler. The previous example used non-linear which you have the visualisations for (Rachel did)
-    # method = 'non-linear'
-    method = 'min_max'
-    # method = 'linear'
-    # method = 'chi2-dist'
-
     scale_factor = 15
     quantiles = 100
     if method in ('non-linear', 'nonlinear'):
@@ -67,7 +68,7 @@ def get_scores(
         raw_pt_numbers_string = str(method)
     intensity_label = 'Lateralised Intensity. '+str(raw_pt_numbers_string)+'. '+'quantiles: '+str(quantiles)+'. '+'scale: '+str(scale_factor)
 
-    df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
+    df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 
     inspect_result = QUERY_SEMIOLOGY(
         df,
@@ -106,4 +107,24 @@ def get_scores(
         df = pd.DataFrame(scores_dict.items(), columns=['Label', 'Score'])
         df.to_csv(output_path, index=False)
 
+    return scores_dict
+
+
+def get_scores_dict(
+        semiology_term='Head version',
+        symptoms_side='R',
+        dominant_hemisphere='L',
+        output_path=None,
+        ):
+    try:
+        scores_dict = get_scores(
+            semiology_term,
+            symptoms_side,
+            dominant_hemisphere,
+            output_path=output_path,
+        )
+    except Exception as e:
+        print('Scores dictionary not retrieved:')
+        print(e)
+        scores_dict = None
     return scores_dict
