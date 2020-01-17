@@ -4,8 +4,6 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # needed for querying dataframe localisations, Transforming and mapping to EpiNav gif parcellations
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import *

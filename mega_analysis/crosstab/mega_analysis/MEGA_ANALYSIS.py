@@ -1,10 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-import sys
-sys.path.insert(0, r"C:\Users\ali_m\AnacondaProjects\PhD\Epilepsy_Surgery_Project")
 
 from ..semiology_all_localisations import all_localisations
 from ..semiology_lateralisation_localisation import semiology_lateralisation_localisation

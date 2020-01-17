@@ -1,20 +1,24 @@
 from scipy.stats import chi2_contingency
-import seaborn as sns
-import matplotlib.pyplot as plt
+try:
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+except ImportError:
+    import warnings
+    warnings.warn('maplotlib not imported')
 import numpy as np
 
 
 def cramers_corrected_stat(confusion_matrix):
     """ calculate Cramers V statistic for categorial-categorial association.
-        uses correction from Bergsma and Wicher, 
+        uses correction from Bergsma and Wicher,
         Journal of the Korean Statistical Society 42 (2013): 323-328
-    """    
+    """
 
     chi2 = chi2_contingency(confusion_matrix)[0]
     n = confusion_matrix.sum().sum()
     phi2 = chi2/n
     r,k = confusion_matrix.shape
-    phi2corr = max(0, phi2 - ((k-1)*(r-1))/(n-1))    
+    phi2corr = max(0, phi2 - ((k-1)*(r-1))/(n-1))
     rcorr = r - ((r-1)**2)/(n-1)
     kcorr = k - ((k-1)**2)/(n-1)
     return np.sqrt(phi2corr / min( (kcorr-1), (rcorr-1)))
@@ -35,7 +39,7 @@ def all_cramers(X):
     compares all cramers pair-wise and plots
     """
     ans = []
-    
+
     for m in range (0, X.shape[1]):
         for n in range (0, X.shape[1]):
 #             ans = np.append(ans, cramers_corr_multiple(X, m, n), axis=0)
@@ -44,7 +48,7 @@ def all_cramers(X):
     return ans
 
 
-def CramersV(X, 
+def CramersV(X,
             title='Categorical Correlation: Cramer\'s V \n309 Patients, 43 Semiologies',
             savefigure=False):
 
@@ -56,8 +60,8 @@ def CramersV(X,
     plt.title(title)
     plt.xticks(np.arange(X.shape[1]), X.columns, rotation='vertical', fontsize=6, fontweight='ultralight')
     plt.yticks(np.arange(X.shape[1]), X.columns, fontsize=6)
-    
+
     if savefigure:
-        plt.savefig('L:\\word_docs\\NLP\\Data Pickles\\automated\\updated dataframes\\CramersV_change_the_name.eps', 
+        plt.savefig('L:\\word_docs\\NLP\\Data Pickles\\automated\\updated dataframes\\CramersV_change_the_name.eps',
                         format='eps', bbox_inches='tight', dpi=1200)
     plt.show()

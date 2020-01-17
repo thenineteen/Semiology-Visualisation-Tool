@@ -1,8 +1,7 @@
 from pathlib import Path
+import yaml
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # needed for querying dataframe localisations, Transforming and mapping to EpiNav gif parcellations
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import *
@@ -20,11 +19,34 @@ from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities impo
 from mega_analysis.crosstab.mega_analysis.mapping import mapping, big_map, pivot_result_to_one_map
 
 
-def get_scores(semiology_term='Head version', output_path=None):
-    repo_dir = Path(__file__).parent.parent
-    resources_dir = repo_dir / 'resources'
-    excel_path = resources_dir / 'syst_review_single_table.xlsx'
-    semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
+repo_dir = Path(__file__).parent.parent
+resources_dir = repo_dir / 'resources'
+excel_path = resources_dir / 'syst_review_single_table.xlsx'
+semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
+
+
+def recursive_items(dictionary):
+    """https://stackoverflow.com/a/39234154/3956024"""
+    for key, value in dictionary.items():
+        if type(value) is dict:
+            yield from recursive_items(value)
+        else:
+            yield key
+
+
+def get_all_semiology_terms():
+    with open(semiology_dict_path) as f:
+        dictionary = yaml.load(f, Loader=yaml.FullLoader)
+    return sorted(recursive_items(dictionary))
+
+
+def get_scores(
+        semiology_term='Head version',
+        symptoms_side='R',
+        dominant_hemisphere='L',
+        output_path=None,
+        ):
+
 
     # I recommend keep this to True
     use_semiology_dictionary = True
@@ -60,8 +82,8 @@ def get_scores(semiology_term='Head version', output_path=None):
         inspect_result,
         df,
         excel_path,
-        side_of_symptoms_signs='R',
-        pts_dominant_hemisphere_R_or_L='L',
+        side_of_symptoms_signs=symptoms_side,
+        pts_dominant_hemisphere_R_or_L=dominant_hemisphere,
     )
 
     all_lateralised_gifs = lateralisation_to_pixel_intensities(

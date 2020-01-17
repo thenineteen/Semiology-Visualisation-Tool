@@ -3,8 +3,12 @@ import math
 from Stats.CramersV import *
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+try:
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+except ImportError:
+    import warnings
+    warnings.warn('maplotlib not imported')
 from scipy.stats import entropy
 
 
@@ -62,7 +66,7 @@ def TheilsU(x, y):
 # https://github.com/shakedzy/dython/blob/master/build/lib/dython/nominal.py
 
 def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=False, plot=True,
-                          return_results = False, 
+                          return_results = False,
                           savefigure=False,
                           title_auto=False,
                           **kwargs):
@@ -141,7 +145,7 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
     if plot:
         plt.figure(figsize=kwargs.get('figsize',None))
         sns.heatmap(corr, annot=kwargs.get('annot',False), fmt=kwargs.get('fmt','.2f'), cmap='YlOrRd')
-        
+
         if title_auto:
             # title = 'Categorical Correlation: Theil\'s U for top X%s of Diagnoses\n\%d Patients, %d Diagnoses'%("%", dataset.shape[0], dataset.shape[1])
             # title = 'Categorical Correlation: Theil\'s U Semiology, HS, EZ \n%d TEST patients, %d variables'%(dataset.shape[0], dataset.shape[1])
@@ -152,12 +156,12 @@ def associations(dataset, nominal_columns=None, mark_columns=False, Theils_U=Fal
         plt.title(title)
         plt.xticks(np.arange(len(dataset.columns)), dataset.columns, rotation='vertical', fontsize=6, fontweight='ultralight')
         plt.yticks(np.arange(len(dataset.columns)), dataset.columns, fontsize=6)
-        
+
         if savefigure:
-            # plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps', 
+            # plt.savefig('L:\\Parashkev_top_2%_TheilsU.eps',
             #             format='eps', bbox_inches='tight', dpi=1200)
 
-            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\fixed fully\\Cramers V 126.jpg', 
+            plt.savefig('D:\\Ali USB Backup\\1 PhD\paper 1\\fixed fully\\Cramers V 126.jpg',
                         format='jpg', bbox_inches='tight', dpi=1200)
 
         plt.show()

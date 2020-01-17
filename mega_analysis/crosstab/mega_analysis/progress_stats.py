@@ -1,6 +1,11 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib_venn import venn3
+
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib_venn import venn3
+except ImportError:
+    import warnings
+    warnings.warn('maplotlib not imported')
 
 def progress_stats(df):
     """
@@ -9,7 +14,7 @@ def progress_stats(df):
 
     Ground Truth: looks at concordance, sEEG/stimulation and seizure-free inclusion criteria
 
-    note in pandas 0.24+ .nonzero() needs to be replaced with .to_numpy().nonzero() 
+    note in pandas 0.24+ .nonzero() needs to be replaced with .to_numpy().nonzero()
 
     Ali Alim-Marvasti July, August 2019
     """
@@ -18,14 +23,14 @@ def progress_stats(df):
     post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
     concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
     sEEG_ES = 'sEEG and/or ES'
-    
+
     # initialise the df_ground_truths df:
     colx = pd.MultiIndex.from_product([['Lateralising Datapoints', 'Localising Datapoints'], ['Exclusive', 'Total']],
                                    #names=['year', 'visit']
                                  )
     df_ground_truths = pd.DataFrame(columns=colx)
-    
-    
+
+
     # populate the total df:
     df_ground_truths.loc['Seizure-Free', ('Lateralising Datapoints', 'Total')] = df.loc[df[post_op].notnull()].Lateralising.sum()
     df_ground_truths.loc['Seizure-Free', ('Localising Datapoints', 'Total')] = df.loc[df[post_op].notnull()].Localising.sum()
@@ -38,8 +43,8 @@ def progress_stats(df):
 
     df_ground_truths.loc['ES', ('Lateralising Datapoints', 'Total')] = df.loc[df[sEEG_ES]== 'ES'].Lateralising.sum()
     df_ground_truths.loc['ES', ('Localising Datapoints', 'Total')] = df.loc[df[sEEG_ES]== 'ES'].Localising.sum()
-    
-    
+
+
     # populate the exlusives:
     df_ground_truths.loc['Seizure-Free', ('Lateralising Datapoints', 'Exclusive')] = df.loc[(
         df[post_op].notnull() & df[concordant].isnull() & df[sEEG_ES].isnull()
@@ -94,7 +99,7 @@ def progress_stats(df):
     df_ground_truths.loc['All three', ('Localising Datapoints', 'Exclusive')] = df.loc[(
         df[post_op].notnull() & df[concordant].notnull() & df[sEEG_ES].notnull()
         ) ].Localising.sum()
-    
+
     return df_ground_truths
 
 

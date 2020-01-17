@@ -7,4 +7,4 @@ import uuid
 from pathlib import *
 import copy
 
-from .scores import get_scores
+from .scores import get_scores, get_all_semiology_terms

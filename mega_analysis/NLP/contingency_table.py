@@ -1,6 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sn
+try:
+    import seaborn as sn
+    import matplotlib.pyplot as plt
+except ImportError:
+    import warnings
+    warnings.warn('maplotlib not imported')
 import pandas as pd
 import os
 from scipy.stats import chi2_contingency
@@ -11,24 +15,24 @@ def chi_squared_yates(
                       two_outcomes=True, print_numbers=False):
     """
     "Chi-Squared Yates correction: chi2-stat, p-value, DOF, expected ndarray same shape as contingency table"
-    Returns text to add to contingency table. 
+    Returns text to add to contingency table.
     """
     if two_outcomes:
         obs = np.array([
-                        [no_Gold, no_No_Surgery + no_Resections], 
+                        [no_Gold, no_No_Surgery + no_Resections],
                         [no_Gold_absent_term, no_No_Surgery_absent_term + no_Resections_absent_term]
                         ])
 
-    else: 
+    else:
         # three outcomes
         obs = np.array([
-                        [no_Gold,  no_Resections, no_No_Surgery], 
+                        [no_Gold,  no_Resections, no_No_Surgery],
                         [no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term]
                         ])
 
     chi_sq, p_value, dof, exp_arr = chi2_contingency(obs)
     # table_chi_sq_text = str("Chi-Sq-stat = ") + str(round(chi_sq,2))
-    
+
     if p_value <0.001:
         table_chi_sq_text = "****"
     elif p_value <0.01:
@@ -36,28 +40,28 @@ def chi_squared_yates(
     elif p_value <0.025:
         table_chi_sq_text = "**"
     elif p_value <0.05:
-        table_chi_sq_text = "*"    
+        table_chi_sq_text = "*"
     else:
         table_chi_sq_text = "-"
-    
+
     if print_numbers:
         print("Chi-Squared with Yates correction:")
-        print("chi2-stat =\t{}".format(chi_sq)) 
+        print("chi2-stat =\t{}".format(chi_sq))
         print("p-value =\t{}".format(p_value))
         print("DOF =\t{}".format(dof))
         print("expected ndarray same shape as contingency table = \n{}".format(exp_arr))
-    
+
 
     stats_string = "chi2-stat = " + str(round(chi_sq,3)) +\
         "\np-value = " + str(round(p_value,9)) +\
         "\nDOF = " + str(dof) +\
         "\nexpected ndarray = \n" + str(np.around(exp_arr))
-    
-        
+
+
     return table_chi_sq_text, stats_string
 
 
-def contingency_table_two_outcomes(term, 
+def contingency_table_two_outcomes(term,
                       no_Gold, no_Resections, no_No_Surgery,
                       no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                       save_to_folder='L:\\word_docs\\NLP\\contingency_tables\\',
@@ -69,11 +73,11 @@ def contingency_table_two_outcomes(term,
         term_regex_str = "term"
 
     conf_arr = np.array([
-                        [no_Gold, no_No_Surgery + no_Resections], 
+                        [no_Gold, no_No_Surgery + no_Resections],
                         [no_Gold_absent_term, no_No_Surgery_absent_term + no_Resections_absent_term]
                         ])
 
-    df_cm = pd.DataFrame(conf_arr, 
+    df_cm = pd.DataFrame(conf_arr,
                     index = ['present', 'absent'],
                     columns = ['Entirely Seizure-Free', 'Other'])
 
@@ -90,11 +94,11 @@ def contingency_table_two_outcomes(term,
 
     plt.yticks([0.5,1.5], [term_regex_str + ' present', 'absent'], va='center')
 
-    plt.title('''Contingency Table \n Term: {} 
+    plt.title('''Contingency Table \n Term: {}
             '''.format(term))
-    
+
     # add chi-squared test *'s to the top left cell in 2 by 2 table
-    table_chi_sq_text, stats_string = chi_squared_yates(                     
+    table_chi_sq_text, stats_string = chi_squared_yates(
                                           no_Gold, no_Resections, no_No_Surgery,
                                           no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                                           print_numbers=print_numberss)
@@ -146,13 +150,13 @@ def contingency_table_three_outcomes(term,
                       print_numberss=False,
                       eps=False,
                       term_regex_str=""):
-    
+
     conf_arr = np.array([
-                        [no_Gold, no_Resections, no_No_Surgery], 
+                        [no_Gold, no_Resections, no_No_Surgery],
                         [no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term]
                         ])
 
-    df_cm = pd.DataFrame(conf_arr, 
+    df_cm = pd.DataFrame(conf_arr,
                     index = ['present', 'absent'],
                     columns = ['Entirely Seizure-Free', 'Resections', 'No Surgery'])
 
@@ -169,11 +173,11 @@ def contingency_table_three_outcomes(term,
 
     plt.yticks([0.5,1.5], [term_regex_str + ' present', 'absent'],va='center')
 
-    plt.title('''Contingency Table \n Term: {} 
+    plt.title('''Contingency Table \n Term: {}
             '''.format(term))
-    
+
     # add chi-squared *'s to the top left cell in 2 by 2 table
-    table_chi_sq_text, stats_string = chi_squared_yates(                     
+    table_chi_sq_text, stats_string = chi_squared_yates(
                                           no_Gold, no_Resections, no_No_Surgery,
                                           no_Gold_absent_term, no_Resections_absent_term, no_No_Surgery_absent_term,
                                           two_outcomes=False, print_numbers=print_numberss)

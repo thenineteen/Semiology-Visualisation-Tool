@@ -1,12 +1,16 @@
 # 1. convert the localising numbers in pivot_result to 0-100 parcellation intensities:
 
 from sklearn.preprocessing import QuantileTransformer, MinMaxScaler
-import seaborn as sns
-import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import skewnorm, chi2, norm
 import scipy.stats
 
+try:
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+except ImportError:
+    import warnings
+    warnings.warn('maplotlib not imported')
 
 def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor):
     """
@@ -153,16 +157,19 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
             return
 
     # look at distribution of pivot_result
-    print('Check distribution of pivot_results, skewnormal & transformation:')
-    fig, axes = plt.subplots(2, 3, figsize=(15,5))
-    a = sns.distplot(pivot_result, fit=skewnorm, kde=True, ax=axes[0, 0])
-    a.set_title('pivot_result skewnorm')
-    a.set(xlabel='pt #s', ylabel='proportion')
+    if plot:
+        print('Check distribution of pivot_results, skewnormal & transformation:')
+        fig, axes = plt.subplots(2, 3, figsize=(15,5))
+        a = sns.distplot(pivot_result, fit=skewnorm, kde=True, ax=axes[0, 0])
+        a.set_title('pivot_result skewnorm')
+        a.set(xlabel='pt #s', ylabel='proportion')
 
     data = skewnorm.rvs(pivot_result)
-    b = sns.distplot(data, fit=skewnorm, kde=False, ax=axes[0, 1])
-    b.set_title('skewnorm.rvs pivot_result')
-    b.set(xlabel='skewnorm rvs transformation')
+
+    if plot:
+        b = sns.distplot(data, fit=skewnorm, kde=False, ax=axes[0, 1])
+        b.set_title('skewnorm.rvs pivot_result')
+        b.set(xlabel='skewnorm rvs transformation')
 
 
     # look at distribution of df: use the entire df distribution of frequency of #s of pts
@@ -172,15 +179,17 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     median = df[localisation_labels].sum().median()
     std = df[localisation_labels].sum().std()
 
-    print('Main df, skewnormal & transformation:')
-    c = sns.distplot(df[localisation_labels].sum(), fit=skewnorm, kde=True, ax=axes[1,0])
-    c.set_title('entire df skewnorm')
-    c.set(xlabel='pt #s', ylabel='proportion')
+    if plot:
+        print('Main df, skewnormal & transformation:')
+        c = sns.distplot(df[localisation_labels].sum(), fit=skewnorm, kde=True, ax=axes[1,0])
+        c.set_title('entire df skewnorm')
+        c.set(xlabel='pt #s', ylabel='proportion')
 
     data2 = skewnorm.rvs(df[localisation_labels].sum())
-    d = sns.distplot(data2, fit=skewnorm, kde=False, ax=axes[1,1] )
-    d.set_title('skewnorm.rvs entire df')
-    d.set(xlabel='skewnorm rvs transformation')
+    if plot:
+        d = sns.distplot(data2, fit=skewnorm, kde=False, ax=axes[1,1] )
+        d.set_title('skewnorm.rvs entire df')
+        d.set(xlabel='skewnorm rvs transformation')
 
 
     # run the tranformation with df:
@@ -198,11 +207,12 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     # plot df
     df_or_pivot_str = 'entire DataFrame: '
     data = pivot_result_intensities
-    e = sns.distplot(data, fit=norm, kde=False, ax=axes[1,2], color=color_df)
-    titre = extra_title_df +'Transform of '+ str(df_or_pivot_str) + str(method)
-    e.set_title(titre)
-    xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
-    e.set(xlabel=xlabeltitre)
+    if plot:
+        e = sns.distplot(data, fit=norm, kde=False, ax=axes[1,2], color=color_df)
+        titre = extra_title_df +'Transform of '+ str(df_or_pivot_str) + str(method)
+        e.set_title(titre)
+        xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
+        e.set(xlabel=xlabeltitre)
 
 
     # use pivot_result instead of df:
@@ -216,14 +226,15 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
     # plot pivot_result transformation
     df_or_pivot_str = 'pivot_result: '
     data = pivot_result_intensities
-    e = sns.distplot(data, fit=norm, kde=False, ax=axes[0,2], color=color)
-    titre = extra_title_pivot+'Transform of '+ str(df_or_pivot_str) + str(method)
-    e.set_title(titre)
-    xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
-    e.set(xlabel=xlabeltitre)
 
-    fig.tight_layout()
     if plot:
+        e = sns.distplot(data, fit=norm, kde=False, ax=axes[0,2], color=color)
+        titre = extra_title_pivot+'Transform of '+ str(df_or_pivot_str) + str(method)
+        e.set_title(titre)
+        xlabeltitre = 'pt #s '+str(method)+' * '+ str(scale_factor)
+        e.set(xlabel=xlabeltitre)
+
+        fig.tight_layout()
         plt.show()
 
     # after all the plotting, use the fitted QT to transform the data:
