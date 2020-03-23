@@ -124,7 +124,7 @@ def get_scores_dict(
             output_path=output_path,
         )
     except Exception as e:
-        print('Scores dictionary not retrieved:')
+        print(f'Scores dictionary for semiology term {semiology_term} not retrieved:')
         print(e)
         scores_dict = None
     return scores_dict
