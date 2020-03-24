@@ -103,7 +103,7 @@
       "Hypomotor": ["unilateral ictal paresis", "(?:relative)? ictal immobility", "behaviour(?:al)? arrest", "akinetic attack",
                     "hypomotor"]
       "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
-      "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground"]
+      "Astatic": ["astatic", "collapse", "falls? to floor", "falls? to ground", "drop attack"]
       "Other Complex Motor": ["complex motor", "complicated motor"]
     automatisms:
       "Oral Automatisms": ["oro-?alimentary", "(?<!no )oral automatism", "(?<!no )lip-? ?smac?k?", "((?<!calci)(?<!no ))chew", "sucking",
@@ -164,7 +164,6 @@
 
 Hippocampal Sclerosis:
   ["(?<!no )hippocampal sclerosis", " HS ", "(?<!no )hipp?o(camp)? scl", "mesial scl", "temporal scl", "mTL scl"]
-
 
 
 
