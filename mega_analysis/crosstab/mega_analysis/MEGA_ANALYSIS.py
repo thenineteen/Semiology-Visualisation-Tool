@@ -3,16 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import sys
-sys.path.insert(0, r"C:\Users\ali_m\AnacondaProjects\PhD\Epilepsy_Surgery_Project")
-
-from crosstab.semiology_all_localisations import all_localisations
-from crosstab.semiology_lateralisation_localisation import semiology_lateralisation_localisation
-from crosstab.mega_analysis.cleaning import cleaning
-from crosstab.mega_analysis.missing_columns import missing_columns
-from crosstab.mega_analysis.progress_stats import progress_stats, progress_venn
-from crosstab.mega_analysis.progress_study_type import progress_study_type, progress_venn_2
-from crosstab.mega_analysis.exclusions import exclusions
+from ..semiology_all_localisations import all_localisations
+from ..semiology_lateralisation_localisation import semiology_lateralisation_localisation
+from .cleaning import cleaning
+from .missing_columns import missing_columns
+from .progress_stats import progress_stats, progress_venn
+from .progress_study_type import progress_study_type, progress_venn_2
+from .exclusions import exclusions
 
 
 
@@ -21,7 +18,10 @@ def MEGA_ANALYSIS(
     n_rows = 2500,
     usecols = "A:DG",
     header = 1,
-    exclude_data=False, **kwargs):
+    exclude_data=False,
+    plot=True,
+    **kwargs,
+    ):
     
     """
     import excel, clean data, print checks, melt and pivot_table. 
@@ -106,15 +106,17 @@ def MEGA_ANALYSIS(
     df_ground_truth = progress_stats(df)
 
     # plot progress by ground truth
-    progress_venn(df_ground_truth, method='Lateralising')
-    progress_venn(df_ground_truth, method='Localising')
+    if plot:
+        progress_venn(df_ground_truth, method='Lateralising')
+        progress_venn(df_ground_truth, method='Localising')
 
 
     # 6. plot progress by study type (CS, SS, ET, Other)
-    print("6. Venn diagrams by patient selection priors (study type)")
-    df_study_type = progress_study_type(df)
-    progress_venn_2(df_study_type, method='Lateralising')
-    progress_venn_2(df_study_type, method='Localising')
+    if plot:
+        print("6. Venn diagrams by patient selection priors (study type)")
+        df_study_type = progress_study_type(df)
+        progress_venn_2(df_study_type, method='Lateralising')
+        progress_venn_2(df_study_type, method='Localising')
 
     print('Other criteria: ',  df.loc[df['Other (e.g. Abs)'].notnull()]['Other (e.g. Abs)'].unique() )
     print('Lateralising Other Total/Exclusives: ', df_study_type.loc['OTHER', ('Lateralising Datapoints', 'Total')], '/',

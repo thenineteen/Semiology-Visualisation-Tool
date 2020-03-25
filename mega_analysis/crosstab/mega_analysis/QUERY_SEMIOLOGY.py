@@ -1,6 +1,11 @@
 import pandas as pd
 import yaml
 import re
+from pathlib import Path
+
+repo_dir1 = Path(__file__).parent.parent.parent
+resources_dir1 = repo_dir1 / 'resources'
+semiology_dict_path = resources_dir1 / 'semiology_dictionary.yaml'
 
 
 def make_simple_list(allv, allv_simple_list = []):
@@ -139,7 +144,7 @@ def regex_ignore_case(term_values):
 
 
 
-def QUERY_SEMIOLOGY(df, semiology_dict_path, semiology_term=['love'],
+def QUERY_SEMIOLOGY(df, semiology_term=['love'],
                     ignore_case=True, use_semiology_dictionary=False,
                     col1 = 'Reported Semiology',
                     col2 = 'Semiology Category'):
@@ -159,7 +164,6 @@ def QUERY_SEMIOLOGY(df, semiology_dict_path, semiology_term=['love'],
     returns a DataFrame subset of df input containing all the results from the df - no melting or pivoting.
 
     """
-
     # initialise return object
     inspect_result = pd.DataFrame()
 

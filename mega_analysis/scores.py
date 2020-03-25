@@ -72,7 +72,6 @@ def get_scores(
 
     inspect_result = QUERY_SEMIOLOGY(
         df,
-        semiology_dict_path,
         semiology_term=semiology_term,
         use_semiology_dictionary=use_semiology_dictionary,
     )

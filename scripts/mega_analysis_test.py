@@ -54,7 +54,6 @@ df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 
 inspect_result = QUERY_SEMIOLOGY(
     df,
-    semiology_dict_path,
     semiology_term=semiology_term,
     use_semiology_dictionary=use_semiology_dictionary,
 )

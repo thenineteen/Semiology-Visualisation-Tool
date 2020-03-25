@@ -12,6 +12,6 @@ def missing_columns(df,
             print('\n\t', col, 'no missing values')
 
         else: 
-            print('\n\t', '\"',col,'\"', 'missing values:')
+            print('\n\t', 'missing', col, ' descriptions:')
 
-            print( df.loc[ df[col].isna(), ['Reference', 'Reported Semiology', 'Semiology Category']])
+            print( df.loc[ df[col].isna().index, 'Reference'] )

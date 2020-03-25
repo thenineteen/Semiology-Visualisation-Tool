@@ -1,6 +1,7 @@
-from crosstab.mega_analysis.QUERY_SEMIOLOGY import *
+from .QUERY_SEMIOLOGY import *
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 def exclusions(df, 
                 POST_ictals=True,
