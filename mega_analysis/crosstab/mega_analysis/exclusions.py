@@ -7,7 +7,8 @@ def exclusions(df,
                 POST_ictals=True,
                 PET_hypermetabolism=True,
                 SPECT_PET=False,
-                CONCORDANCE=False):
+                CONCORDANCE=False,
+                ):
     """
     Exclude certain semiologies and criteria prior to performing searches on the df.
 
@@ -93,6 +94,18 @@ def exclusions(df,
     if CONCORDANCE:
         df.loc[:, concordant] = np.nan 
         print('\nEntirely replaced concordant column with nans')
+        # now need to recheck and drop any rows which have no ground truth:
+        df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=True)
 
+        
 
     return df
+
+
+    def exclude_ET(df):
+        """
+        exclude epilepsy topology cases on the fly as the data grows, rather than using the pickled resources
+        """
+        
+        df_exclusions_ET = df.dropna(subset=['Epilepsy Topology (ET)'], axis=0, inplace=False)
+        return df_exclusions_ET
