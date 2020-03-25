@@ -10,12 +10,13 @@ def cleaning(df):
 
     post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
     concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
-    sEEG_ES = 'sEEG and/or ES'
+    # sEEG_ES = 'sEEG and/or ES'  # July 2019 version
+    sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
     keep_columns = [post_op, concordant, sEEG_ES]
 
 
-    cfirst = df.columns
-    ifirst = df.index
+    cfirst = list(df.columns)
+    ifirst = list(df.index)
 
     # this part purely to allow exclusions.py to exclude concordant without messing up np.nan or using zeros
     cols = [col for col in list(df.columns) if col not in keep_columns]
@@ -25,10 +26,11 @@ def cleaning(df):
     b = df[keep_columns]
     df = b.merge(a, right_index=True, left_index=True)
 
-    df = df.dropna(axis=0, how='all')  # index
+        # df = df.dropna(axis=0, how='all')  # index
+    df.dropna(axis=0, how='all', inplace=True)  # March 2020 version
 
-    csecond=df.columns
-    isecond=df.index
+    csecond=list(df.columns)
+    isecond=list(df.index)
     print('\t', len(cfirst) - len(csecond), 'empty anatomical labels=columns')  # 20 empty anatomical labels
     print('\t', len(ifirst) - len(isecond), "empty rows=empty lines")  # 58 empty rows
 
