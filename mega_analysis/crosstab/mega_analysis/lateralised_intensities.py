@@ -3,7 +3,7 @@ from .pivot_result_to_pixel_intensities import *
 
 def lateralisation_to_pixel_intensities(all_combined_gifs, df,
                                         semiology_term,
-                                        quantiles, method='non-linear', scale_factor=10,
+                                        quantiles, method='min_max', scale_factor=10,
                                         intensity_label='lateralised intensity',
                                         use_semiology_dictionary=False,
                                         plot=False):
