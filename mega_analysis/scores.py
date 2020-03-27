@@ -108,7 +108,7 @@ def get_scores(
 
 
 def get_scores_dict(
-        semiology_term='Head version',
+        semiology_term='Aphasia',
         symptoms_side='R',
         dominant_hemisphere='L',
         output_path=None,
