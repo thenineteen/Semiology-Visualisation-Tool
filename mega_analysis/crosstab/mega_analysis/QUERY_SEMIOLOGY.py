@@ -3,10 +3,6 @@ import yaml
 import re
 from pathlib import Path
 
-repo_dir1 = Path(__file__).parent.parent.parent
-resources_dir1 = repo_dir1 / 'resources'
-semiology_dict_path = resources_dir1 / 'semiology_dictionary.yaml'
-
 
 def make_simple_list(allv, allv_simple_list = []):
     """
@@ -82,7 +78,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
 
 
 
-def use_semiology_dictionary_(semiology_term, semiology_dict_path):
+def use_semiology_dictionary(semiology_term, semiology_dict_path):
     print('using option use_semiology_dictionary as taxonomy replacement')
     # define the key rather than the terms
 
@@ -145,9 +141,10 @@ def regex_ignore_case(term_values):
 
 
 def QUERY_SEMIOLOGY(df, semiology_term=['love'],
-                    ignore_case=True, use_semiology_dictionary=False,
-                    col1 = 'Reported Semiology',
-                    col2 = 'Semiology Category'):
+                    ignore_case=True,
+                    semiology_dict_path=None,
+                    col1='Reported Semiology',
+                    col2='Semiology Category'):
     """
     Search for key terms in both "reported semiology" and "semiology category" and return df if found in either.
     Removes all columns which are entirely null.
@@ -156,7 +153,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     df is the MegaAnalysis DataFrame
     semiology_term is the query (can be a user-defined list e.g. ["epigastric aura", "rising sensation"]) - treated as "OR"
     ignore_case: ignores case using a regular expression
-    use_semiology_dictionary uses the yaml dictionary of equivalent terms, cycles through all equivalent terms and appends
+    semiology_dict_path is the yaml dictionary of equivalent terms, cycles through all equivalent terms and appends
         results to the output df before removing duplicates
         (instead of using user defined semiology_term lists, uses pre-defined yaml dictionary)
         keyword-based user queries are mapped to ontology entities
@@ -166,17 +163,6 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     """
     # initialise return object
     inspect_result = pd.DataFrame()
-
-
-    # # atm this does not work
-    # # Cycle case where term is a list and use_semiology_dictionary is True:
-    # if isinstance(semiology_term, list) & use_semiology_dictionary==True:
-    #     for item in semiology_term:
-    #         inspect_res = QUERY_SEMIOLOGY(df, semiology_term=item, ignore_case=ignore_case, use_semiology_dictionary=True)
-    #         inspect_result.append(inspect_res)
-    #     inspect_result.drop_duplicates(inplace=True)
-    #     return inspect_result
-
 
     # main body of function
     if isinstance(semiology_term, list):
@@ -193,9 +179,8 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
             semiology_term = r'(?i)'+semiology_term
         values = [semiology_term]
 
-
-    if use_semiology_dictionary:
-        values_dict_or_list = use_semiology_dictionary_(
+    if semiology_dict_path is not None:
+        values_dict_or_list = use_semiology_dictionary(
             semiology_term,
             semiology_dict_path,
         )
@@ -203,7 +188,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         if isinstance(values_dict_or_list, list):
             values = values_dict_or_list
         elif isinstance(values_dict_or_list, dict):
-            print("this shouldn't occur: use_semiology_dictionary_ has returned a dict. Attempted to correct... ")
+            print("this shouldn't occur: use_semiology_dictionary has returned a dict. Attempted to correct... ")
             # when the semiology_term used in the dictionary refers to a top level key which is itself a dictionary
             _, values = dictionary_key_recursion_(values_dict_or_list)
             values = make_simple_list(values)
