@@ -9,7 +9,7 @@ def progress_stats(df):
 
     Ground Truth: looks at concordance, sEEG/stimulation and seizure-free inclusion criteria
 
-    note in pandas 0.24+ .nonzero() needs to be replaced with .to_numpy().nonzero() 
+    note in pandas 0.24+ .nonzero() needs to be replaced with .to_numpy().nonzero()
 
     Ali Alim-Marvasti July, August 2019
     """
@@ -26,8 +26,8 @@ def progress_stats(df):
                                    #names=['year', 'visit']
                                  )
     df_ground_truths = pd.DataFrame(columns=colx)
-    
-    
+
+
     # populate the total df:
     df_ground_truths.loc['Seizure-Free', ('Lateralising Datapoints', 'Total')] = df.loc[df[post_op].notnull()].Lateralising.sum()
     df_ground_truths.loc['Seizure-Free', ('Localising Datapoints', 'Total')] = df.loc[df[post_op].notnull()].Localising.sum()
@@ -40,8 +40,8 @@ def progress_stats(df):
 
     df_ground_truths.loc['ES', ('Lateralising Datapoints', 'Total')] = df.loc[df[sEEG_ES]== 'ES'].Lateralising.sum()
     df_ground_truths.loc['ES', ('Localising Datapoints', 'Total')] = df.loc[df[sEEG_ES]== 'ES'].Localising.sum()
-    
-    
+
+
     # populate the exlusives:
     df_ground_truths.loc['Seizure-Free', ('Lateralising Datapoints', 'Exclusive')] = df.loc[(
         df[post_op].notnull() & df[concordant].isnull() & df[sEEG_ES].isnull()
@@ -96,11 +96,11 @@ def progress_stats(df):
     df_ground_truths.loc['All three', ('Localising Datapoints', 'Exclusive')] = df.loc[(
         df[post_op].notnull() & df[concordant].notnull() & df[sEEG_ES].notnull()
         ) ].Localising.sum()
-    
+
     return df_ground_truths
 
 
-def progress_venn(df_ground_truths, method=None):
+def progress_venn(df_ground_truths, method=None, plot=False):
     """
     Use the progress df to plot a venn diagram of the datapoints by ground truths.
 
@@ -134,8 +134,10 @@ def progress_venn(df_ground_truths, method=None):
     numbers = (sz_excl, conc_excl, sz_conc, sEEG_excl, sEEG_ES_sz, sEEG_ES_conc, all_three)
     a = [int(n) for n in numbers]
     numbers = tuple(a)
+
     # plot
-    venn3(subsets = (numbers), set_labels = ('Seizure-Free', 'Concordant', 'sEEG/ES'))
-    titre = method + ' by Ground Truth'
-    plt.title(titre)
-    plt.show()
+    if plot:
+        venn3(subsets = (numbers), set_labels = ('Seizure-Free', 'Concordant', 'sEEG/ES'))
+        titre = method + ' by Ground Truth'
+        plt.title(titre)
+        plt.show()
