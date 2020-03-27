@@ -409,16 +409,18 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
         slicer.mrmlScene.RemoveNode(colorNode)
 
   def installRepository(self):
+    repoDir = Path(__file__).parent.parent
+    import sys
+    sys.path.insert(0, str(repoDir))
     try:
       import mega_analysis
     except ImportError:
-      repoDir = Path('~/git/Semiology-Visualisation-Tool/').expanduser()
+      requirementsPath = repoDir / 'requirements.txt'
       slicer.util.pip_install(
-        '--upgrade git+https://github.com/thenineteen/Semiology-Visualisation-Tool#egg=mega_analysis',
-        # f'--editable {repoDir}',
+        f'-r {requirementsPath}'
       )
-      import matplotlib
-      matplotlib.use('agg')
+    import matplotlib
+    matplotlib.use('agg')
 
 
 class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
