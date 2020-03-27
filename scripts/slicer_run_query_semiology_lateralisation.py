@@ -29,21 +29,21 @@ repo_dir = Path(__file__).parent.parent
 resources_dir = repo_dir / 'resources'
 excel_path = resources_dir / 'syst_review_single_table.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
-path_to_pickled_df_4 = resources_dir / DataFrames_Exclusions_df_postictalPEThyper_concordance_ET.pickle
-path_to_pickled_df_1 = resources_dir / DataFrames_Exclusions_dfETconc.pickle
+# path_to_pickled_df_4 = resources_dir / DataFrames_Exclusions_df_postictalPEThyper_concordance_ET.pickle
+# path_to_pickled_df_1 = resources_dir / DataFrames_Exclusions_dfETconc.pickle
 
-# load pickles:
-with open(path_to_pickled_df_4, 'rb') as f:
-        data = pickle.load(f)          
-(df, # the entire df
- df_exclusions_postictal_PEThyper,  # df excluding postictals, PET hypermetabolism
-             df_exclusions_concordance,  # df excluding all concordance criteria
-             df_exclusions_ET,  # df exclusion epilepsy topology priors
-             ) = data 
+## load pickles:
+# with open(path_to_pickled_df_4, 'rb') as f:
+#         data = pickle.load(f)          
+# (df, # the entire df
+#  df_exclusions_postictal_PEThyper,  # df excluding postictals, PET hypermetabolism
+#              df_exclusions_concordance,  # df excluding all concordance criteria
+#              df_exclusions_ET,  # df exclusion epilepsy topology priors
+#              ) = data 
 
-with open(path_to_pickled_df_1, 'rb') as f:
-        data = pickle.load(f)
-df_exclusions_ET_conc = data      # df exclusing both topology priors and concordance groun truths
+# with open(path_to_pickled_df_1, 'rb') as f:
+#         data = pickle.load(f)
+# df_exclusions_ET_conc = data      # df exclusing both topology priors and concordance groun truths
 
 
 
