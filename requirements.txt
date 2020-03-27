@@ -1,0 +1,11 @@
+click
+docx
+matplotlib
+matplotlib-venn
+pandas
+PyPDF2
+PyYaml
+scikit-learn
+seaborn
+uuid
+xlrd
