@@ -17,7 +17,7 @@ def gifs_lat(excel_path):
     #                            usecols=usecols,
                                header=0,
     #                            index=index,
-                               sheet_name='GIF Lateralisations'
+                               sheet_name='Full GIF Map for Review '
                               )
 
     gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R']
