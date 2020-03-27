@@ -18,7 +18,7 @@ def QUERY_INTERSECTION_TERMS(df, *args):
     for arg in args:
         n += 1
         query_inspection = QUERY_SEMIOLOGY(df, semiology_term=arg,
-                                            ignore_case=True, use_semiology_dictionary=False,
+                                            ignore_case=True, semiology_dict_path=None,
                                             # col1=col1, col2=col1
                                             )
 

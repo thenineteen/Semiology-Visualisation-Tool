@@ -33,9 +33,6 @@ semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 # semiology_term='tonic'
 semiology_term='Head Version'
 
-# I recommend keep this to True
-use_semiology_dictionary = True
-
 # # LATERALISATION initilisation
 
 # I reconmend minmaxscaler. The previous example used non-linear which you have the visualisations for (Rachel did)
@@ -59,7 +56,7 @@ df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 inspect_result = QUERY_SEMIOLOGY(
     df,
     semiology_term=semiology_term,
-    use_semiology_dictionary=use_semiology_dictionary,
+    semiology_dict_path=semiology_dict_path,
 )
 
 
@@ -80,7 +77,7 @@ all_lateralised_gifs = lateralisation_to_pixel_intensities(
     method=method,
     scale_factor=scale_factor,
     intensity_label=intensity_label,
-    use_semiology_dictionary=use_semiology_dictionary,
+    use_semiology_dictionary=True,
 )
 
 array = np.array(all_lateralised_gifs)

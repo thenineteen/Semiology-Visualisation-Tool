@@ -92,7 +92,7 @@ def get_scores(
         method=method,
         scale_factor=scale_factor,
         intensity_label=intensity_label,
-        use_semiology_dictionary=use_semiology_dictionary,
+        use_semiology_dictionary=True,
     )
 
     array = np.array(all_lateralised_gifs)
@@ -112,6 +112,7 @@ def get_scores_dict(
         symptoms_side='R',
         dominant_hemisphere='L',
         output_path=None,
+        catch_errors=True,
         ):
     try:
         scores_dict = get_scores(
@@ -124,4 +125,6 @@ def get_scores_dict(
         print(f'Scores dictionary for semiology term {semiology_term} not retrieved:')
         print(e)
         scores_dict = None
+        if not catch_errors:
+            raise
     return scores_dict

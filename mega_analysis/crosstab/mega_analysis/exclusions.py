@@ -26,7 +26,7 @@ def exclusions(df,
     if POST_ictals:
         post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
         post_ictal_inspection = QUERY_SEMIOLOGY(df, semiology_term=post_ictals,
-                                                ignore_case=True, use_semiology_dictionary=False)
+                                                ignore_case=True, semiology_dict_path=None)
         df.drop(labels = post_ictal_inspection.index, axis='index', inplace=True, errors='ignore')
         print('Excluded post-ictal semiology in the query')
 
@@ -35,12 +35,12 @@ def exclusions(df,
         pet = ['PET']
 
         pet_inspection = QUERY_SEMIOLOGY(df, semiology_term=pet,
-                                                ignore_case=True, use_semiology_dictionary=False,
+                                                ignore_case=True, semiology_dict_path=None,
                                                 col1=col1, col2=col1)
 
         hyper = ['Hyper']
         hyper_inspection = QUERY_SEMIOLOGY(df, semiology_term=hyper,
-                                                ignore_case=True, use_semiology_dictionary=False,
+                                                ignore_case=True, semiology_dict_path=None,
                                                 col1=col1, col2=col1)
 
         # ans is df of the intersection of the above two, keep the index otherwise it is reset
@@ -70,7 +70,7 @@ def exclusions(df,
         spect_pet = ['SPECT', 'PET', 'FDG-PET', 'SPECT scan', 'PET scan', 'ictal SPECT', 'interictal PET', 'inter-ictal PET',
                      'PET+ictal SPECT', 'Surgical finding, PET hypometabolism', 'fMRI+DTI', 'PET (interictal hypometabolism)']
         spect_pet_inspection = QUERY_SEMIOLOGY(df, semiology_term=spect_pet,
-                                                ignore_case=True, use_semiology_dictionary=False,
+                                                ignore_case=True, semiology_dict_path=None,
                                                 col1=col1, col2=col2)
 
         # SPECT or PET and no other ground truth criteria:

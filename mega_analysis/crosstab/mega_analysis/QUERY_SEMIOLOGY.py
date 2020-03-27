@@ -174,7 +174,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     # # Cycle case where term is a list and use_semiology_dictionary is True:
     # if isinstance(semiology_term, list) & use_semiology_dictionary==True:
     #     for item in semiology_term:
-    #         inspect_res = QUERY_SEMIOLOGY(df, semiology_term=item, ignore_case=ignore_case, use_semiology_dictionary=True)
+    #         inspect_res = QUERY_SEMIOLOGY(df, semiology_term=item, ignore_case=ignore_case, semiology_dict_path=semiology_dict_path)
     #         inspect_result.append(inspect_res)
     #     inspect_result.drop_duplicates(inplace=True)
     #     return inspect_result

@@ -34,12 +34,12 @@ semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 ## load pickles:
 # with open(path_to_pickled_df_4, 'rb') as f:
-#         data = pickle.load(f)          
+#         data = pickle.load(f)
 # (df, # the entire df
 #  df_exclusions_postictal_PEThyper,  # df excluding postictals, PET hypermetabolism
 #              df_exclusions_concordance,  # df excluding all concordance criteria
 #              df_exclusions_ET,  # df exclusion epilepsy topology priors
-#              ) = data 
+#              ) = data
 
 # with open(path_to_pickled_df_1, 'rb') as f:
 #         data = pickle.load(f)
@@ -76,7 +76,7 @@ else:
 intensity_label = 'Lateralised Intensity. '+str(raw_pt_numbers_string)+'. '+'quantiles: '+str(quantiles)+'. '+'scale: '+str(scale_factor)
 
 
-## The below is only required if the data collection has been updated 
+## The below is only required if the data collection has been updated
 # - otherwise use pickled DataFrame:
 # df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 
@@ -89,7 +89,7 @@ intensity_label = 'Lateralised Intensity. '+str(raw_pt_numbers_string)+'. '+'qua
 # so now it depends on slicer options on tick boxes: df is entire df. could use the other ones:
 try:
     if slicer_tickbox_concordance == False:
-        df_exclusions_concordance = exclusions(df, 
+        df_exclusions_concordance = exclusions(df,
                 POST_ictals=False,
                 PET_hypermetabolism=False,
                 SPECT_PET=False,
@@ -99,7 +99,7 @@ except: pass
 
 try:
     if slicer_tickbox_ET == False:
-        
+
         df = exclude_ET(df)
 except: pass
 
@@ -110,14 +110,18 @@ except: pass
 
 
 
+from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import *
+
+df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 
 
-# now below df will reflect the Slicer Ground Truth and Prior Selections 
+
+# now below df will reflect the Slicer Ground Truth and Prior Selections
 # https://github.com/fepegar/EpilepsySemiology/issues/2
 inspect_result = QUERY_SEMIOLOGY(
     df,
     semiology_term=semiology_term,
-    use_semiology_dictionary=use_semiology_dictionary,
+    semiology_dict_path=semiology_dict_path,
 )
 
 
@@ -138,7 +142,7 @@ all_lateralised_gifs = lateralisation_to_pixel_intensities(
     method=method,
     scale_factor=scale_factor,
     intensity_label=intensity_label,
-    use_semiology_dictionary=use_semiology_dictionary,
+    use_semiology_dictionary=True,
 )
 
 array = np.array(all_lateralised_gifs)
