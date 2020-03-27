@@ -106,7 +106,7 @@ def progress_study_type(df):
     return df_study_type
 
 
-def progress_venn_2(df_study_type, method=None):
+def progress_venn_2(df_study_type, method=None, plot=False):
     """
     Use the progress df to plot a venn diagram of the datapoints by study types (by ground truth is the original).
 
@@ -145,8 +145,10 @@ def progress_venn_2(df_study_type, method=None):
                 ces_ss_et)
     a = [int(n) for n in numbers]
     numbers = tuple(a)
+
     # plot
-    venn3(subsets = (numbers), set_labels = ('Stimulation', 'Semiological', 'Topological'))
-    titre = method + ' by Patient Selection Priors (Study Type)'
-    plt.title(titre)
-    plt.show()
+    if plot:
+        venn3(subsets = (numbers), set_labels = ('Stimulation', 'Semiological', 'Topological'))
+        titre = method + ' by Patient Selection Priors (Study Type)'
+        plt.title(titre)
+        plt.show()
