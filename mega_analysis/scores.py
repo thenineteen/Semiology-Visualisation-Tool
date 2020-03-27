@@ -73,7 +73,7 @@ def get_scores(
     inspect_result = QUERY_SEMIOLOGY(
         df,
         semiology_term=semiology_term,
-        use_semiology_dictionary=use_semiology_dictionary,
+        semiology_dict_path=semiology_dict_path,
     )
 
 
@@ -114,6 +114,7 @@ def get_scores_dict(
         symptoms_side='R',
         dominant_hemisphere='L',
         output_path=None,
+        catch_error=True,
         ):
     try:
         scores_dict = get_scores(
@@ -126,4 +127,6 @@ def get_scores_dict(
         print(f'Scores dictionary for semiology term {semiology_term} not retrieved:')
         print(e)
         scores_dict = None
+        if not catch_error:
+            raise
     return scores_dict
