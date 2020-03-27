@@ -12,17 +12,13 @@ def gifs_lat(excel_path):
     """
     factor function. opens the right/left gif parcellations from excel and extracts the right/left gifs as series/list.
     """
-    gif_lat_file = pd.read_excel(excel_path,
-    #                            nrows=n_rows,
-    #                            usecols=usecols,
-                               header=0,
-    #                            index=index,
-                               sheet_name='GIF Lateralisations'
-                              )
-
+    gif_lat_file = pd.read_excel(
+        excel_path,
+        header=0,
+        sheet_name='GIF Lateralisations',
+    )
     gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R']
     gifs_left = gif_lat_file.loc[gif_lat_file['L'].notnull(), 'L']
-
     return gifs_right, gifs_left
 
 
