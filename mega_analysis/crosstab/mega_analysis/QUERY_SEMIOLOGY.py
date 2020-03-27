@@ -145,9 +145,10 @@ def regex_ignore_case(term_values):
 
 
 def QUERY_SEMIOLOGY(df, semiology_term=['love'],
-                    ignore_case=True, use_semiology_dictionary=False,
+                    ignore_case=True,
+                    semiology_dict_path=None,
                     col1 = 'Reported Semiology',
-                    col2 = 'Semiology Category'):
+                    col2 = 'Semiology Category',):
     """
     Search for key terms in both "reported semiology" and "semiology category" and return df if found in either.
     Removes all columns which are entirely null.
@@ -156,7 +157,8 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     df is the MegaAnalysis DataFrame
     semiology_term is the query (can be a user-defined list e.g. ["epigastric aura", "rising sensation"]) - treated as "OR"
     ignore_case: ignores case using a regular expression
-    use_semiology_dictionary uses the yaml dictionary of equivalent terms, cycles through all equivalent terms and appends
+    semiology_dict_path is the yaml dictionary of equivalent terms.
+        An iterator cycles through all equivalent terms and appends
         results to the output df before removing duplicates
         (instead of using user defined semiology_term lists, uses pre-defined yaml dictionary)
         keyword-based user queries are mapped to ontology entities
@@ -194,7 +196,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         values = [semiology_term]
 
 
-    if use_semiology_dictionary:
+    if semiology_dict_path is not None:
         values_dict_or_list = use_semiology_dictionary_(
             semiology_term,
             semiology_dict_path,
