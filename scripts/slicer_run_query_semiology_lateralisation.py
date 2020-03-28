@@ -111,7 +111,6 @@ except: pass
 
 
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import *
-
 df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 
 

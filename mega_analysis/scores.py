@@ -31,7 +31,7 @@ df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
-    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA']
+    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA', 'GIF CEREBELLUM']
 )
 gif_lat_file = pd.read_excel(
     excel_path,
@@ -65,7 +65,7 @@ def get_scores(
     """
     Methods can be:
     Ali says:
-    # I reconmend minmaxscaler. The previous example used non-linear which you have the visualisations for (Rachel did)
+    # I reconmend minmaxscaler.
     method = 'non-linear'
     method = 'min_max'
     method = 'linear'

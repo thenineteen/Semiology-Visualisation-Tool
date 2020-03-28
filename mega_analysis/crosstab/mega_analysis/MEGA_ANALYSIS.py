@@ -15,7 +15,7 @@ from .exclusions import exclusions
 
 
 def MEGA_ANALYSIS(
-    excel_data = "D:\\Ali USB Backup\\1 PhD\\Mega Analysis\\4. SystReview Single Table (NEW CROSSTAB) March 2020.xlsx",
+    excel_data,
     n_rows = 2500,
     usecols = "A:DG",
     header = 1,
