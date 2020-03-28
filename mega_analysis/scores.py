@@ -60,7 +60,7 @@ def get_scores(
         symptoms_side='R',
         dominant_hemisphere='L',
         output_path=None,
-        method='min_max'
+        method='min_max',
         ):
     """
     Methods can be:
