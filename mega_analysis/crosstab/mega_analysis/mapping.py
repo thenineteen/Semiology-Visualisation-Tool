@@ -1,7 +1,8 @@
+import logging
 import pandas as pd
 import numpy as np
 
-def mapping(excel_file):
+def mapping(map_df_dict):
     """
     Uses Ali and Gloria's brain reported localisation in literature to GIF parcellations,
     using Ali and Gloria's mapping.
@@ -19,28 +20,20 @@ def mapping(excel_file):
     Aug 2019 Ali Alim-Marvasti
 
     """
-    map_df_dict = pd.read_excel(excel_file,
-#                            nrows=n_rows,
-#                            usecols=usecols,
-                           header=1,
-#                            index=index,
-                           sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA']
-                          )
+    map_df_dict = map_df_dict.copy()
 
     for lobe in map_df_dict.keys():
         map_df_dict[lobe] = map_df_dict[lobe].dropna(axis='rows', how='all')
         map_df_dict[lobe] = map_df_dict[lobe].dropna(axis='columns', how='all')
 
-
-
     return map_df_dict
 
 
-def big_map(excel_path):
+def big_map(map_df_dict):
     """
     Appends all the localisation-to-gif-mapping-DataFrames into one big DataFrame.
     """
-    map_df_dict = mapping(excel_path)
+    map_df_dict = mapping(map_df_dict)
     one_map = pd.DataFrame()
     for lobe in map_df_dict.keys():
         one_map = one_map.append(map_df_dict[lobe], sort=False)

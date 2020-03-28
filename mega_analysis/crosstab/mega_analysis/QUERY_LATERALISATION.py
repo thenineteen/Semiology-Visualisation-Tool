@@ -9,25 +9,17 @@ from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 
 
 
-def gifs_lat(excel_path):
+def gifs_lat(gif_lat_file):
     """
     factor function. opens the right/left gif parcellations from excel and extracts the right/left gifs as series/list.
     """
-    gif_lat_file = pd.read_excel(excel_path,
-    #                            nrows=n_rows,
-    #                            usecols=usecols,
-                               header=0,
-    #                            index=index,
-                               sheet_name='Full GIF Map for Review '
-                              )
-
     gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R']
     gifs_left = gif_lat_file.loc[gif_lat_file['L'].notnull(), 'L']
 
     return gifs_right, gifs_left
 
 
-def QUERY_LATERALISATION(inspect_result, df, excel_path,
+def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                        side_of_symptoms_signs=None,
                        pts_dominant_hemisphere_R_or_L=None):
     """
@@ -64,8 +56,6 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
     except KeyError:
         print('No Lateralising values found for this query of the database.')
         return
-
-
 
     # check that the lateralising columns isn't null where it shouldn't be i.e. CL/IL/DomH/NonDomH not null:
     # but not 'BL (Non-lateralising)'
@@ -131,7 +121,7 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
-        one_map = big_map(excel_path)
+        one_map = big_map(map_df_dict)
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
                                                 suppress_prints=True)
         # ^ row_to_one_map now contains all the lateralising gif parcellations
@@ -194,7 +184,7 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
         # to say the IL side gets one third of the CL side as number of lat is too low
         # hence normalise by dividing by proportion_lateralising (which is between (0,1])
 
-        gifs_right, gifs_left = gifs_lat(excel_path)
+        gifs_right, gifs_left = gifs_lat(gif_lat_file)
 #         row_to_one_map
 #         proportion_lateralising
 #         Right, Left

@@ -41,9 +41,12 @@ def MEGA_ANALYSIS(
 
     Ali Alim-Marvasti July Aug 2019
     """
-    df = pd.read_excel(excel_data, nrows=n_rows, usecols=usecols, header=header,
-                    #index_col=[4,0]  # only if you want multi-index
-                    )
+    df = pd.read_excel(
+        excel_data,
+        nrows = n_rows,
+        usecols = usecols,
+        header=header,
+    )
 
     # 0. CLEANUPS: remove empty rows and columns
     logging.debug('\n0. DataFrame pre-processing and cleaning:')
