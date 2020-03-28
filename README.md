@@ -32,4 +32,4 @@ Data can be filtered based on the above ground truth and journal priors.
   **Edit > Application Settings > Modules > Additional Module Paths > Add**
   (you may have to click on the double arrows to the right of Additional Module Paths)
   
-  **> Click on the directory to which you cloned this repository > click on the *slicer* folder and click *Select Folder*
+  **> Click on the directory to which you cloned this repository > click on the *slicer* folder and click *Select Folder***
