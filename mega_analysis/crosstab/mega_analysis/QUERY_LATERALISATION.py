@@ -140,8 +140,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
         if proportion_lateralising > 1:
             proportion_lateralising = 1
-            print('some extracted lateralising data exceed the localising data,')
-            print('for now these are taken as proportion_lateralising=1.0 !')
+            logging.debug('some extracted lateralising data exceed the localising data,')
+            logging.debug('for now these are taken as proportion_lateralising=1.0 !')
 
         # check columns exist in this particular row:
         for col in lat_vars:
