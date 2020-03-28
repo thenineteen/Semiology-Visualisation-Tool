@@ -1,5 +1,3 @@
-import matplotlib
-matplotlib.use('agg')
 from pathlib import *
 import copy
 
