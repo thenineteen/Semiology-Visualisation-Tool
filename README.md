@@ -25,3 +25,11 @@ Data can be filtered based on the above ground truth and journal priors.
 * MegaAnalysis-March2020 branch - original verbose module for development and progress stats 
   ** (thenineteen jupyter backwards compatibility)
 
+# Installation Guide:
+- 1 Download slicer
+- 2 Clone this repostitory
+- 3 Open Slicer and go to the menu: 
+  **Edit > Application Settings > Modules > Additional Module Paths > Add**
+  (you may have to click on the double arrows to the right of Additional Module Paths)
+  
+  **> Click on the directory to which you cloned this repository > click on the *slicer* folder and click *Select Folder*
