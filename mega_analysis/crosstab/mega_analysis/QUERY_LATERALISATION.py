@@ -139,8 +139,8 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
 
         # some pts will have lateralising but no localising values:
         if ( ('Localising' not in full_row.columns) | (full_row['Localising'].sum() ==0) ):
-            print('\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
-            print ('row# = ', i)
+            logging.debug('\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
+            logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
             # full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
             continue
