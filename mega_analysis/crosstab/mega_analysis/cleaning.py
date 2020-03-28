@@ -1,3 +1,5 @@
+import logging
+
 def cleaning(df):
 
     """
@@ -5,8 +7,8 @@ def cleaning(df):
     Ali Alim-Marvasti July 2019
     """
 
-    print('df.shape to begin with:', df.shape)
-    print('Removing empty rows and columns:')
+    logging.debug(f'df.shape to begin with: {df.shape}')
+    logging.debug('Removing empty rows and columns:')
 
     post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
     concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
@@ -31,15 +33,15 @@ def cleaning(df):
 
     csecond=list(df.columns)
     isecond=list(df.index)
-    print('\t', len(cfirst) - len(csecond), 'empty anatomical labels=columns')  # 20 empty anatomical labels
-    print('\t', len(ifirst) - len(isecond), "empty rows=empty lines")  # 58 empty rows
+    logging.debug(f'\t {len(cfirst) - len(csecond)} empty anatomical labels=columns')  # 20 empty anatomical labels
+    logging.debug(f'\t {len(ifirst) - len(isecond)} empty rows=empty lines') # 58 empty rows
 
-    print('df.shape after dropna:', df.shape)
+    logging.debug(f'df.shape after dropna: {df.shape}')
 
-    print('\n')
-    print('THESE ARE THE REMOVED EMPTY LABELS:\n')
+    logging.debug('\n')
+    logging.debug('THESE ARE THE REMOVED EMPTY LABELS:\n')
     for c in cfirst:
         if c not in csecond:
-            print(c)
+            logging.debug(c)
 
     return df

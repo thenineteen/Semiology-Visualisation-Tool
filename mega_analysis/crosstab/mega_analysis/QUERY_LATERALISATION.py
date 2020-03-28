@@ -1,3 +1,4 @@
+import logging
 import pandas as pd
 import numpy as np
 from .mapping import mapping, big_map, pivot_result_to_one_map
@@ -58,7 +59,7 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
     #check there is lateralising value
     try:
         Lat = inspect_result['Lateralising']
-        print('Lateralisation based on: ',Lat.sum(),' datapoints')
+        logging.debug(f'Lateralisation based on: {Lat.sum()} datapoints')
 
     except KeyError:
         print('No Lateralising values found for this query of the database.')
@@ -80,7 +81,7 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
                                     (inspect_result2['NonDomH'].notnull()), ['Lateralising']]
     missing_lat = missing_lat['Lateralising'].isnull()
     if ( missing_lat.all() ) == False:
-        print('\nNo missing Lateralising data points.')
+        logging.debug('\nNo missing Lateralising data points.')
     else:
         print('The inspect_result has NaNs/zero where it should not: check data at row(s) ', missing_lat.loc[missing_lat['Lateralising'].isnull()].index)
         print('fix it then come back.')
@@ -99,11 +100,11 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
     NonDomH = inspect_result['NonDomH']
     BL = inspect_result['BL (Non-lateralising)']
 
-    print('Overall Contralateral: ',CL.sum(),' datapoints')
-    print('Ipsilateral: ',IL.sum(),' datapoints')
-    print('Bilateral/Non-lateralising: ',BL.sum(),' datapoints. This is not utilised in our analysis/visualisation.')
-    print('Dominant Hemisphere: ',DomH.sum(),' datapoints')
-    print('Non-Dominant Hemisphere: ',NonDomH.sum(),' datapoints')
+    logging.debug(f'Overall Contralateral: {CL.sum()} datapoints')
+    logging.debug(f'Ipsilateral: {IL.sum()} datapoints')
+    logging.debug(f'Bilateral/Non-lateralising: {BL.sum()} datapoints. This is not utilised in our analysis/visualisation.')
+    logging.debug(f'Dominant Hemisphere: {DomH.sum()} datapoints')
+    logging.debug(f'Non-Dominant Hemisphere: {NonDomH.sum()} datapoints')
 
 
     # initialise:
@@ -120,8 +121,8 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
 
-    for i in range (0, no_rows):
-        print(i)
+    for i in range (no_rows):
+        logging.debug(str(i))
         Right = 0
         Left = 0
 
@@ -232,11 +233,11 @@ def QUERY_LATERALISATION(inspect_result, df, excel_path,
         if i == 0:
             # can't merge first row
             all_combined_gifs = row_to_one_map
-            print('end of zeroo')
+            logging.debug('end of zeroo')
             continue
         elif i != 0:
             all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
-        print('end of i', i)
+        logging.debug(f'end of i {i}')
 
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)

@@ -1,5 +1,6 @@
 # 1. convert the localising numbers in pivot_result to 0-100 parcellation intensities:
 
+import logging
 from sklearn.preprocessing import QuantileTransformer, MinMaxScaler
 import pandas as pd
 from scipy.stats import skewnorm, chi2, norm
@@ -91,7 +92,7 @@ def intensities_factor(df_or_pivot_result, quantiles=10,
         pivot_result_intensities.iloc[0, :] = scale_factor * QT_array
 
     elif method == 'min_max':
-        print('Using sklearn.preprocessing MinMaxScaler')
+        logging.debug('Using sklearn.preprocessing MinMaxScaler')
         scaler = MinMaxScaler(feature_range=(1,100))
         minmax_array = scaler.fit_transform(df_or_pivot_result.values.reshape(-1,1))
         minmax_array = minmax_array.reshape(-1,)
@@ -252,7 +253,10 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
                 print('All negative values floored to zero for EpiNav')
                 print_counter = 1
         if pivot_result_intensities.iloc[0, col] > 55:
-            print('Intensity might saturate as ', col, 'on its own has intensity value:', pivot_result_intensities.iloc[0, col])
+            logging.debug(
+                f'Intensity might saturate as {col}'
+                f'on its own has intensity value: {pivot_result_intensities.iloc[0, col]}'
+            )
 
     pivot_result_intensities.index.name = 'intensities (0-100)'
     return pivot_result_intensities.round()
