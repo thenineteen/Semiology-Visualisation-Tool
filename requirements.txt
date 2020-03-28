@@ -1,11 +1,8 @@
-click
-docx
-matplotlib
-matplotlib-venn
 pandas
-PyPDF2
 PyYaml
-scikit-learn
+re
+matplotlib
+matplotlib_venn
 seaborn
-uuid
-xlrd
+logging
+pathlib

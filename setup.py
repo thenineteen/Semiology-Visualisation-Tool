@@ -1,5 +1,5 @@
 """
-use "Process_Epilepsy_Docx" in terminal to run.
+use "MEGA_ANALYSIS_CONSOLE" in terminal to run.
 """
 
 from setuptools import setup, find_packages
@@ -14,15 +14,18 @@ setup(
     name="mega_analysis",
     version="0.1.0",
     author="Ali Alim-Marvasti",
-    description="analysis of presurgical PDFs and word documents to predict"
-                "Engel Class 1 outcomes post epilepsy surgery",
+    description="Epilepsy Semiology Visualisation Tool: "
+                "Thousands of patient level semiology data from journal"
+                "publications with localisation and lateralisation numbers"
+                "collected based on post-operative seizure freedom,"
+                "imaging and EEG concordance, and sEEG/stimulation studies.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['*tests']),
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'Process_Epilepsy_Docx = mega_analysis.preprocessing.command:main_docx_preprocess',
+            'MEGA_ANALYSIS_CONSOLE = scripts.command_console:',
             'make-scores = mega_analysis.cli:main',
         ]}
 )
