@@ -95,8 +95,8 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
         all_gifs = all_gifs.dropna(axis='rows', how='any')
     #     all_gifs = all_gifs.stack()  #  gives a series
     except KeyError:
-        print('\nKeyError. all_gifs=', all_gifs)
-        print('CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
+        logging.debug(f'\nKeyError. all_gifs={all_gifs}')
+        logging.debug('CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
 
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
