@@ -1,11 +1,8 @@
-import pandas as pd
-import yaml
 import re
-from pathlib import Path
+import logging
+import yaml
+import pandas as pd
 
-repo_dir1 = Path(__file__).parent.parent.parent
-resources_dir1 = repo_dir1 / 'resources'
-semiology_dict_path = resources_dir1 / 'semiology_dictionary.yaml'
 
 
 def make_simple_list(allv, allv_simple_list = []):
@@ -61,7 +58,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
     for k, v in dictionary.items():
         if re.search(k, semiology_key, re.IGNORECASE):
         # if k == semiology_key:
-            print('dictionary_key_recursion_2 found values of key')
+            logging.debug('dictionary_key_recursion_2 found values of key')
             if isinstance(v, list):
                 yield v
                 break
@@ -73,7 +70,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
                 break
 
         else:
-            print('searching for nested key...')
+            logging.debug('searching for nested key...')
             if isinstance(v, dict):
                 # for kk, vv in v.items():
                 for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
@@ -83,26 +80,27 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
 
 
 def use_semiology_dictionary_(semiology_term, semiology_dict_path):
-    print('using option use_semiology_dictionary as taxonomy replacement')
+    logging.debug('using option use_semiology_dictionary as taxonomy replacement')
     # define the key rather than the terms
 
     semiology_key = semiology_term
 
     # open the semiology_dictionary yaml_file
-    semiology_dictionary = yaml.load(open(semiology_dict_path))  # yaml file
+    semiology_dictionary = yaml.load(
+        open(semiology_dict_path), Loader=yaml.BaseLoader)  # yaml file
 
     # get all the keys from the semiology_dictionary:
     all_keys, _ = dictionary_key_recursion_(semiology_dictionary['semiology'])
 
     # check the query exists in the keys:
     if not re.search(semiology_key, str(all_keys), re.IGNORECASE):
-        print('\nNo such key found in semiology_dictionary matching %s'%semiology_key)
-        print('Running with use_semiology_dictionary option DISABLED.')
+        logging.debug(f'\nNo such key found in semiology_dictionary matching {semiology_key}')
+        logging.debug('Running with use_semiology_dictionary option DISABLED.')
         return [semiology_term]
 
     # if it does, then use the list of values of this key:
     elif re.search(semiology_key, str(all_keys), re.IGNORECASE):
-        print('...\"%s\" key definitely exists in semiology_dictionary using REGEX...'%semiology_key)
+        logging.debug(f'..."{semiology_key}" key definitely exists in semiology_dictionary using REGEX...')
 
     # find the key, values in first key layers: pretty sure we can skip this and just use dictionary_key_recursion_2
     dict_comprehension = {key:values for (key, values) in semiology_dictionary['semiology'].items() if key.lower()==semiology_key.lower()}
@@ -233,9 +231,9 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         return
 
 
-    print('\nLocalising Datapoints relevant to query %s: '%semiology_term, inspect_result['Localising'].sum())
+    logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
     try:
-        print('Lateralising Datapoints relevant to query: ', inspect_result['Lateralising'].sum())
+        logging.debug(f'Lateralising Datapoints relevant to query: {inspect_result["Lateralising"].sum()}')
     except:
-        print('Lateralising Datapoints relevant to query: 0')
+        logging.debug('Lateralising Datapoints relevant to query: 0')
     return inspect_result.sort_index()
