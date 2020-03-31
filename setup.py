@@ -25,7 +25,7 @@ setup(
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'MEGA_ANALYSIS_CONSOLE = scripts.command_console:',
+            'MEGA_ANALYSIS_CONSOLE = scripts.command_console:process_pdfs',
             'make-scores = mega_analysis.cli:main',
         ]}
 )
