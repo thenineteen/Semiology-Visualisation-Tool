@@ -3,3 +3,5 @@ matplotlib_venn
 pandas
 PyYAML
 seaborn
+scikit-learn
+xlrd
