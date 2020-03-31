@@ -6,6 +6,6 @@ python:
 
 install:
   - pip install pytest
-  - pip install .
+  - pip install --editable .
 
 script: pytest
