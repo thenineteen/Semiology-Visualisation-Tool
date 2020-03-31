@@ -1,8 +1,5 @@
-pandas
-PyYaml
-re
 matplotlib
 matplotlib_venn
+pandas
+PyYAML
 seaborn
-logging
-pathlib
