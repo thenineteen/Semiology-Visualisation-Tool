@@ -27,11 +27,13 @@ Data can be filtered based on the above ground truth and journal priors.
 * MegaAnalysis-March2020 branch - original verbose module for development and progress stats
   ** (thenineteen jupyter backwards compatibility)
 
-# Installation Guide:
-- 1 Download slicer
-- 2 Clone this repostitory
-- 3 Open Slicer and go to the menu:
-  **Edit > Application Settings > Modules > Additional Module Paths > Add**
-  (you may have to click on the double arrows to the right of Additional Module Paths)
 
-  **> Click on the directory to which you cloned this repository > click on the *slicer* folder and click *Select Folder***
+## Installation Guide:
+1. Clone (or [download](https://github.com/thenineteen/Semiology-Visualisation-Tool/archive/master.zip) and extract) this repository
+2. Download a [Preview Release of 3D Slicer](https://download.slicer.org/)
+3. Install and open Slicer
+4. Go to the menu `Edit` > `Application Settings` > `Modules` > `Additional module paths` > `Add` (you may have to click on the double arrows to the right of Additional Module Paths)
+5. Click on the directory to which you cloned this repository > click on the `slicer` folder and click `Select Folder`
+6. Click on `OK` and restart Slicer when prompted
+7. To open the module click on the magnifier and search for `Semiology`
+8. You might need to restart Slicer again
