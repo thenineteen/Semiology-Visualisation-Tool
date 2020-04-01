@@ -248,6 +248,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       labelOpacity=0,
     )
     self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
+    self.logic.showForegroundScalarBar()
 
   def onSelect(self):
     # parcellationPath = Path(self.parcellationPathEdit.currentPath)
@@ -267,11 +268,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.applyButton.enabled = scoresIsFile
 
   def onLoadDataButton(self):
-    logic = SemiologyVisualizationLogic()
     self.referenceVolumeNode = self.logic.loadVolume(
-      logic.getDefaultReferencePath())
-    self.parcellationLabelMapNode = logic.loadParcellation(
-      logic.getDefaultParcellationPath())
+      self.logic.getDefaultReferencePath())
+    self.parcellationLabelMapNode = self.logic.loadParcellation(
+      self.logic.getDefaultParcellationPath())
     slicer.util.setSliceViewerLayers(
       label=None,
     )
@@ -421,6 +421,12 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       )
     import matplotlib
     matplotlib.use('agg')
+
+  def showForegroundScalarBar(self):
+    qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarEnabled', 1)
+    qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarSelectedLayer', 'foreground')
+    import DataProbeLib
+    DataProbeLib.SliceAnnotations().updateSliceViewFromGUI()
 
 
 class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
