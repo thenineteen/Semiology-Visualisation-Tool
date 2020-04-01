@@ -28,7 +28,7 @@ Data can be filtered based on the above ground truth and journal priors.
   ** (thenineteen jupyter backwards compatibility)
 
 
-## Installation Guide:
+## Installation Guide
 1. Clone (or [download](https://github.com/thenineteen/Semiology-Visualisation-Tool/archive/master.zip) and extract) this repository
 2. Download a [Preview Release of 3D Slicer](https://download.slicer.org/)
 3. Install and open Slicer
