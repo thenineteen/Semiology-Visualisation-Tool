@@ -2,6 +2,7 @@ import re
 import logging
 import yaml
 import pandas as pd
+import sys
 
 
 
@@ -222,19 +223,20 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
             df.loc[df[col2].str.contains(term, na=False)], sort=False
         )
 
+
+    # to fix issue #7 by commenting out below and inserting 3 lines instead:
     # inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
-    
-    # attempt to fix issue #7 by commenting out above and inserting line below:
     keep = ['Localising', 'Lateralising']
     inspect_result = \
         inspect_result[[column for column in inspect_result.isna().all().index if column not in [keep]]].dropna(axis=1).append(inspect_result[[keep]], sort=False)
-
+    inspect_result = inspect_result.fillna(0)
 
     try:
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return
+        sys.exit() 
+        
 
     try:
         logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
