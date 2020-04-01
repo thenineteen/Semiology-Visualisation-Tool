@@ -222,16 +222,33 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
             df.loc[df[col2].str.contains(term, na=False)], sort=False
         )
 
-    inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
+# to fix issue #7 by commenting out below and inserting 3 lines instead:
+    # inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
+    keep = ['Localising', 'Lateralising']
+    inspect_result = \
+        inspect_result[[column for column in inspect_result.isna().all().index if column not in [keep]]].dropna(axis=1).append(inspect_result[[keep]], sort=False)
+    inspect_result = inspect_result.fillna(0)
 
     try:
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return
+        sys.exit() 
+        
+
+    try:
+        logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+    except KeyError:
+        # user tried a semiology which doesn't have a key in semiology_dictionary
+        # run again and set semiology_dict to None
+    #     inspect_result = QUERY_SEMIOLOGY(
+    #         df,
+    #         semiology_term=semiology_term,
+    #         semiology_dict_path=None,
+    # )
+        logging.debug('Issue # 7 alive and well.')
 
 
-    logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
     try:
         logging.debug(f'Lateralising Datapoints relevant to query: {inspect_result["Lateralising"].sum()}')
     except:
