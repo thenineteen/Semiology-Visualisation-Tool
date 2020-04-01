@@ -2,7 +2,6 @@ import re
 import logging
 import yaml
 import pandas as pd
-import sys
 
 
 def make_simple_list(allv, allv_simple_list = []):
@@ -233,7 +232,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        sys.exit() 
+        return 
         
 
     try:
