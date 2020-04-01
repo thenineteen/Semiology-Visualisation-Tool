@@ -4,7 +4,6 @@ import yaml
 import pandas as pd
 
 
-
 def make_simple_list(allv, allv_simple_list = []):
     """
     turns a nested list into one simple list
@@ -222,16 +221,33 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
             df.loc[df[col2].str.contains(term, na=False)], sort=False
         )
 
+# to fix issue #7 by commenting out below and inserting 3 lines instead:
     inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
+    if 'Localising' not in inspect_result.columns:
+        inspect_result['Localising'] = 0
+    if 'Lateralising' not in inspect_result.columns:
+        inspect_result['Lateralising'] = 0
 
     try:
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return
+        return 
+        
+
+    try:
+        logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+    except KeyError:
+        # user tried a semiology which doesn't have a key in semiology_dictionary
+        # run again and set semiology_dict to None
+    #     inspect_result = QUERY_SEMIOLOGY(
+    #         df,
+    #         semiology_term=semiology_term,
+    #         semiology_dict_path=None,
+    # )
+        logging.debug('Issue # 7 alive and well.')
 
 
-    logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
     try:
         logging.debug(f'Lateralising Datapoints relevant to query: {inspect_result["Lateralising"].sum()}')
     except:
