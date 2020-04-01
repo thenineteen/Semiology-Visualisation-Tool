@@ -230,8 +230,17 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
         return
 
-
-    logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+    try:
+        logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+    except KeyError:
+        # user tried a semiology which doesn't have a key in semiology_dictionary
+        # run again and set semiology_dict to None
+        inspect_result = QUERY_SEMIOLOGY(
+            df,
+            semiology_term=semiology_term,
+            semiology_dict_path=None,
+    )
+    
     try:
         logging.debug(f'Lateralising Datapoints relevant to query: {inspect_result["Lateralising"].sum()}')
     except:
