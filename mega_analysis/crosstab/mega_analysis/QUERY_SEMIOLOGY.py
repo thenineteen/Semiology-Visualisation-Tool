@@ -224,8 +224,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
 # to fix issue #7 by commenting out below and inserting 3 lines instead:
     # inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
     keep = ['Localising', 'Lateralising']
-    inspect_result2 = \
-        inspect_result[[column for column in inspect_result.isna().all().index if column not in [keep]]].dropna(axis=1).append(inspect_result[[keep]], sort=False)
+    inspect_result2 = inspect_result[[column for column in inspect_result.isna().all().index if column not in [keep]]].dropna(axis=1).append(inspect_result[[keep]], sort=False)
     inspect_result = inspect_result2.fillna(0)
 
     try:
