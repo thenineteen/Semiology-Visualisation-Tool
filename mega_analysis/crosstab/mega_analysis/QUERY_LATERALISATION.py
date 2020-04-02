@@ -103,6 +103,11 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :]  # only those with lat
     no_rows = inspect_result_lat.shape[0]
 
+    # define id_cols:
+    id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
+
+
+
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         print('Please note you must determine at least one of side_of_symptoms_signs')
@@ -127,9 +132,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
 
 
-
     # cycle through rows of inspect_result_lat:
-    id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
 
     for i in range (no_rows):
         logging.debug(str(i))
@@ -256,7 +259,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
-    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].null(), :]
+    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(), :]
     # now clean ready to map:
     inspect_result_nulllateralising.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
     inspect_result_nulllateralising.dropna(how='all', axis='columns', inplace=True)

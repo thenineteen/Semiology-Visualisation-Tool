@@ -3,6 +3,11 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
+concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
+# sEEG_ES = 'sEEG and/or ES'
+sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
+
 def exclusions(df,
                 POST_ictals=True,
                 PET_hypermetabolism=True,
@@ -17,10 +22,7 @@ def exclusions(df,
 
     """
 
-    post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
-    concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
-    # sEEG_ES = 'sEEG and/or ES'
-    sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
+    
 
 
     if POST_ictals:
