@@ -12,7 +12,9 @@ from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATE
 from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclusions,
     exclude_ET,
-    exclude_sEEG_ES,
+    exclude_sEEG,
+    exclude_cortical_stimulation,
+    exclude_seizure_free,
 )
 
 
@@ -68,7 +70,8 @@ class Semiology:
             dominant_hemisphere: Laterality,
             include_seizure_freedom: bool = True,
             include_concordance: bool = True,
-            include_seeg_es: bool = True,
+            include_seeg: bool = True,
+            include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
             ):
         self.term = term
@@ -78,7 +81,8 @@ class Semiology:
             mega_analysis_df,
             include_seizure_freedom,
             include_concordance,
-            include_seeg_es,
+            include_seeg,
+            include_cortical_stimulation,
             include_et_topology_ez,
         )
 
@@ -87,17 +91,20 @@ class Semiology:
             df,
             include_seizure_freedom,
             include_concordance,
-            include_seeg_es,
+            include_seeg,
+            include_cortical_stimulation,
             include_et_topology_ez,
             ):
-        if not include_seizure_freedom:
-            pass  # TODO by Ali
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
+        if not include_seizure_freedom:
+            df = exclude_seizure_free(df)
         if not include_et_topology_ez:
             df = exclude_ET(df)
-        if not include_seeg_es:
-            df = exclude_sEEG_ES(df)
+        if not include_seeg:
+            df = exclude_sEEG(df)
+        if not include_cortical_stimulation:
+            df = exclude_cortical_stimulation(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
