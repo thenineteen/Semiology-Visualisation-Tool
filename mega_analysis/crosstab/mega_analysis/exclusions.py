@@ -110,5 +110,5 @@ def exclude_sEEG_ES(df):
     exclude stereoEEG and electrical stimulation cases on the fly and
     as the data grows, rather than using pickled resources
     """
-    df_exclusions_sEEG_ES = df.dropna(subset=[sEEG_ES], axis=0, inplace=False)
+    df_exclusions_sEEG_ES = df.dropna(subset=['Cortical Stimulation (CS)'], axis=0, inplace=False)
     return df_exclusions_sEEG_ES
