@@ -21,7 +21,8 @@ def gifs_lat(gif_lat_file):
 
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                        side_of_symptoms_signs=None,
-                       pts_dominant_hemisphere_R_or_L=None):
+                       pts_dominant_hemisphere_R_or_L=None,
+                       normalise_lat_to_loc=False):
     """
     After obtaining inspect_result and clinician's filter, can optionally use this function to determine
     lateralisation e.g. for EpiNav(R) visualisation.
@@ -200,14 +201,14 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         higher_value = higher_value.remove(lower_value)
 
         ratio = lower_value / Total
-        norm_ratio = ratio / proportion_lateralising  # see comments on section above about why we should normalise
-        #  # alternatively:
-        # norm_ratio = ratio * (2-proportion_lateralising)
-        # limit it to zero and 1:
-        if norm_ratio > 1:
-            norm_ratio = 1
-            print('norm_ratio capped at 1: small proportion of data lateralised')
 
+        if normalise_lat_to_loc==True:
+            norm_ratio = ratio / proportion_lateralising  # see comments on section above about why we should normalise
+            if norm_ratio > 1:
+                norm_ratio = 1
+                print('norm_ratio capped at 1: small proportion of data lateralised')
+        elif normalise_lat_toloc==False:
+            norm_ratio = lower_value / higher_value
 
 
         # if proportion_lateralising is 1, straightforward: return dataframe of right/left gifs whichever lower
