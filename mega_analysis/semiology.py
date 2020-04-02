@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 from typing import Optional
 
@@ -8,6 +9,11 @@ import pandas as pd
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
+from mega_analysis.crosstab.mega_analysis.exclusions import (
+    exclusions,
+    exclude_ET,
+    exclude_sEEG_ES,
+)
 
 
 # Define paths
@@ -48,30 +54,51 @@ def get_all_semiology_terms():
 all_semiology_terms = get_all_semiology_terms()
 
 # Define constants
-LEFT = 'L'
-RIGHT = 'R'
+class Laterality(Enum):
+    LEFT = 'L'
+    RIGHT = 'R'
+    NEUTRAL = None
 
 
 class Semiology:
     def __init__(
             self,
             term: str,
-            left: bool = False,
-            right: bool = False,
-            neutral: bool = False,
-            seizure_freedom: bool = True,
-            concordance: bool = True,
-            seeg_es: bool = True,
-            et_topology_ez: bool = True,
+            symptoms_side: Laterality,
+            dominant_hemisphere: Laterality,
+            include_seizure_freedom: bool = True,
+            include_concordance: bool = True,
+            include_seeg_es: bool = True,
+            include_et_topology_ez: bool = True,
             ):
         self.term = term
-        self.left = left
-        self.right = right
-        self.neutral = neutral
-        self.seizure_freedom = seizure_freedom
-        self.concordance = concordance
-        self.seeg_es = seeg_es
-        self.et_topology_ez = et_topology_ez
+        self.symptoms_side = symptoms_side
+        self.dominant_hemisphere = dominant_hemisphere
+        self.df = self.remove_exclusions(
+            df,
+            include_seizure_freedom,
+            include_concordance,
+            include_seeg_es,
+            include_et_topology_ez,
+        )
+
+    @staticmethod
+    def remove_exclusions(
+            df,
+            include_seizure_freedom,
+            include_concordance,
+            include_seeg_es,
+            include_et_topology_ez,
+            ):
+        if not include_seizure_freedom:
+            pass  # TODO by Ali
+        if not include_concordance:
+            df = exclusions(df, CONCORDANCE=True)
+        if not include_et_topology_ez:
+            df = exclude_ET(df)
+        if not include_seeg_es:
+            df = exclude_sEEG_ES(df)
+        return df
 
     def query_semiology(self) -> pd.DataFrame:
         if self.term in all_semiology_terms:
@@ -79,32 +106,21 @@ class Semiology:
         else:
             path = None
         inspect_result = QUERY_SEMIOLOGY(
-            df,
+            self.df,
             semiology_term=self.term,
             semiology_dict_path=path,
         )
         return inspect_result
 
-    def get_symptoms_side(self) -> str:
-        if self.left:
-            return LEFT
-        elif self.right:
-            return RIGHT
-        else:
-            raise ValueError('Choose left or right symptoms side')
-
-    def get_dominant_hemisphere(self) -> str:
-        return LEFT  # TODO: check with Ali & Gloria
-
     def query_lateralisation(self):
         query_semiology_result = self.query_semiology()
         all_combined_gifs = QUERY_LATERALISATION(
             query_semiology_result,
-            df,
+            self.df,
             map_df_dict,
             gif_lat_file,
-            side_of_symptoms_signs=self.get_symptoms_side(),
-            pts_dominant_hemisphere_R_or_L=self.get_dominant_hemisphere(),
+            side_of_symptoms_signs=self.symptoms_side.value,
+            pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
         )
         return all_combined_gifs
 
