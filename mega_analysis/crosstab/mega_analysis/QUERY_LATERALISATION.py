@@ -107,7 +107,26 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         print('Please note you must determine at least one of side_of_symptoms_signs')
         print('or pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction')
-        
+        inspect_result
+        # now clean ready to map:
+        inspect_result.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
+        inspect_result.dropna(how='all', axis='columns', inplace=True)
+        # now map:
+        gifs_all = pivot_result_to_one_map(inspect_result, 
+                                            one_map, raw_pt_numbers_string='pt #s',
+                                            suppress_prints=True)
+        # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
+        fixed = gifs_all.pivot_table(columns='Gif Parcellations', values='pt #s', aggfunc='sum')
+        fixed2 = fixed.melt(value_name='pt #s')
+        fixed2.insert(0, 'Semiology Term', np.nan)
+        # fixed2.loc[0, 'Semiology Term'] = str( list(inspect_result.index.values) )
+        gifs_all = fixed2
+
+        return gifs_all.round()
+
+
+
+
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
@@ -229,6 +248,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         elif i != 0:
             all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
         logging.debug(f'end of i {i}')
+
+
+
 
 
 
