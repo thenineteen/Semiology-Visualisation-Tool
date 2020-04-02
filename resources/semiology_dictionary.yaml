@@ -15,7 +15,7 @@
 # negatives not requiring catching as positives only used: "abdomen:  SNT" , "abdomen soft,?"
 # ignore findall freq of occurence in files when using items from a list as can find many iterations of "epigastric rising sensation"
 
-# in ontology need to have occurant ictal, postictal properties
+# in ontology (Exclusions) need to have occurant ictal, postictal properties
 
 # updated tonic
 
@@ -493,22 +493,13 @@
       ]
     # "TEST": ["and"]
 
+
 # negations:
 #   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
 
-# Hippocampal Sclerosis:
-#   [
-#     "(?<!no )hippocampal sclerosis",
-#     " HS ",
-#     "(?<!no )hipp?o(camp)? scl",
-#     "mesial scl",
-#     "temporal scl",
-#     "mTL scl",
-#   ]
 
 
-
-# CONTENTIONS
+# CONTENTIONS and UPDATES
 # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic
 # "Fear/Anxiety" hierarchical under Psychic
 # removed VF from autonomous vegetative
