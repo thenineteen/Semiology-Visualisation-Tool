@@ -15,8 +15,9 @@ BLACK = 0, 0, 0
 GRAY = 0.5, 0.5, 0.5
 LIGHT_GRAY = 0.75, 0.75, 0.75
 WHITE = 1, 1, 1
-LEFT = 'L'
-RIGHT = 'R'
+LEFT = 'Left'
+RIGHT = 'Right'
+OTHER = 'Other'
 
 #
 # SemiologyVisualization
@@ -190,36 +191,39 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return colorNode
 
   def getScoresFromGUI(self):
-    from mega_analysis import get_scores_dict
+    from mega_analysis.semiology import Semiology
     result = self.getSemiologyTermAndSideFromGUI()
     if result is None:
       slicer.util.messageBox('Please select a semiology')
       return
     else:
       semiologyTerm, symptomsSide = result
-    scoresDict = get_scores_dict(
-      semiology_term=semiologyTerm,
-      symptoms_side=symptomsSide,
-      dominant_hemisphere=self.getDominantHemisphereFromGUI(),
+    semiology = Semiology(
+      semiologyTerm,
+      symptomsSide,
+      self.getDominantHemisphereFromGUI(),
     )
+    scoresDict = semiology.get_num_patients_dict()
     return scoresDict
 
   def getSemiologyTermAndSideFromGUI(self):
+    from mega_analysis.semiology import Laterality
     for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
       isLeft = widgetsDict['leftCheckBox'].isChecked()
       isRight = widgetsDict['rightCheckBox'].isChecked()
       if isLeft:
-        result = semiologyTerm, LEFT
+        result = semiologyTerm, Laterality.LEFT
         break
       elif isRight:
-        result = semiologyTerm, RIGHT
+        result = semiologyTerm, Laterality.RIGHT
         break
     else:
       result = None
     return result
 
   def getDominantHemisphereFromGUI(self):
-    return LEFT if self.leftDominantRadioButton.isChecked() else RIGHT
+    from mega_analysis.semiology import Laterality
+    return Laterality.LEFT if self.leftDominantRadioButton.isChecked() else Laterality.RIGHT
 
   # Slots
   def onAutoUpdateButton(self):
@@ -228,27 +232,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def onshowGifButton(self):
     self.parcellation.setOriginalColors()
-
-  def updateColors(self):
-    colorNode = self.getColorNode()
-    if colorNode is None:
-      slicer.util.errorDisplay('No color node is selected')
-      return
-    scoresDict = self.getScoresFromGUI()
-    self.scoresVolumeNode = self.logic.getScoresVolumeNode(
-      scoresDict, colorNode, self.parcellationLabelMapNode)
-    showLeft = self.showLeftHemisphereCheckBox.isChecked()
-    showRight = self.showRightHemisphereCheckBox.isChecked()
-    self.parcellation.setScoresColors(
-      scoresDict, colorNode, showLeft=showLeft, showRight=showRight)
-
-    slicer.util.setSliceViewerLayers(
-      foreground=self.scoresVolumeNode,
-      foregroundOpacity=0,
-      labelOpacity=0,
-    )
-    self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
-    self.logic.showForegroundScalarBar()
 
   def onSelect(self):
     # parcellationPath = Path(self.parcellationPathEdit.currentPath)
@@ -282,6 +265,26 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def onAutoUpdateCheckBox(self):
     self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
 
+  def updateColors(self):
+    colorNode = self.getColorNode()
+    if colorNode is None:
+      slicer.util.errorDisplay('No color node is selected')
+      return
+    scoresDict = self.getScoresFromGUI()
+    self.scoresVolumeNode = self.logic.getScoresVolumeNode(
+      scoresDict, colorNode, self.parcellationLabelMapNode)
+    showLeft = self.showLeftHemisphereCheckBox.isChecked()
+    showRight = self.showRightHemisphereCheckBox.isChecked()
+    self.parcellation.setScoresColors(
+      scoresDict, colorNode, showLeft=showLeft, showRight=showRight)
+
+    slicer.util.setSliceViewerLayers(
+      foreground=self.scoresVolumeNode,
+      foregroundOpacity=0,
+      labelOpacity=0,
+    )
+    self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
+    self.logic.showForegroundScalarBar()
 
 #
 # SemiologyVisualizationLogic
@@ -360,6 +363,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     return self.getImagesDir() / 'MNI_152_gif.nii.gz'
 
   def getScoresVolumeNode(self, scoresDict, colorNode, parcellationLabelMapNode):
+    """Create a scalar volume node so that the colorbar is correct."""
     parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
     parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
     scoresArray = np.zeros_like(parcellationArray)
@@ -592,7 +596,7 @@ class Parcellation(ABC):
           opacity2D = 1
           opacity3D = 1
           score -= minScore
-          score /= maxScore
+          score /= (maxScore - minScore)
           color = self.getColorFromScore(score, colorNode)
       if not showLeft and 'Left' in segment.GetName():
         opacity3D = 0
