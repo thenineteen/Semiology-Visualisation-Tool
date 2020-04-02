@@ -29,7 +29,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     Run this after QUERY_SEMIOLOGY OR QUERY_INTERSECTION_TERMS
 
-    inspect_result may not have a lateralising column (if all were NaNs)
+    inspect_result may not have a lateralising column (if all were NaNs) - set to zero
     goes through row by row
 
     ---
@@ -104,9 +104,10 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     no_rows = inspect_result_lat.shape[0]
 
     # ensure there is patient's lateralised signs and check dominant known or not
-    if not side_of_symptoms_signs:
-        print('Please retry and determine side_of_symptoms_signs argument')
-        return
+    if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
+        print('Please note you must determine at least one of side_of_symptoms_signs')
+        print('or pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction')
+        
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
@@ -230,12 +231,28 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         logging.debug(f'end of i {i}')
 
 
+
+    # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
+    # with inspect_result that had null lateralising:
+    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].null(), :]
+    # now clean ready to map:
+    inspect_result_nulllateralising.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
+    inspect_result_nulllateralising.dropna(how='all', axis='columns', inplace=True)
+    # now map:
+    gifs_not_lat = pivot_result_to_one_map(inspect_result_nulllateralising, 
+                                           one_map, raw_pt_numbers_string='pt #s',
+                                           suppress_prints=True)
+    #now combine:
+    all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False) 
+
+    
+
+    
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
     fixed = all_combined_gifs.pivot_table(columns='Gif Parcellations', values='pt #s', aggfunc='sum')
     fixed2 = fixed.melt(value_name='pt #s')
     fixed2.insert(0, 'Semiology Term', np.nan)
     # fixed2.loc[0, 'Semiology Term'] = str( list(inspect_result.index.values) )
     all_combined_gifs = fixed2
-    all_combined_gifs
 
     return all_combined_gifs.round()
