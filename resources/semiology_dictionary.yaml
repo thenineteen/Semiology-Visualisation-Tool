@@ -435,7 +435,7 @@
         "(?<!no) none?-? ?sense",
         "(?<!no) none? ?-?sensical",
       ]
-    "Pallilalia":
+    "Palilalia":
       [
         "(?<!no) pallilalia",
         "(?<!no) palilalia",
@@ -496,15 +496,17 @@
 # negations:
 #   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
 
-Hippocampal Sclerosis:
-  [
-    "(?<!no )hippocampal sclerosis",
-    " HS ",
-    "(?<!no )hipp?o(camp)? scl",
-    "mesial scl",
-    "temporal scl",
-    "mTL scl",
-  ]
+# Hippocampal Sclerosis:
+#   [
+#     "(?<!no )hippocampal sclerosis",
+#     " HS ",
+#     "(?<!no )hipp?o(camp)? scl",
+#     "mesial scl",
+#     "temporal scl",
+#     "mTL scl",
+#   ]
+
+
 # CONTENTIONS
 # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic
 # "Fear/Anxiety" hierarchical under Psychic
