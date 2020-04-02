@@ -134,3 +134,4 @@ def exclude_seizure_free(df):
     df.loc[df[post_op].notnull(), post_op] = np.nan
     df_exclusion_sz_free = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
     return df_exclusion_sz_free
+
