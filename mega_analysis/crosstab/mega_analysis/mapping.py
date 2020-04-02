@@ -14,6 +14,7 @@ def mapping(map_df_dict):
     #     mapping_OL = map_df_dict['GIF OL']
     #     mapping_CING = map_df_dict['GIF CING']
     #     mapping_INSULA = map_df_dict['GIF INSULA']
+    #     mapping_CEREBELLUM = 
 
     GIF parcellation missing hypothalamic parcellation?
 
@@ -77,7 +78,7 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
     for col in individual_cols:
         col_gifs = one_map[[col]].dropna(axis='rows', how='all')
         # add the ~pts numbers:
-        col_gifs.loc[:, raw_pt_numbers_string] = int(pivot_result[col].values)
+        col_gifs.loc[:, raw_pt_numbers_string] = (pivot_result[col].values).astype('int')
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
 
