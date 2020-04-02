@@ -229,7 +229,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         inspect_result['Lateralising'] = 0
     if ((inspect_result['Localising'] == 0) and (inspect_result['Lateralising'] == 0)):
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return None
+        return
 
     try:
         inspect_result.drop_duplicates(inplace=True)
