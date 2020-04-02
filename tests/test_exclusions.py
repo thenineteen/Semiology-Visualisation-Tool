@@ -3,7 +3,9 @@ from mega_analysis.semiology import mega_analysis_df
 from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclusions,
     exclude_ET,
-    exclude_sEEG_ES,
+    exclude_sEEG,
+    exclude_cortical_stimulation,
+    exclude_seizure_free,
 )
 
 
@@ -21,4 +23,4 @@ class TestExclusions(unittest.TestCase):
         assert not self.df.equals(exclude_ET(self.df))
 
     def test_exclude_seeg_es(self):
-        assert not self.df.equals(exclude_sEEG_ES(self.df))
+        assert not self.df.equals(exclude_sEEG(self.df))
