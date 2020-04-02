@@ -140,7 +140,7 @@
                   "speech difficult", "difficult speech", "(?<!no) distortion of speech", "(?<!no) speech disturbance", "(?<!no) garbled speech",
                   "(?<!no) speech production problem", "(?<!no) incomprehensible speech", "(?<!no) incoherent speech",
                   "(?<!no) none?-? ?sense", "(?<!no) none? ?-?sensical"]
-    "Pallilalia": ["(?<!no) pallilalia", "(?<!no) palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
+    "Palilalia": ["(?<!no) pallilalia", "(?<!no) palilalia", "repetition of (words|sentences?|speech)", "speech repetition", "phrase repetition",
                   "(?<!no) repeating (?:himself|herself)"]
     "Aphemia": ["(?<!no) aphemia", "inarticulate", "articulation", "articulatory", "(?<!no) anarthria"]
     "Coprolalia": ["((?<!no )(?<!without ))corprolalia", "swear", "shit", "fuck", "offensive", "expletive"]
@@ -161,9 +161,9 @@
 # negations:
 #   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
 
-
-Hippocampal Sclerosis:
-  ["(?<!no )hippocampal sclerosis", " HS ", "(?<!no )hipp?o(camp)? scl", "mesial scl", "temporal scl", "mTL scl"]
+# 
+# Hippocampal Sclerosis:
+#   ["(?<!no )hippocampal sclerosis", " HS ", "(?<!no )hipp?o(camp)? scl", "mesial scl", "temporal scl", "mTL scl"]
 
 
 
