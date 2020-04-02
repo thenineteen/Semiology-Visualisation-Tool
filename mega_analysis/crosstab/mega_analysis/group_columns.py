@@ -6,12 +6,13 @@ import pandas as pd
 
 def full_id_vars():
     id_cols = ['Reference', 'Relevant Tot Sample', 'Tot Pt included',
-                    'Reported Semiology', 'Semiology Category', 'Ground truth description',
-                    'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)',
+                'Reported Semiology', 'Semiology Category', 'Ground truth description',
+                'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)',
                 'Concordant Neurophys & Imaging (MRI, PET, SPECT)',
                 'sEEG and/or ES',
                 'Localising', 'Reported Localisation',
-                    '# tot pt in the paper', '# pt excluded', '# pt sz free post-surg',
+                'padeiatric? <7 years (0-6 yrs) y/n',
+                '# tot pt in the paper', '# pt excluded', '# pt sz free post-surg',
                 'Spontaneous Semiology (SS)', 'Epilepsy Topology (ET)', 'Cortical Stimulation (CS)', 'Other (e.g. Abs)']
     
     return id_cols
@@ -24,6 +25,6 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:72]  # for July 2019 version at least
+    localisation_labels = df.columns[17:102]  # March 2020 17:102. Prev 17:72. 
 
     return localisation_labels
