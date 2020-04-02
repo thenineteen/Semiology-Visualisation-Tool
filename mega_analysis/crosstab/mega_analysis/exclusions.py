@@ -99,16 +99,38 @@ def exclusions(df,
 
 def exclude_ET(df):
     """
-    exclude epilepsy topology cases on the fly as the data grows, rather than using the pickled resources
+    exclude ALL epilepsy topology cases on the fly as the data grows, rather than using the pickled resources
     """
-    df_exclusions_ET = df.dropna(subset=['Epilepsy Topology (ET)'], axis=0, inplace=False)
+    ET = 'Epilepsy Topology (ET)'
+    df_exclusions_ET = df.loc[~df[ET].notnull(), :]
     return df_exclusions_ET
 
 
-def exclude_sEEG_ES(df):
+def exclude_cortical_stimulation(df):
     """
-    exclude stereoEEG and electrical stimulation cases on the fly and
-    as the data grows, rather than using pickled resources
+    exclude electrical stimulation cases when this is the only ground truth.
+    will need a datatest to ensure all sEEG_ES = 'ES' have CES.notnull(). 
     """
-    df_exclusions_sEEG_ES = df.dropna(subset=[sEEG_ES], axis=0, inplace=False)
-    return df_exclusions_sEEG_ES
+    df.loc[df[sEEG_ES]=='ES', sEEG_ES] = np.nan
+    df_exclusions_CES = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
+    # # second part for test later
+    # CES = 'Cortical Stimulation (CS)'
+    # df_exclusions_CES = df_exclusions_CES.loc[~df[CES].notnull(), :]
+    # return df_exclusions_CES
+
+def exclude_sEEG(df):
+    """
+    exclude cases where the only ground truth is stereo EEG cases.
+    I recommend also excluding exclude_cortical_stimulation if running this.
+    """"
+    df.loc[df[sEEG_ES]=='y', sEEG_ES] = np.nan
+    df_exclusions_sEEG = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
+    return df_exclusions_sEEG
+
+def exclude_seizure_free(df):
+    """
+    exclude seizure-free cases if this is the only ground truth.
+    """
+    df.loc[df[post_op].notnull(), post_op] = np.nan
+    df_exclusion_sz_free = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
+    return df_exclusion_sz_free
