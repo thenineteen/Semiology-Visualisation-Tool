@@ -94,7 +94,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
     self.semiologiesCollapsibleButton.enabled = False
     self.semiologiesCollapsibleButton.text = 'Semiologies'
-    self.semiologiesCollapsibleButton.setChecked(False)
     self.layout.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
@@ -135,17 +134,23 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       message = f'{e}\n\nPlease restart 3D Slicer and try again'
       slicer.util.errorDisplay(message)
     self.semiologiesDict = self.logic.getSemiologiesDict(
-      get_all_semiology_terms(), self.onAutoUpdateButton)
+      get_all_semiology_terms(),
+      self.onAutoUpdateButton,
+      self.onSemiologyPushButton,
+    )
     semiologiesWidget = qt.QWidget()
     semiologiesLayout = qt.QGridLayout(semiologiesWidget)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Semiology</b>'), 0, 0)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2)
+    align_args = 1, 1, qt.Qt.AlignCenter
+    semiologiesLayout.addWidget(qt.QLabel('<b>Semiology</b>'), 0, 0, *align_args)
+    semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
+    semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
+    semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
     iterable = enumerate(self.semiologiesDict.items(), start=1)
     for row, (semiology, widgetsDict) in iterable:
-      semiologiesLayout.addWidget(qt.QLabel(semiology), row, 0)
-      semiologiesLayout.addWidget(widgetsDict['leftCheckBox'], row, 1)
-      semiologiesLayout.addWidget(widgetsDict['rightCheckBox'], row, 2)
+      semiologiesLayout.addWidget(widgetsDict['pushButton'], row, 0)
+      semiologiesLayout.addWidget(widgetsDict['leftRadioButton'], row, 1, *align_args)
+      semiologiesLayout.addWidget(widgetsDict['rightRadioButton'], row, 2, *align_args)
+      semiologiesLayout.addWidget(widgetsDict['otherRadioButton'], row, 3, *align_args)
     return semiologiesWidget
 
   def getColorNode(self):
@@ -174,13 +179,17 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getSemiologyTermAndSideFromGUI(self):
     from mega_analysis.semiology import Laterality
     for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
-      isLeft = widgetsDict['leftCheckBox'].isChecked()
-      isRight = widgetsDict['rightCheckBox'].isChecked()
+      isLeft = widgetsDict['leftRadioButton'].isChecked()
+      isRight = widgetsDict['rightRadioButton'].isChecked()
+      isOther = widgetsDict['otherRadioButton'].isChecked()
       if isLeft:
         result = semiologyTerm, Laterality.LEFT
         break
       elif isRight:
         result = semiologyTerm, Laterality.RIGHT
+        break
+      elif isOther:
+        result = semiologyTerm, Laterality.NEUTRAL
         break
     else:
       result = None
@@ -191,6 +200,13 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return Laterality.LEFT if self.leftDominantRadioButton.isChecked() else Laterality.RIGHT
 
   # Slots
+  def onSemiologyPushButton(self):
+    for widgetsDict in self.semiologiesDict.values():
+      enable = widgetsDict['pushButton'].isChecked()
+      widgetsDict['leftRadioButton'].setEnabled(enable)
+      widgetsDict['rightRadioButton'].setEnabled(enable)
+      widgetsDict['otherRadioButton'].setEnabled(enable)
+
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
       self.updateColors()
@@ -256,18 +272,27 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 #
 class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
-  def getSemiologiesDict(self, semiologies, slot):
+  def getSemiologiesDict(self, semiologies, radioButton, pushButtonSlot):
     semiologiesDict = {}
     for semiology in semiologies:
-      # leftCheckBox = qt.QCheckBox()
-      # rightCheckBox = qt.QCheckBox()
-      leftCheckBox = qt.QRadioButton()
-      rightCheckBox = qt.QRadioButton()
-      leftCheckBox.toggled.connect(slot)
-      rightCheckBox.toggled.connect(slot)
+      pushButton = qt.QPushButton(semiology)
+      pushButton.clicked.connect(pushButtonSlot)
+      pushButton.setCheckable(True)
+      leftRadioButton = qt.QRadioButton()
+      leftRadioButton.setChecked(True)
+      leftRadioButton.clicked.connect(radioButton)
+      leftRadioButton.setEnabled(False)
+      rightRadioButton = qt.QRadioButton()
+      rightRadioButton.clicked.connect(radioButton)
+      rightRadioButton.setEnabled(False)
+      otherRadioButton = qt.QRadioButton()
+      otherRadioButton.clicked.connect(radioButton)
+      otherRadioButton.setEnabled(False)
       semiologiesDict[semiology] = dict(
-          leftCheckBox=leftCheckBox,
-          rightCheckBox=rightCheckBox,
+        pushButton=pushButton,
+        leftRadioButton=leftRadioButton,
+        rightRadioButton=rightRadioButton,
+        otherRadioButton=otherRadioButton,
       )
     return semiologiesDict
 
