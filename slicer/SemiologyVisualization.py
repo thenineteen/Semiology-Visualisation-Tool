@@ -136,7 +136,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesDict = self.logic.getSemiologiesDict(
       get_all_semiology_terms(),
       self.onAutoUpdateButton,
-      self.onSemiologyPushButton,
+      self.onSemiologyCheckBox,
     )
     semiologiesWidget = qt.QWidget()
     semiologiesLayout = qt.QGridLayout(semiologiesWidget)
@@ -147,7 +147,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
     iterable = enumerate(self.semiologiesDict.items(), start=1)
     for row, (semiology, widgetsDict) in iterable:
-      semiologiesLayout.addWidget(widgetsDict['pushButton'], row, 0)
+      semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
       semiologiesLayout.addWidget(widgetsDict['leftRadioButton'], row, 1, *align_args)
       semiologiesLayout.addWidget(widgetsDict['rightRadioButton'], row, 2, *align_args)
       semiologiesLayout.addWidget(widgetsDict['otherRadioButton'], row, 3, *align_args)
@@ -179,6 +179,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getSemiologyTermAndSideFromGUI(self):
     from mega_analysis.semiology import Laterality
     for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
+      if not widgetsDict['checkBox'].isChecked():
+        continue
       isLeft = widgetsDict['leftRadioButton'].isChecked()
       isRight = widgetsDict['rightRadioButton'].isChecked()
       isOther = widgetsDict['otherRadioButton'].isChecked()
@@ -200,9 +202,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return Laterality.LEFT if self.leftDominantRadioButton.isChecked() else Laterality.RIGHT
 
   # Slots
-  def onSemiologyPushButton(self):
+  def onSemiologyCheckBox(self):
     for widgetsDict in self.semiologiesDict.values():
-      enable = widgetsDict['pushButton'].isChecked()
+      enable = widgetsDict['checkBox'].isChecked()
       widgetsDict['leftRadioButton'].setEnabled(enable)
       widgetsDict['rightRadioButton'].setEnabled(enable)
       widgetsDict['otherRadioButton'].setEnabled(enable)
@@ -272,27 +274,30 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 #
 class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
-  def getSemiologiesDict(self, semiologies, radioButton, pushButtonSlot):
+  def getSemiologiesDict(self, semiologies, radioButton, checkBoxSlot):
     semiologiesDict = {}
     for semiology in semiologies:
-      pushButton = qt.QPushButton(semiology)
-      pushButton.clicked.connect(pushButtonSlot)
-      pushButton.setCheckable(True)
+      checkBox = qt.QCheckBox(semiology)
+      checkBox.toggled.connect(checkBoxSlot)
+      buttonGroup = qt.QButtonGroup()
       leftRadioButton = qt.QRadioButton()
-      leftRadioButton.setChecked(True)
       leftRadioButton.clicked.connect(radioButton)
       leftRadioButton.setEnabled(False)
+      buttonGroup.addButton(leftRadioButton)
       rightRadioButton = qt.QRadioButton()
       rightRadioButton.clicked.connect(radioButton)
       rightRadioButton.setEnabled(False)
+      buttonGroup.addButton(rightRadioButton)
       otherRadioButton = qt.QRadioButton()
       otherRadioButton.clicked.connect(radioButton)
       otherRadioButton.setEnabled(False)
+      buttonGroup.addButton(otherRadioButton)
       semiologiesDict[semiology] = dict(
-        pushButton=pushButton,
+        checkBox=checkBox,
         leftRadioButton=leftRadioButton,
         rightRadioButton=rightRadioButton,
         otherRadioButton=otherRadioButton,
+        buttonGroup=buttonGroup,
       )
     return semiologiesDict
 
@@ -574,7 +579,7 @@ class Parcellation(ABC):
       label = self.getLabelFromSegment(segment)
       if scoresDict is not None:
         scores = np.array(list(scoresDict.values()))
-        scores = scores[scores > 0]  # do I want this?
+        positiveScores = scores[scores > 0]  # do I want this?
         minScore = min(scores)
         maxScore = max(scores)
       color = LIGHT_GRAY
@@ -585,9 +590,9 @@ class Parcellation(ABC):
         if score > 0:
           opacity2D = 1
           opacity3D = 1
-          score -= minScore
-          score /= (maxScore - minScore)
-          color = self.getColorFromScore(score, colorNode)
+          normalizedScore = score - minScore
+          normalizedScore /= (maxScore - minScore)
+          color = self.getColorFromScore(normalizedScore, colorNode)
       if not showLeft and 'Left' in segment.GetName():
         opacity3D = 0
       if not showRight and 'Right' in segment.GetName():
