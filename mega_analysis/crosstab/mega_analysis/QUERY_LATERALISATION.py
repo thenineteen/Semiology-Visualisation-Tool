@@ -207,7 +207,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             if norm_ratio > 1:
                 norm_ratio = 1
                 print('norm_ratio capped at 1: small proportion of data lateralised')
-        elif normalise_lat_toloc==False:
+        elif normalise_lat_to_loc==False:
             norm_ratio = lower_value / higher_value
 
 
