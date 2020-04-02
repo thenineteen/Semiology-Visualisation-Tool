@@ -198,7 +198,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
         lower_value = [Right, Left][lower_postn]
         higher_value = [Right, Left]
-        higher_value = higher_value.remove(lower_value)
+        higher_value.remove(lower_value)
 
         ratio = lower_value / Total
 
