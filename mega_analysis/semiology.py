@@ -24,7 +24,7 @@ semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 
 # Read Excel file only three times at initialisation
-df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
+mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
@@ -74,8 +74,8 @@ class Semiology:
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
-        self.df = self.remove_exclusions(
-            df,
+        self.data_frame = self.remove_exclusions(
+            mega_analysis_df,
             include_seizure_freedom,
             include_concordance,
             include_seeg_es,
@@ -106,7 +106,7 @@ class Semiology:
         else:
             path = None
         inspect_result = QUERY_SEMIOLOGY(
-            self.df,
+            self.data_frame,
             semiology_term=self.term,
             semiology_dict_path=path,
         )
@@ -116,7 +116,7 @@ class Semiology:
         query_semiology_result = self.query_semiology()
         all_combined_gifs = QUERY_LATERALISATION(
             query_semiology_result,
-            self.df,
+            self.data_frame,
             map_df_dict,
             gif_lat_file,
             side_of_symptoms_signs=self.symptoms_side.value,
