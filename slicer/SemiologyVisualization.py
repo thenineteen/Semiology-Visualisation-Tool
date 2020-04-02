@@ -71,7 +71,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.layout.addWidget(self.settingsCollapsibleButton)
 
     self.makeDominantHemisphereButton()
-    # self.makeColorsButton()
     self.makeHemispheresVisibleButtons()
     self.makeShowGIFButton()
     self.autoUpdateCheckBox = qt.QCheckBox()
@@ -90,27 +89,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.settingsLayout.addRow(
       'Dominant hemisphere: ', dominantHemisphereLayout)
-
-  def makeColorsButton(self):
-    self.logic.removeColorMaps()
-    self.colorSelector = slicer.qMRMLColorTableComboBox()
-    self.colorSelector.nodeTypes = ["vtkMRMLColorNode"]
-    self.colorSelector.hideChildNodeTypes = (
-      "vtkMRMLDiffusionTensorDisplayPropertiesNode",
-      "vtkMRMLProceduralColorNode",
-    )
-    self.colorSelector.addEnabled = False
-    self.colorSelector.removeEnabled = False
-    self.colorSelector.noneEnabled = False
-    self.colorSelector.selectNodeUponCreation = True
-    self.colorSelector.showHidden = True
-    self.colorSelector.showChildNodeTypes = True
-    self.colorSelector.setMRMLScene(slicer.mrmlScene)
-    self.colorSelector.setToolTip("Choose a colormap")
-    self.colorSelector.currentNodeID = 'vtkMRMLColorTableNodeFileCividis.txt'
-    self.colorSelector.currentNodeID = None
-    self.colorSelector.currentNodeChanged.connect(self.onAutoUpdateButton)
-    self.settingsLayout.addRow('Colormap: ', self.colorSelector)
 
   def makeSemiologiesButton(self):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
@@ -171,7 +149,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return semiologiesWidget
 
   def getColorNode(self):
-    # colorNode = self.colorSelector.currentNode()
     colorNode = slicer.util.getFirstNodeByClassByName(
       'vtkMRMLColorTableNode',
       'Viridis',
