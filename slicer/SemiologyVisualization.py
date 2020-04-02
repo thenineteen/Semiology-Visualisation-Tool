@@ -596,7 +596,7 @@ class Parcellation(ABC):
           opacity2D = 1
           opacity3D = 1
           score -= minScore
-          score /= maxScore
+          score /= (maxScore - minScore)
           color = self.getColorFromScore(score, colorNode)
       if not showLeft and 'Left' in segment.GetName():
         opacity3D = 0
