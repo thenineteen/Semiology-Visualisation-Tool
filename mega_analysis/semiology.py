@@ -5,20 +5,9 @@ import yaml
 import numpy as np
 import pandas as pd
 
-# needed for querying dataframe localisations, Transforming and mapping to EpiNav gif parcellations
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
-from mega_analysis.crosstab.mega_analysis.QUERY_INTERSECTION_TERMS import QUERY_INTERSECTION_TERMS
-from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import *
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import *
-
-# needed to collate lateralisation data
 from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
-from mega_analysis.crosstab.mega_analysis.lateralised_intensities import lateralisation_to_pixel_intensities
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import *
-
-# mapping to gif
-from mega_analysis.crosstab.mega_analysis.mapping import mapping, big_map, pivot_result_to_one_map
 
 
 # Define paths
