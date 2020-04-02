@@ -24,6 +24,6 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:72]  # for July 2019 version at least
+    localisation_labels = df.columns[17:102]  # for July 2019 version was 72. For March 2020 102
 
     return localisation_labels
