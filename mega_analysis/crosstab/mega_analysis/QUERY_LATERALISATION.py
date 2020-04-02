@@ -69,13 +69,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                     (inspect_result2['IL'].notnull())|
                                     (inspect_result2['DomH'].notnull())|
                                     (inspect_result2['NonDomH'].notnull()), ['Lateralising']]
-    missing_lat = missing_lat['Lateralising'].isnull()
-    if ( missing_lat.all() ) == False:
+    missing_lat_null_mask = missing_lat['Lateralising'].isnull()
+    if not missing_lat_null_mask.all():
         logging.debug('\nNo missing Lateralising data points.')
-    else:
-        print('The inspect_result has NaNs/zero where it should not: check data at row(s) ', missing_lat.loc[missing_lat['Lateralising'].isnull()].index)
-        print('fix it then come back.')
-        return missing_lat
+    else:  # semiology term not recognised
+        logging.debug('The inspect_result has NaNs/zero where it should not: check data')
+        return None
 
     # check columns exist (not removed in preceding notnull steps from other functions):
     for col in lat_vars:
