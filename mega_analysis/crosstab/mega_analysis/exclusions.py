@@ -113,6 +113,7 @@ def exclude_cortical_stimulation(df):
     """
     df.loc[df[sEEG_ES]=='ES', sEEG_ES] = np.nan
     df_exclusions_CES = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
+    return df_exclusions_CES
     # # second part for test later
     # CES = 'Cortical Stimulation (CS)'
     # df_exclusions_CES = df_exclusions_CES.loc[~df[CES].notnull(), :]
