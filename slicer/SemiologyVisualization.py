@@ -71,7 +71,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.layout.addWidget(self.settingsCollapsibleButton)
 
     self.makeDominantHemisphereButton()
-    self.makeEzHemisphereButton()
     # self.makeColorsButton()
     self.makeHemispheresVisibleButtons()
     self.makeShowGIFButton()
@@ -91,17 +90,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.settingsLayout.addRow(
       'Dominant hemisphere: ', dominantHemisphereLayout)
-
-  def makeEzHemisphereButton(self):
-    self.leftEzRadioButton = qt.QRadioButton('Left')
-    self.rightEzRadioButton = qt.QRadioButton('Right')
-    self.leftEzRadioButton.setChecked(True)
-    ezHemisphereLayout = qt.QHBoxLayout()
-    ezHemisphereLayout.addWidget(self.leftEzRadioButton)
-    ezHemisphereLayout.addWidget(self.rightEzRadioButton)
-    self.leftEzRadioButton.toggled.connect(self.onAutoUpdateButton)
-    self.rightEzRadioButton.toggled.connect(self.onAutoUpdateButton)
-    self.settingsLayout.addRow('Epileptogenic zone: ', ezHemisphereLayout)
 
   def makeColorsButton(self):
     self.logic.removeColorMaps()
