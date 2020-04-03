@@ -25,7 +25,6 @@ def exclusions(df,
 
 
 
-
     if POST_ictals:
         post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
         post_ictal_inspection = QUERY_SEMIOLOGY(df, semiology_term=post_ictals,
