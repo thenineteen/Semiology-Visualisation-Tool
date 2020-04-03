@@ -51,6 +51,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       colorTablePath=self.logic.getGifTablePath(),
     )
     self.makeGUI()
+    self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     slicer.semiologyVisualization = self
 
@@ -255,7 +256,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       return
     scoresDict = self.getScoresFromGUI()
     self.scoresVolumeNode = self.logic.getScoresVolumeNode(
-      scoresDict, colorNode, self.parcellationLabelMapNode)
+      scoresDict,
+      colorNode,
+      self.parcellationLabelMapNode,
+      self.scoresVolumeNode,
+    )
     showLeft = self.showLeftHemisphereCheckBox.isChecked()
     showRight = self.showRightHemisphereCheckBox.isChecked()
     self.parcellation.setScoresColors(
@@ -357,7 +362,13 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
   def getDefaultParcellationPath(self):
     return self.getImagesDir() / 'MNI_152_gif.nii.gz'
 
-  def getScoresVolumeNode(self, scoresDict, colorNode, parcellationLabelMapNode):
+  def getScoresVolumeNode(
+      self,
+      scoresDict,
+      colorNode,
+      parcellationLabelMapNode,
+      outputNode,
+      ):
     """Create a scalar volume node so that the colorbar is correct."""
     parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
     parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
@@ -372,7 +383,11 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
     scoresImage = self.getImageFromArray(scoresArray, parcellationImage)
     scoresName = 'Scores'
-    scoresVolumeNode = su.PushVolumeToSlicer(scoresImage, name=scoresName)
+    scoresVolumeNode = su.PushVolumeToSlicer(
+      scoresImage,
+      name=scoresName,
+      targetNode=outputNode,
+    )
     displayNode = scoresVolumeNode.GetDisplayNode()
     displayNode.SetAutoThreshold(False)
     displayNode.SetAndObserveColorNodeID(colorNode.GetID())
