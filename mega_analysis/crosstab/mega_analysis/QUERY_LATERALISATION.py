@@ -143,7 +143,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         full_row = inspect_result_lat.iloc[[i],:]
         row = full_row.drop(labels=id_cols, axis='columns', inplace=False, errors='ignore')
         row = row.dropna(how='all', axis='columns')
-        # row = row.dropna(how='all', axis='rows')
+        row = row.dropna(how='all', axis='rows')
 
         one_map = big_map(map_df_dict)
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
