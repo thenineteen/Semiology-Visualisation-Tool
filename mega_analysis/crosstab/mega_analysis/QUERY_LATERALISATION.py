@@ -147,7 +147,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
         # one_map = big_map(map_df_dict)
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
-                                                suppress_prints=True)
+                                                suppress_prints=False)
         # ^ row_to_one_map now contains all the lateralising gif parcellations
 
 
