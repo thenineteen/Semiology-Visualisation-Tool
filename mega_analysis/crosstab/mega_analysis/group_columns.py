@@ -26,7 +26,7 @@ def lateralisation_vars():
 
 def anatomical_regions(df):
 
-    localisation_labels = df.columns[17:102]  # March 2020 17:102. Prev 17:72. 
+    localisation_labels = df.columns[17:72]  # 102 broke it? 
 
 
     return localisation_labels
