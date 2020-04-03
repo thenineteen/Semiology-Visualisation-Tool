@@ -3,6 +3,11 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
+concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
+# sEEG_ES = 'sEEG and/or ES'
+sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
+
 def exclusions(df,
                 POST_ictals=True,
                 PET_hypermetabolism=True,
@@ -17,10 +22,7 @@ def exclusions(df,
 
     """
 
-    post_op = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
-    concordant = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
-    # sEEG_ES = 'sEEG and/or ES'
-    sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
+    
 
 
     if POST_ictals:
@@ -111,6 +113,8 @@ def exclude_cortical_stimulation(df):
     exclude electrical stimulation cases when this is the only ground truth.
     will need a datatest to ensure all sEEG_ES = 'ES' have CES.notnull(). 
     """
+    sEEG_ES = 'sEEG (y) and/or ES (ES)' 
+
     df.loc[df[sEEG_ES]=='ES', sEEG_ES] = np.nan
     df_exclusions_CES = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
     return df_exclusions_CES
@@ -124,6 +128,8 @@ def exclude_sEEG(df):
     exclude cases where the only ground truth is stereo EEG cases.
     I recommend also excluding exclude_cortical_stimulation if running this.
     """
+    sEEG_ES = 'sEEG (y) and/or ES (ES)' 
+    
     df.loc[df[sEEG_ES]=='y', sEEG_ES] = np.nan
     df_exclusions_sEEG = df.dropna(subset=[post_op, concordant, sEEG_ES], thresh=1, axis=0, inplace=False)
     return df_exclusions_sEEG

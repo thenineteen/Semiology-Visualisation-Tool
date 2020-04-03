@@ -22,5 +22,11 @@ class TestExclusions(unittest.TestCase):
     def test_exclude_et(self):
         assert not self.df.equals(exclude_ET(self.df))
 
-    def test_exclude_seeg_es(self):
+    def test_exclude_seeg(self):
         assert not self.df.equals(exclude_sEEG(self.df))
+
+    def test_exclude_cortical_stimulation(self):
+        assert not self.df.equals(exclude_cortical_stimulation(self.df))
+
+    def test_exclude_seizure_free(self):
+        assert not self.df.equals(exclude_seizure_free(self.df))
