@@ -53,6 +53,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.makeGUI()
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
+    self.tableNode = None
     slicer.semiologyVisualization = self
 
   def makeGUI(self):
@@ -60,6 +61,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.makeSettingsButton()
     self.makeUpdateButton()
     self.makeSemiologiesButton()
+
+    self.tableView = slicer.qMRMLTableView()
+    self.tableView.hide()
+    self.layout.addWidget(self.tableView)
 
     # Add vertical spacer
     self.layout.addStretch(1)
@@ -206,9 +211,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def onSemiologyCheckBox(self):
     for widgetsDict in self.semiologiesDict.values():
       enable = widgetsDict['checkBox'].isChecked()
-      widgetsDict['leftRadioButton'].setEnabled(enable)
-      widgetsDict['rightRadioButton'].setEnabled(enable)
-      widgetsDict['otherRadioButton'].setEnabled(enable)
+      widgetsDict['leftRadioButton'].setVisible(enable)
+      widgetsDict['rightRadioButton'].setVisible(enable)
+      widgetsDict['otherRadioButton'].setVisible(enable)
 
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
@@ -273,13 +278,22 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     )
     self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
     self.logic.showForegroundScalarBar()
+    scoresDict = self.parcellation.getScoresDictWithNames(scoresDict)
+    self.tableNode = self.logic.exportToTable(self.tableNode, scoresDict)
+    # self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
+    self.logic.showTableInViewLayout(self.tableNode)
 
 #
 # SemiologyVisualizationLogic
 #
 class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
-  def getSemiologiesDict(self, semiologies, radioButton, checkBoxSlot):
+  def getSemiologiesDict(
+      self,
+      semiologies,
+      radioButton,
+      checkBoxSlot,
+      ):
     semiologiesDict = {}
     for semiology in semiologies:
       checkBox = qt.QCheckBox(semiology)
@@ -287,15 +301,15 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       buttonGroup = qt.QButtonGroup()
       leftRadioButton = qt.QRadioButton()
       leftRadioButton.clicked.connect(radioButton)
-      leftRadioButton.setEnabled(False)
+      leftRadioButton.setVisible(False)
       buttonGroup.addButton(leftRadioButton)
       rightRadioButton = qt.QRadioButton()
       rightRadioButton.clicked.connect(radioButton)
-      rightRadioButton.setEnabled(False)
+      rightRadioButton.setVisible(False)
       buttonGroup.addButton(rightRadioButton)
       otherRadioButton = qt.QRadioButton()
       otherRadioButton.clicked.connect(radioButton)
-      otherRadioButton.setEnabled(False)
+      otherRadioButton.setVisible(False)
       buttonGroup.addButton(otherRadioButton)
       semiologiesDict[semiology] = dict(
         checkBox=checkBox,
@@ -442,6 +456,46 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     import DataProbeLib
     DataProbeLib.SliceAnnotations().updateSliceViewFromGUI()
 
+  def exportToTable(self, tableNode, scoresDict):
+    if tableNode is None:
+      tableNode = slicer.mrmlScene.AddNewNodeByClass('vtkMRMLTableNode')
+    tableWasModified = tableNode.StartModify()
+    tableNode.RemoveAllColumns()
+    # Sort from large to small and remove zeros
+    scoresDict = {
+      k: v
+      for k, v
+      in sorted(scoresDict.items(), key=lambda item: item[1], reverse=True)
+      if v > 0
+    }
+    structuresColumn = tableNode.AddColumn(vtk.vtkStringArray())
+    structuresColumn.SetName('Structure')
+    scoresColumn = tableNode.AddColumn(vtk.vtkDoubleArray())
+    scoresColumn.SetName('Score')
+
+    # Fill columns
+    table = tableNode.GetTable()
+    for label, score in scoresDict.items():
+        rowIndex = tableNode.AddEmptyRow()
+        table.GetColumn(0).SetValue(rowIndex, str(label))
+        table.GetColumn(1).SetValue(rowIndex, score)
+    tableNode.Modified()
+    tableNode.EndModify(tableWasModified)
+    return tableNode
+
+  def showTableInModuleLayout(self, tableView, tableNode):
+    tableView.setMRMLTableNode(tableNode)
+    tableView.show()
+
+  def showTableInViewLayout(self, tableNode):
+    currentLayout = slicer.app.layoutManager().layout
+    tablesLogic = slicer.modules.tables.logic()
+    appLogic = slicer.app.applicationLogic()
+
+    layoutWithTable = tablesLogic.GetLayoutWithTable(currentLayout)
+    slicer.app.layoutManager().setLayout(layoutWithTable)
+    appLogic.GetSelectionNode().SetActiveTableID(tableNode.GetID())
+    appLogic.PropagateTableSelection()
 
 class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
   """
@@ -656,6 +710,12 @@ class Parcellation(ABC):
       displayNode.SetSegmentOpacity2DOutline(segment.GetName(), opacity)
     elif dimension == 3:
       displayNode.SetSegmentOpacity3D(segment.GetName(), opacity)
+
+  def getNameFromLabel(self, label):
+    return self.colorTable.getStructureNameFromLabelNumber(label)
+
+  def getScoresDictWithNames(self, scoresDict):
+    return {self.getNameFromLabel(k): v for k, v in scoresDict.items()}
 
 
 class GIFParcellation(Parcellation):
