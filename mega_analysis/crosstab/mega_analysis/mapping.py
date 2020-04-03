@@ -78,7 +78,7 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
     for col in individual_cols:
         col_gifs = one_map[[col]].dropna(axis='rows', how='all')
         # add the ~pts numbers:
-        col_gifs.loc[:, raw_pt_numbers_string] = (pivot_result[col]).astype('int')
+        col_gifs.loc[:, raw_pt_numbers_string] = (pivot_result[col].values).astype('int32')
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
 
