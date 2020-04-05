@@ -5,6 +5,7 @@ from typing import Optional, List, Dict
 import yaml
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
@@ -144,3 +145,50 @@ class Semiology:
                 in zip(labels, patients)
             }
         return num_patients_dict
+
+
+def combine_semiologies(semiologies: List[Semiology]) -> Dict[int, float]:
+    df = get_df_from_semiologies(semiologies)
+    normalised_df = normalise_semiologies_df(df)
+    scores_dict = combine_semiologies_df(normalised_df)
+    return scores_dict
+
+def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
+    num_patients_dicts = {
+        s.term: s.get_num_patients_dict()
+        for s in semiologies
+    }
+    df = get_df_from_dicts(num_patients_dicts)
+    return df
+
+
+def get_df_from_dicts(
+        semiologies_dicts: Dict[str, Dict[int, float]],
+        ) -> pd.DataFrame:
+    records = []
+    for term, num_patients_dict in semiologies_dicts.items():
+        num_patients_dict['Semiology'] = term
+        records.append(num_patients_dict)
+    df = pd.DataFrame.from_records(records, index='Semiology')
+    return df
+
+
+def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
+    table = np.array(semiologies_df)
+    data = table.T
+    scaler = MinMaxScaler((0, 100))
+    scaler.fit(data)
+    normalised = scaler.transform(data).T
+    normalised_df = pd.DataFrame(
+        normalised,
+        columns=semiologies_df.columns,
+        index=semiologies_df.index,
+    )
+    return normalised_df
+
+
+def combine_semiologies_df(normalised_df: pd.DataFrame) -> Dict[int, float]:
+    combined_df = normalised_df.sum()
+    combined_normalised_df = combined_df / combined_df.max() * 100
+    scores_dict = dict(combined_normalised_df)
+    return scores_dict
