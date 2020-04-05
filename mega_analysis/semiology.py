@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Dict
 
 import yaml
 import numpy as np
@@ -88,13 +88,13 @@ class Semiology:
 
     @staticmethod
     def remove_exclusions(
-            df,
-            include_seizure_freedom,
-            include_concordance,
-            include_seeg,
-            include_cortical_stimulation,
-            include_et_topology_ez,
-            ):
+            df: pd.DataFrame,
+            include_seizure_freedom: bool,
+            include_concordance: bool,
+            include_seeg: bool,
+            include_cortical_stimulation: bool,
+            include_et_topology_ez: bool,
+            ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
         if not include_seizure_freedom:
@@ -119,7 +119,7 @@ class Semiology:
         )
         return inspect_result
 
-    def query_lateralisation(self):
+    def query_lateralisation(self) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
         all_combined_gifs = QUERY_LATERALISATION(
             query_semiology_result,
