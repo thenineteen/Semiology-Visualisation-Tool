@@ -149,7 +149,9 @@ class Semiology:
 
 def combine_semiologies(semiologies: List[Semiology]) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
-
+    normalised_df = normalise_semiologies_df(df)
+    scores_dict = combine_semiologies_df(normalised_df)
+    return scores_dict
 
 def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
     num_patients_dicts = {
