@@ -75,6 +75,28 @@ class TestSemiology(unittest.TestCase):
         self.assertIs(type(num_patients_dict), dict)
 
 
+    def test_existing_head_version(self):
+        semiology = Semiology('Head version', Laterality.LEFT, Laterality.LEFT)
+        num_patients_dict = semiology.get_num_patients_dict()
+        self.assertIs(type(num_patients_dict), dict)
+
+    def test_neutral_symptoms_side_head_version(self):
+        semiology = Semiology('Head version', Laterality.NEUTRAL, Laterality.LEFT)
+        num_patients_dict = semiology.get_num_patients_dict()
+        self.assertIs(type(num_patients_dict), dict)
+
+    def test_neutral_dominant_hemisphere_head_version(self):
+        semiology = Semiology('Head version', Laterality.LEFT, Laterality.NEUTRAL)
+        num_patients_dict = semiology.get_num_patients_dict()
+        self.assertIs(type(num_patients_dict), dict)
+
+    def test_neutral_all_head_version(self):
+        semiology = Semiology(
+            'Head version', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        num_patients_dict = semiology.get_num_patients_dict()
+        self.assertIs(type(num_patients_dict), dict)
+
+
     def test_non_existing(self):
         semiology = Semiology('No semiology', Laterality.LEFT, Laterality.LEFT)
         num_patients_dict = semiology.get_num_patients_dict()
