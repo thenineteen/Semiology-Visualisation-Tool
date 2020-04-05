@@ -39,6 +39,13 @@ gif_lat_file = pd.read_excel(
     sheet_name='Full GIF Map for Review '
 )
 
+# Read lateralities for GUI
+neutral_only_path = resources_dir / 'semiologies_neutral_only.txt'
+neutral_also_path = resources_dir / 'semiologies_neutral_also.txt'
+semiologies_neutral_only = neutral_only_path.read_text().splitlines()
+semiologies_neutral_also = neutral_also_path.read_text().splitlines()
+
+
 def recursive_items(dictionary):
     """https://stackoverflow.com/a/39234154/3956024"""
     for key, value in dictionary.items():
@@ -74,18 +81,22 @@ class Semiology:
             include_seeg: bool = True,
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
+            possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
         self.data_frame = self.remove_exclusions(
-            mega_analysis_df,
+            mega_analysis_df,  # global variable
             include_seizure_freedom,
             include_concordance,
             include_seeg,
             include_cortical_stimulation,
             include_et_topology_ez,
         )
+        if possible_lateralities is None:
+            possible_lateralities = get_possible_lateralities(self.term)
+        self.possible_lateralities = possible_lateralities
 
     @staticmethod
     def remove_exclusions(
@@ -145,6 +156,15 @@ class Semiology:
                 in zip(labels, patients)
             }
         return num_patients_dict
+
+
+def get_possible_lateralities(term) -> List[Laterality]:
+    lateralities = [Laterality.LEFT, Laterality.RIGHT]
+    if term in semiologies_neutral_only:  # global variable
+        lateralities = [Laterality.NEUTRAL]
+    elif term in semiologies_neutral_also:  # global variable
+        lateralities.append(Laterality.NEUTRAL)
+    return lateralities
 
 
 def combine_semiologies(semiologies: List[Semiology]) -> Dict[int, float]:
