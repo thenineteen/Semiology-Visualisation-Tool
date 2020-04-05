@@ -167,41 +167,38 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return colorNode
 
   def getScoresFromGUI(self):
-    from mega_analysis.semiology import Semiology
-    result = self.getSemiologyTermAndSideFromGUI()
-    if result is None:
+    from mega_analysis.semiology import Semiology, combine_semiologies
+    terms_and_sides = self.getSemiologyTermsAndSidesFromGUI()
+    if terms_and_sides is None:
       slicer.util.messageBox('Please select a semiology')
       return
-    else:
-      semiologyTerm, symptomsSide = result
-    semiology = Semiology(
-      semiologyTerm,
-      symptomsSide,
-      self.getDominantHemisphereFromGUI(),
-    )
-    scoresDict = semiology.get_num_patients_dict()
+    semiologies = []
+    for semiologyTerm, symptomsSide in terms_and_sides:
+      semiology = Semiology(
+        semiologyTerm,
+        symptomsSide,
+        self.getDominantHemisphereFromGUI(),
+      )
+      semiologies.append(semiology)
+    scoresDict = combine_semiologies(semiologies)
     return scoresDict
 
-  def getSemiologyTermAndSideFromGUI(self):
+  def getSemiologyTermsAndSidesFromGUI(self):
     from mega_analysis.semiology import Laterality
+    terms_and_sides = []
     for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
       if not widgetsDict['checkBox'].isChecked():
         continue
-      isLeft = widgetsDict['leftRadioButton'].isChecked()
-      isRight = widgetsDict['rightRadioButton'].isChecked()
-      isOther = widgetsDict['otherRadioButton'].isChecked()
-      if isLeft:
+      if widgetsDict['leftRadioButton'].isChecked():
         result = semiologyTerm, Laterality.LEFT
-        break
-      elif isRight:
+      elif widgetsDict['rightRadioButton'].isChecked():
         result = semiologyTerm, Laterality.RIGHT
-        break
-      elif isOther:
+      elif widgetsDict['otherRadioButton'].isChecked():
         result = semiologyTerm, Laterality.NEUTRAL
-        break
-    else:
-      result = None
-    return result
+      terms_and_sides.append(result)
+    terms_and_sides = None if not terms_and_sides else terms_and_sides
+    return terms_and_sides
+
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
