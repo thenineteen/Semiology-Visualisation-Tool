@@ -1,4 +1,4 @@
-from .QUERY_SEMIOLOGY import *
+from .QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 import numpy as np
 import pandas as pd
 from pathlib import Path
