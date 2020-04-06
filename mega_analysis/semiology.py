@@ -1,3 +1,4 @@
+import warnings
 from enum import Enum
 from pathlib import Path
 from typing import Optional, List, Dict
@@ -146,7 +147,8 @@ class Semiology:
     def get_num_patients_dict(self) -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
-            num_patients_dict = None
+            message = f'No results generated for semiology term "{self.term}"'
+            raise ValueError(message)
         else:
             array = np.array(query_lateralisation_result)
             _, labels, patients = array.T
@@ -173,11 +175,19 @@ def combine_semiologies(semiologies: List[Semiology]) -> Dict[int, float]:
     scores_dict = combine_semiologies_df(normalised_df)
     return scores_dict
 
+
 def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
-    num_patients_dicts = {
-        s.term: s.get_num_patients_dict()
-        for s in semiologies
-    }
+    num_patients_dicts = {}
+    for semiology in semiologies:
+        num_patients_dict = semiology.get_num_patients_dict()
+        if num_patients_dict is None:
+            message = (
+                f'Information for semiology term "{semiology.term}"'
+                ' could not be retrieved'
+            )
+            warnings.warn(message)
+        else:
+            num_patients_dicts[semiology.term] = num_patients_dict
     df = get_df_from_dicts(num_patients_dicts)
     return df
 

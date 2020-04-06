@@ -143,12 +143,12 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       message = f'{e}\n\nPlease restart 3D Slicer and try again'
       slicer.util.errorDisplay(message)
 
-    lateralities_dict = {
+    lateralitiesDict = {
       term: get_possible_lateralities(term)
       for term in get_all_semiology_terms()
     }
-    self.semiologiesDict = self.logic.getSemiologiesWidgetsDict(
-      lateralities_dict,
+    self.semiologiesWidgetsDict = self.logic.getSemiologiesWidgetsDict(
+      lateralitiesDict,
       self.onAutoUpdateButton,
       self.onSemiologyCheckBox,
     )
@@ -159,7 +159,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
     semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
     semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
-    iterable = enumerate(self.semiologiesDict.items(), start=1)
+    iterable = enumerate(self.semiologiesWidgetsDict.items(), start=1)
     for row, (semiology, widgetsDict) in iterable:
       semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
       for i, laterality in enumerate(('left', 'right', 'other')):
@@ -177,40 +177,45 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def getScoresFromGUI(self):
     from mega_analysis.semiology import Semiology, combine_semiologies
-    terms_and_sides = self.getSemiologyTermsAndSidesFromGUI()
-    if terms_and_sides is None:
+    termsAndSides = self.getSemiologyTermsAndSidesFromGUI()
+    if termsAndSides is None:
       slicer.util.messageBox('Please select a semiology')
       return
     semiologies = []
-    for semiologyTerm, symptomsSide in terms_and_sides:
+    for semiologyTerm, symptomsSide in termsAndSides:
       semiology = Semiology(
         semiologyTerm,
         symptomsSide,
         self.getDominantHemisphereFromGUI(),
       )
       semiologies.append(semiology)
-    scoresDict = combine_semiologies(semiologies)
+    try:
+      scoresDict = combine_semiologies(semiologies)
+    except Exception as e:
+      message = f'Error retrieving semiology information. Details:\n\n{e}'
+      slicer.util.errorDisplay(message)
+      scoresDict = None
+      raise
     return scoresDict
 
   def getSemiologyTermsAndSidesFromGUI(self):
     from mega_analysis.semiology import Laterality
-    terms_and_sides = []
-    for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
+    termsAndSides = []
+    for (semiologyTerm, widgetsDict) in self.semiologiesWidgetsDict.items():
       if not widgetsDict['checkBox'].isChecked():
         continue
-      lateralities_dict = {
+      lateralitiesDict = {
         'left': Laterality.LEFT,
         'right': Laterality.RIGHT,
         'other': Laterality.NEUTRAL,
       }
-      for i, laterality in enumerate(lateralities_dict):
+      for i, laterality in enumerate(lateralitiesDict):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None and widget.isChecked():
-          result = semiologyTerm, lateralities_dict[laterality]
-      terms_and_sides.append(result)
-    terms_and_sides = None if not terms_and_sides else terms_and_sides
-    return terms_and_sides
-
+          result = semiologyTerm, lateralitiesDict[laterality]
+      termsAndSides.append(result)
+    termsAndSides = None if not termsAndSides else termsAndSides
+    return termsAndSides
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
@@ -218,7 +223,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   # Slots
   def onSemiologyCheckBox(self):
-    for widgetsDict in self.semiologiesDict.values():
+    for widgetsDict in self.semiologiesWidgetsDict.values():
       enable = widgetsDict['checkBox'].isChecked()
       for i, laterality in enumerate(('left', 'right', 'other')):
         widget = widgetsDict[f'{laterality}RadioButton']
@@ -269,7 +274,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     if colorNode is None:
       slicer.util.errorDisplay('No color node is selected')
       return
+
     scoresDict = self.getScoresFromGUI()
+    if scoresDict is None:
+      return
     self.scoresVolumeNode = self.logic.getScoresVolumeNode(
       scoresDict,
       colorNode,
@@ -300,13 +308,13 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
   def getSemiologiesWidgetsDict(
       self,
-      lateralities_dict,
+      lateralitiesDict,
       radioButton,
       checkBoxSlot,
       ):
     from mega_analysis import Laterality
     semiologiesDict = {}
-    for semiology_term, lateralities in lateralities_dict.items():
+    for semiology_term, lateralities in lateralitiesDict.items():
       checkBox = qt.QCheckBox(semiology_term)
       checkBox.toggled.connect(checkBoxSlot)
       buttonGroup = qt.QButtonGroup()
