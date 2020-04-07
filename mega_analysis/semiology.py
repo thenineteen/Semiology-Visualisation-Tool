@@ -163,13 +163,13 @@ class Semiology:
                     message = f'No QUERY_SEMIOLOGY results for semiology term "{self.term}"'
                     raise ValueError(message)
                 else:
-            array = np.array(query_lateralisation_result)
-            _, labels, patients = array.T
-            num_patients_dict = {
-                int(label): float(num_patients)
-                for (label, num_patients)
-                in zip(labels, patients)
-            }
+                    array = np.array(query_lateralisation_result)
+                    _, labels, patients = array.T
+                    num_patients_dict = {
+                        int(label): float(num_patients)
+                        for (label, num_patients)
+                        in zip(labels, patients)
+                    }
 
             except:
                 message = f'No results generated for semiology term "{self.term}"'
