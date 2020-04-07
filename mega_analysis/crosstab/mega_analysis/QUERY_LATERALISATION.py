@@ -56,7 +56,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     except KeyError:
         print('No Lateralising values found for this query of the database.')
-        return
+        return inspect_result
 
     # check that the lateralising columns isn't null where it shouldn't be i.e. CL/IL/DomH/NonDomH not null:
     # but not 'BL (Non-lateralising)'
