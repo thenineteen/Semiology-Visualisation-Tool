@@ -179,7 +179,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     from mega_analysis.semiology import Semiology, combine_semiologies
     termsAndSides = self.getSemiologyTermsAndSidesFromGUI()
     if termsAndSides is None:
-      slicer.util.messageBox('Please select a semiology')
+      #slicer.util.messageBox('Please select a semiology')
       return
     semiologies = []
     for semiologyTerm, symptomsSide in termsAndSides:
@@ -214,7 +214,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None and widget.isChecked():
           result = semiologyTerm, lateralitiesDict[laterality]
-      termsAndSides.append(result)
+          termsAndSides.append(result)
     termsAndSides = None if not termsAndSides else termsAndSides
     return termsAndSides
 
@@ -230,6 +230,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None:
           widget.setVisible(enable)
+    self.onAutoUpdateButton()
 
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
@@ -310,7 +311,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
   def getSemiologiesWidgetsDict(
       self,
       lateralitiesDict,
-      radioButton,
+      radioButtonSlot,
       checkBoxSlot,
       ):
     from mega_analysis import Laterality
@@ -321,17 +322,17 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       buttonGroup = qt.QButtonGroup()
 
       leftRadioButton = qt.QRadioButton()
-      leftRadioButton.clicked.connect(radioButton)
+      leftRadioButton.clicked.connect(radioButtonSlot)
       leftRadioButton.setVisible(False)
       buttonGroup.addButton(leftRadioButton)
 
       rightRadioButton = qt.QRadioButton()
-      rightRadioButton.clicked.connect(radioButton)
+      rightRadioButton.clicked.connect(radioButtonSlot)
       rightRadioButton.setVisible(False)
       buttonGroup.addButton(rightRadioButton)
 
       otherRadioButton = qt.QRadioButton()
-      otherRadioButton.clicked.connect(radioButton)
+      otherRadioButton.clicked.connect(radioButtonSlot)
       otherRadioButton.setVisible(False)
       buttonGroup.addButton(otherRadioButton)
 
