@@ -9,33 +9,18 @@ from mega_analysis.semiology import (
 
 
 class TestSemiology(unittest.TestCase):
-    def test_existing_aphasia(self):
-        semiology = Semiology('Aphasia', Laterality.LEFT, Laterality.LEFT)
-        num_patients_dict = semiology.get_num_patients_dict()
-        self.assertIs(type(num_patients_dict), dict)
-
+    # Aphasia laterality not defined
     def test_neutral_symptoms_side_aphasia(self):
         semiology = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.LEFT)
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
     def test_neutral_dominant_hemisphere_aphasia(self):
-        semiology = Semiology('Aphasia', Laterality.LEFT, Laterality.NEUTRAL)
+        semiology = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
-    def test_neutral_all_aphasia(self):
-        semiology = Semiology(
-            'Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
-        num_patients_dict = semiology.get_num_patients_dict()
-        self.assertIs(type(num_patients_dict), dict)
-
-
-    def test_existing_aphemia(self):
-        semiology = Semiology('Aphemia', Laterality.LEFT, Laterality.LEFT)
-        num_patients_dict = semiology.get_num_patients_dict()
-        self.assertIs(type(num_patients_dict), dict)
-
+    # Aphasia laterality not defined
     def test_neutral_symptoms_side_aphemia(self):
         semiology = Semiology('Aphemia', Laterality.NEUTRAL, Laterality.LEFT)
         num_patients_dict = semiology.get_num_patients_dict()
@@ -46,13 +31,7 @@ class TestSemiology(unittest.TestCase):
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
-    def test_neutral_all_aphemia(self):
-        semiology = Semiology(
-            'Aphemia', Laterality.NEUTRAL, Laterality.NEUTRAL)
-        num_patients_dict = semiology.get_num_patients_dict()
-        self.assertIs(type(num_patients_dict), dict)
-
-
+    # Blink
     def test_existing_blink(self):
         semiology = Semiology('Blink', Laterality.LEFT, Laterality.LEFT)
         num_patients_dict = semiology.get_num_patients_dict()
@@ -74,14 +53,9 @@ class TestSemiology(unittest.TestCase):
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
-
+    # Neutral head version not defined
     def test_existing_head_version(self):
         semiology = Semiology('Head version', Laterality.LEFT, Laterality.LEFT)
-        num_patients_dict = semiology.get_num_patients_dict()
-        self.assertIs(type(num_patients_dict), dict)
-
-    def test_neutral_symptoms_side_head_version(self):
-        semiology = Semiology('Head version', Laterality.NEUTRAL, Laterality.LEFT)
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
@@ -90,9 +64,15 @@ class TestSemiology(unittest.TestCase):
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
-    def test_neutral_all_head_version(self):
-        semiology = Semiology(
-            'Head version', Laterality.NEUTRAL, Laterality.NEUTRAL)
+
+    # Neutral Figure of 4 not defined
+    def test_existing_figure_of_four(self):
+        semiology = Semiology('Figure of 4', Laterality.LEFT, Laterality.LEFT)
+        num_patients_dict = semiology.get_num_patients_dict()
+        self.assertIs(type(num_patients_dict), dict)
+
+    def test_neutral_dominant_hemisphere_figure_of_four(self):
+        semiology = Semiology('Figure of 4', Laterality.LEFT, Laterality.NEUTRAL)
         num_patients_dict = semiology.get_num_patients_dict()
         self.assertIs(type(num_patients_dict), dict)
 
