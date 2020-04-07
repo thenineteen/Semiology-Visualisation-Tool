@@ -153,7 +153,7 @@ class Semiology:
             try: 
                 # not sure how to call melt_then_pivot_query from here? is df mega_analysis_df here (you've defined a global variable) or exclusions?
                 inspect_result = self.query_semiology()
-                pivot_result = melt_then_pivot_query(mega_analysis_df, inspect_result, Semiology.term)
+                pivot_result = melt_then_pivot_query(mega_analysis_df, inspect_result, self.term)
                 pivot_result_intensities = pivot_result_to_pixel_intensities(
                     pivot_result, mega_analysis_df, method='min_max')
                 all_gifs = pivot_result_to_one_map(
