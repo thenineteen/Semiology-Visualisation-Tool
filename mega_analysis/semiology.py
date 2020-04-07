@@ -157,7 +157,7 @@ class Semiology:
                 pivot_result_intensities = pivot_result_to_pixel_intensities(
                     pivot_result, mega_analysis_df, method='min_max')
                 all_gifs = pivot_result_to_one_map(
-                    pivot_result_intensities, *one_map, raw_pt_numbers_string='pt #s',
+                    pivot_result_intensities, raw_pt_numbers_string='pt #s',
                             suppress_prints=True)
 
                 if all_gifs is None:
