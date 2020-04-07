@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
+from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
+from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
@@ -147,8 +150,30 @@ class Semiology:
     def get_num_patients_dict(self) -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
-            message = f'No results generated for semiology term "{self.term}"'
-            raise ValueError(message)
+            try: 
+                # not sure how to call melt_then_pivot_query from here? is df mega_analysis_df here (you've defined a global variable) or exclusions?
+                pivot_result = melt_then_pivot_query(df, inspect_result, Semiology.term)
+                pivot_result_intensities = pivot_result_to_pixel_intensities(
+                    pivot_result, mega_analysis_df, method='min_max')
+                all_gifs = pivot_result_to_one_map(
+                    pivot_result_intensities, *one_map, raw_pt_numbers_string='pt #s',
+                            suppress_prints=True)
+
+                if all_gifs is None:
+                    message = f'No QUERY_SEMIOLOGY results for semiology term "{self.term}"'
+                    raise ValueError(message)
+                else:
+            array = np.array(query_lateralisation_result)
+            _, labels, patients = array.T
+            num_patients_dict = {
+                int(label): float(num_patients)
+                for (label, num_patients)
+                in zip(labels, patients)
+            }
+
+            except:
+                message = f'No results generated for semiology term "{self.term}"'
+                raise ValueError(message)
         else:
             array = np.array(query_lateralisation_result)
             _, labels, patients = array.T
