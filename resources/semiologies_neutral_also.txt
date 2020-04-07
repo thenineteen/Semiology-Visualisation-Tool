@@ -1,0 +1,9 @@
+Blink
+Hypermotor
+Hypomotor
+Lower Limb Automatism
+Myoclonic
+Other Complex Motor
+Tonic-Clonic
+Upper Limb Automatism
+Visual

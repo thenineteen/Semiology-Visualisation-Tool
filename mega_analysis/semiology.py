@@ -1,10 +1,12 @@
+import warnings
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Dict
 
 import yaml
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
@@ -37,6 +39,13 @@ gif_lat_file = pd.read_excel(
     header=0,
     sheet_name='Full GIF Map for Review '
 )
+
+# Read lateralities for GUI
+neutral_only_path = resources_dir / 'semiologies_neutral_only.txt'
+neutral_also_path = resources_dir / 'semiologies_neutral_also.txt'
+semiologies_neutral_only = neutral_only_path.read_text().splitlines()
+semiologies_neutral_also = neutral_also_path.read_text().splitlines()
+
 
 def recursive_items(dictionary):
     """https://stackoverflow.com/a/39234154/3956024"""
@@ -73,28 +82,32 @@ class Semiology:
             include_seeg: bool = True,
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
+            possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
         self.data_frame = self.remove_exclusions(
-            mega_analysis_df,
+            mega_analysis_df,  # global variable
             include_seizure_freedom,
             include_concordance,
             include_seeg,
             include_cortical_stimulation,
             include_et_topology_ez,
         )
+        if possible_lateralities is None:
+            possible_lateralities = get_possible_lateralities(self.term)
+        self.possible_lateralities = possible_lateralities
 
     @staticmethod
     def remove_exclusions(
-            df,
-            include_seizure_freedom,
-            include_concordance,
-            include_seeg,
-            include_cortical_stimulation,
-            include_et_topology_ez,
-            ):
+            df: pd.DataFrame,
+            include_seizure_freedom: bool,
+            include_concordance: bool,
+            include_seeg: bool,
+            include_cortical_stimulation: bool,
+            include_et_topology_ez: bool,
+            ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
         if not include_seizure_freedom:
@@ -119,7 +132,7 @@ class Semiology:
         )
         return inspect_result
 
-    def query_lateralisation(self):
+    def query_lateralisation(self) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
         all_combined_gifs = QUERY_LATERALISATION(
             query_semiology_result,
@@ -134,7 +147,8 @@ class Semiology:
     def get_num_patients_dict(self) -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
-            num_patients_dict = None
+            message = f'No results generated for semiology term "{self.term}"'
+            raise ValueError(message)
         else:
             array = np.array(query_lateralisation_result)
             _, labels, patients = array.T
@@ -144,3 +158,75 @@ class Semiology:
                 in zip(labels, patients)
             }
         return num_patients_dict
+
+
+def get_possible_lateralities(term) -> List[Laterality]:
+    lateralities = [Laterality.LEFT, Laterality.RIGHT]
+    if term in semiologies_neutral_only:  # global variable
+        lateralities = [Laterality.NEUTRAL]
+    elif term in semiologies_neutral_also:  # global variable
+        lateralities.append(Laterality.NEUTRAL)
+    return lateralities
+
+
+def combine_semiologies(
+        semiologies: List[Semiology],
+        normalise: bool = True,
+        ) -> Dict[int, float]:
+    df = get_df_from_semiologies(semiologies)
+    if normalise:
+        df = normalise_semiologies_df(df)
+    scores_dict = combine_semiologies_df(df, normalise=normalise)
+    return scores_dict
+
+
+def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
+    num_patients_dicts = {}
+    for semiology in semiologies:
+        num_patients_dict = semiology.get_num_patients_dict()
+        if num_patients_dict is None:
+            message = (
+                f'Information for semiology term "{semiology.term}"'
+                ' could not be retrieved'
+            )
+            warnings.warn(message)
+        else:
+            num_patients_dicts[semiology.term] = num_patients_dict
+    df = get_df_from_dicts(num_patients_dicts)
+    return df
+
+
+def get_df_from_dicts(
+        semiologies_dicts: Dict[str, Dict[int, float]],
+        ) -> pd.DataFrame:
+    records = []
+    for term, num_patients_dict in semiologies_dicts.items():
+        num_patients_dict['Semiology'] = term
+        records.append(num_patients_dict)
+    df = pd.DataFrame.from_records(records, index='Semiology')
+    return df
+
+
+def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
+    table = np.array(semiologies_df)
+    data = table.T
+    scaler = MinMaxScaler((0, 100))
+    scaler.fit(data)
+    normalised = scaler.transform(data).T
+    normalised_df = pd.DataFrame(
+        normalised,
+        columns=semiologies_df.columns,
+        index=semiologies_df.index,
+    )
+    return normalised_df
+
+
+def combine_semiologies_df(
+        df: pd.DataFrame,
+        normalise: bool = True,
+        ) -> Dict[int, float]:
+    combined_df = df.sum()
+    if normalise:
+        combined_df = combined_df / combined_df.max() * 100
+    scores_dict = dict(combined_df)
+    return scores_dict

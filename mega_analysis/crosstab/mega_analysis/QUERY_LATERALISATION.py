@@ -74,7 +74,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if not missing_lat_null_mask.all():
         logging.debug('\nNo missing Lateralising data points.')
     else:  # semiology term not recognised
-        logging.debug('The inspect_result has NaNs/zero where it should not: check data')
+        logging.warning('The inspect_result has NaNs/zero where it should not: check data')
         return None
 
     # check columns exist (not removed in preceding notnull steps from other functions):

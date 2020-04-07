@@ -135,12 +135,20 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def getSemiologiesWidget(self):
     try:
-      from mega_analysis import get_all_semiology_terms
+      from mega_analysis import (
+        get_all_semiology_terms,
+        get_possible_lateralities,
+      )
     except ImportError as e:
       message = f'{e}\n\nPlease restart 3D Slicer and try again'
       slicer.util.errorDisplay(message)
-    self.semiologiesDict = self.logic.getSemiologiesDict(
-      get_all_semiology_terms(),
+
+    lateralitiesDict = {
+      term: get_possible_lateralities(term)
+      for term in get_all_semiology_terms()
+    }
+    self.semiologiesWidgetsDict = self.logic.getSemiologiesWidgetsDict(
+      lateralitiesDict,
       self.onAutoUpdateButton,
       self.onSemiologyCheckBox,
     )
@@ -151,12 +159,13 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
     semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
     semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
-    iterable = enumerate(self.semiologiesDict.items(), start=1)
+    iterable = enumerate(self.semiologiesWidgetsDict.items(), start=1)
     for row, (semiology, widgetsDict) in iterable:
       semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
-      semiologiesLayout.addWidget(widgetsDict['leftRadioButton'], row, 1, *align_args)
-      semiologiesLayout.addWidget(widgetsDict['rightRadioButton'], row, 2, *align_args)
-      semiologiesLayout.addWidget(widgetsDict['otherRadioButton'], row, 3, *align_args)
+      for i, laterality in enumerate(('left', 'right', 'other')):
+        widget = widgetsDict[f'{laterality}RadioButton']
+        if widget is not None:
+          semiologiesLayout.addWidget(widget, row, i + 1, *align_args)
     return semiologiesWidget
 
   def getColorNode(self):
@@ -167,41 +176,47 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return colorNode
 
   def getScoresFromGUI(self):
-    from mega_analysis.semiology import Semiology
-    result = self.getSemiologyTermAndSideFromGUI()
-    if result is None:
-      slicer.util.messageBox('Please select a semiology')
+    from mega_analysis.semiology import Semiology, combine_semiologies
+    termsAndSides = self.getSemiologyTermsAndSidesFromGUI()
+    if termsAndSides is None:
+      #slicer.util.messageBox('Please select a semiology')
       return
-    else:
-      semiologyTerm, symptomsSide = result
-    semiology = Semiology(
-      semiologyTerm,
-      symptomsSide,
-      self.getDominantHemisphereFromGUI(),
-    )
-    scoresDict = semiology.get_num_patients_dict()
+    semiologies = []
+    for semiologyTerm, symptomsSide in termsAndSides:
+      semiology = Semiology(
+        semiologyTerm,
+        symptomsSide,
+        self.getDominantHemisphereFromGUI(),
+      )
+      semiologies.append(semiology)
+    try:
+      normalise = len(semiologies) > 1
+      scoresDict = combine_semiologies(semiologies, normalise=normalise)
+    except Exception as e:
+      message = f'Error retrieving semiology information. Details:\n\n{e}'
+      slicer.util.errorDisplay(message)
+      scoresDict = None
+      raise
     return scoresDict
 
-  def getSemiologyTermAndSideFromGUI(self):
+  def getSemiologyTermsAndSidesFromGUI(self):
     from mega_analysis.semiology import Laterality
-    for (semiologyTerm, widgetsDict) in self.semiologiesDict.items():
+    termsAndSides = []
+    for (semiologyTerm, widgetsDict) in self.semiologiesWidgetsDict.items():
       if not widgetsDict['checkBox'].isChecked():
         continue
-      isLeft = widgetsDict['leftRadioButton'].isChecked()
-      isRight = widgetsDict['rightRadioButton'].isChecked()
-      isOther = widgetsDict['otherRadioButton'].isChecked()
-      if isLeft:
-        result = semiologyTerm, Laterality.LEFT
-        break
-      elif isRight:
-        result = semiologyTerm, Laterality.RIGHT
-        break
-      elif isOther:
-        result = semiologyTerm, Laterality.NEUTRAL
-        break
-    else:
-      result = None
-    return result
+      lateralitiesDict = {
+        'left': Laterality.LEFT,
+        'right': Laterality.RIGHT,
+        'other': Laterality.NEUTRAL,
+      }
+      for i, laterality in enumerate(lateralitiesDict):
+        widget = widgetsDict[f'{laterality}RadioButton']
+        if widget is not None and widget.isChecked():
+          result = semiologyTerm, lateralitiesDict[laterality]
+          termsAndSides.append(result)
+    termsAndSides = None if not termsAndSides else termsAndSides
+    return termsAndSides
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
@@ -209,11 +224,13 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   # Slots
   def onSemiologyCheckBox(self):
-    for widgetsDict in self.semiologiesDict.values():
+    for widgetsDict in self.semiologiesWidgetsDict.values():
       enable = widgetsDict['checkBox'].isChecked()
-      widgetsDict['leftRadioButton'].setVisible(enable)
-      widgetsDict['rightRadioButton'].setVisible(enable)
-      widgetsDict['otherRadioButton'].setVisible(enable)
+      for i, laterality in enumerate(('left', 'right', 'other')):
+        widget = widgetsDict[f'{laterality}RadioButton']
+        if widget is not None:
+          widget.setVisible(enable)
+    self.onAutoUpdateButton()
 
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
@@ -259,7 +276,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     if colorNode is None:
       slicer.util.errorDisplay('No color node is selected')
       return
+
     scoresDict = self.getScoresFromGUI()
+    if scoresDict is None:
+      return
     self.scoresVolumeNode = self.logic.getScoresVolumeNode(
       scoresDict,
       colorNode,
@@ -288,34 +308,39 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 #
 class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
-  def getSemiologiesDict(
+  def getSemiologiesWidgetsDict(
       self,
-      semiologies,
-      radioButton,
+      lateralitiesDict,
+      radioButtonSlot,
       checkBoxSlot,
       ):
+    from mega_analysis import Laterality
     semiologiesDict = {}
-    for semiology in semiologies:
-      checkBox = qt.QCheckBox(semiology)
+    for semiology_term, lateralities in lateralitiesDict.items():
+      checkBox = qt.QCheckBox(semiology_term)
       checkBox.toggled.connect(checkBoxSlot)
       buttonGroup = qt.QButtonGroup()
+
       leftRadioButton = qt.QRadioButton()
-      leftRadioButton.clicked.connect(radioButton)
+      leftRadioButton.clicked.connect(radioButtonSlot)
       leftRadioButton.setVisible(False)
       buttonGroup.addButton(leftRadioButton)
+
       rightRadioButton = qt.QRadioButton()
-      rightRadioButton.clicked.connect(radioButton)
+      rightRadioButton.clicked.connect(radioButtonSlot)
       rightRadioButton.setVisible(False)
       buttonGroup.addButton(rightRadioButton)
+
       otherRadioButton = qt.QRadioButton()
-      otherRadioButton.clicked.connect(radioButton)
+      otherRadioButton.clicked.connect(radioButtonSlot)
       otherRadioButton.setVisible(False)
       buttonGroup.addButton(otherRadioButton)
-      semiologiesDict[semiology] = dict(
+
+      semiologiesDict[semiology_term] = dict(
         checkBox=checkBox,
-        leftRadioButton=leftRadioButton,
-        rightRadioButton=rightRadioButton,
-        otherRadioButton=otherRadioButton,
+        leftRadioButton=leftRadioButton if Laterality.LEFT in lateralities else None,
+        rightRadioButton=rightRadioButton if Laterality.RIGHT in lateralities else None,
+        otherRadioButton=otherRadioButton if Laterality.NEUTRAL in lateralities else None,
         buttonGroup=buttonGroup,
       )
     return semiologiesDict
