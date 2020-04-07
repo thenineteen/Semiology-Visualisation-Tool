@@ -41,7 +41,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     returns all_combined_gifs which is similar in structure to output of pivot_result_to_one_map (final step),
         but in this case, the output column is pt #s rather than pixel intensity.
     Should then run this again through a similar process as
-        pivot_result_to_pixel_intensity to curve fit (QuantileTransformer or chi2)
+        pivot_result_to_pixel_intensity to curve fit (MinMaxScaler, QuantileTransformer or Chi2)
     ---
 
     Alim-Marvasti Aug 2019
@@ -56,7 +56,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     except KeyError:
         print('No Lateralising values found for this query of the database.')
-        return inspect_result
+        return
 
     # check that the lateralising columns isn't null where it shouldn't be i.e. CL/IL/DomH/NonDomH not null:
     # but not 'BL (Non-lateralising)'
