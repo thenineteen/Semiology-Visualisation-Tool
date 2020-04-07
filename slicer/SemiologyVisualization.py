@@ -190,7 +190,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       )
       semiologies.append(semiology)
     try:
-      scoresDict = combine_semiologies(semiologies)
+      normalise = len(semiologies) > 1
+      scoresDict = combine_semiologies(semiologies, normalise=normalise)
     except Exception as e:
       message = f'Error retrieving semiology information. Details:\n\n{e}'
       slicer.util.errorDisplay(message)

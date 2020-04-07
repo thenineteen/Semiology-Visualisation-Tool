@@ -169,10 +169,14 @@ def get_possible_lateralities(term) -> List[Laterality]:
     return lateralities
 
 
-def combine_semiologies(semiologies: List[Semiology]) -> Dict[int, float]:
+def combine_semiologies(
+        semiologies: List[Semiology],
+        normalise: bool = True,
+        ) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
-    normalised_df = normalise_semiologies_df(df)
-    scores_dict = combine_semiologies_df(normalised_df)
+    if normalise:
+        df = normalise_semiologies_df(df)
+    scores_dict = combine_semiologies_df(df, normalise=normalise)
     return scores_dict
 
 
@@ -217,8 +221,12 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
     return normalised_df
 
 
-def combine_semiologies_df(normalised_df: pd.DataFrame) -> Dict[int, float]:
-    combined_df = normalised_df.sum()
-    combined_normalised_df = combined_df / combined_df.max() * 100
-    scores_dict = dict(combined_normalised_df)
+def combine_semiologies_df(
+        df: pd.DataFrame,
+        normalise: bool = True,
+        ) -> Dict[int, float]:
+    combined_df = df.sum()
+    if normalise:
+        combined_df = combined_df / combined_df.max() * 100
+    scores_dict = dict(combined_df)
     return scores_dict
