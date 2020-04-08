@@ -14,10 +14,11 @@ def mapping(map_df_dict):
     #     mapping_OL = map_df_dict['GIF OL']
     #     mapping_CING = map_df_dict['GIF CING']
     #     mapping_INSULA = map_df_dict['GIF INSULA']
-
+    #     mapping_HYPOTHALAMUS = map_df_dict['GIF HYPOTHALAMUS']
+    #     mapping_CEREBELLUM = map_df_dict['GIF CEREBELLUM']
     GIF parcellation missing hypothalamic parcellation?
 
-    Aug 2019 Ali Alim-Marvasti
+    Aug 2019/2020 Ali Alim-Marvasti
 
     """
     map_df_dict = map_df_dict.copy()
