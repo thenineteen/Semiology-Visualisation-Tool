@@ -69,7 +69,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     missing_lat = inspect_result2.loc[(inspect_result2['CL'].notnull())|
                                     (inspect_result2['IL'].notnull())|
                                     (inspect_result2['DomH'].notnull())|
-                                    (inspect_result2['NonDomH'].notnull()), ['Lateralising']]
+                                    (inspect_result2['NonDomH'].notnull()), :]
     missing_lat_null_mask = missing_lat['Lateralising'].isnull()
     if not missing_lat_null_mask.all():
         logging.debug('\nNo missing Lateralising data points.')
