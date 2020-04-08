@@ -145,44 +145,33 @@ class Semiology:
             side_of_symptoms_signs=self.symptoms_side.value,
             pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
         )
+
+        if all_combined_gifs is None:
+            pivot_result = melt_then_pivot_query(
+                mega_analysis_df,
+                query_semiology_result,
+                self.term,
+            )
+            all_combined_gifs = pivot_result_to_one_map(
+                pivot_result,
+                suppress_prints=True,
+                map_df_dict=map_df_dict,
+            )
+
         return all_combined_gifs
 
     def get_num_patients_dict(self) -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
-            try: 
-                # not sure how to call melt_then_pivot_query from here? is df mega_analysis_df here (you've defined a global variable) or exclusions?
-                inspect_result = self.query_semiology()
-                pivot_result = melt_then_pivot_query(mega_analysis_df, inspect_result, self.term)
-                pivot_result_intensities = pivot_result_to_pixel_intensities(
-                    pivot_result, mega_analysis_df, method='min_max')
-                all_gifs = pivot_result_to_one_map(
-                    pivot_result_intensities, raw_pt_numbers_string='pt #s',
-                            suppress_prints=True)
-
-                if all_gifs is None:
-                    message = f'No QUERY_SEMIOLOGY results for semiology term "{self.term}"'
-                    raise ValueError(message)
-                else:
-                    array = np.array(query_lateralisation_result)
-                    _, labels, patients = array.T
-                    num_patients_dict = {
-                        int(label): float(num_patients)
-                        for (label, num_patients)
-                        in zip(labels, patients)
-                    }
-
-            except:
-                message = f'No results generated for semiology term "{self.term}"'
-                raise ValueError(message)
-        else:
-            array = np.array(query_lateralisation_result)
-            _, labels, patients = array.T
-            num_patients_dict = {
-                int(label): float(num_patients)
-                for (label, num_patients)
-                in zip(labels, patients)
-            }
+            message = f'No results generated for semiology term "{self.term}"'
+            raise ValueError(message)
+        array = np.array(query_lateralisation_result)
+        _, labels, patients = array.T
+        num_patients_dict = {
+            int(label): float(num_patients)
+            for (label, num_patients)
+            in zip(labels, patients)
+        }
         return num_patients_dict
 
 
