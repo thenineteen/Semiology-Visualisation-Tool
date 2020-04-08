@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
+from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
+from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
@@ -142,6 +145,19 @@ class Semiology:
             side_of_symptoms_signs=self.symptoms_side.value,
             pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
         )
+
+        if all_combined_gifs is None:
+            pivot_result = melt_then_pivot_query(
+                mega_analysis_df,
+                query_semiology_result,
+                self.term,
+            )
+            all_combined_gifs = pivot_result_to_one_map(
+                pivot_result,
+                suppress_prints=True,
+                map_df_dict=map_df_dict,
+            )
+
         return all_combined_gifs
 
     def get_num_patients_dict(self) -> Optional[dict]:
@@ -149,14 +165,13 @@ class Semiology:
         if query_lateralisation_result is None:
             message = f'No results generated for semiology term "{self.term}"'
             raise ValueError(message)
-        else:
-            array = np.array(query_lateralisation_result)
-            _, labels, patients = array.T
-            num_patients_dict = {
-                int(label): float(num_patients)
-                for (label, num_patients)
-                in zip(labels, patients)
-            }
+        array = np.array(query_lateralisation_result)
+        _, labels, patients = array.T
+        num_patients_dict = {
+            int(label): float(num_patients)
+            for (label, num_patients)
+            in zip(labels, patients)
+        }
         return num_patients_dict
 
 

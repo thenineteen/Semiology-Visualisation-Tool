@@ -42,8 +42,13 @@ def big_map(map_df_dict):
 
 
 
-def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s',
-                            suppress_prints=False):
+def pivot_result_to_one_map(
+        pivot_result,
+        *one_map,
+        raw_pt_numbers_string='pt #s',
+        suppress_prints=False,
+        map_df_dict=None,
+        ):
     """
     Run after pivot_result_to_pixel_intensities - unless being called as part of QUERY_LATERALISATION.
     This is the Final Step without lateralisation.
@@ -56,7 +61,9 @@ def pivot_result_to_one_map(pivot_result, *one_map, raw_pt_numbers_string='pt #s
     Makes a dataframe as it goes along, appending all the mappings.
     """
     if not one_map:
-        one_map = big_map()
+        if map_df_dict is None:
+            raise ValueError('If one_map not provided, map_df_dict cannot be None')
+        one_map = big_map(map_df_dict)
         # one_map = one_map[0]
     if isinstance(one_map, tuple):
         one_map = one_map[0]
