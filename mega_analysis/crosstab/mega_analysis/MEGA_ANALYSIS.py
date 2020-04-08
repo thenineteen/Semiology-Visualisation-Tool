@@ -17,7 +17,7 @@ from .exclusions import exclusions
 def MEGA_ANALYSIS(
     excel_data,
     n_rows = 2500,
-    usecols = "A:DG",
+    usecols = "A:DH",
     header = 1,
     exclude_data=False,
     plot=True,
