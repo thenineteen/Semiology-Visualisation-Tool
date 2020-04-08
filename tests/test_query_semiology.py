@@ -20,24 +20,24 @@ class TestQuerySemiology(unittest.TestCase):
 
     def test_aphasia(self):
         inspect_result = self.query(mega_analysis_df, 'Aphasia')
-        assert not inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_aphemia(self):
         inspect_result = self.query(mega_analysis_df, 'Aphemia')
-        assert not inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_blink(self):
         inspect_result = self.query(mega_analysis_df, 'Blink')
-        assert not inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_head_version(self):
         inspect_result = self.query(mega_analysis_df, 'Head version')
-        assert not inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_figure_of_four(self):
         inspect_result = self.query(mega_analysis_df, 'Figure of 4')
-        assert not inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_non_existing(self):
         inspect_result = self.query(mega_analysis_df, 'No semiology')
-        assert inspect_result.empty
+        self.assertIs(type(inspect_result), pd.DataFrame)
