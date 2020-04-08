@@ -25,6 +25,6 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:102]  # 17:72  # March excel updated to 17:103
+    localisation_labels = df.columns[17:72]  # 17:72  # March excel updated to 17:103
 
     return localisation_labels
