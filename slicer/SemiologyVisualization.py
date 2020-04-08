@@ -87,12 +87,15 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def makeDominantHemisphereButton(self):
     self.leftDominantRadioButton = qt.QRadioButton('Left')
     self.rightDominantRadioButton = qt.QRadioButton('Right')
+    self.unknownDominantRadioButton = qt.QRadioButton('Unknown')
     self.leftDominantRadioButton.setChecked(True)
     dominantHemisphereLayout = qt.QHBoxLayout()
     dominantHemisphereLayout.addWidget(self.leftDominantRadioButton)
     dominantHemisphereLayout.addWidget(self.rightDominantRadioButton)
+    dominantHemisphereLayout.addWidget(self.unknownDominantRadioButton)
     self.leftDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
+    self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.settingsLayout.addRow(
       'Dominant hemisphere: ', dominantHemisphereLayout)
 
@@ -220,7 +223,12 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
-    return Laterality.LEFT if self.leftDominantRadioButton.isChecked() else Laterality.RIGHT
+    if self.leftDominantRadioButton.isChecked():
+      return Laterality.LEFT
+    if self.rightDominantRadioButton.isChecked():
+      return Laterality.RIGHT
+    if self.unknownDominantRadioButton.isChecked():
+      return Laterality.NEUTRAL
 
   # Slots
   def onSemiologyCheckBox(self):
