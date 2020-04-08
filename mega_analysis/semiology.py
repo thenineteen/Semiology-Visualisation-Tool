@@ -35,7 +35,8 @@ mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
-    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA', 'GIF CEREBELLUM']
+    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA', 
+    'GIF HYPOTHALAMUS', 'GIF CEREBELLUM']
 )
 gif_lat_file = pd.read_excel(
     excel_path,
