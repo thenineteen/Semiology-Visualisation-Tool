@@ -267,13 +267,13 @@
           "extension [a-z]* ?[a-z]* ?flexion",
           "flexion [a-z]* ?[a-z]* ?extension",
         ]
-      "Figure of 4": 
+      "Figure of 4":
         [
-          "figure of 4", 
-          "figure of four", 
+          "figure of 4",
+          "figure of four",
           "fig of 4",
           "figure 4",
-          ]
+        ]
       "Hypermotor":
         [
           "hypermotor",
