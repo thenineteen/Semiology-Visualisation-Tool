@@ -34,10 +34,6 @@ class TestQuerySemiology(unittest.TestCase):
         inspect_result = self.query('Head version')
         self.assertIs(type(inspect_result), pd.DataFrame)
 
-    def test_figure_of_four(self):
-        inspect_result = self.query('Figure of 4')
-        self.assertIs(type(inspect_result), pd.DataFrame)
-
     def test_non_existing(self):
         inspect_result = self.query('No semiology')
         self.assertIs(type(inspect_result), pd.DataFrame)
