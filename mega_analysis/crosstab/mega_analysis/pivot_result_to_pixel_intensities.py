@@ -10,8 +10,7 @@ try:
     import seaborn as sns
     import matplotlib.pyplot as plt
 except ImportError:
-    import warnings
-    warnings.warn('maplotlib not imported')
+    logging.debug('matplotlib not imported')
 
 def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor):
     """
