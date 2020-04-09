@@ -5,6 +5,7 @@ from sklearn.preprocessing import QuantileTransformer, MinMaxScaler
 import pandas as pd
 from scipy.stats import skewnorm, chi2, norm
 import scipy.stats
+from .group_columns import anatomical_regions
 
 try:
     import seaborn as sns
@@ -173,7 +174,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
 
 
     # look at distribution of df: use the entire df distribution of frequency of #s of pts
-    localisation_labels = df.columns[17:72]
+    localisation_labels = anatomical_regions(df)
     max_value = df[localisation_labels].sum().max()  # usually this is the temporal lobe sum
     mean = df[localisation_labels].sum().mean()
     median = df[localisation_labels].sum().median()
