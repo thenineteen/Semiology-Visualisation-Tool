@@ -5,4 +5,3 @@ PyYAML
 seaborn
 scikit-learn
 xlrd
-logging
