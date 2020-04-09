@@ -174,7 +174,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getColorNode(self):
     colorNode = slicer.util.getFirstNodeByClassByName(
       'vtkMRMLColorTableNode',
-      'Viridis',
+      'Cividis',
     )
     return colorNode
 
