@@ -119,17 +119,17 @@ class TestQueryLateralisation(unittest.TestCase):
         assert not all_combined_gifs.empty
 
 
-    def test_figure_of_four(self):
+    def test_asymmetric_tonic(self):
         all_combined_gifs = self.query(
-            'Figure of 4',
+            'Asymmetric Tonic',
             Laterality.LEFT,
             Laterality.LEFT,
         )
         assert not all_combined_gifs.empty
 
-    def test_figure_of_four_neutral_dominant(self):
+    def test_asymmetric_tonic_neutral_dominant(self):
         all_combined_gifs = self.query(
-            'Figure of 4',
+            'Asymmetric Tonic',
             Laterality.NEUTRAL,
             Laterality.NEUTRAL,
         )
