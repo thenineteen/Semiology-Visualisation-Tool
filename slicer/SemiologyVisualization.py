@@ -149,7 +149,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def makeUpdateButton(self):
     self.updateButton = qt.QPushButton('Update')
-    self.updateButton.enabled = False
+    self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
     self.updateButton.clicked.connect(self.updateColors)
     self.layout.addWidget(self.updateButton)
 
