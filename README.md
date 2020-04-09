@@ -5,8 +5,12 @@
 ## Epilepsy Semiology Visualisation Tool:
 
 ![](resources/SVT_All_Automatisms.jpg)
+Figure:
+849 Patients with automatisms have an epileptogenic-zone localising mostly to the mesial temporal lobe.
+124 of these lateralise, mainly ipsilaterally.
 
-Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following groun-truths:
+
+Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following ground-truths:
 
 * post-operative seizure freedom,
 * imaging & EEG concordance, (could include PET, SPECT, MEG but this can be filtered)
