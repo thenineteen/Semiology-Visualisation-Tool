@@ -63,11 +63,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.makeLoadDataButton()
     self.makeSettingsButton()
     self.makeUpdateButton()
+    self.splitter = qt.QSplitter()
+    self.splitter.setOrientation(qt.Qt.Vertical)
+    self.layout.addWidget(self.splitter)
     self.makeSemiologiesButton()
-
-    self.tableView = slicer.qMRMLTableView()
-    self.tableView.hide()
-    self.layout.addWidget(self.tableView)
+    self.makeTableButton()
 
     # Add vertical spacer
     self.layout.addStretch(1)
@@ -106,10 +106,22 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
     self.semiologiesCollapsibleButton.enabled = False
     self.semiologiesCollapsibleButton.text = 'Semiologies'
-    self.layout.addWidget(self.semiologiesCollapsibleButton)
+    # self.layout.addWidget(self.semiologiesCollapsibleButton)
+    self.splitter.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
     semiologiesFormLayout.addWidget(self.getSemiologiesWidget())
+
+  def makeTableButton(self):
+    self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
+    self.tableCollapsibleButton.visible = False
+    self.tableCollapsibleButton.text = 'Scores'
+    # self.layout.addWidget(self.tableCollapsibleButton)
+    self.splitter.addWidget(self.tableCollapsibleButton)
+
+    tableLayout = qt.QFormLayout(self.tableCollapsibleButton)
+    self.tableView = slicer.qMRMLTableView()
+    tableLayout.addWidget(self.tableView)
 
   def makeLoadDataButton(self):
     self.loadDataButton = qt.QPushButton('Load data')
@@ -325,8 +337,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.logic.jumpToMax(self.scoresVolumeNode)
     scoresDict = self.parcellation.getScoresDictWithNames(scoresDict)
     self.tableNode = self.logic.exportToTable(self.tableNode, scoresDict)
-    # self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
-    self.logic.showTableInViewLayout(self.tableNode)
+
+    self.tableCollapsibleButton.visible = True
+    self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
+
+    # self.logic.showTableInViewLayout(self.tableNode)
 
 #
 # SemiologyVisualizationLogic
@@ -550,9 +565,10 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
   def jumpToMax(self, volumeNode):
     array = slicer.util.array(volumeNode.GetID())
     maxIndices = np.array(np.where(array == array.max())).T
-    firstMaxIdx = maxIndices[0][::-1].astype(np.uint16).tolist()  # numpy to sitk
+    meanMaxIdx = maxIndices.mean(axis=0)[::-1].astype(np.uint16).tolist()  # numpy to sitk
     image = su.PullVolumeFromSlicer(volumeNode)
-    point = np.array(image.TransformIndexToPhysicalPoint(firstMaxIdx))
+    point = image.TransformContinuousIndexToPhysicalPoint(meanMaxIdx)
+    point = np.array(point)
     point[:2] *= -1  # LPS to RAS
     self.jumpSlices(point)
 
