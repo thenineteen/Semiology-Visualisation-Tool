@@ -172,7 +172,14 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None:
           semiologiesLayout.addWidget(widget, row, i + 1, *align_args)
-    return semiologiesWidget
+
+    scrollArea = qt.QScrollArea()
+    scrollArea.setVerticalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOn)
+    scrollArea.setHorizontalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOff)
+    scrollArea.setWidgetResizable(True)
+    scrollArea.setWidget(semiologiesWidget)
+
+    return scrollArea
 
   def getColorNode(self):
     colorNode = slicer.util.getFirstNodeByClassByName(
