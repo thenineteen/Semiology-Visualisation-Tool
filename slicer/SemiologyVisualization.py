@@ -314,6 +314,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     )
     self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
     self.logic.showForegroundScalarBar()
+    self.logic.jumpToMax(self.scoresVolumeNode)
     scoresDict = self.parcellation.getScoresDictWithNames(scoresDict)
     self.tableNode = self.logic.exportToTable(self.tableNode, scoresDict)
     # self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
@@ -537,6 +538,22 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     slicer.app.layoutManager().setLayout(layoutWithTable)
     appLogic.GetSelectionNode().SetActiveTableID(tableNode.GetID())
     appLogic.PropagateTableSelection()
+
+  def jumpToMax(self, volumeNode):
+    array = slicer.util.array(volumeNode.GetID())
+    maxIndices = np.array(np.where(array == array.max())).T
+    firstMaxIdx = maxIndices[0][::-1].astype(np.uint16).tolist()  # numpy to sitk
+    image = su.PullVolumeFromSlicer(volumeNode)
+    point = np.array(image.TransformIndexToPhysicalPoint(firstMaxIdx))
+    point[:2] *= -1  # LPS to RAS
+    self.jumpSlices(point)
+
+  def jumpSlices(self, center):
+    colors = 'Yellow', 'Green', 'Red'
+    for (color, offset) in zip(colors, center):
+      sliceLogic = slicer.app.layoutManager().sliceWidget(color).sliceLogic()
+      sliceLogic.SetSliceOffset(offset)
+
 
 class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
   """
