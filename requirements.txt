@@ -5,3 +5,5 @@ PyYAML
 seaborn
 scikit-learn
 xlrd
+warnings
+logging

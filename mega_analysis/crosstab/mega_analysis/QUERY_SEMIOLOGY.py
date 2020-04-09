@@ -2,6 +2,7 @@ import re
 import logging
 import yaml
 import pandas as pd
+import warnings
 
 
 def make_simple_list(allv, allv_simple_list = []):
@@ -212,7 +213,7 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         # turn these values to regexes too:
         values = regex_ignore_case(values)
 
-
+    warnings.filterwarnings("ignore", 'This pattern has match groups')
     for term in values:
         inspect_result = inspect_result.append(
             df.loc[df[col1].str.contains(term, na=False)], sort=False
@@ -232,8 +233,8 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return 
-        
+        return
+
 
     try:
         logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
