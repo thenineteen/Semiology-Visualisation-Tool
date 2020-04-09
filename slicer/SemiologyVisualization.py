@@ -21,6 +21,10 @@ LEFT = 'Left'
 RIGHT = 'Right'
 OTHER = 'Other'
 
+IMAGE_FILE_STEM = 'MNI_152'
+# IMAGE_FILE_STEM = 'colin27_t1_tal_lin'
+
+
 #
 # SemiologyVisualization
 #
@@ -407,7 +411,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     return colorPath
 
   def getGifSegmentationPath(self):
-    return self.getImagesDir() / 'MNI_152_gif_cerebrum.seg.nrrd'
+    return self.getImagesDir() / f'{IMAGE_FILE_STEM}_gif_cerebrum.seg.nrrd'
 
   def getGifColorNode(self, version=None):
     colorPath = self.getGifTablePath(version=version)
@@ -430,10 +434,10 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     return self.getResourcesDir() / 'Image'
 
   def getDefaultReferencePath(self):
-    return self.getImagesDir() / 'MNI_152_mri.nii.gz'
+    return self.getImagesDir() / f'{IMAGE_FILE_STEM}_mri.nii.gz'
 
   def getDefaultParcellationPath(self):
-    return self.getImagesDir() / 'MNI_152_gif.nii.gz'
+    return self.getImagesDir() / f'{IMAGE_FILE_STEM}_gif.nii.gz'
 
   def getScoresVolumeNode(
       self,
