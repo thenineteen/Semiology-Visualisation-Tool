@@ -12,6 +12,8 @@ from slicer.ScriptedLoadableModule import *
 
 
 BLACK = 0, 0, 0
+VERY_DARK_GRAY = 0.15, 0.15, 0.15
+DARK_GRAY = 0.25, 0.25, 0.25
 GRAY = 0.5, 0.5, 0.5
 LIGHT_GRAY = 0.75, 0.75, 0.75
 WHITE = 1, 1, 1
@@ -54,6 +56,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     self.tableNode = None
+    self.color_blind_mode = False
     slicer.semiologyVisualization = self
 
   def makeGUI(self):
@@ -174,7 +177,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getColorNode(self):
     colorNode = slicer.util.getFirstNodeByClassByName(
       'vtkMRMLColorTableNode',
-      'Cividis',
+      'Cividis' if self.color_blind_mode else 'Viridis',
     )
     return colorNode
 
@@ -297,7 +300,12 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     showLeft = self.showLeftHemisphereCheckBox.isChecked()
     showRight = self.showRightHemisphereCheckBox.isChecked()
     self.parcellation.setScoresColors(
-      scoresDict, colorNode, showLeft=showLeft, showRight=showRight)
+      scoresDict,
+      colorNode,
+      BLACK if self.color_blind_mode else LIGHT_GRAY,
+      showLeft=showLeft,
+      showRight=showRight,
+    )
 
     slicer.util.setSliceViewerLayers(
       foreground=self.scoresVolumeNode,
@@ -664,6 +672,7 @@ class Parcellation(ABC):
       self,
       scoresDict,
       colorNode,
+      defaultColor,
       showLeft=True,
       showRight=True,
       ):
@@ -684,7 +693,7 @@ class Parcellation(ABC):
         positiveScores = scores[scores > 0]  # do I want this?
         minScore = min(scores)
         maxScore = max(scores)
-      color = LIGHT_GRAY
+      color = defaultColor
       opacity2D = 0
       opacity3D = 1
       if scoresDict is not None and label in scoresDict:
