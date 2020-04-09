@@ -87,7 +87,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.makeHemispheresVisibleButtons()
     self.makeShowGIFButton()
     self.autoUpdateCheckBox = qt.QCheckBox()
-    self.autoUpdateCheckBox.setChecked(True)
+    self.autoUpdateCheckBox.setChecked(False)
     self.autoUpdateCheckBox.toggled.connect(self.onAutoUpdateCheckBox)
     self.settingsLayout.addRow('Auto-update: ', self.autoUpdateCheckBox)
 
