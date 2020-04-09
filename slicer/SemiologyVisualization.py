@@ -173,6 +173,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         if widget is not None:
           semiologiesLayout.addWidget(widget, row, i + 1, *align_args)
 
+    # https://www.learnpyqt.com/courses/adanced-ui-features/qscrollarea/
     scrollArea = qt.QScrollArea()
     scrollArea.setVerticalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOn)
     scrollArea.setHorizontalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOff)
