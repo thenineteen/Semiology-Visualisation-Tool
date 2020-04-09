@@ -3,6 +3,9 @@
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
 
 ## Epilepsy Semiology Visualisation Tool:
+
+![](resources/SVT_All_Automatisms.jpg)
+
 Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following groun-truths:
 
 * post-operative seizure freedom,
