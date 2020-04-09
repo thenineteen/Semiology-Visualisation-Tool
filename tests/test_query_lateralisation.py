@@ -96,7 +96,7 @@ class TestQueryLateralisation(unittest.TestCase):
     def test_blink_neutral_dominant(self):
         all_combined_gifs = self.query(
             'Blink',
-            Laterality.NEUTRAL,
+            Laterality.LEFT,
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
@@ -113,7 +113,7 @@ class TestQueryLateralisation(unittest.TestCase):
     def test_head_version_neutral_dominant(self):
         all_combined_gifs = self.query(
             'Head version',
-            Laterality.NEUTRAL,
+            Laterality.LEFT,
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
@@ -130,7 +130,7 @@ class TestQueryLateralisation(unittest.TestCase):
     def test_asymmetric_tonic_neutral_dominant(self):
         all_combined_gifs = self.query(
             'Asymmetric Tonic',
-            Laterality.NEUTRAL,
+            Laterality.LEFT,
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
@@ -144,10 +144,18 @@ class TestQueryLateralisation(unittest.TestCase):
         )
         assert all_combined_gifs.empty
 
-    def test_non_existing_neutral_dominant(self):
+    def test_non_existing_neutral_side(self):
         all_combined_gifs = self.query(
             'Non existing',
             Laterality.NEUTRAL,
+            Laterality.LEFT,
+        )
+        assert not all_combined_gifs.empty
+
+    def test_non_existing_neutral_dominant(self):
+        all_combined_gifs = self.query(
+            'Non existing',
+            Laterality.LEFT,
             Laterality.NEUTRAL,
         )
         assert all_combined_gifs.empty
