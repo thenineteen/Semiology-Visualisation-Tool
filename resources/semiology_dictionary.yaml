@@ -143,6 +143,8 @@
         "hears? (?:vague)? sounds?",
         "hears? echoe?s?",
         "hears? noises?",
+        "whistle", 
+        "whistling",
       ]
     "Visual":
       [
@@ -192,7 +194,7 @@
         "electric",
         "indefinable sensation",
         "indefinable feeling",
-        "cephalic sensation",
+        "cephalic sensation", "head rush",
       ]
 
   motor:
@@ -239,8 +241,20 @@
           "asymetric tonic",
           "assymetric tonic",
           "assymmetric tonic",
+          "fencing",
+          "extension [a-z]* ?[a-z]* ?flexion",
+          "flexion [a-z]* ?[a-z]* ?extension",
+          "figure of 4",
+          "figure of four",
+          "fig of 4",
+          "figure 4",
         ]
-      "Dystonic": ["(?<!no )dystonic", "twisted postur", "twisting"] #"supinat"]
+      "Dystonic": 
+        [
+          "(?<!no )dystonic", 
+          "twisted postur", 
+          "twisting", #"supinat"
+        ]
       "Clonic":
         [
           "((?<!tonic-)(?<!tonic )(?<!tonic/)(?<!myo))clonic",
@@ -261,19 +275,6 @@
       "Other Simple Motor":
         ["simple motor", "((?<!complex )(?<!non-))motor seizure"]
     complex:
-      "Fencing":
-        [
-          "fencing",
-          "extension [a-z]* ?[a-z]* ?flexion",
-          "flexion [a-z]* ?[a-z]* ?extension",
-        ]
-      "Figure of 4":
-        [
-          "figure of 4",
-          "figure of four",
-          "fig of 4",
-          "figure 4",
-        ]
       "Hypermotor":
         [
           "hypermotor",
@@ -371,12 +372,30 @@
         ]
       "Cough": ["ictal cough", "cough seizure"]
       "Nose-wiping":
-        ["(?<!no )nose-? ?wip", "rubs? nose", "nose rub", "wipes? nose"]
-      "Spitting": [" spit", "spitting"]
-      "Whistling": ["whistle", "whistling"]
-      "Drinking": ["ictal drink", " sip(ping)? ", "ictal swallow"]
+        [
+          "(?<!no )nose-? ?wip", 
+          "rubs? nose", 
+          "nose rub", 
+          "wipes? nose"
+        ]
+      "Spitting": 
+        [
+          " spit", 
+          "spitting",
+        ]
+      "Drinking":
+        [
+          "ictal drink", 
+          " sip(ping)? ", 
+          "ictal swallow",
+        ]
       "Gelastic":
-        ["laughter", "(?<!no )laughing", "laugh", "(?<!no )gelastic", "giggl"]
+        [
+          "laughter", 
+          "(?<!no )laughing", 
+          "laugh", 
+          "(?<!no )gelastic", 
+          "giggl"]
       "Dacrystic":
         [
           "((?<!no )(?<!denies )(?<!deny ))cry(?:ing)?",
@@ -394,7 +413,7 @@
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
-      "Other Automatism":
+      "All Automatisms":
         [
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
           "((?<!no )(?<!denies )(?<!deny ))other automatism",
@@ -427,9 +446,7 @@
       [
         "(?<!no) dysphasia",
         "(?<!no) difficulty speak(?:ing)?",
-        "(?<!no) difficulty talk(?:ing)?",
-        "ictal talk",
-        "(?<!no) ictal speech",
+        "(?<!no) difficulty talk(?:ing)?",        
         "speech difficult",
         "difficult speech",
         "(?<!no) distortion of speech",
@@ -440,6 +457,11 @@
         "(?<!no) incoherent speech",
         "(?<!no) none?-? ?sense",
         "(?<!no) none? ?-?sensical",
+      ]
+    "Ictal Speech":
+      [
+        "ictal talk",
+        "ictal speech",
       ]
     "Palilalia":
       [
