@@ -427,7 +427,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     """Create a scalar volume node so that the colorbar is correct."""
     parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
     parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
-    scoresArray = np.zeros_like(parcellationArray)
+    scoresArray = np.zeros_like(parcellationArray, np.float)
 
     if scoresDict is not None:
       for (label, score) in scoresDict.items():
