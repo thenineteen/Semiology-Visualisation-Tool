@@ -109,7 +109,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.layout.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
-    semiologiesFormLayout.addWidget(self.getSemiologiesWidget())
+    semiologiesWidget = self.getSemiologiesWidget()
+    semiologiesFormLayout.addWidget(semiologiesWidget)
 
   def makeLoadDataButton(self):
     self.loadDataButton = qt.QPushButton('Load data')
@@ -149,6 +150,23 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       message = f'{e}\n\nPlease restart 3D Slicer and try again'
       slicer.util.errorDisplay(message)
 
+    semiologiesWidget = qt.QWidget()
+    semiologiesLayout = qt.QVBoxLayout(semiologiesWidget)
+
+    headerLayout = qt.QGridLayout()
+    semiologiesLayout.addLayout(headerLayout)
+
+    align_args = 1, 1, qt.Qt.AlignCenter
+    headerLayout.addWidget(qt.QLabel('<b>Semiology</b>'), 0, 0, *align_args)
+    headerLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
+    headerLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
+    headerLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
+
+    # Populate semiologies from YAML dictionary
+    semiologiesListWidget = qt.QWidget()
+    semiologiesListLayout = qt.QGridLayout(semiologiesListWidget)
+    # semiologiesLayout.addWidget(semiologiesListWidget)
+
     lateralitiesDict = {
       term: get_possible_lateralities(term)
       for term in get_all_semiology_terms()
@@ -158,20 +176,23 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       self.onAutoUpdateButton,
       self.onSemiologyCheckBox,
     )
-    semiologiesWidget = qt.QWidget()
-    semiologiesLayout = qt.QGridLayout(semiologiesWidget)
-    align_args = 1, 1, qt.Qt.AlignCenter
-    semiologiesLayout.addWidget(qt.QLabel('<b>Semiology</b>'), 0, 0, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
-    iterable = enumerate(self.semiologiesWidgetsDict.items(), start=1)
+    iterable = enumerate(self.semiologiesWidgetsDict.items())
     for row, (semiology, widgetsDict) in iterable:
-      semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
+      print(row, semiology)
+      semiologiesListLayout.addWidget(widgetsDict['checkBox'], row, 0)
       for i, laterality in enumerate(('left', 'right', 'other')):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None:
-          semiologiesLayout.addWidget(widget, row, i + 1, *align_args)
+          print('Adding', row, i)
+          semiologiesListLayout.addWidget(widget, row, i + 1, *align_args)
+
+    scrollArea = qt.QScrollArea()
+    scrollArea.setVerticalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOn)
+    scrollArea.setHorizontalScrollBarPolicy(qt.Qt.ScrollBarAlwaysOff)
+    scrollArea.setWidgetResizable(True)
+    scrollArea.setWidget(semiologiesListWidget)
+    semiologiesLayout.addWidget(scrollArea)
+
     return semiologiesWidget
 
   def getColorNode(self):
