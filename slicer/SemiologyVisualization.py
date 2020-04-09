@@ -106,7 +106,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
     self.semiologiesCollapsibleButton.enabled = False
     self.semiologiesCollapsibleButton.text = 'Semiologies'
-    # self.layout.addWidget(self.semiologiesCollapsibleButton)
     self.splitter.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
@@ -116,7 +115,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
     self.tableCollapsibleButton.visible = False
     self.tableCollapsibleButton.text = 'Scores'
-    # self.layout.addWidget(self.tableCollapsibleButton)
     self.splitter.addWidget(self.tableCollapsibleButton)
 
     tableLayout = qt.QFormLayout(self.tableCollapsibleButton)
@@ -173,11 +171,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     semiologiesWidget = qt.QWidget()
     semiologiesLayout = qt.QGridLayout(semiologiesWidget)
     align_args = 1, 1, qt.Qt.AlignCenter
-    semiologiesLayout.addWidget(qt.QLabel('<b>Semiology</b>'), 0, 0, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Left</b>'), 0, 1, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Right</b>'), 0, 2, *align_args)
-    semiologiesLayout.addWidget(qt.QLabel('<b>Other</b>'), 0, 3, *align_args)
-    iterable = enumerate(self.semiologiesWidgetsDict.items(), start=1)
+    iterable = enumerate(self.semiologiesWidgetsDict.items())
     for row, (semiology, widgetsDict) in iterable:
       semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
       for i, laterality in enumerate(('left', 'right', 'other')):
@@ -361,17 +355,17 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       checkBox.toggled.connect(checkBoxSlot)
       buttonGroup = qt.QButtonGroup()
 
-      leftRadioButton = qt.QRadioButton()
+      leftRadioButton = qt.QRadioButton('Left')
       leftRadioButton.clicked.connect(radioButtonSlot)
       leftRadioButton.setVisible(False)
       buttonGroup.addButton(leftRadioButton)
 
-      rightRadioButton = qt.QRadioButton()
+      rightRadioButton = qt.QRadioButton('Right')
       rightRadioButton.clicked.connect(radioButtonSlot)
       rightRadioButton.setVisible(False)
       buttonGroup.addButton(rightRadioButton)
 
-      otherRadioButton = qt.QRadioButton()
+      otherRadioButton = qt.QRadioButton('Other')
       otherRadioButton.clicked.connect(radioButtonSlot)
       otherRadioButton.setVisible(False)
       buttonGroup.addButton(otherRadioButton)
