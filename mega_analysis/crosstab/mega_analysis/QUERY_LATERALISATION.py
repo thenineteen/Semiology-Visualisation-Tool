@@ -231,6 +231,33 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         logging.debug(f'end of i {i}')
 
 
+    # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
+    # with inspect_result that had null lateralising:
+    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(), :]
+    # now clean ready to map:
+    inspect_result_nulllateralising.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
+    inspect_result_nulllateralising.dropna(how='all', axis='columns', inplace=True)
+    # now map row by row otherwise you get a "TypeError: only size-1 arrays can be converted to Python scalars":
+    nonlat_no_rows = inspect_result_nulllateralising.shape[0]
+    for j in range(nonlat_no_rows):
+        full_row = inspect_result_nulllateralising.iloc[[j],:]
+        row = full_row.drop(labels=id_cols, axis='columns', inplace=False, errors='ignore')
+        row = row.dropna(how='all', axis='columns')
+        row_nonlat_to_one_map = pivot_result_to_one_map(row,
+                                           one_map, raw_pt_numbers_string='pt #s',
+                                           suppress_prints=True)
+        if j==0:
+            # can't merge first row
+            gifs_not_lat = row_nonlat_to_one_map
+            logging.debug('j zero gifs_not_lat set to row_nonlat_to_one_map')
+            continue
+        elif j != 0:
+            gifs_not_lat = pd.concat([gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
+    #now combine the lateralised and non-lateralised:
+    all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
+
+
+
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
     fixed = all_combined_gifs.pivot_table(columns='Gif Parcellations', values='pt #s', aggfunc='sum')
     fixed2 = fixed.melt(value_name='pt #s')
