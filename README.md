@@ -2,8 +2,15 @@
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
 
-## Epilepsy Semiology Visualisation Tool:
-Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following groun-truths:
+## Epilepsy Semiology Visualisation Tool
+
+![3D Slicer module screenshot](images/all_automatisms.png)
+Figure:
+849 Patients with automatisms have an epileptogenic-zone localising mostly to the mesial temporal lobe.
+124 of these lateralise, mainly ipsilaterally.
+
+
+Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following ground-truths:
 
 * post-operative seizure freedom,
 * imaging & EEG concordance, (could include PET, SPECT, MEG but this can be filtered)
