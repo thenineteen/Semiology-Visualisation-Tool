@@ -22,6 +22,8 @@ class TestQueryLateralisation(unittest.TestCase):
             semiology_term=term,
             semiology_dict_path=path,
         )
+        if query_semiology_result is None:
+            return None
         all_combined_gifs = QUERY_LATERALISATION(
             query_semiology_result,
             mega_analysis_df,
@@ -134,28 +136,3 @@ class TestQueryLateralisation(unittest.TestCase):
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
-
-
-    def test_non_existing(self):
-        all_combined_gifs = self.query(
-            'Non existing',
-            Laterality.LEFT,
-            Laterality.LEFT,
-        )
-        assert all_combined_gifs.empty
-
-    def test_non_existing_neutral_side(self):
-        all_combined_gifs = self.query(
-            'Non existing',
-            Laterality.NEUTRAL,
-            Laterality.LEFT,
-        )
-        assert not all_combined_gifs.empty
-
-    def test_non_existing_neutral_dominant(self):
-        all_combined_gifs = self.query(
-            'Non existing',
-            Laterality.LEFT,
-            Laterality.NEUTRAL,
-        )
-        assert all_combined_gifs.empty
