@@ -36,7 +36,7 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.title = "Semiology Visualization"
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
-    self.parent.contributors = ["Fernando Perez-Garcia (University College London)"]
+    self.parent.contributors = ["Fernando Pérez-García (University College London)"]
     self.parent.helpText = """
 """
     self.parent.helpText += self.getDefaultModuleDocumentationLink()
@@ -80,18 +80,42 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.settingsCollapsibleButton = ctk.ctkCollapsibleButton()
     self.settingsCollapsibleButton.enabled = False
     self.settingsCollapsibleButton.text = 'Settings'
-    self.settingsLayout = qt.QFormLayout(self.settingsCollapsibleButton)
+
+    self.settingsLayout = qt.QVBoxLayout(self.settingsCollapsibleButton)
+
+    self.settingsTabWidget = qt.QTabWidget()
+    self.settingsLayout.addWidget(self.settingsTabWidget)
+
+    self.settingsTabWidget.addTab(self.getQuerySettingsTab(), 'Query')
+    self.settingsTabWidget.addTab(self.getVisualizationSettingsTab(), 'Visualization')
+    self.settingsTabWidget.addTab(self.getModuleSettingsTab(), 'Module')
+
     self.layout.addWidget(self.settingsCollapsibleButton)
 
-    self.makeDominantHemisphereButton()
-    self.makeHemispheresVisibleButtons()
-    self.makeShowGIFButton()
+  def getQuerySettingsTab(self):
+    querySettingsWidget = qt.QWidget()
+    querySettingsLayout = qt.QFormLayout(querySettingsWidget)
+    querySettingsLayout.addRow('Dominant hemisphere: ', self.getDominantHemisphereLayout())
+    return querySettingsWidget
+
+  def getVisualizationSettingsTab(self):
+    visualizationSettingsWidget = qt.QWidget()
+    visualizationSettingsLayout = qt.QFormLayout(visualizationSettingsWidget)
+    visualizationSettingsLayout.addWidget(self.getShowGIFButton())
+    visualizationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
+    return visualizationSettingsWidget
+
+  def getModuleSettingsTab(self):
     self.autoUpdateCheckBox = qt.QCheckBox()
     self.autoUpdateCheckBox.setChecked(False)
     self.autoUpdateCheckBox.toggled.connect(self.onAutoUpdateCheckBox)
-    self.settingsLayout.addRow('Auto-update: ', self.autoUpdateCheckBox)
 
-  def makeDominantHemisphereButton(self):
+    moduleSettingsWidget = qt.QWidget()
+    moduleSettingsLayout = qt.QFormLayout(moduleSettingsWidget)
+    moduleSettingsLayout.addRow('Auto-update: ', self.autoUpdateCheckBox)
+    return moduleSettingsWidget
+
+  def getDominantHemisphereLayout(self):
     self.leftDominantRadioButton = qt.QRadioButton('Left')
     self.rightDominantRadioButton = qt.QRadioButton('Right')
     self.unknownDominantRadioButton = qt.QRadioButton('Unknown')
@@ -103,8 +127,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.leftDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
-    self.settingsLayout.addRow(
-      'Dominant hemisphere: ', dominantHemisphereLayout)
+    return dominantHemisphereLayout
 
   def makeSemiologiesButton(self):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
@@ -130,12 +153,12 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.loadDataButton.clicked.connect(self.onLoadDataButton)
     self.layout.addWidget(self.loadDataButton)
 
-  def makeShowGIFButton(self):
+  def getShowGIFButton(self):
     self.showGifButton = qt.QPushButton('Show GIF colors')
     self.showGifButton.clicked.connect(self.onshowGifButton)
-    self.settingsLayout.addWidget(self.showGifButton)
+    return self.showGifButton
 
-  def makeHemispheresVisibleButtons(self):
+  def getHemispheresVisibleLayout(self):
     self.showLeftHemisphereCheckBox = qt.QCheckBox('Left')
     self.showRightHemisphereCheckBox = qt.QCheckBox('Right')
     self.showLeftHemisphereCheckBox.setChecked(True)
@@ -145,7 +168,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     showHemispheresLayout.addWidget(self.showRightHemisphereCheckBox)
     self.showLeftHemisphereCheckBox.toggled.connect(self.onAutoUpdateButton)
     self.showRightHemisphereCheckBox.toggled.connect(self.onAutoUpdateButton)
-    self.settingsLayout.addRow('Show hemispheres: ', showHemispheresLayout)
+    return showHemispheresLayout
 
   def makeUpdateButton(self):
     self.updateButton = qt.QPushButton('Update')
