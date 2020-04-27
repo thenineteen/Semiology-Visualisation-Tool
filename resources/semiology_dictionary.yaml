@@ -143,7 +143,7 @@
         "hears? (?:vague)? sounds?",
         "hears? echoe?s?",
         "hears? noises?",
-        "whistle", 
+        "whistle",
         "whistling",
       ]
     "Visual":
@@ -249,10 +249,10 @@
           "fig of 4",
           "figure 4",
         ]
-      "Dystonic": 
+      "Dystonic":
         [
-          "(?<!no )dystonic", 
-          "twisted postur", 
+          "(?<!no )dystonic",
+          "twisted postur",
           "twisting", #"supinat"
         ]
       "Clonic":
@@ -300,15 +300,20 @@
           "head rock",
           "rocks from side",
         ]
-      "Hypomotor":
+      "Behavioural Arrest":
         [
-          "unilateral ictal paresis",
-          "(?:relative)? ictal immobility",
           "behaviour(?:al)? arrest",
           "akinetic attack",
-          "hypomotor",
+          "(?:relative)? ictal immobility",
+          "freeze", "unable to move",
         ]
+      "Other Complex Motor": ["complex motor", "complicated motor"]
+    special seizures:
       "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
+      "Ictal Limb Paresis":
+        [
+          "unilateral ictal paresis",
+        ]
       "Astatic":
         [
           "astatic",
@@ -317,7 +322,7 @@
           "falls? to ground",
           "drop attack",
         ]
-      "Other Complex Motor": ["complex motor", "complicated motor"]
+      "Hypomotor": ["hypomotor"]
     automatisms:
       "Oral Automatisms":
         [
@@ -373,28 +378,28 @@
       "Cough": ["ictal cough", "cough seizure"]
       "Nose-wiping":
         [
-          "(?<!no )nose-? ?wip", 
-          "rubs? nose", 
-          "nose rub", 
+          "(?<!no )nose-? ?wip",
+          "rubs? nose",
+          "nose rub",
           "wipes? nose"
         ]
-      "Spitting": 
+      "Spitting":
         [
-          " spit", 
+          " spit",
           "spitting",
         ]
       "Drinking":
         [
-          "ictal drink", 
-          " sip(ping)? ", 
+          "ictal drink",
+          " sip(ping)? ",
           "ictal swallow",
         ]
       "Gelastic":
         [
-          "laughter", 
-          "(?<!no )laughing", 
-          "laugh", 
-          "(?<!no )gelastic", 
+          "laughter",
+          "(?<!no )laughing",
+          "laugh",
+          "(?<!no )gelastic",
           "giggl"]
       "Dacrystic":
         [
@@ -446,7 +451,7 @@
       [
         "(?<!no) dysphasia",
         "(?<!no) difficulty speak(?:ing)?",
-        "(?<!no) difficulty talk(?:ing)?",        
+        "(?<!no) difficulty talk(?:ing)?",
         "speech difficult",
         "difficult speech",
         "(?<!no) distortion of speech",
