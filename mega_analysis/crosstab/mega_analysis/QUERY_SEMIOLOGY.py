@@ -232,8 +232,8 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
         print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
-        return 
-        
+        return
+
 
     try:
         logging.debug(f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')

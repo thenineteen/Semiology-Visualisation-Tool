@@ -118,7 +118,7 @@ def MEGA_ANALYSIS(
         progress_venn_2(df_study_type, method='Lateralising')
         progress_venn_2(df_study_type, method='Localising')
 
-    logging.debug(f'Other criteria: {df.loc[df["Other (e.g. Abs)"].notnull()]["Other (e.g. Abs)"].unique()}')
+    logging.debug(f'Other criteria: {df.loc[df["Other (e.g. Abs)"].notnull(), "Other (e.g. Abs)"].unique()}')
     logging.debug(
         'Lateralising Other Total/Exclusives: '
         f'{df_study_type.loc["OTHER", ("Lateralising Datapoints","Total")]}'

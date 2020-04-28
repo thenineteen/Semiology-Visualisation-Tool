@@ -13,8 +13,8 @@ def gifs_lat(gif_lat_file):
     """
     factor function. opens the right/left gif parcellations from excel and extracts the right/left gifs as series/list.
     """
-    gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R']
-    gifs_left = gif_lat_file.loc[gif_lat_file['L'].notnull(), 'L']
+    gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R'].copy()
+    gifs_left = gif_lat_file.loc[gif_lat_file['L'].notnull(), 'L'].copy()
 
     return gifs_right, gifs_left
 
@@ -69,13 +69,13 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     missing_lat = inspect_result2.loc[(inspect_result2['CL'].notnull())|
                                     (inspect_result2['IL'].notnull())|
                                     (inspect_result2['DomH'].notnull())|
-                                    (inspect_result2['NonDomH'].notnull()), :]
+                                    (inspect_result2['NonDomH'].notnull()), :].copy()
     missing_lat_null_mask = missing_lat['Lateralising'].isnull()
     if not missing_lat_null_mask.all():
         logging.debug('\nNo missing Lateralising data points.')
     else:  # semiology term not recognised
         logging.warning('The inspect_result lat col has NaNs/zero where it should not: autofilled')
-        df_of_missing_lats = missing_lat.loc[missing_lat_null_mask]
+        df_of_missing_lats = missing_lat.loc[missing_lat_null_mask].copy()
         df.loc[df_of_missing_lats.index, 'Lateralising'] = df_of_missing_lats[['CL', 'IL', 'DomH', 'NonDomH']].sum(axis=1)
 
     # check columns exist (not removed in preceding notnull steps from other functions):
@@ -101,7 +101,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # initialise:
     Right = 0
     Left = 0
-    inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :]  # only those with lat
+    inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
 
     # ensure there is patient's lateralised signs and check dominant known or not
@@ -213,9 +213,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
 
         # if proportion_lateralising is 1, straightforward: return dataframe of right/left gifs whichever lower
-        df_lower_lat_to_be_reduced = row_to_one_map.loc[row_to_one_map['Gif Parcellations'].isin(list(isin))]
+        df_lower_lat_to_be_reduced = row_to_one_map.loc[row_to_one_map['Gif Parcellations'].isin(list(isin))].copy()
         # now make these values lower by a proportion = norm_ratio (in this case norm_ratio = ratio as denom is 1)
-        reduce_these = df_lower_lat_to_be_reduced.loc[:,'pt #s']
+        reduce_these = df_lower_lat_to_be_reduced.loc[:,'pt #s'].copy()
         df_lower_lat_to_be_reduced.loc[:,'pt #s'] = norm_ratio * reduce_these
         # re attribute these corrected reduced lateralised values to the entire row's data:
         row_to_one_map.loc[df_lower_lat_to_be_reduced.index, :] = df_lower_lat_to_be_reduced
@@ -233,7 +233,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
-    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(), :]
+    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(), :].copy()
     # now clean ready to map:
     inspect_result_nulllateralising.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
     inspect_result_nulllateralising.dropna(how='all', axis='columns', inplace=True)
