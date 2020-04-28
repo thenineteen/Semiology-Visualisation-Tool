@@ -1,5 +1,7 @@
 import re
 import logging
+import warnings
+
 import yaml
 import pandas as pd
 
@@ -26,18 +28,13 @@ def dictionary_key_recursion_(dictionary, all_keys=[], all_values=[]):
     return all keys and values in a nested dictionary.
     values may be a list of lists hence the use of the make_simple_list function to open nested lists.
     Ali Alim-Marvasti Aug 2019
-
     """
-
     for k, v in dictionary.items():
         all_keys.append(k)
-
         if isinstance(v, dict):
             all_keys, all_values = dictionary_key_recursion_(v, all_keys=all_keys, all_values=all_values)
-
         else:  # this returns a list of lists
             all_values.append(v)
-            continue
 
     # this returns a single list of single items and removes the nested lists
     all_values = make_simple_list(all_values, allv_simple_list = [])
@@ -51,31 +48,24 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
 
     """
     if isinstance(dictionary, list):
-        print('No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural \"s\" or a hyphen?')
+        print('No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
-
     for k, v in dictionary.items():
-        if re.search(k, semiology_key, re.IGNORECASE):
-        # if k == semiology_key:
+        search = re.search(k, semiology_key, re.IGNORECASE)
+        if search:
             logging.debug('dictionary_key_recursion_2 found values of key')
             if isinstance(v, list):
                 yield v
                 break
             elif isinstance(v, dict):
-                # for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
-                #     yield result
                 allk, allv = dictionary_key_recursion_(v, all_keys=[], all_values=[])
                 yield allv
                 break
-
         else:
             logging.debug('searching for nested key...')
             if isinstance(v, dict):
-                # for kk, vv in v.items():
                 for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
                     yield result
-
-
 
 
 def use_semiology_dictionary_(semiology_term, semiology_dict_path):
@@ -92,13 +82,13 @@ def use_semiology_dictionary_(semiology_term, semiology_dict_path):
     all_keys, _ = dictionary_key_recursion_(semiology_dictionary['semiology'])
 
     # check the query exists in the keys:
-    if not re.search(semiology_key, str(all_keys), re.IGNORECASE):
+    search = re.search(semiology_key, str(all_keys), re.IGNORECASE)
+    if not search:
         logging.debug(f'\nNo such key found in semiology_dictionary matching {semiology_key}')
         logging.debug('Running with use_semiology_dictionary option DISABLED.')
         return [semiology_term]
-
     # if it does, then use the list of values of this key:
-    elif re.search(semiology_key, str(all_keys), re.IGNORECASE):
+    else:
         logging.debug(f'..."{semiology_key}" key definitely exists in semiology_dictionary using REGEX...')
 
     # find the key, values in first key layers: pretty sure we can skip this and just use dictionary_key_recursion_2
@@ -144,8 +134,8 @@ def regex_ignore_case(term_values):
 def QUERY_SEMIOLOGY(df, semiology_term=['love'],
                     ignore_case=True,
                     semiology_dict_path=None,
-                    col1 = 'Reported Semiology',
-                    col2 = 'Semiology Category',):
+                    col1='Reported Semiology',
+                    col2='Semiology Category',):
     """
     Search for key terms in both "reported semiology" and "semiology category" and return df if found in either.
     Removes all columns which are entirely null.
@@ -161,21 +151,9 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         keyword-based user queries are mapped to ontology entities
 
     returns a DataFrame subset of df input containing all the results from the df - no melting or pivoting.
-
     """
     # initialise return object
     inspect_result = pd.DataFrame()
-
-
-    # # atm this does not work
-    # # Cycle case where term is a list and use_semiology_dictionary is True:
-    # if isinstance(semiology_term, list) & use_semiology_dictionary==True:
-    #     for item in semiology_term:
-    #         inspect_res = QUERY_SEMIOLOGY(df, semiology_term=item, ignore_case=ignore_case, semiology_dict_path=semiology_dict_path)
-    #         inspect_result.append(inspect_res)
-    #     inspect_result.drop_duplicates(inplace=True)
-    #     return inspect_result
-
 
     # main body of function
     if isinstance(semiology_term, list):
@@ -212,16 +190,16 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
         # turn these values to regexes too:
         values = regex_ignore_case(values)
 
-
     for term in values:
-        inspect_result = inspect_result.append(
-            df.loc[df[col1].str.contains(term, na=False)], sort=False
-        )
-        inspect_result = inspect_result.append(
-            df.loc[df[col2].str.contains(term, na=False)], sort=False
-        )
+        # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', 'This pattern has match groups')
+            mask1 = df[col1].str.contains(term, na=False)
+            mask2 = df[col2].str.contains(term, na=False)
+        inspect_result = inspect_result.append(df.loc[mask1], sort=False)
+        inspect_result = inspect_result.append(df.loc[mask2], sort=False)
 
-# to fix issue #7 by commenting out below and inserting 3 lines instead:
+    # to fix issue #7 by commenting out below and inserting 3 lines instead:
     inspect_result = inspect_result.dropna(axis='columns', how='all')  # may remove lateralising or localising if all nan
     if 'Localising' not in inspect_result.columns:
         inspect_result['Localising'] = 0
@@ -240,16 +218,11 @@ def QUERY_SEMIOLOGY(df, semiology_term=['love'],
     except KeyError:
         # user tried a semiology which doesn't have a key in semiology_dictionary
         # run again and set semiology_dict to None
-    #     inspect_result = QUERY_SEMIOLOGY(
-    #         df,
-    #         semiology_term=semiology_term,
-    #         semiology_dict_path=None,
-    # )
         logging.debug('Issue # 7 alive and well.')
 
-
     try:
-        logging.debug(f'Lateralising Datapoints relevant to query: {inspect_result["Lateralising"].sum()}')
+        num_datapoints = inspect_result["Lateralising"].sum()
     except:
-        logging.debug('Lateralising Datapoints relevant to query: 0')
+        num_datapoints = 0
+    logging.debug(f'Lateralising Datapoints relevant to query: {num_datapoints}')
     return inspect_result.sort_index()
