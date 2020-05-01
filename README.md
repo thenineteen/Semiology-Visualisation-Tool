@@ -6,21 +6,21 @@
 
 ![3D Slicer module screenshot](images/all_automatisms.png)
 Figure:
-849 Patients with automatisms have an epileptogenic-zone localising mostly to the mesial temporal lobe.
+849 Patients with automatisms have an epileptogenic zone localising mostly to the mesial temporal lobe.
 124 of these lateralise, mainly ipsilaterally.
 
 
-Thousands of patient level semiology data from journal publications with localisation and lateralisation numbers collected based on the following ground-truths:
+Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting a certain seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria to establish epileptogeniz zone's localisation and/ or lateralisation was satisfied:
 
-* post-operative seizure freedom,
-* imaging & EEG concordance, (could include PET, SPECT, MEG but this can be filtered)
-* sEEG/stimulation studies
+* Post-operative seizure freedom (Engel Ia,b; ILAE 1,2), confirmed at a minimum follow-up of 12 months;
+* Invasive EEG recording and/ or electrical stimulation, mapping seizure semiology;
+* Multi-modal concordance between brain imaging & non-invasive neurophysiology findings (e.g. PET, SPECT, MEG, EEG, fMRI) in pointing towards a highly possible epileptogenic zone.
 
-The data also are tagged to reduce publications bias and enhance visualisation of invasive EEG electrode targets by removing specific paper/patient level priors:
+The data are also tagged to reduce publications bias and/or enhance data visualisation (e.g. of invasive EEG electrode targets) to allow filtering out specific paper/patient-level priors:
 
-* Epilepsy Topology (ET): when a study looks at patients with epilepsy with e.g. temporal lobe onset
-* Spontaneous Semiology (SS): when a study looks either at all patients with a particular semiology e.g. epigastric rising or between selected dates
-* sEEG/cortical stimulation studies
+* Epilepsy Topology (ET): when the paper selects sample of patients based on their established epileptogenic zone and/or site of surgical resection (seizure onset zone), and describes the related seizure semiology - e.g. papers looking at mTLE, TLE, FLE, OLE;
+* Spontaneous Semiology (SS): when paper selects sample of patients based on their siezure semiology (e.g. genital automatisms, nose-wiping, gelastic, ictal kissing), or other factors (specific techniques used, specific associated conditions like FCD etc.), and provides details of epileptogenic zone's localisation/lateralisation; 
+* Electrical Stimulation (ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping;
 
 
 ## Brief workings:
