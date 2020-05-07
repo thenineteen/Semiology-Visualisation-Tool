@@ -1,8 +1,8 @@
 import pandas as pd
 
-def all_localisations(localisation_columns="R:CY"):
+def all_localisations(localisation_columns="R:CZ"):
     """
-    Import the excel spreadsheet of 1,171 journal paper reviews and return a list of the anatomical brain region terms. 
+    Import the excel spreadsheet of 1,171 journal paper reviews and return a list of the anatomical brain region terms.
     Used as default when importing the spreadsheet in semiology_lateralisation_localisation.
     """
 # set the path to excel file:
