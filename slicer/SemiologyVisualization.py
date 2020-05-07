@@ -36,12 +36,19 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.title = "Semiology Visualization"
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
-    self.parent.contributors = ["Fernando Pérez-García (University College London)"]
-    self.parent.helpText = """
-"""
-    self.parent.helpText += self.getDefaultModuleDocumentationLink()
+    self.parent.contributors = [
+      "Fernando Pérez-García (3D Slicer Module and data processing)",
+      "Ali Alim-Marvasti (data collection and processing)",
+      "Gloria Romagnoli (data collection)",
+      "John Duncan (supervision)",
+    ]
+    self.parent.helpText = """[This is the help text.]
+    """
+    self.parent.helpText += self.getDefaultModuleDocumentationLink(
+      docPage='https://github.com/thenineteen/Semiology-Visualisation-Tool')
     self.parent.acknowledgementText = """
-""" # replace with organization, grant and thanks.
+    University College London.
+    """
 
 #
 # SemiologyVisualizationWidget
