@@ -35,7 +35,7 @@ mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
-    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA', 
+    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA',
     'GIF HYPOTHALAMUS', 'GIF CEREBELLUM']
 )
 gif_lat_file = pd.read_excel(
@@ -161,19 +161,19 @@ class Semiology:
 
         return all_combined_gifs
 
-    def get_num_patients_dict(self) -> Optional[dict]:
+    def get_num_datapoints_dict(self) -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
             message = f'No results generated for semiology term "{self.term}"'
             raise ValueError(message)
         array = np.array(query_lateralisation_result)
         _, labels, patients = array.T
-        num_patients_dict = {
-            int(label): float(num_patients)
-            for (label, num_patients)
+        num_datapoints_dict = {
+            int(label): float(num_datapoints)
+            for (label, num_datapoints)
             in zip(labels, patients)
         }
-        return num_patients_dict
+        return num_datapoints_dict
 
 
 def get_possible_lateralities(term) -> List[Laterality]:
@@ -197,18 +197,18 @@ def combine_semiologies(
 
 
 def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
-    num_patients_dicts = {}
+    num_datapoints_dicts = {}
     for semiology in semiologies:
-        num_patients_dict = semiology.get_num_patients_dict()
-        if num_patients_dict is None:
+        num_datapoints_dict = semiology.get_num_datapoints_dict()
+        if num_datapoints_dict is None:
             message = (
                 f'Information for semiology term "{semiology.term}"'
                 ' could not be retrieved'
             )
             warnings.warn(message)
         else:
-            num_patients_dicts[semiology.term] = num_patients_dict
-    df = get_df_from_dicts(num_patients_dicts)
+            num_datapoints_dicts[semiology.term] = num_datapoints_dict
+    df = get_df_from_dicts(num_datapoints_dicts)
     return df
 
 
@@ -216,9 +216,9 @@ def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
         ) -> pd.DataFrame:
     records = []
-    for term, num_patients_dict in semiologies_dicts.items():
-        num_patients_dict['Semiology'] = term
-        records.append(num_patients_dict)
+    for term, num_datapoints_dict in semiologies_dicts.items():
+        num_datapoints_dict['Semiology'] = term
+        records.append(num_datapoints_dict)
     df = pd.DataFrame.from_records(records, index='Semiology')
     return df
 
