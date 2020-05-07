@@ -1,9 +1,12 @@
+All Automatisms
 Blink
 Hypermotor
 Hypomotor
 Lower Limb Automatism
 Myoclonic
 Other Complex Motor
+Other Simple Motor
+Tonic
 Tonic-Clonic
 Upper Limb Automatism
 Visual

@@ -15,6 +15,7 @@ Fear-Anxiety
 Gelastic
 Grimace
 Ictal Pout
+Ictal Speech
 LOC
 Non-Specific Aura
 Olfactory-Gustatory
