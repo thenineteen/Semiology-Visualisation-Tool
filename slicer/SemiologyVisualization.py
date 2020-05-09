@@ -356,10 +356,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         'right': Laterality.RIGHT,
         'other': Laterality.NEUTRAL,
       }
-      for i, laterality in enumerate(lateralitiesDict):
-        widget = widgetsDict[f'{laterality}RadioButton']
+      for lateralityName, laterality in lateralitiesDict.items():
+        widget = widgetsDict[f'{lateralityName}RadioButton']
         if widget is not None and widget.isChecked():
-          result = semiologyTerm, lateralitiesDict[laterality]
+          result = semiologyTerm, laterality
           termsAndSides.append(result)
     termsAndSides = None if not termsAndSides else termsAndSides
     return termsAndSides
@@ -377,6 +377,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def onSemiologyCheckBox(self):
     for widgetsDict in self.semiologiesWidgetsDict.values():
       enable = widgetsDict['checkBox'].isChecked()
+
+      # If lateralities shouldn't be available, don't show only "Other" radio button
+      if widgetsDict[f'leftRadioButton'] is None:
+        continue
+
       for i, laterality in enumerate(('left', 'right', 'other')):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None:
@@ -487,18 +492,21 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
 
       leftRadioButton = qt.QRadioButton('Left')
       leftRadioButton.clicked.connect(radioButtonSlot)
-      leftRadioButton.setVisible(False)
+      leftRadioButton.hide()
       buttonGroup.addButton(leftRadioButton)
 
       rightRadioButton = qt.QRadioButton('Right')
       rightRadioButton.clicked.connect(radioButtonSlot)
-      rightRadioButton.setVisible(False)
+      rightRadioButton.hide()
       buttonGroup.addButton(rightRadioButton)
 
       otherRadioButton = qt.QRadioButton('Other')
       otherRadioButton.clicked.connect(radioButtonSlot)
-      otherRadioButton.setVisible(False)
+      otherRadioButton.hide()
       buttonGroup.addButton(otherRadioButton)
+
+      if len(lateralities) == 1 and lateralities[0] == Laterality.NEUTRAL:
+        otherRadioButton.setChecked(True)
 
       semiologiesDict[semiology_term] = dict(
         checkBox=checkBox,
