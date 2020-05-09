@@ -330,6 +330,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       )
       semiologies.append(semiology)
     try:
+      box = qt.QMessageBox()
+      box.setStandardButtons(0)
+      box.setText('Querying mega_analysis module...')
+      box.show()
+      slicer.app.processEvents()
       normalise = len(semiologies) > 1
       scoresDict = combine_semiologies(semiologies, normalise=normalise)
     except Exception as e:
@@ -337,6 +342,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       slicer.util.errorDisplay(message)
       scoresDict = None
       raise
+    box.accept()
     return scoresDict
 
   def getSemiologyTermsAndSidesFromGUI(self):
@@ -623,6 +629,11 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     repoDir = Path(__file__).parent.parent
     import sys
     sys.path.insert(0, str(repoDir))
+    box = qt.QMessageBox()
+    box.setStandardButtons(0)
+    box.setText('Importing mega analysis Python module...')
+    box.show()
+    slicer.app.processEvents()
     try:
       import mega_analysis
     except ImportError:
@@ -632,6 +643,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       )
     import matplotlib
     matplotlib.use('agg')
+    box.accept()
 
   def showForegroundScalarBar(self):
     qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarEnabled', 1)
