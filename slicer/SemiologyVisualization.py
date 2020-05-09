@@ -37,7 +37,7 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
     self.parent.contributors = [
-      "Fernando Pérez-García (3D Slicer Module and data processing)",
+      "Fernando Perez-Garcia (3D Slicer Module and data processing)",
       "Ali Alim-Marvasti (data collection and processing)",
       "Gloria Romagnoli (data collection)",
       "John Duncan (supervision)",
@@ -101,15 +101,64 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def getQuerySettingsTab(self):
     querySettingsWidget = qt.QWidget()
-    querySettingsLayout = qt.QFormLayout(querySettingsWidget)
-    querySettingsLayout.addRow('Dominant hemisphere: ', self.getDominantHemisphereLayout())
+    querySettingsLayout = qt.QVBoxLayout(querySettingsWidget)
+    dominantHemisphereLayout = qt.QHBoxLayout()
+    querySettingsLayout.addLayout(self.getDominantHemisphereLayout())
+
+    inclusionsGroupBox = self.getInclusionsWidget()
+    querySettingsLayout.addWidget(inclusionsGroupBox)
+
     return querySettingsWidget
+
+  def getInclusionsWidget(self):
+    inclusionsGroupBox = qt.QGroupBox('Inclusions')
+    inclusionsLayout = qt.QVBoxLayout(inclusionsGroupBox)
+
+
+    ezgtGroupBox = qt.QGroupBox('Epileptogenic zone ground truth')
+    inclusionsLayout.addWidget(ezgtGroupBox)
+    ezgtLayout = qt.QVBoxLayout(ezgtGroupBox)
+
+    self.postSurgicalSzFreedomCheckBox = qt.QCheckBox('Postoperative seizure freedom')
+    self.concordanceCheckBox = qt.QCheckBox('Multimodal concordance')
+    self.seegCheckBox = qt.QCheckBox('Stereoelectroencephalography')
+
+    self.postSurgicalSzFreedomCheckBox.setChecked(True)
+    self.concordanceCheckBox.setChecked(True)
+    self.seegCheckBox.setChecked(True)
+
+    ezgtLayout.addWidget(self.postSurgicalSzFreedomCheckBox)
+    ezgtLayout.addWidget(self.concordanceCheckBox)
+    ezgtLayout.addWidget(self.seegCheckBox)
+
+
+    publicationGroupBox = qt.QGroupBox('Publication approaches')
+    inclusionsLayout.addWidget(publicationGroupBox)
+    publicationLayout = qt.QVBoxLayout(publicationGroupBox)
+
+    self.epilepsyTopologyCheckBox = qt.QCheckBox('Epilepsy topology')
+    self.seizureSemiologyCheckBox = qt.QCheckBox('Seizure semiology')
+    self.seizureSemiologyCheckBox.setEnabled(False)  # not implemented yet
+    self.brainStimulationCheckBox = qt.QCheckBox('Cortical stimulation')
+
+    self.epilepsyTopologyCheckBox.setChecked(True)
+    self.seizureSemiologyCheckBox.setChecked(True)
+    self.brainStimulationCheckBox.setChecked(True)
+
+    publicationLayout.addWidget(self.epilepsyTopologyCheckBox)
+    publicationLayout.addWidget(self.seizureSemiologyCheckBox)
+    publicationLayout.addWidget(self.brainStimulationCheckBox)
+
+    return inclusionsGroupBox
 
   def getVisualizationSettingsTab(self):
     visualizationSettingsWidget = qt.QWidget()
     visualizationSettingsLayout = qt.QFormLayout(visualizationSettingsWidget)
     visualizationSettingsLayout.addWidget(self.getShowGIFButton())
     visualizationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
+    self.segmentsComboBox = qt.QComboBox()
+    self.segmentsComboBox.setEnabled(False)
+    visualizationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
     return visualizationSettingsWidget
 
   def getModuleSettingsTab(self):
@@ -128,6 +177,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.unknownDominantRadioButton = qt.QRadioButton('Unknown')
     self.leftDominantRadioButton.setChecked(True)
     dominantHemisphereLayout = qt.QHBoxLayout()
+    dominantHemisphereLayout.addWidget(qt.QLabel('Dominant hemisphere: '))
     dominantHemisphereLayout.addWidget(self.leftDominantRadioButton)
     dominantHemisphereLayout.addWidget(self.rightDominantRadioButton)
     dominantHemisphereLayout.addWidget(self.unknownDominantRadioButton)
@@ -324,6 +374,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       label=None,
     )
     self.parcellation.load()
+    structures = sorted(self.parcellation.getSegmentIDs())
+    self.segmentsComboBox.addItems(structures)
     self.semiologiesCollapsibleButton.enabled = True
     self.settingsCollapsibleButton.enabled = True
 
