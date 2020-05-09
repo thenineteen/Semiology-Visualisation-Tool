@@ -74,9 +74,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.makeLoadDataButton()
     self.makeSettingsButton()
     self.makeUpdateButton()
-    self.splitter = qt.QSplitter()
-    self.splitter.setOrientation(qt.Qt.Vertical)
-    self.layout.addWidget(self.splitter)
+    self.semiologiesTableSplitter = qt.QSplitter()
+    self.semiologiesTableSplitter.setOrientation(qt.Qt.Vertical)
+    self.layout.addWidget(self.semiologiesTableSplitter)
     self.makeSemiologiesButton()
     self.makeTableButton()
 
@@ -85,7 +85,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def makeSettingsButton(self):
     self.settingsCollapsibleButton = ctk.ctkCollapsibleButton()
-    self.settingsCollapsibleButton.enabled = False
+    self.settingsCollapsibleButton.setChecked(False)
+    self.settingsCollapsibleButton.hide()
     self.settingsCollapsibleButton.text = 'Settings'
 
     self.settingsLayout = qt.QVBoxLayout(self.settingsCollapsibleButton)
@@ -123,6 +124,18 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.concordanceCheckBox = qt.QCheckBox('Multimodal concordance')
     self.seegCheckBox = qt.QCheckBox('Stereoelectroencephalography')
 
+    self.postSurgicalSzFreedomCheckBox.setToolTip(
+      'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months'
+    )
+    self.concordanceCheckBox.setToolTip(
+      'Multimodal concordance between brain imaging and non-invasive neurophysiology'
+      ' findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) in pointing towards a'
+      ' highly probable epileptogenic zone'
+    )
+    self.seegCheckBox.setToolTip(
+      'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology'
+    )
+
     self.postSurgicalSzFreedomCheckBox.setChecked(True)
     self.concordanceCheckBox.setChecked(True)
     self.seegCheckBox.setChecked(True)
@@ -138,8 +151,25 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
     self.epilepsyTopologyCheckBox = qt.QCheckBox('Epilepsy topology')
     self.seizureSemiologyCheckBox = qt.QCheckBox('Seizure semiology')
-    self.seizureSemiologyCheckBox.setEnabled(False)  # not implemented yet
     self.brainStimulationCheckBox = qt.QCheckBox('Cortical stimulation')
+
+    self.seizureSemiologyCheckBox.setEnabled(False)  # not implemented yet
+
+    self.epilepsyTopologyCheckBox.setToolTip(
+      'When the paper selects a sample of patients based on their established'
+      ' epileptogenic zone and/or site of surgical resection (seizure onset zone),'
+      ' and describes the related seizure semiology, e.g. papers looking at TLE, FLE, OLE, etc.'
+    )
+    self.seizureSemiologyCheckBox.setToolTip(
+      'When the paper selects a sample of patients based on their siezure semiology'
+      ' (e.g. genital automatisms, nose-wiping, gelastic, ictal kissing),'
+      ' or other factors (specific techniques used, specific associated conditions'
+      ' like FCD etc.), and provides details of epileptogenic zone localisation/lateralisation'
+    )
+    self.brainStimulationCheckBox.setToolTip(
+      'When the paper describes the semiology elicited by electrical brain stimulation,'
+      ' in the context of pre- or intra-operative functional mapping'
+    )
 
     self.epilepsyTopologyCheckBox.setChecked(True)
     self.seizureSemiologyCheckBox.setChecked(True)
@@ -188,9 +218,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def makeSemiologiesButton(self):
     self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
-    self.semiologiesCollapsibleButton.enabled = False
+    self.semiologiesCollapsibleButton.hide()
     self.semiologiesCollapsibleButton.text = 'Semiologies'
-    self.splitter.addWidget(self.semiologiesCollapsibleButton)
+    self.semiologiesTableSplitter.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
     semiologiesFormLayout.addWidget(self.getSemiologiesWidget())
@@ -199,7 +229,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
     self.tableCollapsibleButton.visible = False
     self.tableCollapsibleButton.text = 'Scores'
-    self.splitter.addWidget(self.tableCollapsibleButton)
+    self.semiologiesTableSplitter.addWidget(self.tableCollapsibleButton)
 
     tableLayout = qt.QFormLayout(self.tableCollapsibleButton)
     self.tableView = slicer.qMRMLTableView()
@@ -228,7 +258,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     return showHemispheresLayout
 
   def makeUpdateButton(self):
-    self.updateButton = qt.QPushButton('Update')
+    self.updateButton = qt.QPushButton('Update visualisation')
+    self.updateButton.hide()
     self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
     self.updateButton.clicked.connect(self.updateColors)
     self.layout.addWidget(self.updateButton)
@@ -381,8 +412,10 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.parcellation.load()
     structures = sorted(self.parcellation.getSegmentIDs())
     self.segmentsComboBox.addItems(structures)
-    self.semiologiesCollapsibleButton.enabled = True
-    self.settingsCollapsibleButton.enabled = True
+    self.semiologiesCollapsibleButton.show()
+    self.settingsCollapsibleButton.show()
+    self.updateButton.show()
+    self.loadDataButton.hide()
 
   def onAutoUpdateCheckBox(self):
     self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
