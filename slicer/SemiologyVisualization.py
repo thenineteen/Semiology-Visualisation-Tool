@@ -291,6 +291,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         semiologyTerm,
         symptomsSide,
         self.getDominantHemisphereFromGUI(),
+        include_seizure_freedom=self.seizureSemiologyCheckBox.isChecked(),
+        include_concordance=self.concordanceCheckBox.isChecked(),
+        include_seeg=self.seegCheckBox.isChecked(),
+        include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
+        include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
       )
       semiologies.append(semiology)
     try:
