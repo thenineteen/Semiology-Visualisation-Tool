@@ -187,7 +187,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     visualizationSettingsLayout.addWidget(self.getShowGIFButton())
     visualizationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
     self.segmentsComboBox = qt.QComboBox()
-    self.segmentsComboBox.setEnabled(False)
     visualizationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
     return visualizationSettingsWidget
 
@@ -378,8 +377,16 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     labels = [
       int(self.parcellation.getLabelFromName(name)) for name in structures
     ]
-    items = [f'{label} - {name}' for (label, name) in zip(labels, structures)]
-    self.segmentsComboBox.addItems(items)
+    names = []
+    for label, structure in zip(labels, structures):
+      split = structure.split('-')
+      if label < 100:
+        name = f'{label} - {" ".join(split)}'
+      else:
+        name = f'{label} - {" ".join(split[:2])} ({" ".join(split[2:])})'
+      names.append(name)
+    self.segmentsComboBox.addItems(names)
+    self.segmentsComboBox.setEnabled(False)  # temporarily, until logic is implemented
 
   # Slots
   def onSemiologyCheckBox(self):
