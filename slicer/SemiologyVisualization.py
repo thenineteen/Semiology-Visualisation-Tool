@@ -121,28 +121,28 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     ezgtLayout = qt.QVBoxLayout(ezgtGroupBox)
 
     self.postSurgicalSzFreedomCheckBox = qt.QCheckBox('Postoperative seizure freedom')
+    self.invasiveEegCheckBox = qt.QCheckBox('Invasive EEG monitoring')
     self.concordanceCheckBox = qt.QCheckBox('Multimodal concordance')
-    self.seegCheckBox = qt.QCheckBox('Stereoelectroencephalography')
 
     self.postSurgicalSzFreedomCheckBox.setToolTip(
       'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months'
+    )
+    self.invasiveEegCheckBox.setToolTip(
+      'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology'
     )
     self.concordanceCheckBox.setToolTip(
       'Multimodal concordance between brain imaging and non-invasive neurophysiology'
       ' findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) in pointing towards a'
       ' highly probable epileptogenic zone'
     )
-    self.seegCheckBox.setToolTip(
-      'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology'
-    )
 
     self.postSurgicalSzFreedomCheckBox.setChecked(True)
+    self.invasiveEegCheckBox.setChecked(True)
     self.concordanceCheckBox.setChecked(True)
-    self.seegCheckBox.setChecked(True)
 
     ezgtLayout.addWidget(self.postSurgicalSzFreedomCheckBox)
+    ezgtLayout.addWidget(self.invasiveEegCheckBox)
     ezgtLayout.addWidget(self.concordanceCheckBox)
-    ezgtLayout.addWidget(self.seegCheckBox)
 
 
     publicationGroupBox = qt.QGroupBox('Publication approaches')
@@ -324,7 +324,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
         self.getDominantHemisphereFromGUI(),
         include_seizure_freedom=self.seizureSemiologyCheckBox.isChecked(),
         include_concordance=self.concordanceCheckBox.isChecked(),
-        include_seeg=self.seegCheckBox.isChecked(),
+        include_seeg=self.invasiveEegCheckBox.isChecked(),
         include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
         include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
       )
