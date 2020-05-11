@@ -373,6 +373,14 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     if self.unknownDominantRadioButton.isChecked():
       return Laterality.NEUTRAL
 
+  def addGifStructuresToComboBox(self):
+    structures = self.parcellation.getSegmentIDs()
+    labels = [
+      int(self.parcellation.getLabelFromName(name)) for name in structures
+    ]
+    items = [f'{label} - {name}' for (label, name) in zip(labels, structures)]
+    self.segmentsComboBox.addItems(items)
+
   # Slots
   def onSemiologyCheckBox(self):
     for widgetsDict in self.semiologiesWidgetsDict.values():
@@ -421,8 +429,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       label=None,
     )
     self.parcellation.load()
-    structures = sorted(self.parcellation.getSegmentIDs())
-    self.segmentsComboBox.addItems(structures)
+    self.addGifStructuresToComboBox()
     self.semiologiesCollapsibleButton.show()
     self.settingsCollapsibleButton.show()
     self.updateButton.show()
