@@ -36,6 +36,6 @@ class TestExclusions(unittest.TestCase):
         A test to ensure all SEEG_ES = 'ES' are the same as CES.notnull() in the data.
         """
         CS = 'Cortical Stimulation (CS)'
-        indices1 = (self.df.loc[df[SEEG_ES]=='ES', :]).index
-        indices2 = (self.df.loc[df[CS].notnull(), :]).index
+        indices1 = (self.df.loc[self.df[SEEG_ES]=='ES', :]).index
+        indices2 = (self.df.loc[self.df[CS].notnull(), :]).index
         assert (indices1 == indices2)
