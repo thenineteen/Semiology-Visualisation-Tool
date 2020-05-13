@@ -38,9 +38,9 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.dependencies = []
     self.parent.contributors = [
       "Fernando Perez-Garcia (3D Slicer Module and data processing)",
-      "Ali Alim-Marvasti (data collection and processing)",
+      "Ali Alim-Marvasti (data collection and processing modules)",
       "Gloria Romagnoli (data collection)",
-      "John Duncan (supervision)",
+      "John Duncan (supervisor)",
     ]
     self.parent.helpText = """[This is the help text.]
     """
@@ -131,7 +131,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology'
     )
     self.concordanceCheckBox.setToolTip(
-      'Multimodal concordance between brain imaging and non-invasive neurophysiology'
+      'Multimodal concordance between brain imaging and neurophysiological'
       ' findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) in pointing towards a'
       ' highly probable epileptogenic zone'
     )
@@ -161,10 +161,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       ' and describes the related seizure semiology, e.g. papers looking at TLE, FLE, OLE, etc.'
     )
     self.seizureSemiologyCheckBox.setToolTip(
-      'When the paper selects a sample of patients based on their siezure semiology'
-      ' (e.g. genital automatisms, nose-wiping, gelastic, ictal kissing),'
-      ' or other factors (specific techniques used, specific associated conditions'
-      ' like FCD etc.), and provides details of epileptogenic zone localisation/lateralisation'
+      'When the paper pre-selects a sample of patients based on their seizure semiology'
+      ' (e.g. nose-wiping, gelastic, ictal kissing),'
+      ' or takes a cohort of unselected patients with epilepsy,'
+      ' or pre-selects based on other non-topological factors (specific techniques or conditions'
+      ' e.g. FCD), and provides details of epileptogenic zone localisation/lateralisation'
     )
     self.brainStimulationCheckBox.setToolTip(
       'When the paper describes the semiology elicited by electrical brain stimulation,'
