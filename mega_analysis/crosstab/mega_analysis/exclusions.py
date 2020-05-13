@@ -109,7 +109,9 @@ def exclusions(df,
 
 def exclude_ET(df):
     """
-    Exclude ALL epilepsy topology cases EVEN if there are other ground truths.
+    Exclude ALL epilepsy topology cases EVEN if there are other selection priors.
+    e.g. some articles may pre-select patients with TLE then also look at ictal cough.
+    This exclusion, removes this data even though it was both ET and SS.
     (on the fly as the data grows, rather than using the pickled resources)
     """
     ET = 'Epilepsy Topology (ET)'

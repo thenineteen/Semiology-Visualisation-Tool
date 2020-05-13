@@ -125,15 +125,21 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.concordanceCheckBox = qt.QCheckBox('Multimodal concordance')
 
     self.postSurgicalSzFreedomCheckBox.setToolTip(
-      'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months'
+      'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months.'
+      ''
+      'When unticked, seizure-free cases are excluded if they are the only ground truth.'
     )
     self.invasiveEegCheckBox.setToolTip(
-      'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology'
+      'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology.'
+      ''
+      'When unticked, stereotactic EEG cases are excluded only if they are the only ground truth.'
     )
     self.concordanceCheckBox.setToolTip(
       'Multimodal concordance between brain imaging and neurophysiological'
-      ' findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) in pointing towards a'
-      ' highly probable epileptogenic zone'
+      'findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a'
+      'highly probable epileptogenic zone'
+      ''
+      'When unticked, concordant data are excxluded only if they are the only ground truth.'
     )
 
     self.postSurgicalSzFreedomCheckBox.setChecked(True)
@@ -156,20 +162,25 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.seizureSemiologyCheckBox.setEnabled(False)  # not implemented yet
 
     self.epilepsyTopologyCheckBox.setToolTip(
-      'When the paper selects a sample of patients based on their established'
-      ' epileptogenic zone and/or site of surgical resection (seizure onset zone),'
-      ' and describes the related seizure semiology, e.g. papers looking at TLE, FLE, OLE, etc.'
+      'When the paper pre-selects samples of patients based on their established epileptogenic zone'
+      '(site of surgical resection) or seizure onset zone (neurophysiological/anatomical), and'
+      'describes the related seizure semiology - e.g. articles looking at TLE, FLE, OLE.'
+      ''
+      'When unticked, ALL epilepsy topology data are excluded, EVEN if there are other approaches.'
     )
     self.seizureSemiologyCheckBox.setToolTip(
       'When the paper pre-selects a sample of patients based on their seizure semiology'
-      ' (e.g. nose-wiping, gelastic, ictal kissing),'
-      ' or takes a cohort of unselected patients with epilepsy,'
-      ' or pre-selects based on other non-topological factors (specific techniques or conditions'
-      ' e.g. FCD), and provides details of epileptogenic zone localisation/lateralisation'
+      '(e.g. nose-wiping, gelastic, ictal kissing), or'
+      'reports on a cohort of unselected patients with epilepsy, or'
+      'pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD).'
+      ''
+      'When unticked, ALL spontaneous semiology cases are excluded, even if there are other approaches.'
     )
     self.brainStimulationCheckBox.setToolTip(
       'When the paper describes the semiology elicited by electrical brain stimulation,'
-      ' in the context of pre- or intra-operative functional mapping'
+      'in the context of pre- and/or intra-operative functional mapping.'
+      ''
+      'When unticked, electrical stimulation cases are only excluded if they are the ONLY ground truth.'
     )
 
     self.epilepsyTopologyCheckBox.setChecked(True)
