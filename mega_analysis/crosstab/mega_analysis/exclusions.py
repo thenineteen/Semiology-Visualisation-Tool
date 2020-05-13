@@ -132,6 +132,7 @@ def exclude_cortical_stimulation(df):
     """
     Exclude electrical stimulation cases when this is the only ground truth.
     will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
+    if they don't, then needs a manual check. See tests.
     """
     df.loc[df[SEEG_ES]=='ES', SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
