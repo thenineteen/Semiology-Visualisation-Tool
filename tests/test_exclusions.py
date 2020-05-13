@@ -30,3 +30,12 @@ class TestExclusions(unittest.TestCase):
 
     def test_exclude_cortical_stimulation(self):
         assert not self.df.equals(exclude_cortical_stimulation(self.df))
+
+    def test_cortical_stimulation_columns_data_integrity(self):
+        """
+        A test to ensure all SEEG_ES = 'ES' are the same as CES.notnull() in the data.
+        """
+        CS = 'Cortical Stimulation (CS)'
+        indices1 = (df.loc[df[SEEG_ES]=='ES', :]).index
+        indices2 = (df.loc[df[CS].notnull(), :]).index
+        assert (indices1 == indices2)

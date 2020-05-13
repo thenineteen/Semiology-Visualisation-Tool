@@ -128,26 +128,11 @@ def exclude_spontaneous_semiology(df):
     return df_exclusions_SS
 
 
-def cortical_stimulation_test(df):
-    """
-    A test to ensure all SEEG_ES = 'ES' are the same as CES.notnull() in the data.
-    """
-    CS = 'Cortical Stimulation (CS)'
-    indices1 = (df.loc[df[SEEG_ES]=='ES', :]).index
-    indices2 = (df.loc[df[CS].notnull(), :]).index
-    test_ = indices1 == indices2
-    if test_:
-        logging.debug('cortical_stimulation_test passed')
-    else:
-        logging.debug('cortical_stimulation_test FAILED')
-
-
 def exclude_cortical_stimulation(df):
     """
     Exclude electrical stimulation cases when this is the only ground truth.
     will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
     """
-    cortical_stimulation_test(df)
     df.loc[df[SEEG_ES]=='ES', SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
     df_exclusions_CES = df.dropna(subset=subset, thresh=1, axis=0, inplace=False)
