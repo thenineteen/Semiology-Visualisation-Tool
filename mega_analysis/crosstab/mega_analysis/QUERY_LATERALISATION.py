@@ -105,7 +105,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     no_rows = inspect_result_lat.shape[0]
 
     # ensure there is patient's lateralised signs and check dominant known or not
-    if not side_of_symptoms_signs:
+    if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         print('Please retry and determine side_of_symptoms_signs argument')
         return
 
