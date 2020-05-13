@@ -25,19 +25,18 @@
   auras:
     "Epigastric":
       [
-        "((?<!no )(?<!denies )(?<!deny ))epigastric sensation",
+        "((?<!no )(?<!denies )(?<!deny ))epigastric ?(sensation)?",
         "((?<!no )(?<!denies )(?<!deny ))epigastric rising",
         "rising epigastric",
         "((?<!no )(?<!denies )(?<!deny ))epigastric aura",
         "((?<!no )(?<!denies )(?<!deny ))epigastric feeling",
         "characteristics? epigatric pain",
-        "(?<!no) epigastric or (?:cephalic) sensation",
         "epigastric disturbance sensation",
         "(?:aura of)? epigastric (?:& chest)? discomfort",
         'epigastric "funny feeling"',
         "((?<!no )(?<!denies )(?<!deny ))epigastric tightness",
-        "(?<!no) rising sensation",
-        "(?<!no) epigastric warning",
+        "(?<!no )rising sensation",
+        "(?<!no )epigastric warning",
         'epigastric "fluttering"',
         "(?<!no )(abdo[a-z]* aura)|(abdo.* ((sens[a-z]*)|(feeling)))",
         "(butterfly (feel|sens|in stomach))",
@@ -46,6 +45,7 @@
       ]
     "Fear-Anxiety":
       [
+        "Fear-Anxiety",
         "((?<!no )(?<!denies )(?<!deny ))fear",
         "frighten(ed)?",
         "scare(d)?",
@@ -56,11 +56,11 @@
         "doom",
       ]
     "Psychic": [
+        "psychic",
         "((?<!no )(?<!denies )(?<!deny ))de.?ja.?vu",
         "jamais.?vu",
         "erotic",
         "sexual",
-        "psychic",
         "de-?personali[sz]ation",
         "de-?reali[sz]ation",
         "negative emotion",
@@ -83,7 +83,7 @@
         "ictal asystole",
         "lightheadedness",
         "(?<!no )heart racing",
-        "(?<!no) hyper-?ventilation",
+        "(?<!no )hyper-?ventilation",
         "heavy-? ?breathing",
         "rapid-? ?breathing",
         "tachypnoea",
@@ -92,7 +92,7 @@
         "hypopnoea",
         "pilo-?erection",
         "hair-? ?sticking",
-        "fuzzy (?:sensation|feeling)",
+        "fuzzy ?(?:sensation|feeling)",
         "sweating",
         "hyper-? ?hydrosis",
         "((?<!no )(?<!denies )(?<!deny ))hyper-? ?salivation",
@@ -102,7 +102,7 @@
         "vomit",
         "borborygmi",
         "encoparesis",
-        "burp(?:ing)",
+        "burp",
         "ictal urinary urge",
         "((?<!no )(?<!denies )(?<!deny ))urinary urge",
         "urgency aura",
@@ -112,6 +112,7 @@
       ]
     "Olfactory-Gustatory":
       [
+        "Olfactory-Gustatory",
         "(?<!no )olfactory",
         "(?<!no )odd smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
@@ -123,13 +124,13 @@
         "(?<!no )nasty taste",
         "(?<!no )unpleasant taste",
         "(?<!no )funny taste",
-        "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) taste",
+        "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) ?taste",
         "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )unusual smell",
       ]
     "Auditory":
       [
-        "((?<!no )(?<!denies )(?<!deny ))auditory (hallucination)?(illusion)?",
+        "((?<!no )(?<!denies )(?<!deny ))auditory ?(hallucination)?(illusion)?",
         "altered hearing",
         "voices? illusion",
         "voices? in head",
@@ -148,6 +149,7 @@
       ]
     "Visual":
       [
+        "Visual",
         "((?<!no )(?<!denies )(?<!migraine with )(?<!migraine without ))visual aura",
         "(?:flashing)?(?:colou?r.{0,2}) lights?",
         "blurr(?:y)?(?:ed)? vision",
@@ -172,6 +174,7 @@
       ]
     "Vestibular":
       [
+        "Vestibular",
         "((?<!no )(?<!denies )(?<!deny ))vertigo",
         "vertiginous",
         "((?<!no )(?<!denies )(?<!deny ))dizzy",
@@ -184,7 +187,7 @@
     "Non-Specific Aura":
       [
         "non-?.?specific (aura)?",
-        "vague (aura)?",
+        "vague ?(aura)?",
         "unspecified aura",
         "unclear aura",
         "somesthetic",
@@ -194,7 +197,8 @@
         "electric",
         "indefinable sensation",
         "indefinable feeling",
-        "cephalic sensation", "head rush",
+        "cephalic sensation",
+        "head rush",
       ]
 
   motor:
@@ -271,9 +275,18 @@
           "generalized TCS",
           "secondary tonic-?/? ?clonic",
         ]
-      "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
+      "Myoclonic":
+        [
+          "myo-? ?clonic",
+          "myo-?clonus",
+          "single jerk",
+        ]
       "Other Simple Motor":
-        ["simple motor", "((?<!complex )(?<!non-))motor seizure"]
+        [
+          "Other Simple Motor",
+          "simple motor",
+          "((?<!complex )(?<!non-))motor seizure",
+        ]
     complex:
       "Hypermotor":
         [
@@ -304,14 +317,27 @@
         [
           "behaviour(?:al)? arrest",
           "akinetic attack",
-          "(?:relative)? ictal immobility",
-          "freeze", "unable to move",
+          "(?:relative )?ictal immobility",
+          "freeze",
+          "unable to move",
         ]
-      "Other Complex Motor": ["complex motor", "complicated motor"]
+      "Other Complex Motor":
+        [
+          "Other Complex Motor",
+          "complex motor",
+          "complicated motor",
+          ]
     special seizures:
-      "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
+      "Atonic":
+        [
+          "atonic",
+          "flaccid",
+          "loss of tone",
+          "jelly",
+        ]
       "Ictal Limb Paresis":
         [
+          "Ictal Limb Paresis",
           "unilateral ictal paresis",
         ]
       "Astatic":
@@ -322,10 +348,14 @@
           "falls? to ground",
           "drop attack",
         ]
-      "Hypomotor": ["hypomotor"]
+      "Hypomotor":
+        [
+          "hypomotor",
+        ]
     automatisms:
       "Oral Automatisms":
         [
+          "Oral Automatisms",
           "oro-?alimentary",
           "(?<!no )oral automatism",
           "(?<!no )lip-? ?smac?k?",
@@ -336,6 +366,7 @@
         ]
       "Upper Limb Automatism":
         [
+          "upper limb autom",
           "hand automatism",
           "unilateral hand automatism",
           "fiddl",
@@ -346,10 +377,10 @@
           "arm automatism",
           "(?<!no )manual automat",
           "fumbl",
-          "upper limb autom",
         ]
       "Lower Limb Automatism":
         [
+          "Lower Limb Automatism",
           "leg automatism",
           "lower-? ?limb automatism",
           "lower-? ?limb automotor",
@@ -375,9 +406,15 @@
           "(?<!no )flickering of? ?eyes",
           "(?<!no )flicker(ing)? of eye",
         ]
-      "Cough": ["ictal cough", "cough seizure"]
+      "Cough":
+        [
+          "Cough",
+          "ictal cough",
+          "cough seizure",
+        ]
       "Nose-wiping":
         [
+          "Nose-wiping",
           "(?<!no )nose-? ?wip",
           "rubs? nose",
           "nose rub",
@@ -390,6 +427,7 @@
         ]
       "Drinking":
         [
+          "Drinking",
           "ictal drink",
           " sip(ping)? ",
           "ictal swallow",
@@ -403,14 +441,15 @@
           "giggl"]
       "Dacrystic":
         [
+          "Dacrystic",
           "((?<!no )(?<!denies )(?<!deny ))cry(?:ing)?",
           "((?<!not )(?<!denies )(?<!deny ))tear(?:ful)?",
           "((?<!not )(?<!denies )(?<!deny ))dacrystic",
         ]
       "Ictal Pout":
         [
-          "((?<!no )(?<!denies )(?<!deny ))chapeau",
           "((?<!no )(?<!denies )(?<!deny ))ictal pout",
+          "((?<!no )(?<!denies )(?<!deny ))chapeau",
           "((?<!no )(?<!denies )(?<!deny ))pout",
         ]
       "Grimace":
@@ -419,20 +458,18 @@
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
       "All Automatisms":
-        [
+        [  # covers upper and lower limb and oral automatisms, not hypermotor
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
-          "((?<!no )(?<!denies )(?<!deny ))other automatism",
-          "((?<!no )(?<!denies )(?<!deny ))complex automatism",
-          "((?<!no )(?<!denies )(?<!deny ))other automotor",
-          "((?<!no )(?<!denies )(?<!deny ))automotor",
+           "((?<!no )(?<!denies )(?<!deny ))automotor",
         ]
 
   speech:
-    "Vocalisation":
+    "Vocalisation":  # non-sensical sounds
       [
+        "Vocalisation",
         "ictal vocalis?z?ation",
         "grunt",
-        "(?<!no) vocalis?z?",
+        "(?<!no )vocalis?z?",
         "mumble",
         "humming",
         " hum ",
@@ -440,54 +477,55 @@
       ]
     "Aphasia":
       [
-        "(?<!no) aphasia",
+        "(?<!no )aphasia",
         "mute",
-        "no speech ((?!disorder)(?!disturbance)(?!deficit)(?!problem))",
+        "no speech ?((?!disorder)(?!disturbance)(?!deficit)(?!problem))",
         "unable to speak",
         "unable to talk",
-        "(?<!no) speech arrest",
+        "(?<!no )speech arrest",
       ]
     "Dysphasia":
       [
-        "(?<!no) dysphasia",
-        "(?<!no) difficulty speak(?:ing)?",
-        "(?<!no) difficulty talk(?:ing)?",
+        "(?<!no )dysphasia",
+        "(?<!no )difficulty speak(?:ing)?",
+        "(?<!no )difficulty talk(?:ing)?",
         "speech difficult",
         "difficult speech",
-        "(?<!no) distortion of speech",
-        "(?<!no) speech disturbance",
-        "(?<!no) garbled speech",
-        "(?<!no) speech production problem",
-        "(?<!no) incomprehensible speech",
-        "(?<!no) incoherent speech",
-        "(?<!no) none?-? ?sense",
-        "(?<!no) none? ?-?sensical",
+        "(?<!no )distortion of speech",
+        "(?<!no )speech disturbance",
+        "(?<!no )garbled speech",
+        "(?<!no )speech production problem",
+        "(?<!no )incomprehensible speech",
+        "(?<!no )incoherent speech",
+        "(?<!no )none?-? ?sense",
+        "(?<!no )none? ?-?sensical",
       ]
     "Ictal Speech":
       [
-        "ictal talk",
         "ictal speech",
+        "ictal talk",
       ]
     "Palilalia":
       [
-        "(?<!no) pallilalia",
-        "(?<!no) palilalia",
+        "(?<!no )pallilalia",
+        "(?<!no )palilalia",
         "repetition of (words|sentences?|speech)",
         "speech repetition",
         "phrase repetition",
-        "(?<!no) repeating (?:himself|herself)",
+        "(?<!no )repeating ?(?:himself|herself)",
       ]
     "Aphemia":
       [
-        "(?<!no) aphemia",
+        "(?<!no )aphemia",
         "inarticulate",
         "articulation",
         "articulatory",
-        "(?<!no) anarthria",
+        "(?<!no )anarthria",
       ]
     "Coprolalia":
       [
-        "((?<!no )(?<!without ))corprolalia",
+        "((?<!no )(?<!without ))corprolalia",  # deliberate misspelling
+        "Coprolalia",
         "swear",
         "shit",
         "fuck",
@@ -503,7 +541,7 @@
         "stare",
         "(((becomes? )|(became )|(looks? ))distant)|(distant ((look)|(stare)|(gaze)))",
         "unresponsive",
-        "absence (?!of)",
+        "absence(?! of)",
         "dyscognitive",
         "(?<!no )loss of awareness",
         "unaware",
