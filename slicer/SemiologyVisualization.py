@@ -37,10 +37,10 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
     self.parent.contributors = [
-      "Fernando Perez-Garcia (3D Slicer Module and data processing)",
-      "Ali Alim-Marvasti (data collection and processing modules)",
-      "Gloria Romagnoli (data collection)",
-      "John Duncan (supervisor)",
+      "Fernando Perez-Garcia (SVT software: Design, 3D Slicer Module, Tests, and GUI API)",
+      "Ali Alim-Marvasti (Data collection and SVT software: Design, MegaAnalysis Preprocessing Modules, Semiology Dictionary)",
+      "Gloria Romagnoli (Data collection and Design)",
+      "John Duncan (Study Supervisor and Design)",
     ]
     self.parent.helpText = """[This is the help text.]
     """
