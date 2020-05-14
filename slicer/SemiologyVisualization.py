@@ -135,8 +135,8 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       'When unticked, stereotactic EEG cases are excluded only if they are the only ground truth.'
     )
     self.concordanceCheckBox.setToolTip(
-      'Multimodal concordance between brain imaging and neurophysiological'
-      'findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a'
+      'Multimodal concordance between brain imaging and neurophysiology'
+      '(e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a'
       'highly probable epileptogenic zone'
       ''
       'When unticked, concordant data are excxluded only if they are the only ground truth.'
