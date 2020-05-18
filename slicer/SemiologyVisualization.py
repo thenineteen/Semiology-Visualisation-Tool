@@ -37,10 +37,10 @@ class SemiologyVisualization(ScriptedLoadableModule):
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
     self.parent.contributors = [
-      "Fernando Perez-Garcia (SVT software: Design, 3D Slicer Module, Tests, and GUI API)",
-      "Ali Alim-Marvasti (Data collection and SVT software: Design, MegaAnalysis Preprocessing Modules, Semiology Dictionary)",
-      "Gloria Romagnoli (Data collection and Design)",
-      "John Duncan (Study Supervisor and Design)",
+      "Fernando Perez-Garcia (SVT code)",
+      "Ali Alim-Marvasti (Data and SVT code)",
+      "Gloria Romagnoli (Data)",
+      "John Duncan (Study Supervisor)",
     ]
     self.parent.helpText = """[This is the help text.]
     """
@@ -126,19 +126,19 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
     self.postSurgicalSzFreedomCheckBox.setToolTip(
       'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months.'
-      ''
+      '\n'
       'When unticked, seizure-free cases are excluded if they are the only ground truth.'
     )
     self.invasiveEegCheckBox.setToolTip(
       'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology.'
-      ''
+      '\n'
       'When unticked, stereotactic EEG cases are excluded only if they are the only ground truth.'
     )
     self.concordanceCheckBox.setToolTip(
       'Multimodal concordance between brain imaging and neurophysiology'
       '(e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a'
       'highly probable epileptogenic zone'
-      ''
+      '\n'
       'When unticked, concordant data are excxluded only if they are the only ground truth.'
     )
 
