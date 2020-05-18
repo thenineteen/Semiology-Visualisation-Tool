@@ -9,6 +9,19 @@ CONCORDANT = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
 SEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
 
 
+def exclude_postictals(df):
+    """
+    Exclude post-ictal semiology.
+    This is an individual semiology option.
+    """
+    post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
+    post_ictal_inspection = QUERY_SEMIOLOGY(df, semiology_term=post_ictals,
+                                            ignore_case=True, semiology_dict_path=None)
+    df.drop(labels = post_ictal_inspection.index, axis='index', inplace=True, errors='ignore')
+    print('Excluded post-ictal semiology in specific query')
+    return df
+
+
 def exclusions(df,
                 POST_ictals=True,
                 PET_hypermetabolism=True,
@@ -23,14 +36,9 @@ def exclusions(df,
 
     """
 
-
-
     if POST_ictals:
-        post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
-        post_ictal_inspection = QUERY_SEMIOLOGY(df, semiology_term=post_ictals,
-                                                ignore_case=True, semiology_dict_path=None)
-        df.drop(labels = post_ictal_inspection.index, axis='index', inplace=True, errors='ignore')
-        print('Excluded post-ictal semiology in the query')
+        df = exclude_postictals(df)
+        print('Excluded post-ictal semiology at top level data loading prior to query')
 
     if PET_hypermetabolism:
         col1 = CONCORDANT
@@ -101,17 +109,30 @@ def exclusions(df,
 
 def exclude_ET(df):
     """
-    exclude ALL epilepsy topology cases on the fly as the data grows, rather than using the pickled resources
+    Exclude ALL epilepsy topology cases EVEN if there are other selection priors.
+    e.g. some articles may pre-select patients with TLE then also look at ictal cough.
+    This exclusion, removes this data even though it was both ET and SS.
+    (on the fly as the data grows, rather than using the pickled resources)
     """
     ET = 'Epilepsy Topology (ET)'
     df_exclusions_ET = df.loc[~df[ET].notnull(), :]
     return df_exclusions_ET
 
 
+def exclude_spontaneous_semiology(df):
+    """
+    Exclude cases ALL spontaneous semiology cases.
+    """
+    SS = 'Spontaneous Semiology (SS)'
+    df_exclusions_SS = df.loc[~df[SS].notnull(), :]
+    return df_exclusions_SS
+
+
 def exclude_cortical_stimulation(df):
     """
-    exclude electrical stimulation cases when this is the only ground truth.
-    will need a datatest to ensure all SEEG_ES = 'ES' have CES.notnull().
+    Exclude electrical stimulation cases when this is the only ground truth.
+    will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
+    if they don't, then needs a manual check. See tests.
     """
     df.loc[df[SEEG_ES]=='ES', SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
@@ -122,19 +143,31 @@ def exclude_cortical_stimulation(df):
     # df_exclusions_CES = df_exclusions_CES.loc[~df[CES].notnull(), :]
     # return df_exclusions_CES
 
+
 def exclude_sEEG(df):
     """
-    exclude cases where the only ground truth is stereo EEG cases.
+    Exclude cases where the only ground truth is stereo EEG cases.
     I recommend also excluding exclude_cortical_stimulation if running this.
     """
     df.loc[df[SEEG_ES]=='y', SEEG_ES] = np.nan
     df_exclusions_sEEG = df.dropna(subset=[POST_OP, CONCORDANT, SEEG_ES], thresh=1, axis=0, inplace=False)
     return df_exclusions_sEEG
 
+
 def exclude_seizure_free(df):
     """
-    exclude seizure-free cases if this is the only ground truth.
+    Exclude seizure-free cases if this is the only ground truth.
     """
     df.loc[df[POST_OP].notnull(), POST_OP] = np.nan
     df_exclusion_sz_free = df.dropna(subset=[POST_OP, CONCORDANT, SEEG_ES], thresh=1, axis=0, inplace=False)
     return df_exclusion_sz_free
+
+
+def exclude_paediatric_cases(df):
+    """
+    Exclude ALL cases labelled as paediatric, i.e. < 7 years old.
+    (If the data is mixed and undifferentiated by < 7 yrs, the data is excluded)
+    """
+    PAED = 'padeiatric? <7 years (0-6 yrs) y/n'
+    df_exclusions_paeds = df.loc[~df[PAED].notnull(), :]
+    return df_exclusions_paeds
