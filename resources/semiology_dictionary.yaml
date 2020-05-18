@@ -54,6 +54,7 @@
         "anxious",
         "impending (?:sensation)? ?doom",
         "doom",
+        "panic"
       ]
     "Psychic": [
         "psychic",
@@ -73,7 +74,7 @@
       [
         "vegetative ((?=)(aura)|(?<=)(aura))",
         "autonomous-?.?vegetative",
-        "((?<!no )(?<!denies )(?<!deny ))autonomic aura",
+        "((?<!no )(?<!denies )(?<!deny ))autonomic",
         "palpitations",
         "ictal tachycardia",
         "ictal bradycardia",
@@ -107,13 +108,13 @@
         "((?<!no )(?<!denies )(?<!deny ))urinary urge",
         "urgency aura",
         "aura of (:?urinary)? ?urge",
-        "((?<!no )(?<!denies )(?<!deny ))autonomic",
         "flush",
       ]
     "Olfactory-Gustatory":
       [
         "Olfactory-Gustatory",
         "(?<!no )olfactory",
+        "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )odd smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
         "(metallic)?.?taste",
@@ -125,7 +126,6 @@
         "(?<!no )unpleasant taste",
         "(?<!no )funny taste",
         "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) ?taste",
-        "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )unusual smell",
       ]
     "Auditory":
@@ -197,7 +197,7 @@
         "electric",
         "indefinable sensation",
         "indefinable feeling",
-        "cephalic sensation",
+        "cephalic",
         "head rush",
       ]
 
