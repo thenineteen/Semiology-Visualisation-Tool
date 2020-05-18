@@ -12,15 +12,18 @@ Figure:
 
 Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting a certain seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria to establish epileptogeniz zone's localisation and/ or lateralisation was satisfied:
 
-* Post-operative seizure freedom (Engel Ia,b; ILAE 1,2), confirmed at a minimum follow-up of 12 months;
+* Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I), confirmed at a minimum follow-up of 12 months;
 * Invasive EEG recording and/ or electrical stimulation, mapping seizure semiology;
-* Multi-modal concordance between brain imaging & non-invasive neurophysiology findings (e.g. PET, SPECT, MEG, EEG, fMRI, etc.) in pointing towards a highly probable epileptogenic zone.
+* Multi-modal concordance between brain imaging & neurophysiology (e.g. PET, SPECT, MEG, EEG, fMRI) in pointing towards a highly probable epileptogenic zone.
 
 The data are also tagged to reduce publications bias and/or enhance data visualisation (e.g. of invasive EEG electrode targets) to allow filtering out specific paper/patient-level priors:
 
-* Epilepsy Topology (ET): when the paper selects sample of patients based on their established epileptogenic zone and/or site of surgical resection (seizure onset zone), and describes the related seizure semiology - e.g. papers looking at TLE, FLE, OLE, etc.;
-* Spontaneous Semiology (SS): when paper selects sample of patients based on their siezure semiology (e.g. genital automatisms, nose-wiping, gelastic, ictal kissing), or other factors (specific techniques used, specific associated conditions like FCD etc.), and provides details of epileptogenic zone's localisation/lateralisation; 
-* Electrical Stimulation (ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping;
+* Epilepsy Topology (ET): when the paper selects sample of patients based on their established epileptogenic zone (site of surgical resection) or seizure onset zone (neurophysiological/anatomical), and describes the related seizure semiology - e.g. papers looking at TLE, FLE, OLE;
+* Spontaneous Semiology (SS): when the paper pre-selects a sample of patients based on their seizure semiology
+  (e.g. nose-wiping, gelastic, ictal kissing), or
+  reports on a cohort of unselected patients with epilepsy, or
+  pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
+* Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
 
 ## Brief workings:
