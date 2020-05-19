@@ -28,6 +28,9 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
 # Define paths
 repo_dir, resources_dir, excel_path, semiology_dict_path = file_paths()
 
+# Define the gif sheet names
+gif_sheet_names = gif_sheet_names()
+
 # Read Excel file only three times at initialisation
 mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
