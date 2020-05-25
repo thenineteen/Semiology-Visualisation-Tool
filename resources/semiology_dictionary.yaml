@@ -468,7 +468,7 @@
       "All Automatisms (oral, automotor)":
         [  # covers upper and lower limb and oral automatisms, not hypermotor
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
-           "((?<!no )(?<!denies )(?<!deny ))automotor",
+          "((?<!no )(?<!denies )(?<!deny ))automotor",
         ]
 
   speech:
