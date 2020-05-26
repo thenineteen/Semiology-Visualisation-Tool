@@ -138,16 +138,23 @@ class Semiology:
 
     def query_lateralisation(self) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
-        all_combined_gifs = QUERY_LATERALISATION(
-            query_semiology_result,
-            self.data_frame,
-            map_df_dict,
-            gif_lat_file,
-            side_of_symptoms_signs=self.symptoms_side.value,
-            pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
-        )
+        # ensure query_semiology_result isn't None or empty:
+        if query_semiology_result is not None:
+            if ((query_semiology_result['Localising'] != 0)|(query_semiology_result['Lateralising'] != 0)):
+                all_combined_gifs = QUERY_LATERALISATION(
+                    query_semiology_result,
+                    self.data_frame,
+                    map_df_dict,
+                    gif_lat_file,
+                    side_of_symptoms_signs=self.symptoms_side.value,
+                    pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                )
 
-        if all_combined_gifs is None:
+                if all_combined_gifs is None:
+                    print("Something is broken. This shouldn't be happening with triple ifs and updated QUERY_LAT")
+                    return
+        # else: query semiology is none, or both localising and lateralising are zero:
+        else:
             pivot_result = melt_then_pivot_query(
                 mega_analysis_df,
                 query_semiology_result,
