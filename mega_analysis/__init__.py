@@ -1,6 +1,3 @@
-from pathlib import *
-import copy
-
 from .semiology import (
     Semiology,
     Laterality,
