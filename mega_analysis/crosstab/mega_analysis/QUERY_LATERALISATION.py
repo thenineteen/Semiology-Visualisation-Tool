@@ -103,10 +103,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     Left = 0
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
+    one_map = big_map(map_df_dict)
 
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
-        print('Please retry and determine side_of_symptoms_signs argument')
+        print('Please note you must determine at least one of side_of_symptoms_signs or')
+        print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
         return
 
     # cycle through rows of inspect_result_lat:
@@ -122,7 +124,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
-        one_map = big_map(map_df_dict)
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
                                                 suppress_prints=True)
         # ^ row_to_one_map now contains all the lateralising gif parcellations
