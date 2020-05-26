@@ -138,9 +138,11 @@ class Semiology:
 
     def query_lateralisation(self) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
-        # ensure query_semiology_result isn't None or empty:
         if query_semiology_result is not None:
-            if ((query_semiology_result['Localising'].sum() != 0)|(query_semiology_result['Lateralising'].sum() != 0)):
+            # ensure query_semiology_result isn't None or empty:
+            if ((query_semiology_result[['Localising', 'Lateralising']]).sum().sum() != 0):
+                # same as saying (query_semiology_result['Localising'].sum() != 0) OR
+                # (query_semiology_result['Lateralising'].sum() != 0)
                 all_combined_gifs = QUERY_LATERALISATION(
                     query_semiology_result,
                     self.data_frame,
@@ -162,7 +164,7 @@ class Semiology:
                         suppress_prints=True,
                         map_df_dict=map_df_dict,
                     )
-            else:
+            elif ((query_semiology_result[['Localising', 'Lateralising']]).sum().sum() == 0):
                 message = f'No query_semiology results for term "{self.term}"'
                 raise ValueError(message)
         else:
