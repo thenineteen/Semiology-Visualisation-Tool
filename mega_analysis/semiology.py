@@ -138,11 +138,20 @@ class Semiology:
 
     def query_lateralisation(self) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
-        if query_semiology_result is not None:
-            # ensure query_semiology_result isn't None or empty:
-            if ((query_semiology_result[['Localising', 'Lateralising']]).sum().sum() != 0):
-                # same as saying (query_semiology_result['Localising'].sum() != 0) OR
-                # (query_semiology_result['Lateralising'].sum() != 0)
+        if query_semiology_result is None:
+            print('No such semiology found')
+            return None
+        else:
+            # Same as saying (query_semiology_result['Localising'].sum() != 0) OR
+            # (query_semiology_result['Lateralising'].sum() != 0)
+            columns = ['Localising', 'Lateralising']
+            localising_lateralising = query_semiology_result[columns]
+            ll_empty = localising_lateralising.sum().sum() == 0
+
+            if ll_empty:
+                message = f'No query_semiology results for term "{self.term}"'
+                raise ValueError(message)
+            else:
                 all_combined_gifs = QUERY_LATERALISATION(
                     query_semiology_result,
                     self.data_frame,
@@ -152,8 +161,8 @@ class Semiology:
                     pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
                 )
                 if all_combined_gifs is None:
-                    # then either no lateralising pt data, or empty lat column
-                    # run manual pipeline:
+                    # Either no lateralising pt data, or empty lat column
+                    # Run manual pipeline:
                     pivot_result = melt_then_pivot_query(
                         mega_analysis_df,
                         query_semiology_result,
@@ -164,13 +173,6 @@ class Semiology:
                         suppress_prints=True,
                         map_df_dict=map_df_dict,
                     )
-            elif ((query_semiology_result[['Localising', 'Lateralising']]).sum().sum() == 0):
-                message = f'No query_semiology results for term "{self.term}"'
-                raise ValueError(message)
-        else:
-            # else: query semiology is none, or both localising and lateralising are zero:
-            print('No such semiology found.')
-            return
         return all_combined_gifs
 
     def get_num_datapoints_dict(self) -> Optional[dict]:
