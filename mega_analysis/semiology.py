@@ -149,23 +149,23 @@ class Semiology:
                     side_of_symptoms_signs=self.symptoms_side.value,
                     pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
                 )
-
                 if all_combined_gifs is None:
-                    print("Something is broken. This shouldn't be happening with triple ifs and updated QUERY_LAT")
-                    return
-        # else: query semiology is none, or both localising and lateralising are zero:
+                    # then either no lateralising pt data, or empty lat column
+                    # run manual pipeline:
+                    pivot_result = melt_then_pivot_query(
+                        mega_analysis_df,
+                        query_semiology_result,
+                        self.term,
+                    )
+                    all_combined_gifs = pivot_result_to_one_map(
+                        pivot_result,
+                        suppress_prints=True,
+                        map_df_dict=map_df_dict,
+                    )
         else:
-            pivot_result = melt_then_pivot_query(
-                mega_analysis_df,
-                query_semiology_result,
-                self.term,
-            )
-            all_combined_gifs = pivot_result_to_one_map(
-                pivot_result,
-                suppress_prints=True,
-                map_df_dict=map_df_dict,
-            )
-
+            # else: query semiology is none, or both localising and lateralising are zero:
+            print('No such semiology found.')
+            return
         return all_combined_gifs
 
     def get_num_datapoints_dict(self) -> Optional[dict]:
