@@ -47,16 +47,21 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     Alim-Marvasti Aug 2019
     """
 
-    lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
+    # ensure there is patient's lateralised signs and check dominant known or not
+    if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
+        print('Please note you must determine at least one of side_of_symptoms_signs or')
+        print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
+        return
 
     #check there is lateralising value
     try:
         Lat = inspect_result['Lateralising']
         logging.debug(f'Lateralisation based on: {Lat.sum()} datapoints')
-
     except KeyError:
         print('No Lateralising values found for this query of the database.')
         return
+
+    lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
 
     # check that the lateralising columns isn't null where it shouldn't be i.e. CL/IL/DomH/NonDomH not null:
     # but not 'BL (Non-lateralising)'
@@ -83,7 +88,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if col not in inspect_result.columns:
             inspect_result[col] = 0
 
-
     # summarise overall lat values
     IL = inspect_result['IL']
     CL = inspect_result['CL']
@@ -103,11 +107,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     Left = 0
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
+    one_map = big_map(map_df_dict)
+    all_combined_gifs = None
 
-    # ensure there is patient's lateralised signs and check dominant known or not
-    if not side_of_symptoms_signs:
-        print('Please retry and determine side_of_symptoms_signs argument')
-        return
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
@@ -122,7 +124,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
-        one_map = big_map(map_df_dict)
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
                                                 suppress_prints=True)
         # ^ row_to_one_map now contains all the lateralising gif parcellations
@@ -178,6 +179,13 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         Total = Right+Left
         if Right == Left:
             # no point as this is 50:50 as it already is, so skip
+            # before continuing, ensure there is a all_combined_gifs...
+                # e.g. for blink there isn't as the first row is 50:50...
+                # ... and all future codes fail
+            if all_combined_gifs is None:
+                all_combined_gifs = row_to_one_map
+            elif all_combined_gifs is not None:
+                all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
             continue
 
         # now should be able to use above to lateralise the localising gif parcellations:
@@ -254,7 +262,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         elif j != 0:
             gifs_not_lat = pd.concat([gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
     #now combine the lateralised and non-lateralised:
-    all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
+    # all_combined_gifs may still be None if after running above with some lateralised...
+        # ...semiology or dominance, there is no lateralising data.
+    if all_combined_gifs is None:
+        all_combined_gifs = gifs_not_lat
+    elif all_combined_gifs is not None:
+        all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
 
 
 
