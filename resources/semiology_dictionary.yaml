@@ -465,7 +465,7 @@
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
-      "All Automatisms (oral, automotor)":
+      "All Automatisms oral-automotor":
         [  # covers upper and lower limb and oral automatisms, not hypermotor
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
           "((?<!no )(?<!denies )(?<!deny ))automotor",
