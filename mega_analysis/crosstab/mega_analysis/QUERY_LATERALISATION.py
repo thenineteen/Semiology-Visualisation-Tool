@@ -104,6 +104,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
     one_map = big_map(map_df_dict)
+    all_combined_gifs = None
 
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
@@ -179,6 +180,13 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         Total = Right+Left
         if Right == Left:
             # no point as this is 50:50 as it already is, so skip
+            # before continuing, ensure there is a all_combined_gifs...
+                # e.g. for blink there isn't as the first row is 50:50...
+                # ... and all future codes fail
+            if all_combined_gifs is None:
+                all_combined_gifs = row_to_one_map
+            elif all_combined_gifs is not None:
+                all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
             continue
 
         # now should be able to use above to lateralise the localising gif parcellations:
@@ -259,7 +267,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # ...semiology or dominance, there is no lateralising data.
     if all_combined_gifs is None:
         all_combined_gifs = gifs_not_lat
-    else:
+    elif all_combined_gifs is not None:
         all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
 
 
