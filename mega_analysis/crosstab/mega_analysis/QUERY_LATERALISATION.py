@@ -47,16 +47,21 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     Alim-Marvasti Aug 2019
     """
 
-    lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
+    # ensure there is patient's lateralised signs and check dominant known or not
+    if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
+        print('Please note you must determine at least one of side_of_symptoms_signs or')
+        print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
+        return
 
     #check there is lateralising value
     try:
         Lat = inspect_result['Lateralising']
         logging.debug(f'Lateralisation based on: {Lat.sum()} datapoints')
-
     except KeyError:
         print('No Lateralising values found for this query of the database.')
         return
+
+    lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
 
     # check that the lateralising columns isn't null where it shouldn't be i.e. CL/IL/DomH/NonDomH not null:
     # but not 'BL (Non-lateralising)'
@@ -83,7 +88,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if col not in inspect_result.columns:
             inspect_result[col] = 0
 
-
     # summarise overall lat values
     IL = inspect_result['IL']
     CL = inspect_result['CL']
@@ -106,11 +110,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     one_map = big_map(map_df_dict)
     all_combined_gifs = None
 
-    # ensure there is patient's lateralised signs and check dominant known or not
-    if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
-        print('Please note you must determine at least one of side_of_symptoms_signs or')
-        print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
-        return
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
