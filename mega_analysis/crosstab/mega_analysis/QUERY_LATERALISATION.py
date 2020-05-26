@@ -255,7 +255,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         elif j != 0:
             gifs_not_lat = pd.concat([gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
     #now combine the lateralised and non-lateralised:
-    all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
+    # all_combined_gifs may still be None if after running above with some lateralised...
+        # ...semiology or dominance, there is no lateralising data.
+    if all_combined_gifs is None:
+        all_combined_gifs = gifs_not_lat
+    else:
+        all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
 
 
 
