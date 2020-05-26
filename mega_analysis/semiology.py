@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+from resources.gif_sheet_names import gif_sheet_names
+from resources.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
 from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map
@@ -24,19 +26,17 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
 
 
 # Define paths
-repo_dir = Path(__file__).parent.parent
-resources_dir = repo_dir / 'resources'
-excel_path = resources_dir / 'syst_review_single_table.xlsx'
-semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
+repo_dir, resources_dir, excel_path, semiology_dict_path = file_paths()
 
+# Define the gif sheet names
+gif_sheet_names = gif_sheet_names()
 
 # Read Excel file only three times at initialisation
 mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
-    sheet_name=['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING', 'GIF INSULA',
-    'GIF HYPOTHALAMUS', 'GIF CEREBELLUM']
+    sheet_name=gif_sheet_names
 )
 gif_lat_file = pd.read_excel(
     excel_path,

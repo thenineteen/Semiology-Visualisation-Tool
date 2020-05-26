@@ -21,6 +21,13 @@
 
 "semiology":
   # "temporal": auras["epigastric"]
+  "No Semiology (Stimulation)":
+    [
+      "no semiology",
+      "non-? ?manifest",
+      "silent seizure",
+      "no clinical correlate"
+    ]
 
   auras:
     "Epigastric":
@@ -54,6 +61,7 @@
         "anxious",
         "impending (?:sensation)? ?doom",
         "doom",
+        "panic"
       ]
     "Psychic": [
         "psychic",
@@ -73,7 +81,7 @@
       [
         "vegetative ((?=)(aura)|(?<=)(aura))",
         "autonomous-?.?vegetative",
-        "((?<!no )(?<!denies )(?<!deny ))autonomic aura",
+        "((?<!no )(?<!denies )(?<!deny ))autonomic",
         "palpitations",
         "ictal tachycardia",
         "ictal bradycardia",
@@ -107,13 +115,14 @@
         "((?<!no )(?<!denies )(?<!deny ))urinary urge",
         "urgency aura",
         "aura of (:?urinary)? ?urge",
-        "((?<!no )(?<!denies )(?<!deny ))autonomic",
         "flush",
+        "laryngeal spasm", "throat", "constrictive", "constriction",
       ]
     "Olfactory-Gustatory":
       [
         "Olfactory-Gustatory",
         "(?<!no )olfactory",
+        "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )odd smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
         "(metallic)?.?taste",
@@ -125,7 +134,6 @@
         "(?<!no )unpleasant taste",
         "(?<!no )funny taste",
         "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) ?taste",
-        "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )unusual smell",
       ]
     "Auditory":
@@ -197,7 +205,7 @@
         "electric",
         "indefinable sensation",
         "indefinable feeling",
-        "cephalic sensation",
+        "cephalic",
         "head rush",
       ]
 
@@ -457,10 +465,10 @@
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
-      "All Automatisms":
+      "All Automatisms (oral, automotor)":
         [  # covers upper and lower limb and oral automatisms, not hypermotor
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
-           "((?<!no )(?<!denies )(?<!deny ))automotor",
+          "((?<!no )(?<!denies )(?<!deny ))automotor",
         ]
 
   speech:
