@@ -77,16 +77,7 @@ def MEGA_ANALYSIS(
     missing_columns(df)
 
     # localisation_labels = run anatomical regions
-    try:
-        localisation_labels = anatomical_regions(df)
-    except IndexError:
-        id_cols = full_id_vars()
-        lat_vars = lateralisation_vars()
-        known_columns = id_cols.append(lat_vars)
-        # best guess for localisation_labels. Unless Gloria added new non-loc columns, it works:
-        df_localisation_labels = df.drop(labels=known_columns, axis='columns', inplace=False, errors='ignore')
-        localisation_labels = df_localisation_labels.columns
-
+    localisation_labels = anatomical_regions(df)
     logging.debug(f'\n Checking for dtypes: first localisation_labels column is: {localisation_labels[0]} ...last one is {localisation_labels[-1]}')
     for col in df[localisation_labels]:
         for val in df[col]:
