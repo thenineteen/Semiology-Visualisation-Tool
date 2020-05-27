@@ -36,17 +36,25 @@ class TestQuerySemiology(unittest.TestCase):
         assert not inspect_result.empty
         assert path is not None
 
-    def test_head_version(self):
-        path, inspect_result = self.query('Head version')
-        self.assertIs(type(inspect_result), pd.DataFrame)
-        assert not inspect_result.empty
-        assert path is not None
-
     def test_non_existing_semio(self):
         path, inspect_result = self.query('enja hichi nist')
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert inspect_result.empty
         assert path is None
+
+    def test_head_version(self):
+        # Head version here has a lower case v so won't find in semio_dict
+        path, inspect_result = self.query('Head version')
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert path is None
+
+    def test_head_version(self):
+        # Head Version here has an upper case v so WILL find it in semio_dict
+        path, inspect_result = self.query('Head Version')
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert path is not None
 
     def test_non_existing_path(self):
         path, inspect_result = self.query('love')
