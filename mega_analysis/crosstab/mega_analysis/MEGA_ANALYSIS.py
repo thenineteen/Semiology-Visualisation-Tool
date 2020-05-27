@@ -82,7 +82,7 @@ def MEGA_ANALYSIS(
     except IndexError:
         known_columns = full_id_vars().append(lateralisation_vars())
         # best guess for localisation_labels. Unless Gloria added new non-loc columns, it works:
-        df_localisation_labels = df.drop((labels=known_columns, axis='columns', inplace=False, errors='ignore'))
+        df_localisation_labels = df.drop(labels=known_columns, axis='columns', inplace=False, errors='ignore')
         localisation_labels = df_localisation_labels.columns
 
     logging.debug(f'\n Checking for dtypes: first localisation_labels column is: {localisation_labels[0]} ...last one is {localisation_labels[-1]}')
