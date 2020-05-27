@@ -76,8 +76,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category'
             )
-        print(query['Localising'].sum() == 13)
-        print(query['Lateralising'].sum() == 6)
+        assert(query['Localising'].sum() == 13)
+        assert(query['Lateralising'].sum() == 6)
 
     def test_caps_QUERY_SEMIOLOGY_regex_pickup(self):
         query = QUERY_SEMIOLOGY(
@@ -88,9 +88,10 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category'
             )
-        print(query['Localising'].sum() == 12)
-        print(query['Lateralising'].sum() == 6)
+        assert(query['Localising'].sum() == 12)
+        assert(query['Lateralising'].sum() == 6)
+
 
 # for debugging:
-query = TestDummyDataDummyDictionary()
-query.test_caps_QUERY_SEMIOLOGY_regex_pickup()
+# query = TestDummyDataDummyDictionary()
+# query.test_caps_QUERY_SEMIOLOGY_regex_pickup()
