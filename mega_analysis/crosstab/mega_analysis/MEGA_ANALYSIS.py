@@ -11,7 +11,7 @@ from .missing_columns import missing_columns
 from .progress_stats import progress_stats, progress_venn
 from .progress_study_type import progress_study_type, progress_venn_2
 from .exclusions import exclusions
-
+from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 
 
 def MEGA_ANALYSIS(
@@ -76,9 +76,16 @@ def MEGA_ANALYSIS(
     logging.debug('\n2. Checking for missing values for columns')
     missing_columns(df)
 
-    logging.debug(f'\n Checking for dtypes: first localisation_labels column is: {df.columns[17]} ...last one is {df.columns[88]}')
-    # localisation_labels = df.columns[17:72]  # old July 2019
-    localisation_labels = df.columns[17:88]  # news March 2020
+    # localisation_labels = run anatomical regions
+    try:
+        localisation_labels = anatomical_regions(df)
+    except IndexError:
+        known_columns = full_id_vars().append(lateralisation_vars())
+        # best guess for localisation_labels. Unless Gloria added new non-loc columns, it works:
+        df_localisation_labels = df.drop((labels=known_columns, axis='columns', inplace=False, errors='ignore'))
+        localisation_labels = df_localisation_labels.columns
+
+    logging.debug(f'\n Checking for dtypes: first localisation_labels column is: {localisation_labels[0]} ...last one is {localisation_labels[-1]}')
     for col in df[localisation_labels]:
         for val in df[col]:
             if ( type(val) != (np.float) ) & ( type(val) != (np.int) ):

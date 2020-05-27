@@ -174,7 +174,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
 
 
     # look at distribution of df: use the entire df distribution of frequency of #s of pts
-    localisation_labels = anatomical_regions()
+    localisation_labels = anatomical_regions(df)
     max_value = df[localisation_labels].sum().max()  # usually this is the temporal lobe sum
     mean = df[localisation_labels].sum().mean()
     median = df[localisation_labels].sum().median()

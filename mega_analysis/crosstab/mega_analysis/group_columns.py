@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 
 
 
@@ -14,7 +14,7 @@ def full_id_vars():
                 'padeiatric? <7 years (0-6 yrs) y/n',
                 '# tot pt in the paper', '# pt excluded', '# pt sz free post-surg',
                 'Spontaneous Semiology (SS)', 'Epilepsy Topology (ET)', 'Cortical Stimulation (CS)', 'Other (e.g. Abs)']
-    
+
     return id_cols
 
 
@@ -25,6 +25,6 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:72]  # 17:72  # March excel updated to 17:103
+    localisation_labels = df.columns[17:88]  # May 2020 17:72  to 17:88
 
     return localisation_labels
