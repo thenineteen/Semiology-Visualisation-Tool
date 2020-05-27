@@ -13,7 +13,7 @@ with open("requirements.txt") as fh:
 setup(
     name="mega_analysis",
     version="0.1.0",
-    author="Ali Alim-Marvasti",
+    author="Ali Alim-Marvasti, Fernando Perez-Garcia",
     description="Epilepsy Semiology Visualisation Tool: "
                 "Thousands of patient level semiology data from journal"
                 "publications with localisation and lateralisation numbers"
@@ -25,7 +25,7 @@ setup(
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'MEGA_ANALYSIS_CONSOLE = scripts.command_console:process_pdfs',
+            'MEGA_ANALYSIS_CONSOLE = scripts.command_console:run_query',
             'make-scores = mega_analysis.cli:main',
         ]}
 )

@@ -6,12 +6,13 @@ It should be called with "MEGA_ANALYSIS_CONSOLE" followed by args.
 """
 from argparse import ArgumentParser
 from mega_analysis.crosstab.mega_analysis import MEGA_ANALYSIS, QUERY_SEMIOLOGY, QUERY_LATERALISATION
-# from preprocessing.pdf_preprocess import
 import yaml
+import mega_analysis
+from mega_analysis import Semiology, Laterality
 
 
-def process_pdfs():
-    parser = ArgumentParser(description="Epilepsy SVT")
+def run_preprocess():
+    parser = ArgumentParser(description="Epilepsy SVT Preprocessing")
     parser.add_argument('excel_data')  # where the data is locally for dev purposes when updating data to ensure works- make into test later
     parser.add_argument('plot')  # add default later
     parser.add_argument('kwargs')
@@ -37,5 +38,37 @@ def process_pdfs():
     except(TypeError):
             pass
 
-if __name__ == "__main__":  # why is this here?
-    process_pdfs()
+
+def run_query():
+    parser = ArgumentParser(description="Epilepsy SVT query")
+    parser.add_argument('semio')  # where the data is locally for dev purposes when updating data to ensure works- make into test later
+    parser.add_argument('symptoms_side')
+    parser.add_argument('dominant_hemisphere')  # add default later e.g. Laterality.LEFT
+    parser.add_argument('--true', '-t', action='store_true')  # -t: future use to be able to run or omit a section of the code
+    arguments = parser.parse_args()
+
+    symptoms_side = arguments.semio
+    dominant_hemisphere = arguments.dominant_hemisphere
+
+    heatmap = Semiology(
+        arguments.semio,
+        Laterality.symptoms_side,
+        Laterality.dominant_hemisphere,
+        )
+    num_patients_dict = heatmap.get_num_datapoints_dict()
+    print('Result:', num_patients_dict)
+
+    # output2 = output1.SOMEFUNCTION(arguments.true)
+
+    # -t: future use to be able to run or omit a section of the code
+    try:
+        if arguments.true:
+            pass
+        else:
+            pass
+    except(TypeError):
+            pass
+
+
+if __name__ == "__main__":
+    run_query()
