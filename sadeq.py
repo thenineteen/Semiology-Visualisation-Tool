@@ -13,11 +13,16 @@ heatmap = Semiology(
     # Laterality.NEUTRAL,
     # Laterality.LEFT,
 
-    'All Automatisms (oral, automotor)',
-    Laterality.LEFT,
-    Laterality.LEFT,
+    # 'All Automatisms (oral, automotor)',
+    # Laterality.LEFT,
+    # Laterality.LEFT,
 
     # 'Grimace', Laterality.NEUTRAL, Laterality.NEUTRAL,
+
+    'love',
+    Laterality.NEUTRAL,
+    Laterality.NEUTRAL,
 )
+
 num_patients_dict = heatmap.get_num_datapoints_dict()
 print('Result:', num_patients_dict)
