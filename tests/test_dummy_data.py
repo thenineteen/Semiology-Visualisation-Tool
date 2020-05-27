@@ -27,7 +27,7 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_paediatric_cases,
 )
 
-# define paths
+# define paths: note dummy data has a tab called test_counts as a hand crafted test fixture count
 repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = file_paths(dummy_data=True)
 
 # Define the gif sheet names
@@ -55,8 +55,42 @@ gif_lat_file = pd.read_excel(
 )
 
 class TestDummyDataDummyDictionary(unittest.TestCase):
-    def setUp(self):
+    """
+    for debugging run as such (at end of file):
+        query = TestDummyDataDummyDictionary()
+        query.test_default_no_exclusions()
+    """
+    def __init__(self):
         self.df = test_df.copy()
 
-    def test_default_no_exclusions(self):
-        assert self.df.equals(exclusions(self.df))
+    def test_default_vs_exclusions(self):
+        assert not self.df.equals(exclusions(self.df))
+            # exclusions default is to exclude postictals and PETs only
+
+    def test_parenthesis_and_caps_QUERY_SEMIOLOGY_regex_pickup(self):
+        query = QUERY_SEMIOLOGY(
+            self.df,
+            semiology_term=['aphasia'],
+            ignore_case=True,
+            semiology_dict_path=None,
+            col1='Reported Semiology',
+            col2='Semiology Category'
+            )
+        print(query['Localising'].sum() == 13)
+        print(query['Lateralising'].sum() == 6)
+
+    def test_caps_QUERY_SEMIOLOGY_regex_pickup(self):
+        query = QUERY_SEMIOLOGY(
+            self.df,
+            semiology_term=['aphasia'],
+            ignore_case=False,
+            semiology_dict_path=None,
+            col1='Reported Semiology',
+            col2='Semiology Category'
+            )
+        print(query['Localising'].sum() == 12)
+        print(query['Lateralising'].sum() == 6)
+
+# for debugging:
+query = TestDummyDataDummyDictionary()
+query.test_caps_QUERY_SEMIOLOGY_regex_pickup()
