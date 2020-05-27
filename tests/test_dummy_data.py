@@ -25,7 +25,7 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_paediatric_cases,
 )
 
-repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = file_paths()
+repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = file_paths(dummy_data=True)
 
 test_df, _, _ = MEGA_ANALYSIS(excel_data=dummy_data_path)
 map_df_dict = pd.read_excel(
