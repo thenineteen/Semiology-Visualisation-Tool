@@ -1,5 +1,5 @@
 import pandas as pd
-
+from ..semiology_all_localisations import all_localisations
 
 
 # note 'Localising' is in id_cols not localisation_labels
@@ -25,6 +25,13 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:88]  # May 2020 17:72  to 17:88
+    """
+    After cleaning in MEGA_ANALYSIS, the df will have lost some localisation columns.
+    Full localisation names are in all_localisations().
+    Improved version from:
+    "localisation_labels = df.columns[17:88]  # May 2020 17:72  to 17:88"
+    """
+    all_localisations_list = all_localisations()
+    localisation_labels = [i for i in df.columns if i in all_localisations_list]
 
     return localisation_labels
