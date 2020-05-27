@@ -35,6 +35,6 @@ class TestQuerySemiology(unittest.TestCase):
         self.assertIs(type(inspect_result), pd.DataFrame)
 
     def test_non_existing(self):
-        inspect_result = self.query('No semiology')
+        inspect_result = self.query('enja hichi nist')
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert inspect_result.empty
