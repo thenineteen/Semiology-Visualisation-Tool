@@ -4,7 +4,7 @@ from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from resources.file_paths import file_paths
 from resources.gif_sheet_names import gif_sheet_names
 from mega_analysis.semiology import (
-    semiology_dict_path,
+    # semiology_dict_path,
     mega_analysis_df,
     all_semiology_terms,
     map_df_dict,
@@ -60,7 +60,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         query = TestDummyDataDummyDictionary()
         query.test_default_no_exclusions()
     """
-    def __init__(self):
+    def __init__(self, df):
         self.df = test_df.copy()
 
     def test_default_vs_exclusions(self):
@@ -74,7 +74,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             ignore_case=True,
             semiology_dict_path=None,
             col1='Reported Semiology',
-            col2='Semiology Category'
+            col2='Semiology Category',
             )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
@@ -86,12 +86,28 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             ignore_case=False,
             semiology_dict_path=None,
             col1='Reported Semiology',
-            col2='Semiology Category'
+            col2='Semiology Category',
             )
         assert(query['Localising'].sum() == 12)
         assert(query['Lateralising'].sum() == 6)
 
+    def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
+        query = QUERY_SEMIOLOGY(
+            self.df,
+            semiology_term=['aphasia'],
+            ignore_case=True,
+            semiology_dict_path=dummy_semiology_dict_path,
+            col1='Reported Semiology',
+            col2='Semiology Category',
+            )
+        assert(query['Localising'].sum() == 13)
+        assert(query['Lateralising'].sum() == 6)
+
+    # def test_parenthesis_and_caps_toplevel_query_semiology(self):
+    #     query = que
+
+
 
 # for debugging:
 # query = TestDummyDataDummyDictionary()
-# query.test_caps_QUERY_SEMIOLOGY_regex_pickup()
+# query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
