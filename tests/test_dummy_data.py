@@ -3,6 +3,7 @@ import pandas as pd
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from resources.file_paths import file_paths
 from resources.gif_sheet_names import gif_sheet_names
+import sys
 from mega_analysis.semiology import (
     # semiology_dict_path,
     mega_analysis_df,
@@ -56,16 +57,22 @@ gif_lat_file = pd.read_excel(
 
 class TestDummyDataDummyDictionary(unittest.TestCase):
     """
-    for debugging run as such (at end of file):
+    for debugging run as such (at end of file) if def __init__(self):
         query = TestDummyDataDummyDictionary()
         query.test_default_no_exclusions()
+    Otherwise:
+        if __name__ == '__main__':
+            sys.argv.insert(1, '--verbose')
+            unittest.main(argv=sys.argv)
     """
-    def __init__(self, df):
+    def setUp(self):
         self.df = test_df.copy()
+        print('setup')
 
     def test_default_vs_exclusions(self):
         assert not self.df.equals(exclusions(self.df))
             # exclusions default is to exclude postictals and PETs only
+        print('1')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_regex_pickup(self):
         query = QUERY_SEMIOLOGY(
@@ -78,6 +85,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
+        print('2')
 
     def test_caps_QUERY_SEMIOLOGY_regex_pickup(self):
         query = QUERY_SEMIOLOGY(
@@ -90,24 +98,31 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             )
         assert(query['Localising'].sum() == 12)
         assert(query['Lateralising'].sum() == 6)
+        print('3')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
         query = QUERY_SEMIOLOGY(
             self.df,
-            semiology_term=['aphasia'],
-            ignore_case=True,
+            semiology_term='Aphasia',
+            ignore_case=False,
             semiology_dict_path=dummy_semiology_dict_path,
             col1='Reported Semiology',
             col2='Semiology Category',
             )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
+        print('4')
 
     # def test_parenthesis_and_caps_toplevel_query_semiology(self):
     #     query = que
 
 
 
-# for debugging:
+# for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
 # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
+
+# for debugging with setUp(self):
+if __name__ == '__main__':
+    sys.argv.insert(1, '--verbose')
+    unittest.main(argv=sys.argv)
