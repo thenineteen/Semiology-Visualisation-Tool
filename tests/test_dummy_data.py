@@ -39,6 +39,6 @@ gif_lat_file = pd.read_excel(
     sheet_name='Full GIF Map for Review '
 )
 
-class TestExclusions(unittest.TestCase):
+class TestDummyDataDummyDictionary(unittest.TestCase):
     def setUp(self):
         self.df = mega_analysis_df.copy()
