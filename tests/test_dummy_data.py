@@ -9,6 +9,7 @@ from mega_analysis.semiology import (
     all_semiology_terms,
     map_df_dict,
     gif_lat_file,
+    Semiology,
     Laterality,
     QUERY_SEMIOLOGY,
     QUERY_LATERALISATION,
@@ -33,7 +34,15 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = file_paths
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel file only three times at initialisation
-test_df, _, _ = MEGA_ANALYSIS(excel_data=dummy_data_path)
+test_df, _, _ = MEGA_ANALYSIS(
+    excel_data=dummy_data_path,
+    n_rows = 100,
+    usecols = "A:DH",
+    header = 1,
+    exclude_data=False,
+    plot=True,
+)
+
 map_df_dict = pd.read_excel(
     dummy_data_path,
     header=1,
