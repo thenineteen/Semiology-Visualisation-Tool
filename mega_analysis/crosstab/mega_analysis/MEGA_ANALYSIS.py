@@ -80,7 +80,9 @@ def MEGA_ANALYSIS(
     try:
         localisation_labels = anatomical_regions(df)
     except IndexError:
-        known_columns = full_id_vars().append(lateralisation_vars())
+        id_cols = full_id_vars()
+        lat_vars = lateralisation_vars()
+        known_columns = id_cols.append(lat_vars)
         # best guess for localisation_labels. Unless Gloria added new non-loc columns, it works:
         df_localisation_labels = df.drop(labels=known_columns, axis='columns', inplace=False, errors='ignore')
         localisation_labels = df_localisation_labels.columns
