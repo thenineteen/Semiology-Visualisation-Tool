@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
+
 def file_paths(dummy_data=False):
     # Define paths
     repo_dir = Path(__file__).parent.parent.parent
