@@ -108,7 +108,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         query = QUERY_SEMIOLOGY(
             self.df,
             semiology_term='aphasia',
-            ignore_case=False,
+            ignore_case=False,  # in QUERY_SEMIO re.IGNORECASE is used for dictionary anyway
             semiology_dict_path=dummy_semiology_dict_path,
             col1='Reported Semiology',
             col2='Semiology Category',
@@ -117,9 +117,23 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(query['Lateralising'].sum() == 6)
         # print('4')
 
-    # def test_parenthesis_and_caps_toplevel_query_semiology(self):
-    #     query = que
 
+    def test_toplevel_aphasia_parentheses_and_caps(self):
+        """
+        test query_semiology which calls QUERY_SEMIOLOGY
+        Need to change the call to the semiology_dictionary to
+            make it the dummy_semio_dict
+
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert(inspect_result['Localising'].sum() == 13)
+        assert(inspect_result['Lateralising'].sum() == 6)
+        # print('6')
 
 
 # for debugging with __init__():
