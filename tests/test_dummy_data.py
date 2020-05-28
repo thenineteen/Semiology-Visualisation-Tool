@@ -72,7 +72,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     def test_default_vs_exclusions(self):
         assert not self.df.equals(exclusions(self.df))
             # exclusions default is to exclude postictals and PETs only
-        print('1')
+        # print('1')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_regex_pickup(self):
         query = QUERY_SEMIOLOGY(
@@ -85,9 +85,13 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
-        print('2')
+        # print('2')
 
     def test_caps_QUERY_SEMIOLOGY_regex_pickup(self):
+        """
+        when ignore case is false, it won't pick up case mismatches.
+        so sum is slightly less.
+        """
         query = QUERY_SEMIOLOGY(
             self.df,
             semiology_term=['aphasia'],
@@ -98,12 +102,12 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             )
         assert(query['Localising'].sum() == 12)
         assert(query['Lateralising'].sum() == 6)
-        print('3')
+        # print('3')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
         query = QUERY_SEMIOLOGY(
             self.df,
-            semiology_term='Aphasia',
+            semiology_term='aphasia',
             ignore_case=False,
             semiology_dict_path=dummy_semiology_dict_path,
             col1='Reported Semiology',
@@ -111,7 +115,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
-        print('4')
+        # print('4')
 
     # def test_parenthesis_and_caps_toplevel_query_semiology(self):
     #     query = que
