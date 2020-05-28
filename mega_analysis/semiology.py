@@ -8,8 +8,6 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from resources.gif_sheet_names import gif_sheet_names
-from resources.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
 from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map
@@ -24,19 +22,22 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_seizure_free,
 )
 
+GIF_SHEET_NAMES = ['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING',
+    'GIF INSULA', 'GIF HYPOTHALAMUS', 'GIF CEREBELLUM',
+]
 
 # Define paths
-repo_dir, resources_dir, excel_path, semiology_dict_path = file_paths()
-
-# Define the gif sheet names
-gif_sheet_names = gif_sheet_names()
+repo_dir = Path(__file__).parent.parent
+resources_dir = repo_dir / 'resources'
+excel_path = resources_dir / 'syst_review_single_table.xlsx'
+semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 # Read Excel file only three times at initialisation
 mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
-    sheet_name=gif_sheet_names
+    sheet_name=GIF_SHEET_NAMES,
 )
 gif_lat_file = pd.read_excel(
     excel_path,
@@ -260,3 +261,20 @@ def combine_semiologies_df(
         combined_df = combined_df / combined_df.max() * 100
     scores_dict = dict(combined_df)
     return scores_dict
+
+
+def gif_lobes_from_excel_sheets():
+    """
+    Sort the gif parcellations as per excel gif sheet lobes.
+    e.g. GIF FL = GIF Frontal Lobe - has a list of GIF parcellations
+    which we want to see in 3D slicer, using the GUI
+    """
+    lobes_mapping = {}
+    for gif_lobe in GIF_SHEET_NAMES:
+        gif_parcellations = pd.read_excel(
+            excel_path,
+            header=None, index_col="A,B",
+            sheet_name=gif_lobe,
+        )
+        lobes_mapping[gif_lobe] = gif_parcellations["B"]
+    return lobes_mapping
