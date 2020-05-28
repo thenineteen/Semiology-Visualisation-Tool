@@ -1,30 +1,31 @@
 import warnings
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
-import yaml
 import numpy as np
 import pandas as pd
+import yaml
 from sklearn.preprocessing import MinMaxScaler
 
-from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.file_paths import file_paths
-from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
-from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map
-from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
-from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
-from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
+from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclusions,
-    exclude_ET,
-    exclude_sEEG,
-    exclude_cortical_stimulation,
-    exclude_seizure_free,
-)
+    exclude_cortical_stimulation, exclude_ET, exclude_sEEG,
+    exclude_seizure_free, exclusions)
+from mega_analysis.crosstab.mega_analysis.mapping import \
+    pivot_result_to_one_map
+from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
+from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import \
+    melt_then_pivot_query
+from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
+    pivot_result_to_pixel_intensities
+from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import \
+    QUERY_LATERALISATION
+from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import \
+    QUERY_SEMIOLOGY
 
-GIF_SHEET_NAMES = gif_sheet_names
+GIF_SHEET_NAMES = gif_sheet_names()
 
 # Define paths
 repo_dir = Path(__file__).parent.parent

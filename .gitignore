@@ -1,6 +1,5 @@
 # Debug files
-# debugging_sadeq.py
-# debugging_dummy_data.py
+debugging_sadeq.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
