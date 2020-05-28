@@ -99,7 +99,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         query = QUERY_SEMIOLOGY(
             self.df,
             semiology_term='aphasia',
-            ignore_case=False,  # in QUERY_SEMIO re.IGNORECASE is used for dictionary anyway
+            ignore_case=False,
+            # in QUERY_SEMIO re.IGNORECASE is used for dictionary anyway
             semiology_dict_path=dummy_semiology_dict_path,
             col1='Reported Semiology',
             col2='Semiology Category',
@@ -159,7 +160,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         print('fixture.shape.shape is: ', fixture.shape)
 
         assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
-        assert(new_all_combined_gifindexed.values.all() == fixture.values.all())
+        assert(
+            new_all_combined_gifindexed.values.all() == fixture.values.all())
         print('6 query lat')
 
 
