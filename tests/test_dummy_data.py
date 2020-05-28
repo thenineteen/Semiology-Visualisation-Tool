@@ -123,7 +123,6 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         test query_semiology which calls QUERY_SEMIOLOGY
         Need to change the call to the semiology_dictionary to
             make it the dummy_semio_dict
-
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
@@ -133,7 +132,42 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert not inspect_result.empty
         assert(inspect_result['Localising'].sum() == 13)
         assert(inspect_result['Lateralising'].sum() == 6)
-        # print('6')
+        # print('5')
+
+    def test_toplevel_query_lat(self):
+        """
+        Need to change the call to the semiology_dictionary to
+            make it the dummy_semio_dict
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        all_combined_gifs = patient.query_lateralisation()
+
+        self.assertIs(type(all_combined_gifs), pd.DataFrame)
+        assert not all_combined_gifs.empty
+
+        labels = ['Gif Parcellations', 'pt #s']
+        all_combined_gifs = all_combined_gifs.astype({'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        new_all_combined_gifindexed = all_combined_gifs.loc[:, labels]
+
+        new_all_combined_gifindexed.set_index('Gif Parcellations', inplace=True)
+
+        # load fixture:
+        fixture = pd.read_excel(
+            dummy_data_path,
+            header=0,
+            usecols='A:B',
+            sheet_name='fixture_aphasia',
+            index_col=0,
+        )
+        # fixture.sort_index(inplace=True)
+        assert((new_all_combined_gifindexed.shape) == (fixture.shape))
+        print('new_all_combined_gifindexed.shape is: ', new_all_combined_gifindexed.shape)
+        print('fixture.shape.shape is: ', fixture.shape)
+
+        assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
+        assert(new_all_combined_gifindexed.values.all() == fixture.values.all())
+        print('6 query lat')
 
 
 # for debugging with __init__():
