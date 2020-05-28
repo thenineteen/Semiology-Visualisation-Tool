@@ -4,7 +4,7 @@ from mega_analysis import Semiology, Laterality
 
 
 
-heatmap = Semiology(
+patient = Semiology(
     # 'Figure of 4',
     # symptoms_side=Laterality.LEFT,
     # dominant_hemisphere=Laterality.LEFT,
@@ -24,5 +24,5 @@ heatmap = Semiology(
     Laterality.NEUTRAL,
 )
 
-num_patients_dict = heatmap.get_num_datapoints_dict()
-print('Result:', num_patients_dict)
+heatmap = patient.get_num_datapoints_dict()
+print('Result:', heatmap)
