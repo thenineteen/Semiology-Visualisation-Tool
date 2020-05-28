@@ -38,7 +38,6 @@ def exclusions(df,
 
     if POST_ictals:
         df = exclude_postictals(df)
-        print('Excluded post-ictal semiology at top level data loading prior to query')
 
     if PET_hypermetabolism:
         col1 = CONCORDANT

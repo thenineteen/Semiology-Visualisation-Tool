@@ -11,6 +11,7 @@ try:
     import matplotlib.pyplot as plt
 except ImportError:
     logging.debug('matplotlib not imported')
+from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 
 def use_df_to_transform_pivot_result(df_or_pivot_result, pivot_result, quantiles, scale_factor):
     """
@@ -173,7 +174,7 @@ def pivot_result_to_pixel_intensities(pivot_result, df,
 
 
     # look at distribution of df: use the entire df distribution of frequency of #s of pts
-    localisation_labels = df.columns[17:72]
+    localisation_labels = anatomical_regions(df)
     max_value = df[localisation_labels].sum().max()  # usually this is the temporal lobe sum
     mean = df[localisation_labels].sum().mean()
     median = df[localisation_labels].sum().median()

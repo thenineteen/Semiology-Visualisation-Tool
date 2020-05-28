@@ -1,5 +1,5 @@
-import pandas as pd 
-
+import pandas as pd
+from ..semiology_all_localisations import all_localisations
 
 
 # note 'Localising' is in id_cols not localisation_labels
@@ -14,7 +14,7 @@ def full_id_vars():
                 'padeiatric? <7 years (0-6 yrs) y/n',
                 '# tot pt in the paper', '# pt excluded', '# pt sz free post-surg',
                 'Spontaneous Semiology (SS)', 'Epilepsy Topology (ET)', 'Cortical Stimulation (CS)', 'Other (e.g. Abs)']
-    
+
     return id_cols
 
 
@@ -25,6 +25,13 @@ def lateralisation_vars():
 
 
 def anatomical_regions(df):
-    localisation_labels = df.columns[17:72]  # 17:72  # March excel updated to 17:103
+    """
+    After cleaning in MEGA_ANALYSIS, the df will have lost some localisation columns.
+    Full localisation names are in all_localisations().
+    Improved version from:
+    "localisation_labels = df.columns[17:88]  # May 2020 17:72  to 17:88"
+    """
+    all_localisations_list = all_localisations()
+    localisation_labels = [i for i in df.columns if i in all_localisations_list]
 
     return localisation_labels

@@ -1,3 +1,7 @@
+# Debug files
+# debugging_sadeq.py
+# debugging_dummy_data.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

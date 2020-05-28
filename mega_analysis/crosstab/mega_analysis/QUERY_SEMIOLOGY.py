@@ -131,7 +131,7 @@ def regex_ignore_case(term_values):
 
 
 
-def QUERY_SEMIOLOGY(df, semiology_term=['love'],
+def QUERY_SEMIOLOGY(df, semiology_term='love',
                     ignore_case=True,
                     semiology_dict_path=None,
                     col1='Reported Semiology',
