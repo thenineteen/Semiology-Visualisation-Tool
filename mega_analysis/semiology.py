@@ -24,9 +24,7 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_seizure_free,
 )
 
-GIF_SHEET_NAMES = ['GIF TL', 'GIF FL', 'GIF PL', 'GIF OL', 'GIF CING',
-    'GIF INSULA', 'GIF HYPOTHALAMUS', 'GIF CEREBELLUM',
-]
+GIF_SHEET_NAMES = gif_sheet_names
 
 # Define paths
 repo_dir = Path(__file__).parent.parent
@@ -68,10 +66,13 @@ def get_all_semiology_terms():
         dictionary = yaml.load(f, Loader=yaml.FullLoader)
     return sorted(recursive_items(dictionary))
 
+
 # Read YAML
 all_semiology_terms = get_all_semiology_terms()
 
 # Define constants
+
+
 class Laterality(Enum):
     LEFT = 'L'
     RIGHT = 'R'
@@ -90,7 +91,7 @@ class Semiology:
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
             possible_lateralities: Optional[List[Laterality]] = None,
-            ):
+    ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -114,7 +115,7 @@ class Semiology:
             include_seeg: bool,
             include_cortical_stimulation: bool,
             include_et_topology_ez: bool,
-            ) -> pd.DataFrame:
+    ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
         if not include_seizure_freedom:
@@ -145,7 +146,8 @@ class Semiology:
             print('No such semiology found')
             return None
         else:
-            # Same as saying (query_semiology_result['Localising'].sum() != 0) OR
+            # Same as saying (query_semiology_result['Localising'].sum() != 0)
+            # OR
             # (query_semiology_result['Lateralising'].sum() != 0)
             columns = ['Localising', 'Lateralising']
             localising_lateralising = query_semiology_result[columns]
@@ -205,7 +207,7 @@ def get_possible_lateralities(term) -> List[Laterality]:
 def combine_semiologies(
         semiologies: List[Semiology],
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
     if normalise:
         df = normalise_semiologies_df(df)
@@ -231,7 +233,7 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
 
 def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
-        ) -> pd.DataFrame:
+) -> pd.DataFrame:
     records = []
     for term, num_datapoints_dict in semiologies_dicts.items():
         num_datapoints_dict['Semiology'] = term
@@ -257,26 +259,9 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 def combine_semiologies_df(
         df: pd.DataFrame,
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
     scores_dict = dict(combined_df)
     return scores_dict
-
-
-def gif_lobes_from_excel_sheets():
-    """
-    Sort the gif parcellations as per excel gif sheet lobes.
-    e.g. GIF FL = GIF Frontal Lobe - has a list of GIF parcellations
-    which we want to see in 3D slicer, using the GUI
-    """
-    lobes_mapping = {}
-    for gif_lobe in GIF_SHEET_NAMES:
-        gif_parcellations = pd.read_excel(
-            excel_path,
-            header=None, index_col="A,B",
-            sheet_name=gif_lobe,
-        )
-        lobes_mapping[gif_lobe] = gif_parcellations["B"]
-    return lobes_mapping
