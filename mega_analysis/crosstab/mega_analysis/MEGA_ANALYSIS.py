@@ -95,8 +95,7 @@ def MEGA_ANALYSIS(
     logging.debug("\n4. 'sEEG and/or ES' column only contains ['ES', nan, 'y']: ")
     logging.debug(str(list(df[sEEG_ES].unique()) == ['ES', np.nan, 'y']))
     if not (list(df[sEEG_ES].unique()) == ['ES', np.nan, 'y']):
-        SEEG_ES = 'sEEG (y) and/or ES (ES)'
-        logging.debug(f'the set includes: {list(df[SEEG_ES].unique())}')
+        logging.debug(f'the set includes: {list(df[sEEG_ES].unique())}')
 
     # 5. print some basic progress stats:
     logging.debug('\n\n 5. BASIC PROGRESS:')
