@@ -1,8 +1,8 @@
 import unittest
 import pandas as pd
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
-from resources.file_paths import file_paths
-from resources.gif_sheet_names import gif_sheet_names
+from mega_analysis.crosstab.file_paths import file_paths
+from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 import sys
 from mega_analysis.semiology import (
     # semiology_dict_path,

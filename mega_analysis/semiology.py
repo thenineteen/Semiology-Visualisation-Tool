@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from resources.gif_sheet_names import gif_sheet_names
-from resources.file_paths import file_paths
+from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
+from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import pivot_result_to_pixel_intensities
 from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map

@@ -3,7 +3,7 @@ from pathlib import Path
 
 def file_paths(dummy_data=False):
     # Define paths
-    repo_dir = Path(__file__).parent.parent
+    repo_dir = Path(__file__).parent.parent.parent
     resources_dir = repo_dir / 'resources'
     test_dir = repo_dir / 'tests'
     if dummy_data:

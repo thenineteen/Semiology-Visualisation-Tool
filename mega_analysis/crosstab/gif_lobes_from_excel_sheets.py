@@ -1,6 +1,5 @@
 import pandas as pd
-from mega_analysis.crosstab.mega_analysis
-from resources.gif_sheet_names import gif_sheet_names
+from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 
 def gif_lobes_from_excel_sheets():
     """
@@ -15,7 +14,7 @@ def gif_lobes_from_excel_sheets():
     for gif_lobe in gif_sheet_names:
         gif_parcellations = pd.read_excel(
             excel_path,
-            header=None, index_col="A,B",
+            header=None, index_col="A:B",
             sheet_name=gif_lobe
         )
 
