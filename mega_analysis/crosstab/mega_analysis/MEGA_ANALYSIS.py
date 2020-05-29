@@ -107,8 +107,9 @@ def MEGA_ANALYSIS(
 
     # 5. print some basic progress stats:
     logging.debug('\n\n 5. BASIC PROGRESS:')
+    num_ = int(df["Reference"].nunique())
     logging.debug(
-        f'Number of articles included in this analysis: {int(df["Reference"].nunique())}')
+        f'Number of articles included in this analysis: {num_}')
     logging.debug(f'Number of patients: {int(df["Tot Pt included"].sum())}')
     logging.debug(
         f'Number of lateralising datapoints: {df.Lateralising.sum()}')
@@ -129,13 +130,17 @@ def MEGA_ANALYSIS(
         progress_venn_2(df_study_type, method='Lateralising')
         progress_venn_2(df_study_type, method='Localising')
 
+    other_ = df.loc[df["Other (e.g. Abs)"].notnull(),
+                    "Other (e.g. Abs)"].unique()
+    lat_other_exc = df_study_type.loc["OTHER",
+                                      ("Lateralising Datapoints", "Exclusive")]
     logging.debug(
-        f'Other criteria: {df.loc[df["Other (e.g. Abs)"].notnull(), "Other (e.g. Abs)"].unique()}')
+        f'Other criteria: {other_}')
     logging.debug(
         'Lateralising Other Total/Exclusives: '
         f'{df_study_type.loc["OTHER", ("Lateralising Datapoints","Total")]}'
         '/'
-        f'{df_study_type.loc["OTHER", ("Lateralising Datapoints","Exclusive")]}'
+        f'{lat_other_exc}'
     )
     logging.debug(
         'Localising Other Total/Exclusives: '
