@@ -162,12 +162,12 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         )
         # fixture.sort_index(inplace=True)
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))
-        print('new_all_combined_gifindexed.shape is: ', new_all_combined_gifindexed.shape)
-        print('fixture.shape.shape is: ', fixture.shape)
+        # print('new_all_combined_gifindexed.shape is: ', new_all_combined_gifindexed.shape)
+        # print('fixture.shape.shape is: ', fixture.shape)
 
         assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
         assert(new_all_combined_gifindexed.values.all() == fixture.values.all())
-        print('6 query lat')
+        # print('6 query lat')
 
 
 # for debugging with __init__():
