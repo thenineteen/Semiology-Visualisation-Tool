@@ -26,7 +26,7 @@
       "no semiology",
       "non-? ?manifest",
       "silent seizure",
-      "no clinical correlate"
+      "no clinical correlate",
     ]
 
   auras:
@@ -61,7 +61,7 @@
         "anxious",
         "impending (?:sensation)? ?doom",
         "doom",
-        "panic"
+        "panic",
       ]
     "Psychic": [
         "psychic",
@@ -116,7 +116,10 @@
         "urgency aura",
         "aura of (:?urinary)? ?urge",
         "flush",
-        "laryngeal spasm", "throat", "constrictive", "constriction",
+        "laryngeal spasm",
+        "throat",
+        "constrictive",
+        "constriction",
       ]
     "Olfactory-Gustatory":
       [
@@ -261,8 +264,7 @@
           "fig of 4",
           "figure 4",
         ]
-      "Dystonic":
-        [
+      "Dystonic": [
           "(?<!no )dystonic",
           "twisted postur",
           "twisting", #"supinat"
@@ -283,17 +285,13 @@
           "generalized TCS",
           "secondary tonic-?/? ?clonic",
         ]
-      "Myoclonic":
-        [
-          "myo-? ?clonic",
-          "myo-?clonus",
-          "single jerk",
-        ]
+      "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
       "Other Simple Motor":
         [
           "Other Simple Motor",
           "simple motor",
           "((?<!complex )(?<!non-))motor seizure",
+          "jackson",
         ]
     complex:
       "Hypermotor":
@@ -330,24 +328,10 @@
           "unable to move",
         ]
       "Other Complex Motor":
-        [
-          "Other Complex Motor",
-          "complex motor",
-          "complicated motor",
-          ]
+        ["Other Complex Motor", "complex motor", "complicated motor"]
     special seizures:
-      "Atonic":
-        [
-          "atonic",
-          "flaccid",
-          "loss of tone",
-          "jelly",
-        ]
-      "Ictal Limb Paresis":
-        [
-          "Ictal Limb Paresis",
-          "unilateral ictal paresis",
-        ]
+      "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
+      "Ictal Limb Paresis": ["Ictal Limb Paresis", "unilateral ictal paresis"]
       "Astatic":
         [
           "astatic",
@@ -356,10 +340,7 @@
           "falls? to ground",
           "drop attack",
         ]
-      "Hypomotor":
-        [
-          "hypomotor",
-        ]
+      "Hypomotor": ["hypomotor"]
     automatisms:
       "Oral Automatisms":
         [
@@ -414,39 +395,19 @@
           "(?<!no )flickering of? ?eyes",
           "(?<!no )flicker(ing)? of eye",
         ]
-      "Cough":
-        [
-          "Cough",
-          "ictal cough",
-          "cough seizure",
-        ]
+      "Cough": ["Cough", "ictal cough", "cough seizure"]
       "Nose-wiping":
         [
           "Nose-wiping",
           "(?<!no )nose-? ?wip",
           "rubs? nose",
           "nose rub",
-          "wipes? nose"
+          "wipes? nose",
         ]
-      "Spitting":
-        [
-          " spit",
-          "spitting",
-        ]
-      "Drinking":
-        [
-          "Drinking",
-          "ictal drink",
-          " sip(ping)? ",
-          "ictal swallow",
-        ]
+      "Spitting": [" spit", "spitting"]
+      "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
       "Gelastic":
-        [
-          "laughter",
-          "(?<!no )laughing",
-          "laugh",
-          "(?<!no )gelastic",
-          "giggl"]
+        ["laughter", "(?<!no )laughing", "laugh", "(?<!no )gelastic", "giggl"]
       "Dacrystic":
         [
           "Dacrystic",
@@ -465,14 +426,14 @@
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
-      "All Automatisms oral-automotor":
-        [  # covers upper and lower limb and oral automatisms, not hypermotor
+      "All Automatisms oral-automotor": [
+          # covers upper and lower limb and oral automatisms, not hypermotor
           "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
           "((?<!no )(?<!denies )(?<!deny ))automotor",
         ]
 
   speech:
-    "Vocalisation":  # non-sensical sounds
+    "Vocalisation": # non-sensical sounds
       [
         "Vocalisation",
         "ictal vocalis?z?ation",
@@ -508,11 +469,7 @@
         "(?<!no )none?-? ?sense",
         "(?<!no )none? ?-?sensical",
       ]
-    "Ictal Speech":
-      [
-        "ictal speech",
-        "ictal talk",
-      ]
+    "Ictal Speech": ["ictal speech", "ictal talk"]
     "Palilalia":
       [
         "(?<!no )pallilalia",
@@ -530,9 +487,8 @@
         "articulatory",
         "(?<!no )anarthria",
       ]
-    "Coprolalia":
-      [
-        "((?<!no )(?<!without ))corprolalia",  # deliberate misspelling
+    "Coprolalia": [
+        "((?<!no )(?<!without ))corprolalia", # deliberate misspelling
         "Coprolalia",
         "swear",
         "shit",
@@ -571,12 +527,8 @@
         "((?<!b)(?<!ve)(?<!no )(?<!without ))LOC((?!k)(?!us)(?!at)(?!al))",
       ]
     # "TEST": ["and"]
-
-
 # negations:
 #   "No": [" no ", "none", "denies?", "deny", "absent", "without"]
-
-
 
 # CONTENTIONS and UPDATES
 # d/c with Dr B Diehl 11/4/19: sexual and erotic under psychic
