@@ -12,7 +12,7 @@
 37 Right-Caudate 122 186 220 255
 38 Left-Caudate 122 186 220 255
 39 Right-Cerebellum-Exterior 96 204 96 255
-40 Left-Cerebellum 96 204 96 255
+40 Left-Cerebellum-Exterior 96 204 96 255
 41 Right-Cerebellum 220 247 164 255
 42 Left-Cerebellum 220 247 164 255
 43 Right-Cerebral-Exterior 205 62 78 255
@@ -39,7 +39,7 @@
 64 Right-vessel 160 32 240 255
 65 Left-vessel 160 32 240 255
 66 Right-periventricular-white-matter 56 192 255 255
-67 Left-periventricular-white-matter 56 192 255 255     
+67 Left-periventricular-white-matter 56 192 255 255
 70 Optic-Chiasm 255 225 225 255
 72 Cerebellar-Vermal-Lobules-I-V 184 237 194 255
 73 Cerebellar-Vermal-Lobules-VI-VII 180 231 250 255
