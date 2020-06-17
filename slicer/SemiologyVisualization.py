@@ -201,6 +201,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     visualizationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
     self.segmentsComboBox = qt.QComboBox()
     visualizationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
+
+    self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colors')
+    visualizationSettingsLayout.addWidget(self.showProgressCheckBox)
     return visualizationSettingsWidget
 
   def getModuleSettingsTab(self):
@@ -352,11 +355,17 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       normalise = len(semiologies) > 1
       scoresDict = combine_semiologies(semiologies, normalise=normalise)
     except Exception as e:
-      message = f'Error retrieving semiology information. Details:\n\n{e}'
+      message = (
+        'Error retrieving semiology information from mega_analysis module.'
+        f' Details:\n\n{e}\n\n'
+        'Please report this issue on the repository:'
+        ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
+      )
       slicer.util.errorDisplay(message)
       scoresDict = None
       raise
-    box.accept()
+    finally:
+      box.accept()
     return scoresDict
 
   def getSemiologyTermsAndSidesFromGUI(self):
@@ -420,10 +429,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
-      self.updateColors()
+      self.updateColors(showProgress=self.showProgressCheckBox.isChecked())
 
   def onshowGifButton(self):
-    self.parcellation.setOriginalColors()
+    self.parcellation.setOriginalColors(
+      showProgress=self.showProgressCheckBox.isChecked())
 
   def onSelect(self):
     # parcellationPath = Path(self.parcellationPathEdit.currentPath)
@@ -460,7 +470,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def onAutoUpdateCheckBox(self):
     self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
 
-  def updateColors(self):
+  def updateColors(self, showProgress=True):
     colorNode = self.getColorNode()
     if colorNode is None:
       slicer.util.errorDisplay('No color node is selected')
@@ -483,6 +493,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       BLACK if self.color_blind_mode else LIGHT_GRAY,
       showLeft=showLeft,
       showRight=showRight,
+      showProgress=showProgress,
     )
 
     slicer.util.setSliceViewerLayers(
@@ -858,25 +869,28 @@ class Parcellation(ABC):
   def getLabelFromSegment(self, segment):
     return self.getLabelFromName(segment.GetName())
 
-  def setOriginalColors(self):
+  def setOriginalColors(self, showProgress=True):
     segments = self.getSegments()
     numSegments = len(segments)
-    progressDialog = slicer.util.createProgressDialog(
-      value=0,
-      maximum=numSegments,
-      windowTitle='Setting colors...',
-    )
+    if showProgress:
+      progressDialog = slicer.util.createProgressDialog(
+        value=0,
+        maximum=numSegments,
+        windowTitle='Setting colors...',
+      )
     for i, segment in enumerate(segments):
-      progressDialog.setValue(i)
-      progressDialog.setLabelText(segment.GetName())
-      slicer.app.processEvents()
+      if showProgress:
+        progressDialog.setValue(i)
+        progressDialog.setLabelText(segment.GetName())
+        slicer.app.processEvents()
       color = self.getColorFromSegment(segment)
       segment.SetColor(color)
       self.setSegmentOpacity(segment, 1, dimension=2)
       self.setSegmentOpacity(segment, 1, dimension=3)
-    progressDialog.setValue(numSegments)
-    slicer.app.processEvents()
-    progressDialog.close()
+    if showProgress:
+      progressDialog.setValue(numSegments)
+      slicer.app.processEvents()
+      progressDialog.close()
 
   def setScoresColors(
       self,
@@ -885,18 +899,21 @@ class Parcellation(ABC):
       defaultColor,
       showLeft=True,
       showRight=True,
+      showProgress=True,
       ):
     segments = self.getSegments()
     numSegments = len(segments)
-    progressDialog = slicer.util.createProgressDialog(
-      value=0,
-      maximum=numSegments,
-      windowTitle='Setting colors...',
-    )
+    if showProgress:
+      progressDialog = slicer.util.createProgressDialog(
+        value=0,
+        maximum=numSegments,
+        windowTitle='Setting colors...',
+      )
     for i, segment in enumerate(segments):
-      progressDialog.setValue(i)
-      progressDialog.setLabelText(segment.GetName())
-      slicer.app.processEvents()
+      if showProgress:
+        progressDialog.setValue(i)
+        progressDialog.setLabelText(segment.GetName())
+        slicer.app.processEvents()
       label = self.getLabelFromSegment(segment)
       if scoresDict is not None:
         scores = np.array(list(scoresDict.values()))
@@ -921,9 +938,10 @@ class Parcellation(ABC):
       segment.SetColor(color)
       self.setSegmentOpacity(segment, opacity2D, dimension=2)
       self.setSegmentOpacity(segment, opacity3D, dimension=3)
-    progressDialog.setValue(numSegments)
-    slicer.app.processEvents()
-    progressDialog.close()
+    if showProgress:
+      progressDialog.setValue(numSegments)
+      slicer.app.processEvents()
+      progressDialog.close()
 
   def getColorFromScore(self, normalizedScore, colorNode):
     """This method is very important"""
