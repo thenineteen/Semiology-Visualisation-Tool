@@ -131,6 +131,28 @@ def main(input_path, output_path):
     return 0
 
 
+# To be run within Slicer
+def createSegmentation(labelMapPath, colorsPath, outputPath, smoothing=0.2):
+    labelMapPath = str(labelMapPath)
+    colorsPath = str(colorsPath)
+    outputPath = str(outputPath)
+    if not outputPath.endswith('.seg.nrrd'):
+        raise ValueError('Output path must end with ".seg.nrrd"')
+    labelNode = loadLabelVolume(labelMapPath)
+    colorNode = loadColorTable(colorsPath)
+    displayNode = labelNode.GetDisplayNode()
+    displayNode.SetAndObserveColorNodeID(colorNode.GetID())
+    segmentationNode = slicer.mrmlScene.AddNewNodeByClass('vtkMRMLSegmentationNode')
+    logic = slicer.modules.segmentations.logic()
+    logic.ImportLabelmapToSegmentationNode(labelNode, segmentationNode)
+    rule = slicer.vtkBinaryLabelmapToClosedSurfaceConversionRule
+    smoothingParameter = rule.GetSmoothingFactorParameterName()
+    segmentation = segmentationNode.GetSegmentation()
+    segmentation.SetConversionParameter(smoothingParameter, str(smoothing))
+    segmentationNode.CreateClosedSurfaceRepresentation()
+    saveNode(segmentationNode, outputPath)
+
+
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
     sys.exit(main())  # pragma: no cover
