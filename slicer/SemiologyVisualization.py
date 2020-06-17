@@ -1,5 +1,6 @@
 import csv
 import logging
+import warnings
 from pathlib import Path
 from abc import ABC, abstractmethod
 
@@ -277,10 +278,12 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def getSemiologiesWidget(self):
     try:
-      from mega_analysis import (
-        get_all_semiology_terms,
-        get_possible_lateralities,
-      )
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        from mega_analysis import (
+          get_all_semiology_terms,
+          get_possible_lateralities,
+        )
     except ImportError as e:
       message = f'{e}\n\nPlease restart 3D Slicer and try again'
       slicer.util.errorDisplay(message)
@@ -669,7 +672,9 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
     box.show()
     slicer.app.processEvents()
     try:
-      import mega_analysis
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import mega_analysis
     except ImportError:
       requirementsPath = repoDir / 'requirements.txt'
       slicer.util.pip_install(
