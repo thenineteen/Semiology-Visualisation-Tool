@@ -8,6 +8,8 @@ from tqdm import tqdm
 KEEP = [
     32,
     33,
+    39,
+    40,
     48,
     49,
     76,
