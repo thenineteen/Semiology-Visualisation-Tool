@@ -323,6 +323,7 @@
         ]
       "Other Complex Motor":
         ["Other Complex Motor", "complex motor", "complicated motor"]
+
     special seizures:
       "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
       "Ictal Limb Paresis": ["Ictal Limb Paresis", "unilateral ictal paresis"]
@@ -335,6 +336,13 @@
           "drop attack",
         ]
       "Hypomotor": ["hypomotor"]
+      "Spasms - epileptic/infantile":
+        [
+          "infantile spasm",
+          "epileptic spasm",
+          "((?<!hemifacial )(?<!facial )(?<!hemi-facial ))spasm",
+        ]
+
     automatisms:
       "Oral Automatisms":
         [
