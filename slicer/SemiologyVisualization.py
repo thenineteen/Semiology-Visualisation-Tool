@@ -68,7 +68,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     self.tableNode = None
-    self.color_blind_mode = False
+    self.colorBlindMode = False
     slicer.semiologyVisualization = self
 
   def makeGUI(self):
@@ -204,6 +204,16 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
     self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colors')
     visualizationSettingsLayout.addWidget(self.showProgressCheckBox)
+
+    self.min2dOpacitySlider = slicer.qMRMLSliderWidget()
+    self.min2dOpacitySlider.maximum = 1
+    self.min2dOpacitySlider.singleStep = 0.01
+    self.min2dOpacitySlider.value = 0.25
+    visualizationSettingsLayout.addRow(
+      'Min. 2D opacity: ',
+      self.min2dOpacitySlider,
+    )
+
     return visualizationSettingsWidget
 
   def getModuleSettingsTab(self):
@@ -323,7 +333,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getColorNode(self):
     colorNode = slicer.util.getFirstNodeByClassByName(
       'vtkMRMLColorTableNode',
-      'Cividis' if self.color_blind_mode else 'Viridis',
+      'Cividis' if self.colorBlindMode else 'Viridis',
     )
     return colorNode
 
@@ -429,7 +439,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
   def onAutoUpdateButton(self):
     if self.autoUpdateCheckBox.isChecked():
-      self.updateColors(showProgress=self.showProgressCheckBox.isChecked())
+      self.updateColors()
 
   def onshowGifButton(self):
     self.parcellation.setOriginalColors(
@@ -470,7 +480,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def onAutoUpdateCheckBox(self):
     self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
 
-  def updateColors(self, showProgress=True):
+  def updateColors(self):
     colorNode = self.getColorNode()
     if colorNode is None:
       slicer.util.errorDisplay('No color node is selected')
@@ -490,10 +500,11 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.parcellation.setScoresColors(
       scoresDict,
       colorNode,
-      BLACK if self.color_blind_mode else LIGHT_GRAY,
+      BLACK if self.colorBlindMode else LIGHT_GRAY,
       showLeft=showLeft,
       showRight=showRight,
-      showProgress=showProgress,
+      showProgress=self.showProgressCheckBox.isChecked(),
+      min2dOpacity=self.min2dOpacitySlider.value,
     )
 
     slicer.util.setSliceViewerLayers(
@@ -900,6 +911,7 @@ class Parcellation(ABC):
       showLeft=True,
       showRight=True,
       showProgress=True,
+      min2dOpacity=1,
       ):
     segments = self.getSegments()
     numSegments = len(segments)
@@ -926,10 +938,11 @@ class Parcellation(ABC):
       if scoresDict is not None and label in scoresDict:
         score = scoresDict[label]
         if score > 0:
-          opacity2D = 1
           opacity3D = 1
           normalizedScore = score - minScore
           normalizedScore /= (maxScore - minScore)
+          # opacity2D goes from minOpacity2d to 1.0
+          opacity2D = normalizedScore * (1 - min2dOpacity) + min2dOpacity
           color = self.getColorFromScore(normalizedScore, colorNode)
       if not showLeft and 'Left' in segment.GetName():
         opacity3D = 0
