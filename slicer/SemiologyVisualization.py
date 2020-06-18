@@ -68,7 +68,6 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     self.tableNode = None
-    self.colorBlindMode = False
     slicer.semiologyVisualization = self
 
   def makeGUI(self):
@@ -214,6 +213,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
       self.min2dOpacitySlider,
     )
 
+    self.colorBlindCheckbox = qt.QCheckBox('Color-blind mode')
+    visualizationSettingsLayout.addWidget(self.colorBlindCheckbox)
+
     return visualizationSettingsWidget
 
   def getModuleSettingsTab(self):
@@ -333,7 +335,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
   def getColorNode(self):
     colorNode = slicer.util.getFirstNodeByClassByName(
       'vtkMRMLColorTableNode',
-      'Cividis' if self.colorBlindMode else 'Viridis',
+      'Cividis' if self.colorBlindCheckbox.isChecked() else 'Viridis',
     )
     return colorNode
 
@@ -500,7 +502,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.parcellation.setScoresColors(
       scoresDict,
       colorNode,
-      BLACK if self.colorBlindMode else LIGHT_GRAY,
+      BLACK if self.colorBlindCheckbox.isChecked() else LIGHT_GRAY,
       showLeft=showLeft,
       showRight=showRight,
       showProgress=self.showProgressCheckBox.isChecked(),
