@@ -286,7 +286,13 @@
           "secondary tonic-?/? ?clonic",
         ]
       "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
-
+      "Other Simple Motor":
+        [
+          "Other Simple Motor",
+          "simple motor",
+          "((?<!complex )(?<!non-))motor seizure",
+          "jackson",
+        ]
     complex:
       "Hypermotor":
         [
@@ -420,6 +426,11 @@
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
         ]
+      "All Automatisms oral-automotor": [
+          # covers upper and lower limb and oral automatisms, not hypermotor
+          "((?<!no )(?<!denies )(?<!deny )(?<!without ))automatism",
+          "((?<!no )(?<!denies )(?<!deny ))automotor",
+        ]
 
   speech:
     "Vocalisation": # non-sensical sounds
@@ -430,8 +441,8 @@
         "(?<!no )vocalis?z?",
         "mumble",
         "humming",
-        "hum ",
-        "humms",
+        " hum ",
+        " humms",
       ]
     "Aphasia":
       [
@@ -458,14 +469,15 @@
         "(?<!no )none?-? ?sense",
         "(?<!no )none? ?-?sensical",
       ]
-    "Ictal Speech":
+    "Ictal Speech": ["ictal speech", "ictal talk"]
+    "Palilalia":
       [
-        "ictal speech",
-        "ictal talk",
-        "palilalia",
-        "coprolalia",
-        "swear",
-        "expletive",
+        "(?<!no )pallilalia",
+        "(?<!no )palilalia",
+        "repetition of (words|sentences?|speech)",
+        "speech repetition",
+        "phrase repetition",
+        "(?<!no )repeating ?(?:himself|herself)",
       ]
     "Aphemia":
       [
@@ -474,6 +486,15 @@
         "articulation",
         "articulatory",
         "(?<!no )anarthria",
+      ]
+    "Coprolalia": [
+        "((?<!no )(?<!without ))corprolalia", # deliberate misspelling
+        "Coprolalia",
+        "swear",
+        "shit",
+        "fuck",
+        "offensive",
+        "expletive",
       ]
 
   consciousness:
