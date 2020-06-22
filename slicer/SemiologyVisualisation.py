@@ -25,6 +25,23 @@ OTHER = 'Other'
 IMAGE_FILE_STEM = 'MNI_152'
 # IMAGE_FILE_STEM = 'colin27_t1_tal_lin'
 
+ALIGN_ARGS = 1, 1, qt.Qt.AlignCenter
+
+COLORMAPS = [
+  'Cividis',
+  'Plasma',
+  'Viridis',
+  'Magma',
+  'Inferno',
+  'Grey',
+  'Red',
+  'Green',
+  'Blue',
+  'Yellow',
+  'Cyan',
+  'Magenta',
+]
+
 
 #
 # SemiologyVisualisation
@@ -68,7 +85,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     self.tableNode = None
-    self.lineEdits = []
+    self.customSemiologies = []
     slicer.semiologyVisualisation = self
 
   def makeGUI(self):
@@ -95,9 +112,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.settingsTabWidget = qt.QTabWidget()
     self.settingsLayout.addWidget(self.settingsTabWidget)
 
-    self.settingsTabWidget.addTab(self.getQuerySettingsTab(), 'Query')
-    self.settingsTabWidget.addTab(self.getVisualisationSettingsTab(), 'Visualisation')
-    self.settingsTabWidget.addTab(self.getModuleSettingsTab(), 'Module')
+    queryTab = self.getQuerySettingsTab()
+    moduleTab = self.getModuleSettingsTab()
+    visualisationTab = self.getVisualisationSettingsTab()
+
+    self.settingsTabWidget.addTab(queryTab, 'Query')
+    self.settingsTabWidget.addTab(visualisationTab, 'Visualisation')
+    self.settingsTabWidget.addTab(moduleTab, 'Module')
 
     self.layout.addWidget(self.settingsCollapsibleButton)
 
@@ -215,7 +236,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     )
 
     self.colorBlindCheckbox = qt.QCheckBox('Color-blind mode')
+    self.colorBlindCheckbox.toggled.connect(self.onColorBlindCheckBox)
     visualisationSettingsLayout.addWidget(self.colorBlindCheckbox)
+
+    self.colorSelector = self.getColorsButton()
+    visualisationSettingsLayout.addRow(
+      'Colour map: ',
+      self.colorSelector,
+    )
 
     return visualisationSettingsWidget
 
@@ -255,13 +283,15 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesWidget = semiologiesScrollArea.widget()
     semiologiesFormLayout.addWidget(semiologiesScrollArea)
 
-    removeLineEditButton = qt.QPushButton('Remove custom semiology')
-    removeLineEditButton.setDisabled(True)
+    self.removeLineEditButton = qt.QPushButton('Remove custom semiology')
+    self.removeLineEditButton.setDisabled(True)
+    self.removeLineEditButton.clicked.connect(self.removeCustomSemiology)
     addLineEditButton = qt.QPushButton('Add custom semiology')
+    addLineEditButton.clicked.connect(self.addCustomSemiology)
 
     lineEditsFrame = qt.QFrame()
     lineEditsLayout = qt.QHBoxLayout(lineEditsFrame)
-    lineEditsLayout.addWidget(removeLineEditButton)
+    lineEditsLayout.addWidget(self.removeLineEditButton)
     lineEditsLayout.addWidget(addLineEditButton)
     semiologiesFormLayout.addWidget(lineEditsFrame)
 
@@ -279,6 +309,26 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.loadDataButton = qt.QPushButton('Load data')
     self.loadDataButton.clicked.connect(self.onLoadDataButton)
     self.layout.addWidget(self.loadDataButton)
+
+  def getColorsButton(self):
+    colorSelector = slicer.qMRMLColorTableComboBox()
+    colorSelector.nodeTypes = ["vtkMRMLColorNode"]
+    colorSelector.hideChildNodeTypes = (
+      "vtkMRMLDiffusionTensorDisplayPropertiesNode",
+      "vtkMRMLProceduralColorNode",
+    )
+    colorSelector.addEnabled = False
+    colorSelector.removeEnabled = False
+    colorSelector.noneEnabled = False
+    colorSelector.selectNodeUponCreation = True
+    colorSelector.showHidden = True
+    colorSelector.showChildNodeTypes = True
+    colorSelector.setMRMLScene(slicer.mrmlScene)
+    colorSelector.setToolTip("Choose a colormap")
+    colorSelector.currentNodeID = 'vtkMRMLColorTableNodeFileViridis.txt'
+    colorSelector.currentNodeChanged.connect(self.onAutoUpdateButton)
+    self.logic.removeColorMaps()
+    return colorSelector
 
   def getShowGIFButton(self):
     self.showGifButton = qt.QPushButton('Show GIF colors')
@@ -327,14 +377,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     )
     semiologiesWidget = qt.QWidget()
     semiologiesLayout = qt.QGridLayout(semiologiesWidget)
-    align_args = 1, 1, qt.Qt.AlignCenter
     iterable = enumerate(self.semiologiesWidgetsDict.items())
     for row, (semiology, widgetsDict) in iterable:
       semiologiesLayout.addWidget(widgetsDict['checkBox'], row, 0)
       for i, laterality in enumerate(('left', 'right', 'other')):
         widget = widgetsDict[f'{laterality}RadioButton']
         if widget is not None:
-          semiologiesLayout.addWidget(widget, row, i + 1, *align_args)
+          semiologiesLayout.addWidget(widget, row, i + 1, *ALIGN_ARGS)
 
     # https://www.learnpyqt.com/courses/adanced-ui-features/qscrollarea/
     scrollArea = qt.QScrollArea()
@@ -346,17 +395,53 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     return scrollArea
 
   def getColorNode(self):
-    colorNode = slicer.util.getFirstNodeByClassByName(
-      'vtkMRMLColorTableNode',
-      'Cividis' if self.colorBlindCheckbox.isChecked() else 'Viridis',
-    )
+    if self.colorBlindCheckbox.isChecked():
+      colorNode = slicer.util.getFirstNodeByClassByName(
+        'vtkMRMLColorTableNode',
+        'Cividis',
+      )
+    else:
+      colorNode = self.colorSelector.currentNode()
     return colorNode
+
+  def getSemiologyTermsAndSidesFromGUI(self):
+    from mega_analysis.semiology import Laterality
+    lateralitiesDict = {
+      'left': Laterality.LEFT,
+      'right': Laterality.RIGHT,
+      'other': Laterality.NEUTRAL,
+    }
+    termsAndSides = []
+    for (semiologyTerm, widgetsDict) in self.semiologiesWidgetsDict.items():
+      if not widgetsDict['checkBox'].isChecked(): continue
+      for lateralityName, laterality in lateralitiesDict.items():
+        widget = widgetsDict[f'{lateralityName}RadioButton']
+        if widget is not None and widget.isChecked():
+          result = semiologyTerm, laterality
+          termsAndSides.append(result)
+          break
+      else:
+        message = f'Please select a laterality for semiology term "{semiologyTerm}"'
+        slicer.util.errorDisplay(message)
+        raise ValueError(message)
+
+    for customSemiology in self.customSemiologies:
+      if customSemiology.isEmpty(): continue
+      semiologyTerm = customSemiology.text
+      laterality = customSemiology.laterality
+      if laterality is None:
+        message = f'Please select a laterality for custom semiology term "{semiologyTerm}"'
+        slicer.util.errorDisplay(message)
+        raise ValueError(message)
+      termsAndSides.append((semiologyTerm, laterality))
+    termsAndSides = None if not termsAndSides else termsAndSides
+    return termsAndSides
 
   def getScoresFromGUI(self):
     from mega_analysis.semiology import Semiology, combine_semiologies
     termsAndSides = self.getSemiologyTermsAndSidesFromGUI()
     if termsAndSides is None:
-      #slicer.util.messageBox('Please select a semiology')
+      slicer.util.messageBox('Please select at least one semiology and laterality')
       return
     semiologies = []
     for semiologyTerm, symptomsSide in termsAndSides:
@@ -392,25 +477,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     finally:
       box.accept()
     return scoresDict
-
-  def getSemiologyTermsAndSidesFromGUI(self):
-    from mega_analysis.semiology import Laterality
-    termsAndSides = []
-    for (semiologyTerm, widgetsDict) in self.semiologiesWidgetsDict.items():
-      if not widgetsDict['checkBox'].isChecked():
-        continue
-      lateralitiesDict = {
-        'left': Laterality.LEFT,
-        'right': Laterality.RIGHT,
-        'other': Laterality.NEUTRAL,
-      }
-      for lateralityName, laterality in lateralitiesDict.items():
-        widget = widgetsDict[f'{lateralityName}RadioButton']
-        if widget is not None and widget.isChecked():
-          result = semiologyTerm, laterality
-          termsAndSides.append(result)
-    termsAndSides = None if not termsAndSides else termsAndSides
-    return termsAndSides
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
@@ -537,6 +603,28 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
 
     # self.logic.showTableInViewLayout(self.tableNode)
+
+  def onColorBlindCheckBox(self):
+    self.colorSelector.setDisabled(self.colorBlindCheckbox.isChecked())
+    self.onAutoUpdateButton()
+
+  def addCustomSemiology(self):
+    customSemiology = CustomSemiology()
+    gridLayout = self.semiologiesWidget.layout()
+    numRows = gridLayout.rowCount()
+    gridLayout.addWidget(customSemiology.lineEdit, numRows, 0)
+    for i, radioButton in enumerate(customSemiology.radioButtons.values(), start=1):
+      gridLayout.addWidget(radioButton, numRows, i, *ALIGN_ARGS)
+    self.customSemiologies.append(customSemiology)
+    self.removeLineEditButton.setEnabled(True)
+
+  def removeCustomSemiology(self):
+    customSemiology = self.customSemiologies.pop()
+    for widget in customSemiology.widgets:
+      widget.hide()
+      self.semiologiesWidget.layout().removeWidget(widget)
+    del customSemiology
+    self.removeLineEditButton.setEnabled(self.customSemiologies)
 
 #
 # SemiologyVisualisationLogic
@@ -1068,17 +1156,38 @@ class GIFColorTable(ColorTable):
   pass
 
 
-COLORMAPS = [
-  'Cividis',
-  'Plasma',
-  'Viridis',
-  'Magma',
-  'Inferno',
-  'Grey',
-  'Red',
-  'Green',
-  'Blue',
-  'Yellow',
-  'Cyan',
-  'Magenta',
-]
+class CustomSemiology:
+  def __init__(self):
+    self.lineEdit = qt.QLineEdit()
+    self.radioButtons = {
+      'left': qt.QRadioButton('Left'),
+      'right': qt.QRadioButton('Right'),
+      'other': qt.QRadioButton('Other'),
+    }
+    self.buttonGroup = qt.QButtonGroup()
+    for button in self.radioButtons.values():
+      self.buttonGroup.addButton(button)
+
+  @property
+  def text(self):
+    return self.lineEdit.text
+
+  def isEmpty(self):
+    return not self.text
+
+  @property
+  def widgets(self):
+    return [self.lineEdit, *self.radioButtons.values()]
+
+  @property
+  def laterality(self):
+    from mega_analysis.semiology import Laterality
+    lateralitiesDict = {
+      'left': Laterality.LEFT,
+      'right': Laterality.RIGHT,
+      'other': Laterality.NEUTRAL,
+    }
+    for lateralityName, laterality in lateralitiesDict.items():
+      widget = self.radioButtons[lateralityName]
+      if widget.isChecked():
+        return laterality
