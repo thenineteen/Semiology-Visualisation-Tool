@@ -1,6 +1,7 @@
 import csv
 import logging
 import warnings
+from typing import Dict
 from pathlib import Path
 from abc import ABC, abstractmethod
 
@@ -1001,7 +1002,7 @@ class Parcellation(ABC):
 
   def setScoresColors(
       self,
-      scoresDict,
+      scoresDict: Dict[int, float],
       colorNode,
       defaultColor,
       showLeft=True,
@@ -1009,6 +1010,17 @@ class Parcellation(ABC):
       showProgress=True,
       min2dOpacity=1,
       ):
+    """[summary]
+
+    Args:
+        scoresDict: Dictionary mapping GIF label numbers to scores (datapoints or numbers between 0 and 100)
+        colorNode ([type]): [description]
+        defaultColor ([type]): [description]
+        showLeft (bool, optional): [description]. Defaults to True.
+        showRight (bool, optional): [description]. Defaults to True.
+        showProgress (bool, optional): [description]. Defaults to True.
+        min2dOpacity (int, optional): [description]. Defaults to 1.
+    """
     segments = self.getSegments()
     numSegments = len(segments)
     if showProgress:
@@ -1025,7 +1037,6 @@ class Parcellation(ABC):
       label = self.getLabelFromSegment(segment)
       if scoresDict is not None:
         scores = np.array(list(scoresDict.values()))
-        positiveScores = scores[scores > 0]  # do I want this?
         minScore = min(scores)
         maxScore = max(scores)
       color = defaultColor
@@ -1055,7 +1066,7 @@ class Parcellation(ABC):
   def getColorFromScore(self, normalizedScore, colorNode):
     """This method is very important"""
     numColors = colorNode.GetNumberOfColors()
-    scoreIndex = int((numColors - 1) * normalizedScore)
+    scoreIndex = int(round((numColors - 1) * normalizedScore))
     colorAlpha = 4 * [0]
     colorNode.GetColor(scoreIndex, colorAlpha)
     color = np.array(colorAlpha[:3])
