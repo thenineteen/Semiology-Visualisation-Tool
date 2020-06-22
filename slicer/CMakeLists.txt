@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-set(MODULE_NAME SemiologyVisualization)
+set(MODULE_NAME SemiologyVisualisation)
 
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS

@@ -27,14 +27,14 @@ IMAGE_FILE_STEM = 'MNI_152'
 
 
 #
-# SemiologyVisualization
+# SemiologyVisualisation
 #
 
-class SemiologyVisualization(ScriptedLoadableModule):
+class SemiologyVisualisation(ScriptedLoadableModule):
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
-    self.parent.title = "Semiology Visualization"
+    self.parent.title = "Semiology Visualisation"
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
     self.parent.contributors = [
@@ -52,13 +52,13 @@ class SemiologyVisualization(ScriptedLoadableModule):
     """
 
 #
-# SemiologyVisualizationWidget
+# SemiologyVisualisationWidget
 #
-class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
+class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
   def setup(self):
     ScriptedLoadableModuleWidget.setup(self)
-    self.logic = SemiologyVisualizationLogic()
+    self.logic = SemiologyVisualisationLogic()
     self.logic.installRepository()
     self.parcellation = GIFParcellation(
       segmentationPath=self.logic.getGifSegmentationPath(),
@@ -69,7 +69,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.parcellationLabelMapNode = None
     self.tableNode = None
     self.lineEdits = []
-    slicer.semiologyVisualization = self
+    slicer.semiologyVisualisation = self
 
   def makeGUI(self):
     self.makeLoadDataButton()
@@ -96,7 +96,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.settingsLayout.addWidget(self.settingsTabWidget)
 
     self.settingsTabWidget.addTab(self.getQuerySettingsTab(), 'Query')
-    self.settingsTabWidget.addTab(self.getVisualizationSettingsTab(), 'Visualization')
+    self.settingsTabWidget.addTab(self.getVisualisationSettingsTab(), 'Visualisation')
     self.settingsTabWidget.addTab(self.getModuleSettingsTab(), 'Module')
 
     self.layout.addWidget(self.settingsCollapsibleButton)
@@ -194,30 +194,30 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
 
     return inclusionsGroupBox
 
-  def getVisualizationSettingsTab(self):
-    visualizationSettingsWidget = qt.QWidget()
-    visualizationSettingsLayout = qt.QFormLayout(visualizationSettingsWidget)
-    visualizationSettingsLayout.addWidget(self.getShowGIFButton())
-    visualizationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
+  def getVisualisationSettingsTab(self):
+    visualisationSettingsWidget = qt.QWidget()
+    visualisationSettingsLayout = qt.QFormLayout(visualisationSettingsWidget)
+    visualisationSettingsLayout.addWidget(self.getShowGIFButton())
+    visualisationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
     self.segmentsComboBox = qt.QComboBox()
-    visualizationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
+    visualisationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
 
     self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colors')
-    visualizationSettingsLayout.addWidget(self.showProgressCheckBox)
+    visualisationSettingsLayout.addWidget(self.showProgressCheckBox)
 
     self.min2dOpacitySlider = slicer.qMRMLSliderWidget()
     self.min2dOpacitySlider.maximum = 1
     self.min2dOpacitySlider.singleStep = 0.01
     self.min2dOpacitySlider.value = 0.25
-    visualizationSettingsLayout.addRow(
+    visualisationSettingsLayout.addRow(
       'Min. 2D opacity: ',
       self.min2dOpacitySlider,
     )
 
     self.colorBlindCheckbox = qt.QCheckBox('Color-blind mode')
-    visualizationSettingsLayout.addWidget(self.colorBlindCheckbox)
+    visualisationSettingsLayout.addWidget(self.colorBlindCheckbox)
 
-    return visualizationSettingsWidget
+    return visualisationSettingsWidget
 
   def getModuleSettingsTab(self):
     self.autoUpdateCheckBox = qt.QCheckBox()
@@ -539,9 +539,9 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     # self.logic.showTableInViewLayout(self.tableNode)
 
 #
-# SemiologyVisualizationLogic
+# SemiologyVisualisationLogic
 #
-class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
+class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
   def getSemiologiesWidgetsDict(
       self,
@@ -785,7 +785,7 @@ class SemiologyVisualizationLogic(ScriptedLoadableModuleLogic):
       sliceLogic.SetSliceOffset(offset)
 
 
-class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
+class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
   """
   This is the test case for your scripted module.
   Uses ScriptedLoadableModuleTest base class, available at:
@@ -801,9 +801,9 @@ class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
     """Run as few or as many tests as needed here.
     """
     self.setUp()
-    self.test_SemiologyVisualization1()
+    self.test_SemiologyVisualisation1()
 
-  def test_SemiologyVisualization1(self):
+  def test_SemiologyVisualisation1(self):
     """ Ideally you should have several levels of tests.  At the lowest level
     tests should exercise the functionality of the logic with different inputs
     (both valid and invalid).  At higher levels your tests should emulate the
@@ -828,7 +828,7 @@ class SemiologyVisualizationTest(ScriptedLoadableModuleTest):
     self.delayDisplay('Finished with download and loading')
 
     volumeNode = slicer.util.getNode(pattern="FA")
-    logic = SemiologyVisualizationLogic()
+    logic = SemiologyVisualisationLogic()
     self.assertIsNotNone( logic.hasImageData(volumeNode) )
     self.delayDisplay('Test passed!')
 
