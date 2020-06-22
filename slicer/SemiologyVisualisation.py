@@ -783,7 +783,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     return self.readScores(scoresPath)
 
   def removeColorMaps(self):
-    for colorNode in slicer.util.getNodesByClass('vtkMRMLColorTableNode'):
+    for colorNode in slicer.util.getNodesByClass('vtkMRMLColorNode'):
       if colorNode.GetName() not in COLORMAPS:
         slicer.mrmlScene.RemoveNode(colorNode)
 
