@@ -826,14 +826,6 @@ class Parcellation(ABC):
     self.segmentationNode = None
     self._labelMap = None
 
-  # @property
-  # def label_map(self):
-  #   if self._labelMap is None:
-  #     self._labelMap = sitk.ReadImage(str(self.parcellation_path))
-  #     if 'float' in self._labelMap.GetPixelIDTypeAsString():
-  #       self._labelMap = sitk.Cast(self._labelMap, sitk.sitkUInt16)
-  #   return self._labelMap
-
   # Note that @property must come before @abstractmethod
   @property
   @abstractmethod
@@ -863,6 +855,7 @@ class Parcellation(ABC):
       logging.info(f'Segmentation found in scene: {stem}')
     except slicer.util.MRMLNodeNotFoundException:
       logging.info(f'Segmentation not found in scene: {stem}')
+      logging.info(f'Loading from {self.segmentationPath}...')
       node = slicer.util.loadSegmentation(str(self.segmentationPath))
     self.segmentationNode = node
     self.segmentationNode.GetDisplayNode().SetOpacity2DFill(1)
