@@ -1,11 +1,12 @@
+import copy
 import warnings
 from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import yaml
 import numpy as np
 import pandas as pd
-import yaml
 from sklearn.preprocessing import MinMaxScaler
 
 from mega_analysis.crosstab.file_paths import file_paths
@@ -24,6 +25,7 @@ from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import \
     QUERY_LATERALISATION
 from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import \
     QUERY_SEMIOLOGY
+
 
 GIF_SHEET_NAMES = gif_sheet_names()
 
@@ -92,7 +94,7 @@ class Semiology:
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
             possible_lateralities: Optional[List[Laterality]] = None,
-    ):
+            ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -116,7 +118,7 @@ class Semiology:
             include_seeg: bool,
             include_cortical_stimulation: bool,
             include_et_topology_ez: bool,
-    ) -> pd.DataFrame:
+            ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
         if not include_seizure_freedom:
@@ -208,7 +210,7 @@ def get_possible_lateralities(term) -> List[Laterality]:
 def combine_semiologies(
         semiologies: List[Semiology],
         normalise: bool = True,
-) -> Dict[int, float]:
+        ) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
     if normalise:
         df = normalise_semiologies_df(df)
@@ -234,8 +236,9 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
 
 def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
-) -> pd.DataFrame:
+        ) -> pd.DataFrame:
     records = []
+    semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
         num_datapoints_dict['Semiology'] = term
         records.append(num_datapoints_dict)
@@ -260,7 +263,7 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 def combine_semiologies_df(
         df: pd.DataFrame,
         normalise: bool = True,
-) -> Dict[int, float]:
+        ) -> Dict[int, float]:
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
