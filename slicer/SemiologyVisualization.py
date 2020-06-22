@@ -68,6 +68,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode = None
     self.parcellationLabelMapNode = None
     self.tableNode = None
+    self.lineEdits = []
     slicer.semiologyVisualization = self
 
   def makeGUI(self):
@@ -250,7 +251,19 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.semiologiesTableSplitter.addWidget(self.semiologiesCollapsibleButton)
 
     semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
-    semiologiesFormLayout.addWidget(self.getSemiologiesWidget())
+    semiologiesScrollArea = self.getSemiologiesScrollArea()
+    self.semiologiesWidget = semiologiesScrollArea.widget()
+    semiologiesFormLayout.addWidget(semiologiesScrollArea)
+
+    removeLineEditButton = qt.QPushButton('Remove custom semiology')
+    removeLineEditButton.setDisabled(True)
+    addLineEditButton = qt.QPushButton('Add custom semiology')
+
+    lineEditsFrame = qt.QFrame()
+    lineEditsLayout = qt.QHBoxLayout(lineEditsFrame)
+    lineEditsLayout.addWidget(removeLineEditButton)
+    lineEditsLayout.addWidget(addLineEditButton)
+    semiologiesFormLayout.addWidget(lineEditsFrame)
 
   def makeTableButton(self):
     self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
@@ -291,7 +304,7 @@ class SemiologyVisualizationWidget(ScriptedLoadableModuleWidget):
     self.updateButton.clicked.connect(self.updateColors)
     self.layout.addWidget(self.updateButton)
 
-  def getSemiologiesWidget(self):
+  def getSemiologiesScrollArea(self):
     try:
       with warnings.catch_warnings():
         warnings.simplefilter("ignore")
