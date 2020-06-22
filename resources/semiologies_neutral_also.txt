@@ -10,3 +10,4 @@ Tonic
 Tonic-Clonic
 Upper Limb Automatism
 Visual
+Spasms - epileptic/infantile
