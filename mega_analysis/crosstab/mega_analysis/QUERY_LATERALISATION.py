@@ -8,7 +8,6 @@ from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 # main function is QUERY_LATERALISATION
 
 
-
 def gifs_lat(gif_lat_file):
     """
     factor function. opens the right/left gif parcellations from excel and extracts the right/left gifs as series/list.
@@ -20,9 +19,9 @@ def gifs_lat(gif_lat_file):
 
 
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
-                       side_of_symptoms_signs=None,
-                       pts_dominant_hemisphere_R_or_L=None,
-                       normalise_lat_to_loc=False):
+                         side_of_symptoms_signs=None,
+                         pts_dominant_hemisphere_R_or_L=None,
+                         normalise_lat_to_loc=False):
     """
     After obtaining inspect_result and clinician's filter, can optionally use this function to determine
     lateralisation e.g. for EpiNav(R) visualisation.
@@ -53,7 +52,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
         return
 
-    #check there is lateralising value
+    # check there is lateralising value
     try:
         Lat = inspect_result['Lateralising']
         logging.debug(f'Lateralisation based on: {Lat.sum()} datapoints')
@@ -70,18 +69,20 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     for col in lat_vars:
         if col not in inspect_result2.columns:
             inspect_result2[col] = np.nan
-    #now can check lateralising columns isn't null where it shouldn't be:
-    missing_lat = inspect_result2.loc[(inspect_result2['CL'].notnull())|
-                                    (inspect_result2['IL'].notnull())|
-                                    (inspect_result2['DomH'].notnull())|
-                                    (inspect_result2['NonDomH'].notnull()), :].copy()
+    # now can check lateralising columns isn't null where it shouldn't be:
+    missing_lat = inspect_result2.loc[(inspect_result2['CL'].notnull()) |
+                                      (inspect_result2['IL'].notnull()) |
+                                      (inspect_result2['DomH'].notnull()) |
+                                      (inspect_result2['NonDomH'].notnull()), :].copy()
     missing_lat_null_mask = missing_lat['Lateralising'].isnull()
     if not missing_lat_null_mask.all():
         logging.debug('\nNo missing Lateralising data points.')
     else:  # semiology term not recognised
-        logging.warning('The inspect_result lat col has NaNs/zero where it should not: autofilled')
+        logging.warning(
+            'The inspect_result lat col has NaNs/zero where it should not: autofilled')
         df_of_missing_lats = missing_lat.loc[missing_lat_null_mask].copy()
-        df.loc[df_of_missing_lats.index, 'Lateralising'] = df_of_missing_lats[['CL', 'IL', 'DomH', 'NonDomH']].sum(axis=1)
+        df.loc[df_of_missing_lats.index, 'Lateralising'] = df_of_missing_lats[[
+            'CL', 'IL', 'DomH', 'NonDomH']].sum(axis=1)
 
     # check columns exist (not removed in preceding notnull steps from other functions):
     for col in lat_vars:
@@ -97,53 +98,58 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     logging.debug(f'Overall Contralateral: {CL.sum()} datapoints')
     logging.debug(f'Ipsilateral: {IL.sum()} datapoints')
-    logging.debug(f'Bilateral/Non-lateralising: {BL.sum()} datapoints. This is not utilised in our analysis/visualisation.')
+    logging.debug(
+        f'Bilateral/Non-lateralising: {BL.sum()} datapoints. This is not utilised in our analysis/visualisation.')
     logging.debug(f'Dominant Hemisphere: {DomH.sum()} datapoints')
     logging.debug(f'Non-Dominant Hemisphere: {NonDomH.sum()} datapoints')
-
 
     # initialise:
     Right = 0
     Left = 0
-    inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(), :].copy()  # only those with lat
+    inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
+    ), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
     one_map = big_map(map_df_dict)
     all_combined_gifs = None
 
-
     # cycle through rows of inspect_result_lat:
-    id_cols = [i for i in full_id_vars() if i not in ['Localising']]  # note 'Localising' is in id_cols
+    id_cols = [i for i in full_id_vars() if i not in ['Localising']
+               ]  # note 'Localising' is in id_cols
 
-    for i in range (no_rows):
+    for i in range(no_rows):
         logging.debug(str(i))
         Right = 0
         Left = 0
 
-        full_row = inspect_result_lat.iloc[[i],:]
-        row = full_row.drop(labels=id_cols, axis='columns', inplace=False, errors='ignore')
+        full_row = inspect_result_lat.iloc[[i], :]
+        row = full_row.drop(labels=id_cols, axis='columns',
+                            inplace=False, errors='ignore')
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
-                                                suppress_prints=True)
+                                                 suppress_prints=True)
         # ^ row_to_one_map now contains all the lateralising gif parcellations
 
-
         # some pts will have lateralising but no localising values:
-        if ( ('Localising' not in full_row.columns) | (full_row['Localising'].sum() ==0) ):
-            logging.debug('\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
+        if (('Localising' not in full_row.columns) | (full_row['Localising'].sum() == 0)):
+            logging.debug(
+                '\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
             logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
             # full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
             continue
 
         # set the scale of influence of lateralisation on the gif parcellations:
-        proportion_lateralising = full_row['Lateralising'].sum() / full_row['Localising'].sum()
+        proportion_lateralising = full_row['Lateralising'].sum(
+        ) / full_row['Localising'].sum()
 
         if proportion_lateralising > 1:
             proportion_lateralising = 1
-            logging.debug('some extracted lateralising data exceed the localising data,')
-            logging.debug('for now these are taken as proportion_lateralising=1.0 !')
+            logging.debug(
+                'some extracted lateralising data exceed the localising data,')
+            logging.debug(
+                'for now these are taken as proportion_lateralising=1.0 !')
 
         # check columns exist in this particular row:
         for col in lat_vars:
@@ -172,7 +178,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             if pts_dominant_hemisphere_R_or_L == 'R':
                 Right += DomH_row
                 Left += NonDomH_row
-            elif pts_dominant_hemisphere_R_or_L =='L':
+            elif pts_dominant_hemisphere_R_or_L == 'L':
                 Right += NonDomH_row
                 Left += DomH_row
 
@@ -180,12 +186,13 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if Right == Left:
             # no point as this is 50:50 as it already is, so skip
             # before continuing, ensure there is a all_combined_gifs...
-                # e.g. for blink there isn't as the first row is 50:50...
-                # ... and all future codes fail
+            # e.g. for blink there isn't as the first row is 50:50...
+            # ... and all future codes fail
             if all_combined_gifs is None:
                 all_combined_gifs = row_to_one_map
             elif all_combined_gifs is not None:
-                all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
+                all_combined_gifs = pd.concat(
+                    [all_combined_gifs, row_to_one_map], join='outer', sort=False)
             continue
 
         # now should be able to use above to lateralise the localising gif parcellations:
@@ -211,22 +218,24 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
         ratio = lower_value / Total
 
-        if normalise_lat_to_loc==True:
-            norm_ratio = ratio / proportion_lateralising  # see comments on section above about why we should normalise
+        if normalise_lat_to_loc == True:
+            # see comments on section above about why we should normalise
+            norm_ratio = ratio / proportion_lateralising
             if norm_ratio > 1:
                 norm_ratio = 1
                 print('norm_ratio capped at 1: small proportion of data lateralised')
-        elif normalise_lat_to_loc==False:
+        elif normalise_lat_to_loc == False:
             norm_ratio = lower_value / higher_value
 
-
         # if proportion_lateralising is 1, straightforward: return dataframe of right/left gifs whichever lower
-        df_lower_lat_to_be_reduced = row_to_one_map.loc[row_to_one_map['Gif Parcellations'].isin(list(isin))].copy()
+        df_lower_lat_to_be_reduced = row_to_one_map.loc[row_to_one_map['Gif Parcellations'].isin(
+            list(isin))].copy()
         # now make these values lower by a proportion = norm_ratio (in this case norm_ratio = ratio as denom is 1)
-        reduce_these = df_lower_lat_to_be_reduced.loc[:,'pt #s'].copy()
-        df_lower_lat_to_be_reduced.loc[:,'pt #s'] = norm_ratio * reduce_these
+        reduce_these = df_lower_lat_to_be_reduced.loc[:, 'pt #s'].copy()
+        df_lower_lat_to_be_reduced.loc[:, 'pt #s'] = norm_ratio * reduce_these
         # re attribute these corrected reduced lateralised values to the entire row's data:
-        row_to_one_map.loc[df_lower_lat_to_be_reduced.index, :] = df_lower_lat_to_be_reduced
+        row_to_one_map.loc[df_lower_lat_to_be_reduced.index,
+                           :] = df_lower_lat_to_be_reduced
 
         # now need to merge/concat these rows-(pivot-result)-to-one-map as the cycle goes through each row:
         if i == 0:
@@ -235,44 +244,51 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             logging.debug('end of zeroo')
             continue
         elif i != 0:
-            all_combined_gifs = pd.concat([all_combined_gifs, row_to_one_map], join='outer', sort=False)
+            all_combined_gifs = pd.concat(
+                [all_combined_gifs, row_to_one_map], join='outer', sort=False)
         logging.debug(f'end of i {i}')
-
 
     # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
-    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(), :].copy()
+    inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(
+    ), :].copy()
     # now clean ready to map:
-    inspect_result_nulllateralising.drop(labels=id_cols, axis='columns', inplace=True, errors='ignore')
-    inspect_result_nulllateralising.dropna(how='all', axis='columns', inplace=True)
+    inspect_result_nulllateralising.drop(
+        labels=id_cols, axis='columns', inplace=True, errors='ignore')
+    inspect_result_nulllateralising.dropna(
+        how='all', axis='columns', inplace=True)
     # now map row by row otherwise you get a "TypeError: only size-1 arrays can be converted to Python scalars":
     nonlat_no_rows = inspect_result_nulllateralising.shape[0]
     for j in range(nonlat_no_rows):
-        full_row = inspect_result_nulllateralising.iloc[[j],:]
-        row = full_row.drop(labels=id_cols, axis='columns', inplace=False, errors='ignore')
+        full_row = inspect_result_nulllateralising.iloc[[j], :]
+        row = full_row.drop(labels=id_cols, axis='columns',
+                            inplace=False, errors='ignore')
         row = row.dropna(how='all', axis='columns')
         row_nonlat_to_one_map = pivot_result_to_one_map(row,
-                                           one_map, raw_pt_numbers_string='pt #s',
-                                           suppress_prints=True)
-        if j==0:
+                                                        one_map, raw_pt_numbers_string='pt #s',
+                                                        suppress_prints=True)
+        if j == 0:
             # can't merge first row
             gifs_not_lat = row_nonlat_to_one_map
             logging.debug('j zero gifs_not_lat set to row_nonlat_to_one_map')
             continue
         elif j != 0:
-            gifs_not_lat = pd.concat([gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
-    #now combine the lateralised and non-lateralised:
+            gifs_not_lat = pd.concat(
+                [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
+    # now combine the lateralised and non-lateralised:
     # all_combined_gifs may still be None if after running above with some lateralised...
         # ...semiology or dominance, there is no lateralising data.
     if all_combined_gifs is None:
         all_combined_gifs = gifs_not_lat
+    if inspect_result_nulllateralising.empty:
+        pass
     elif all_combined_gifs is not None:
-        all_combined_gifs = pd.concat([all_combined_gifs, gifs_not_lat], join='outer', sort=False)
-
-
+        all_combined_gifs = pd.concat(
+            [all_combined_gifs, gifs_not_lat], join='outer', sort=False)
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
-    fixed = all_combined_gifs.pivot_table(columns='Gif Parcellations', values='pt #s', aggfunc='sum')
+    fixed = all_combined_gifs.pivot_table(
+        columns='Gif Parcellations', values='pt #s', aggfunc='sum')
     fixed2 = fixed.melt(value_name='pt #s')
     fixed2.insert(0, 'Semiology Term', np.nan)
     # fixed2.loc[0, 'Semiology Term'] = str( list(inspect_result.index.values) )
