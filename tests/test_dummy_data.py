@@ -164,11 +164,49 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             new_all_combined_gifindexed.values.all() == fixture.values.all())
 #         print('6 query lat')
 
+    def test_hierarchy(self):
+        """
+        first test postcode system which duplicates mapping
+        before testing its reversal
 
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+        assert(inspect_result['TL'].sum() == 12)
+        assert(inspect_result['Anterior (temporal pole)'].sum() == 5)
+        assert(inspect_result['Lateral Temporal'].sum() == 4)
+        assert(inspect_result['ITG'].sum() == 4)
+        assert(inspect_result['Mesial Temporal'].sum() == 5)
+        assert(inspect_result['FL'].sum() == 1)
+        assert(inspect_result['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
+
+        print('7 hierarchy')
+
+    # def test_hierarchy_reversal(self):
+    #     """
+    #     now test reversal postcode system which duplicates mapping
+    #     for new function hierarchy_reversal()
+    #     """
+    #     patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+    #     patient.data_frame = self.df
+    #     inspect_result = patient.query_semiology()
+    #     inspect_result_reversal = hierarchy_reversal(inspect_result)
+
+    #     assert(inspect_result['TL'].sum() == 0)
+    #     assert(inspect_result['Anterior (temporal pole)'].sum() == 5)
+    #     assert(inspect_result['Lateral Temporal'].sum() == 0)
+    #     assert(inspect_result['ITG'].sum() == 4)
+    #     assert(inspect_result['Mesial Temporal'].sum() == 5)
+    #     assert(inspect_result['FL'].sum() == 0
+    #     assert(inspect_result['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
+
+    #     print('8 hierarchy reversal')
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
 # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
+
 
 # for debugging with setUp(self):
 if __name__ == '__main__':
