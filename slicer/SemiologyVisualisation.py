@@ -468,7 +468,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       message = (
         'Error retrieving semiology information from mega_analysis module.'
         f' Details:\n\n{e}\n\n'
-        'Please report this issue on the repository:'
+        'If you think this is a bug, please report this issue on the repository:'
         ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
       )
       slicer.util.errorDisplay(message)
