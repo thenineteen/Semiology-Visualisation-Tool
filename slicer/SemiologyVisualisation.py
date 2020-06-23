@@ -182,8 +182,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.seizureSemiologyCheckBox = qt.QCheckBox('Seizure semiology')
     self.brainStimulationCheckBox = qt.QCheckBox('Cortical stimulation')
 
-    self.seizureSemiologyCheckBox.setEnabled(False)  # not implemented yet
-
     self.epilepsyTopologyCheckBox.setToolTip(
       'When the paper pre-selects samples of patients based on their established epileptogenic zone'
       '(site of surgical resection) or seizure onset zone (neurophysiological/anatomical), and'
@@ -455,6 +453,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         include_seeg=self.invasiveEegCheckBox.isChecked(),
         include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
         include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
+        include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
       )
       semiologies.append(semiology)
     try:

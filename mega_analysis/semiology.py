@@ -13,7 +13,7 @@ from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_cortical_stimulation, exclude_ET, exclude_sEEG,
-    exclude_seizure_free, exclusions)
+    exclude_seizure_free, exclude_spontaneous_semiology, exclusions)
 from mega_analysis.crosstab.mega_analysis.mapping import \
     pivot_result_to_one_map
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
@@ -93,6 +93,7 @@ class Semiology:
             include_seeg: bool = True,
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
+            include_spontaneous_semiology: bool = True,
             possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
@@ -105,6 +106,7 @@ class Semiology:
             include_seeg,
             include_cortical_stimulation,
             include_et_topology_ez,
+            include_spontaneous_semiology,
         )
         if possible_lateralities is None:
             possible_lateralities = get_possible_lateralities(self.term)
@@ -118,6 +120,7 @@ class Semiology:
             include_seeg: bool,
             include_cortical_stimulation: bool,
             include_et_topology_ez: bool,
+            include_spontaneous_semiology: bool,
             ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
@@ -129,6 +132,8 @@ class Semiology:
             df = exclude_sEEG(df)
         if not include_cortical_stimulation:
             df = exclude_cortical_stimulation(df)
+        if not include_spontaneous_semiology:
+            df = exclude_spontaneous_semiology(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
