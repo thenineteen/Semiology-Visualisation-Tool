@@ -80,6 +80,23 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(query['Lateralising'].sum() == 6)
         # print('2')
 
+    def test_postictal_exclusion(self):
+        """
+        Exclude the single postictal aphasia
+        """
+        df_excl = exclusions(self.df)
+        query = QUERY_SEMIOLOGY(
+            df_excl,
+            semiology_term=['aphasia'],
+            ignore_case=True,
+            semiology_dict_path=None,
+            col1='Reported Semiology',
+            col2='Semiology Category',
+        )
+        assert(query['Localising'].sum() == 12)
+        assert(query['Lateralising'].sum() == 5)
+        print('\n2.2 postictal\n')
+
     def test_caps_QUERY_SEMIOLOGY_regex_pickup(self):
         """
         when ignore case is false, it won't pick up case mismatches.
@@ -182,8 +199,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(inspect_result['Mesial Temporal'].sum() == 5)
         assert(inspect_result['FL'].sum() == 1)
         assert(inspect_result['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
-
-        print('7 hierarchy')
+        print('\n7 hierarchy\n')
 
     def test_temporal_hierarchy_reversal(self):
         """
@@ -195,7 +211,6 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         inspect_result = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
-        # inspect_result_reversed =
         hierarchy_df.temporal_hierarchy_reversal()  # deafult max option
         inspect_result_reversed = hierarchy_df.temporal_hr
 
@@ -204,26 +219,24 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(inspect_result_reversed['Lateral Temporal'].sum() == 0)
         assert(inspect_result_reversed['ITG'].sum() == 4)
         assert(inspect_result_reversed['Mesial Temporal'].sum() == 5)
+        print('\n8 temporal hierarchy reversal\n')
 
-        print('8 hierarchy reversal')
+    def test_frontal_hierarchy_reversal(self):
+        """
+        continuing testing reversal of postcode system
+        for new class Hierarchy
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
 
-    # def test_frontal_hierarchy_reversal(self):
-    #     """
-    #     now test reversal postcode system which duplicates mapping
-    #     for new class Hierarchy
-    #     """
-    #     patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
-    #     patient.data_frame = self.df
-    #     inspect_result = patient.query_semiology()
+        hierarchy_df = Hierarchy(inspect_result)
+        hierarchy_df.frontal_hierarchy_reversal()  # deafult max option
+        inspect_result_reversed = hierarchy_df.frontal_hr
 
-    #     hierarchy_df = Hierarchy(inspect_result)
-    #     # inspect_result_reversed =
-    #     hierarchy_df.frontal_hierarchy_reversal()  # deafult max option
-    #     inspect_result_reversed = hierarchy_df.frontal_hr
-
-    #     assert(inspect_result_reversed['FL'].sum() == 0)
-    #     assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
-
+        assert(inspect_result_reversed['FL'].sum() == 0)
+        assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
+        print('\n9 frontal dictionary hierarchy reversal\n')
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
