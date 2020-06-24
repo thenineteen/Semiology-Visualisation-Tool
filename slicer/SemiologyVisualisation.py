@@ -56,18 +56,22 @@ class SemiologyVisualisation(ScriptedLoadableModule):
     self.parent.categories = ["Epilepsy Semiology"]
     self.parent.dependencies = []
     self.parent.contributors = [
-      "Fernando Perez-Garcia (SVT code)",
-      "Ali Alim-Marvasti (Data and SVT code)",
-      "Gloria Romagnoli (Data)",
-      "John Duncan (Study Supervisor)",
+      "Fernando Perez-Garcia",
+      "Ali Alim-Marvasti",
+      "Gloria Romagnoli",
+      "John S. Duncan",
     ]
     self.parent.helpText = """[This is the help text.]
     """
-    self.parent.helpText += self.getDefaultModuleDocumentationLink(
-      docPage='https://github.com/thenineteen/Semiology-Visualisation-Tool')
+    self.parent.helpText += self.getDefaultModuleDocumentationLink()
     self.parent.acknowledgementText = """
     University College London.
     """
+
+  def getDefaultModuleDocumentationLink(self):
+    repoUrl = 'https://github.com/thenineteen/Semiology-Visualisation-Tool'
+    linkText = f'See <a href="{repoUrl}">the documentation</a> for more information.'
+    return linkText
 
 #
 # SemiologyVisualisationWidget
