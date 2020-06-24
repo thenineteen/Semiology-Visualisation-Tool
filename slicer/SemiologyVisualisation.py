@@ -911,12 +911,7 @@ class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
     #
     # first, get some data
     #
-    import SampleData
-    SampleData.downloadFromURL(
-      nodeNames='FA',
-      fileNames='FA.nrrd',
-      uris='http://slicer.kitware.com/midas3/download?items=5767',
-      checksums='SHA256:12d17fba4f2e1f1a843f0757366f28c3f3e1a8bb38836f0de2a32bb1cd476560')
+    widget = slicer.semiologyVisualisation
     self.delayDisplay('Finished with download and loading')
 
     volumeNode = slicer.util.getNode(pattern="FA")
