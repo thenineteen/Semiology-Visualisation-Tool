@@ -66,44 +66,98 @@ class Hierarchy():
                 self.new_df['_reversal']
             self.new_df.drop(labels=['_raw_sum', '_reversal'],
                              axis='columns', inplace=True, errors='ignore')
-            # yield self.new_df
 
     def temporal_hierarchy_reversal(self):
-        # STG
-
         self.new_df.top_level_col1 = 'TL'  # TL
         self.new_df.low_level_cols1 = ['Anterior (temporal pole)', 'Lateral Temporal',
                                        'Mesial Temporal', 'Posterior Temporal', 'Basal (including Fusiform OTMG)']
-        # self.temporal_hierarchy_reversal1 =
         self.hierarchy_reversal(
             self.new_df.top_level_col1, self.new_df.low_level_cols1)
 
-        # basal
         self.new_df.top_level_col2 = 'Basal (including Fusiform OTMG)'
         self.new_df.low_level_cols2 = ['OTMG (fusiform)']
-        # self.temporal_hierarchy_reversal2 =
         self.hierarchy_reversal(
             self.new_df.top_level_col2, self.new_df.low_level_cols2)
 
         self.new_df.top_level_col3 = 'Mesial Temporal'  # mesial temporal
         self.new_df.low_level_cols3 = [
             'Ant Mesial Temporal', 'Post Mesial Temporal', 'Enthorinal Cortex', 'Fusiform', 'AMYGD', 'PARAHIPPOCAMPUS', 'HIPPOCAMPUS']
-        # self.temporal_hierarchy_reversal3 =
         self.hierarchy_reversal(
             self.new_df.top_level_col3, self.new_df.low_level_cols3)
 
         self.new_df.top_level_col4 = 'Lateral Temporal'  # lateral temporal
         self.new_df.low_level_cols4 = [
             'STG (includes Transverse Temporal Gyrus, Both Planum)', 'MTG', 'ITG']
-        # self.temporal_hierarchy_reversal4 =
         self.hierarchy_reversal(
             self.new_df.top_level_col4, self.new_df.low_level_cols4)
 
         self.new_df.top_level_col5 = 'STG (includes Transverse Temporal Gyrus, Both Planum)'
         self.new_df.low_level_cols5 = [
             'Transverse Temporal Gyrus (Heschl\'s, BA 41,  42, ?opercula)', 'Planum Temporale', 'Planum Polare']
-        # self.temporal_hierarchy_reversal5 =
         self.hierarchy_reversal(
             self.new_df.top_level_col5, self.new_df.low_level_cols5)
 
         self.temporal_hr = self.new_df
+
+    # def frontal_hierarchy_reversal(self):
+    #     self.new_df.top_level_col = 'FL'
+    #     self.new_df.low_level_cols = []
+    #     self.hierarchy_reversal(
+    #         self.new_df.top_level_col, self.new_df.low_level_cols)
+
+    def frontal_hierarchy_reversal(self):
+        self.frontal = {
+            'FL': [
+                'frontal pole',
+                'Pre-frontal (BA 8, 9, 10, 11, 12, 13, 14, 24, 25, 32, 44, 45, 46, 47)',
+                'Medial Frontal\n(should include medial premotor and its constituents as its subsets)',
+                'Primary Motor Cortex (Pre-central gyrus, BA 4, Rolandic)',
+                'SFG (F1)',
+                'MFG (F2)',
+                'IFG (F3)\n(BA 44,45,47)',
+                'Premotor frontal (posterior frontal)',
+                'SMA (pre-central gyrus; posterior SFG, MFG)',
+                'SSMA',
+            ],
+            'Pre-frontal (BA 8, 9, 10, 11, 12, 13, 14, 24, 25, 32, 44, 45, 46, 47)': [
+                'DL-PFC\n(BA 46)\n(include subgroups BA 9, 8, 10 - frontopolar/anterior prefrontal)',
+                'gyrus rectus (basal = gyrus rectus and OFC)',
+                'Orbito-frontal (BA 10, 11, 12/47) (basal = gyrus rectus and OFC)',
+            ],
+            'Primary Motor Cortex (Pre-central gyrus, BA 4, Rolandic)': [
+                'medial precentral',
+                'Rolandic Operculum (low BA4)',
+            ],
+            'SFG (F1)': [
+                'Med SFG',
+                'Ant SFG',
+            ],
+            'MFG (F2)': [
+                'Ant MFG',
+            ],
+            'IFG (F3)\n(BA 44,45,47)': [
+                'Pars orbitalis (subgroup of IFG)\n(BA 47)',
+                'Pars Triangularis (subgroup IFG)',
+                'Pars opercularis (BA 44)(subgroup IFG, ?opercula)',
+            ],
+            'Premotor frontal (posterior frontal)': [
+                'Ant Premotor\n(BA 8, frontal-eye-fields)',
+                'Lateral Premotor\n(BA 6)',
+                'Medial Premotor (including pre SMA)',
+            ],
+            'Orbito-frontal (BA 10, 11, 12/47) (basal = gyrus rectus and OFC)': [
+                'Ant OF',
+                'Post OF',
+                'Lat OF',
+                'Med OF',
+            ],
+            'Lateral Premotor\n(BA 6)': [
+                'Ventro-lateral premotor',
+                'Dorso-lateral premotor',
+            ]
+        }
+
+        for k, v in self.frontal.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.frontal_hr = self.new_df
