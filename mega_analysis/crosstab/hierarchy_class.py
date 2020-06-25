@@ -117,3 +117,10 @@ class Hierarchy():
                 k, v)
         self.cerebellar_hr = self.new_df
 
+    def all_hierarchy_reversal(self):
+        self.all_postcodes = postcode_dictionaries()
+
+        for k, v in self.all_postcodes.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.all_postcodes_hr = self.new_df
