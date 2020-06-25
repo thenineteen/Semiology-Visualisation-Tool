@@ -92,3 +92,11 @@ class Hierarchy():
             self.hierarchy_reversal(
                 k, v)
         self.parietal_hr = self.new_df
+
+    def occipital_hierarchy_reversal(self):
+        self.occipital = postcode_dictionaries(occipital=True)
+
+        for k, v in self.occipital.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.occipital_hr = self.new_df
