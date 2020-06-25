@@ -100,3 +100,11 @@ class Hierarchy():
             self.hierarchy_reversal(
                 k, v)
         self.occipital_hr = self.new_df
+
+    def insular_hierarchy_reversal(self):
+        self.insular = postcode_dictionaries(insular=True)
+
+        for k, v in self.insular.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.insular_hr = self.new_df
