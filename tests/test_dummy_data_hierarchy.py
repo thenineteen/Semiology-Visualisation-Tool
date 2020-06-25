@@ -142,6 +142,29 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
         print('\n10 combined T & F hierarchy reversals\n')
 
+    def test_all_hierarchy_reversals(self):
+        """
+        test all.
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+
+        hierarchy_df = Hierarchy(inspect_result)
+        hierarchy_df.all_hierarchy_reversal()  # deafult max option
+        inspect_result_reversed = hierarchy_df.new_df
+
+        # assert object doesn't have any _hr aatribute:
+        assert not hasattr(hierarchy_df, 'temporal_hr')
+        assert(inspect_result_reversed['TL'].sum() == 3)
+        assert(inspect_result_reversed['Anterior (temporal pole)'].sum() == 5)
+        assert(inspect_result_reversed['Lateral Temporal'].sum() == 0)
+        assert(inspect_result_reversed['ITG'].sum() == 4)
+        assert(inspect_result_reversed['Mesial Temporal'].sum() == 5)
+        assert(inspect_result_reversed['FL'].sum() == 0)
+        assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
+        print('\n11 all_hierarchy reversals\n')
+
 
 # for debugging with setUp(self):
 if __name__ == '__main__':
