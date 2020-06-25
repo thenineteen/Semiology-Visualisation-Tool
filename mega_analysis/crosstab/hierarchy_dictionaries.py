@@ -28,9 +28,7 @@ temporal_postcodes = {
         'Planum Temporale',
         'Planum Polare',
     ],
-
 }
-
 
 frontal_postcodes = {
     'FL': [
@@ -116,14 +114,23 @@ parietal_postscodes = {
     ]
 }
 
-postcodes = {**temporal_postcodes, **frontal_postcodes,
-             **cingulate_postcodes, **parietal_postscodes}
+occipital_postcodes = {
+    'OL': [
+        'Cuneus ',
+        'Mesial Occipital',
+        'Lateral Occipital',
+        'Posterior Occipital Gyrus',
+    ],
+    'Mesial Occipital': [
+        'Lingual gyrus ',
+    ]
+}
 
 
 def postcode_dictionaries(**kwargs):
     """
-    combine dictionaries for hierarchy reversals.
-    The kwargs are allowed in single use only, for testing.
+    Combine dictionaries for hierarchy reversals.
+    The kwargs are allowed in single use only. Called by Hierarchy Class.
     """
     if 'temporal' in kwargs:
         return temporal_postcodes
@@ -133,5 +140,9 @@ def postcode_dictionaries(**kwargs):
         return cingulate_postcodes
     if 'parietal' in kwargs:
         return parietal_postscodes
+    if 'occipital' in kwargs:
+        return postcode_dictionaries
     else:
+        postcodes = {**temporal_postcodes, **frontal_postcodes,
+                     **cingulate_postcodes, **parietal_postscodes, **occipital_postcodes}
         return postcodes
