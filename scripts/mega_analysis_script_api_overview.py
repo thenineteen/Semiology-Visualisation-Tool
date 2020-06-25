@@ -6,24 +6,23 @@ import numpy as np
 import pandas as pd
 
 # needed for querying dataframe localisations, Transforming and mapping to EpiNav gif parcellations
-from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import *
-from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import *
-from mega_analysis.crosstab.mega_analysis.QUERY_INTERSECTION_TERMS import QUERY_INTERSECTION_TERMS
-from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import *
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import *
+from mega_analysis.crosstab.mega_analysis import (
+    MEGA_ANALYSIS, QUERY_SEMIOLOGY, QUERY_INTERSECTION_TERMS,
+    melt_then_pivot_query, pivot_result_to_pixel_intensities
+)
 
 # needed to collate lateralisation data
-from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import *
+from mega_analysis.crosstab.mega_analysis import QUERY_LATERALISATION
 from mega_analysis.crosstab.mega_analysis.lateralised_intensities import lateralisation_to_pixel_intensities
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import *
+# from mega_analysis.crosstab.mega_analysis import pivot_result_to_pixel_intensities
 
 # mapping to gif
-from mega_analysis.crosstab.mega_analysis.mapping import mapping, big_map, pivot_result_to_one_map
+from mega_analysis.crosstab.mega_analysis.mapping import (
+    mapping, big_map, pivot_result_to_one_map
+)
 
 
-
-
-repo_dir = Path(__file__).parent.parent
+repo_dir = Path(__file__).parent.parent.parent
 resources_dir = repo_dir / 'resources'
 excel_path = resources_dir / 'syst_review_single_table.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
@@ -31,7 +30,7 @@ semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 # set the semiology of interest:
 # semiology_term='Dialeptic/loa'
 # semiology_term='tonic'
-semiology_term='Head Version'
+semiology_term = 'Head Version'
 
 # # LATERALISATION initilisation
 
@@ -47,7 +46,9 @@ if method in ('non-linear', 'nonlinear'):
     raw_pt_numbers_string = 'normal QuantileTransformer'
 else:
     raw_pt_numbers_string = str(method)
-intensity_label = 'Lateralised Intensity. '+str(raw_pt_numbers_string)+'. '+'quantiles: '+str(quantiles)+'. '+'scale: '+str(scale_factor)
+intensity_label = 'Lateralised Intensity. ' + \
+    str(raw_pt_numbers_string)+'. '+'quantiles: ' + \
+    str(quantiles)+'. '+'scale: '+str(scale_factor)
 
 
 df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
@@ -84,9 +85,11 @@ array = np.array(all_lateralised_gifs)
 labels = array[:, 1].astype(np.uint16)
 scores = array[:, 3].astype(np.float32)
 
-scores_dict = {int(label): float(score) for (label, score) in zip(labels, scores)}
+scores_dict = {int(label): float(score)
+               for (label, score) in zip(labels, scores)}
 
-result = pd.DataFrame(np.column_stack([labels, scores]), columns=['Label', 'Score'])
+result = pd.DataFrame(np.column_stack(
+    [labels, scores]), columns=['Label', 'Score'])
 
 result.to_csv('/tmp/test.csv', index=False)
 
