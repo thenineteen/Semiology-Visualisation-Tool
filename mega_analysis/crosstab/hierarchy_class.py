@@ -67,7 +67,7 @@ class Hierarchy():
         for k, v in self.temporal.items():
             self.hierarchy_reversal(
                 k, v)
-        self.temporal_hr = self.new_df
+        self.temporal_hr = self.new_df.copy()
 
     def frontal_hierarchy_reversal(self):
         self.frontal = postcode_dictionaries(frontal=True)
@@ -75,7 +75,7 @@ class Hierarchy():
         for k, v in self.frontal.items():
             self.hierarchy_reversal(
                 k, v)
-        self.frontal_hr = self.new_df
+        self.frontal_hr = self.new_df.copy()
 
     def cingulate_hierarchy_reversal(self):
         self.cingulate = postcode_dictionaries(cingulate=True)
@@ -83,7 +83,7 @@ class Hierarchy():
         for k, v in self.cingulate.items():
             self.hierarchy_reversal(
                 k, v)
-        self.cingulate_hr = self.new_df
+        self.cingulate_hr = self.new_df.copy()
 
     def parietal_hierarchy_reversal(self):
         self.parietal = postcode_dictionaries(parietal=True)
@@ -91,7 +91,7 @@ class Hierarchy():
         for k, v in self.parietal.items():
             self.hierarchy_reversal(
                 k, v)
-        self.parietal_hr = self.new_df
+        self.parietal_hr = self.new_df.copy()
 
     def occipital_hierarchy_reversal(self):
         self.occipital = postcode_dictionaries(occipital=True)
@@ -99,7 +99,7 @@ class Hierarchy():
         for k, v in self.occipital.items():
             self.hierarchy_reversal(
                 k, v)
-        self.occipital_hr = self.new_df
+        self.occipital_hr = self.new_df.copy()
 
     def insular_hierarchy_reversal(self):
         self.insular = postcode_dictionaries(insular=True)
@@ -107,7 +107,7 @@ class Hierarchy():
         for k, v in self.insular.items():
             self.hierarchy_reversal(
                 k, v)
-        self.insular_hr = self.new_df
+        self.insular_hr = self.new_df.copy()
 
     def cerebellar_hierarchy_reversal(self):
         self.cerebellar = postcode_dictionaries(cerebellar=True)
@@ -115,7 +115,7 @@ class Hierarchy():
         for k, v in self.cerebellar.items():
             self.hierarchy_reversal(
                 k, v)
-        self.cerebellar_hr = self.new_df
+        self.cerebellar_hr = self.new_df.copy()
 
     def all_hierarchy_reversal(self):
         self.all_postcodes = postcode_dictionaries()
