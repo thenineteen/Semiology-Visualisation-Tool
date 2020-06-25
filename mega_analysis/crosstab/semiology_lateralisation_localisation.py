@@ -9,6 +9,7 @@ def semiology_lateralisation_localisation(
     localisations_to_extract=[],
     extract_lateralisation=True,
     n_rows=2500,
+    **kwargs,
 ):
     """
     Manipulate the excel spreadsheet made with Gloria to make data analysable.
@@ -34,7 +35,7 @@ def semiology_lateralisation_localisation(
 
 # load the spreadsheet with semiology and paper as multiindex:
     df_multiindex = pd.read_excel(
-        excel_path, nrows=n_rows, usecols="A:CZ", header=0, index_col=[3, 0])
+        excel_path, nrows=n_rows, usecols="A:CZ", header=1, index_col=[3, 0])
     df_clean = df_multiindex.dropna(axis=0, how='all')
 
 # rename the indices to ensure we are consistent no matter what they were called in excel
@@ -45,14 +46,12 @@ def semiology_lateralisation_localisation(
     if type(df_clean.index) != pd.core.indexes.range.RangeIndex or type(df_clean.index) != pd.core.indexes.multi.MultiIndex:
         df_clean = df_clean.reset_index()
 
-
-# name the columns for each DataFrame:
-    # df_lateralisation.columns.name = "Lateralisation"
-    # df_localisation.columns.name = "Localisation"
-
 # melt the DataFrame to create a column of all the Localisation terms - to allow pivoting by Semiology
     df_melted = df_clean.melt(id_vars=semiologies_to_extract, value_vars=localisations_to_extract,
                               var_name='Localisation', value_name='numbers')
+
+    if 'test' in kwargs:
+        return df_melted
 
 # use pivot_table() to combine the semiologies which are exactly the same:
     df_localisation = df_melted.pivot_table(
