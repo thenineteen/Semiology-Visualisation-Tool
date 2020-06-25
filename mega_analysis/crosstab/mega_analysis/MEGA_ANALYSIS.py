@@ -5,9 +5,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from ..semiology_all_localisations import all_localisations
-from ..semiology_lateralisation_localisation import \
-    semiology_lateralisation_localisation
 from .cleaning import cleaning
 from .exclusions import exclusions
 from .group_columns import (anatomical_regions, full_id_vars,
