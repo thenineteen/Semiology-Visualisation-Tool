@@ -39,6 +39,17 @@ def MEGA_ANALYSIS(
         change pd.read_excel below first
         df.loc[df.loc[('Aphasia')].index.str.contains('Afif') ]
 
+
+    returns:
+        df: the entire databse cleaned preprocessed etc as a DataFrame
+        df_ground_truth: a DataFrame that splits the datapoints by ground truth
+        df_study_type: a DataFrame that splits the datapoints by prior study selection (publication approach)
+        num_database_articles: integer of number of studies in the entire database (not queried yet)
+        num_database_patients: int of number of total patients in entire database (not queried yet)
+        num_database_lat: sum of total number of lateralising patient-semiology datapoints in database
+        num_database_loc: sum of total number of localising patient-semiology datapoints in database
+
+
     Ali Alim-Marvasti July Aug 2019
     """
     df = pd.read_excel(
@@ -98,15 +109,12 @@ def MEGA_ANALYSIS(
     logging.debug(
         f'\n\n4. sEEG and/or ES set labels include: {list(df[sEEG_ES].unique())}')
 
-    # 5. print some basic progress stats:
+    # 5. Some basic progress stats:
     logging.debug('\n\n 5. BASIC PROGRESS:')
-    num_ = int(df["Reference"].nunique())
-    logging.debug(
-        f'Number of articles included in this analysis: {num_}')
-    logging.debug(f'Number of patients: {int(df["Tot Pt included"].sum())}')
-    logging.debug(
-        f'Number of lateralising datapoints: {df.Lateralising.sum()}')
-    logging.debug(f'Number of localising datapoints: {df.Localising.sum()}')
+    num_database_articles = int(df["Reference"].nunique())
+    num_database_patients = int(df["Tot Pt included"].sum())
+    num_database_lat = df.Lateralising.sum()
+    num_database_loc = df.Localising.sum()
 
     df_ground_truth = progress_stats(df)
 
@@ -142,7 +150,5 @@ def MEGA_ANALYSIS(
         f'{df_study_type.loc["OTHER", ("Localising Datapoints","Exclusive")]}'
     )
 
-    # df['Localising'].astype('Int16', copy=False)
-    # df['Lateralising'].astype('Int16', copy=False)
-
-    return df, df_ground_truth, df_study_type
+    return (df, df_ground_truth, df_study_type,
+            num_database_articles, num_database_patients, num_database_lat, num_database_loc)

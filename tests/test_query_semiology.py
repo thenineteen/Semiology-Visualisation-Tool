@@ -11,7 +11,7 @@ from mega_analysis.semiology import QUERY_SEMIOLOGY
 class TestQuerySemiology(unittest.TestCase):
     def query(self, term):
         path = semiology_dict_path if term in all_semiology_terms else None
-        inspect_result = QUERY_SEMIOLOGY(
+        inspect_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             mega_analysis_df,
             semiology_term=term,
             semiology_dict_path=path,
