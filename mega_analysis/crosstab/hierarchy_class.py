@@ -76,3 +76,11 @@ class Hierarchy():
             self.hierarchy_reversal(
                 k, v)
         self.frontal_hr = self.new_df
+
+    def cingulate_hierarchy_reversal(self):
+        self.cingulate = postcode_dictionaries(cingulate=True)
+
+        for k, v in self.cingulate.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.cingulate_hr = self.new_df
