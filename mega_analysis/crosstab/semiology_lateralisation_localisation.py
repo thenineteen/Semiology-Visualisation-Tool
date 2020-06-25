@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from .semiology_all_localisations import all_localisations
-
+from pathlib import Path
 
 
 def semiology_lateralisation_localisation(
@@ -33,7 +33,8 @@ def semiology_lateralisation_localisation(
 
 
 # load the spreadsheet with semiology and paper as multiindex:
-    df_multiindex = pd.read_excel(excel_path, nrows=n_rows, usecols="A:CZ", header=0, index_col=[3,0])
+    df_multiindex = pd.read_excel(
+        excel_path, nrows=n_rows, usecols="A:CZ", header=0, index_col=[3, 0])
     df_clean = df_multiindex.dropna(axis=0, how='all')
 
 # rename the indices to ensure we are consistent no matter what they were called in excel
@@ -45,8 +46,6 @@ def semiology_lateralisation_localisation(
         df_clean = df_clean.reset_index()
 
 
-
-
 # name the columns for each DataFrame:
     # df_lateralisation.columns.name = "Lateralisation"
     # df_localisation.columns.name = "Localisation"
@@ -56,16 +55,11 @@ def semiology_lateralisation_localisation(
                               var_name='Localisation', value_name='numbers')
 
 # use pivot_table() to combine the semiologies which are exactly the same:
-    df_localisation = df_melted.pivot_table(index='Semiology', columns='Localisation', values='numbers', aggfunc='sum')
-
-
-
-
-
+    df_localisation = df_melted.pivot_table(
+        index='Semiology', columns='Localisation', values='numbers', aggfunc='sum')
 
 
 # # now extract the Lateralisation DataFrame
 #     df_lateralisation =
-
 
     return df_localisation
