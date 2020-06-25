@@ -126,6 +126,16 @@ occipital_postcodes = {
     ]
 }
 
+insular_dictionary = {
+    'INSULA': [
+        'Ant Ins',
+        'Precentral gyrus',
+        'Postcentral gyrus',
+        'Posterior long gyrus',
+        'Insular pole',
+    ]
+}
+
 
 def postcode_dictionaries(**kwargs):
     """
@@ -142,6 +152,8 @@ def postcode_dictionaries(**kwargs):
         return parietal_postscodes
     if 'occipital' in kwargs:
         return postcode_dictionaries
+    if 'insular' in kwargs:
+        return insular_dictionary
     else:
         postcodes = {**temporal_postcodes, **frontal_postcodes,
                      **cingulate_postcodes, **parietal_postscodes, **occipital_postcodes}
