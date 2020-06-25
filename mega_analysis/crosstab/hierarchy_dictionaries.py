@@ -126,7 +126,7 @@ occipital_postcodes = {
     ]
 }
 
-insular_dictionary = {
+insular_postcodes = {
     'INSULA': [
         'Ant Ins',
         'Precentral gyrus',
@@ -136,11 +136,19 @@ insular_dictionary = {
     ]
 }
 
+cerebellar_postcodes = {
+    'Cerebellum': [
+        'Hemisphere',
+        'Vermis',
+    ]
+}
+
 
 def postcode_dictionaries(**kwargs):
     """
     Combine dictionaries for hierarchy reversals.
     The kwargs are allowed in single use only. Called by Hierarchy Class.
+    Hypothalamus has no key:value pairs.
     """
     if 'temporal' in kwargs:
         return temporal_postcodes
@@ -151,10 +159,13 @@ def postcode_dictionaries(**kwargs):
     if 'parietal' in kwargs:
         return parietal_postscodes
     if 'occipital' in kwargs:
-        return postcode_dictionaries
+        return occipital_postcodes
     if 'insular' in kwargs:
-        return insular_dictionary
+        return insular_postcodes
+    if 'cerebellar' in kwargs:
+        return cerebellar_postcodes
+
     else:
         postcodes = {**temporal_postcodes, **frontal_postcodes,
-                     **cingulate_postcodes, **parietal_postscodes, **occipital_postcodes}
+                     **cingulate_postcodes, **parietal_postscodes, **occipital_postcodes, **insular_postcodes, **cerebellar_postcodes}
         return postcodes
