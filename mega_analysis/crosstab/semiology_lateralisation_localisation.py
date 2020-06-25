@@ -23,7 +23,7 @@ def semiology_lateralisation_localisation(
     when you have the df, can evaluate it as such: df.loc['Hypermotor', 'FL']
     """
 # set the path to excel file:
-    repo_dir = Path(__file__).parent.parent
+    repo_dir = Path(__file__).parent.parent.parent
     resources_dir = repo_dir / 'resources'
     excel_path = resources_dir / 'syst_review_single_table.xlsx'
 
