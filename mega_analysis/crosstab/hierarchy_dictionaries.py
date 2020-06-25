@@ -97,7 +97,27 @@ cingulate_postcodes = {
     ]
 }
 
-postcodes = {**temporal_postcodes, **frontal_postcodes, **cingulate_postcodes}
+parietal_postscodes: {
+    'PL': [
+        'Primary Sensory Cortex (post-central gyrus)',
+        'Sup. pariet. lobule',
+        'Inferior Parietal Lobule',
+    ],
+    'Primary Sensory Cortex (post-central gyrus)': [
+        'medial anterior parietal',
+    ],
+    'Sup. pariet. lobule': [
+        'Precuneus (medial post sup parietal lobule)',
+    ],
+    'Inferior Parietal Lobule': [
+        'Supramarg gyrus (post part of parietal operculum)',
+        'Angular gyrus (BA 39)',
+        'parietal operculum (ceiling of secondary somatosensory cortex)',
+    ]
+}
+
+postcodes = {**temporal_postcodes, **frontal_postcodes,
+             **cingulate_postcodes, **parietal_postscodes}
 
 
 def postcode_dictionaries(**kwargs):
@@ -111,6 +131,7 @@ def postcode_dictionaries(**kwargs):
         return frontal_postcodes
     if 'cingulate' in kwargs:
         return cingulate_postcodes
-
+    if 'parietal' in kwargs:
+        return parietal_postscodes
     else:
         return postcodes
