@@ -17,10 +17,12 @@ from mega_analysis.crosstab.mega_analysis.lateralised_intensities import lateral
 # from mega_analysis.crosstab.mega_analysis import pivot_result_to_pixel_intensities
 
 # mapping to gif
-from mega_analysis.crosstab.mega_analysis.mapping import mapping, big_map, pivot_result_to_one_map
+from mega_analysis.crosstab.mega_analysis.mapping import (
+    mapping, big_map, pivot_result_to_one_map
+)
 
 
-repo_dir = Path(__file__).parent.parent
+repo_dir = Path(__file__).parent.parent.parent
 resources_dir = repo_dir / 'resources'
 excel_path = resources_dir / 'Semio2Brain Database.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
@@ -49,11 +51,10 @@ intensity_label = 'Lateralised Intensity. ' + \
     str(quantiles)+'. '+'scale: '+str(scale_factor)
 
 
-df, df_ground_truth, df_study_type, num_database_articles, num_database_patients, num_database_lat, num_database_loc = MEGA_ANALYSIS(
-    excel_data=excel_path)
+df, df_ground_truth, df_study_type = MEGA_ANALYSIS(excel_data=excel_path)
 
 
-inspect_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
+inspect_result = QUERY_SEMIOLOGY(
     df,
     semiology_term=semiology_term,
     semiology_dict_path=semiology_dict_path,
@@ -61,7 +62,7 @@ inspect_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
 
 
 # # 2.3 QUERY_LATERALISATION
-all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = QUERY_LATERALISATION(
+all_combined_gifs = QUERY_LATERALISATION(
     inspect_result,
     df,
     excel_path,
