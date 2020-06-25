@@ -84,3 +84,11 @@ class Hierarchy():
             self.hierarchy_reversal(
                 k, v)
         self.cingulate_hr = self.new_df
+
+    def parietal_hierarchy_reversal(self):
+        self.parietal = postcode_dictionaries(parietal=True)
+
+        for k, v in self.parietal.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.parietal_hr = self.new_df
