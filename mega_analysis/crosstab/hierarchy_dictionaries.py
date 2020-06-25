@@ -83,7 +83,21 @@ frontal_postcodes = {
     ]
 }
 
-postcodes = {**temporal_postcodes, **frontal_postcodes}
+cingulate_postcodes = {
+    'CING': [
+        'Cingulum WM',
+        'Ant Cing',
+        'Middle Cingulate',
+        'Post Cing',
+        'Isthmus',
+    ],
+    'Ant Cing': [
+        'Ventr Ant Cing\n(BA 24)',
+        'Dorsal Ant Cing (BA 32)',
+    ]
+}
+
+postcodes = {**temporal_postcodes, **frontal_postcodes, **cingulate_postcodes}
 
 
 def postcode_dictionaries(**kwargs):
@@ -91,9 +105,12 @@ def postcode_dictionaries(**kwargs):
     combine dictionaries for hierarchy reversals.
     The kwargs are allowed in single use only, for testing.
     """
-    if 'frontal' in kwargs:
-        return frontal_postcodes
     if 'temporal' in kwargs:
         return temporal_postcodes
+    if 'frontal' in kwargs:
+        return frontal_postcodes
+    if 'cingulate' in kwargs:
+        return cingulate_postcodes
+
     else:
         return postcodes
