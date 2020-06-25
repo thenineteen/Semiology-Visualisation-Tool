@@ -37,6 +37,10 @@ class Hierarchy():
 
         > top_level_col: the localisation to be cleaned e.g. TL (single)
         > low_level_cols: the granular column localisation e.g. mTL as a list
+
+        note that the order matters because self.new_df.copy() is used in all the methods:
+            e.g. Hierarchy.temporal_hierarchy_reversal() method:
+
         """
         skip = False
         if top_level_col not in self.localisation_columns:

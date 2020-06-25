@@ -117,6 +117,31 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
         print('\n9 frontal dictionary hierarchy reversal\n')
 
+    def test_temporal_and_frontal_hierarchy_reversal(self):
+        """
+        test combined temporal and frontals
+        """
+        patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+
+        hierarchy_df = Hierarchy(inspect_result)
+        hierarchy_df.temporal_hierarchy_reversal()  # deafult max option
+        hierarchy_df.frontal_hierarchy_reversal()
+        inspect_result_reversed = hierarchy_df.new_df
+
+        assert hierarchy_df.frontal_hr.equals(hierarchy_df.new_df)
+        assert not hierarchy_df.temporal_hr.equals(hierarchy_df.new_df)
+        # ^ because self.new_df.copy() in the Hierarchy.temporal_hierarchy_reversal() method, so order matters.
+        assert(inspect_result_reversed['TL'].sum() == 3)
+        assert(inspect_result_reversed['Anterior (temporal pole)'].sum() == 5)
+        assert(inspect_result_reversed['Lateral Temporal'].sum() == 0)
+        assert(inspect_result_reversed['ITG'].sum() == 4)
+        assert(inspect_result_reversed['Mesial Temporal'].sum() == 5)
+        assert(inspect_result_reversed['FL'].sum() == 0)
+        assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
+        print('\n10 combined T & F hierarchy reversals\n')
+
 
 # for debugging with setUp(self):
 if __name__ == '__main__':
