@@ -97,7 +97,7 @@ cingulate_postcodes = {
     ]
 }
 
-parietal_postscodes: {
+parietal_postscodes = {
     'PL': [
         'Primary Sensory Cortex (post-central gyrus)',
         'Sup. pariet. lobule',
