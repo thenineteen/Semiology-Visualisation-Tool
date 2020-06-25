@@ -108,3 +108,12 @@ class Hierarchy():
             self.hierarchy_reversal(
                 k, v)
         self.insular_hr = self.new_df
+
+    def cerebellar_hierarchy_reversal(self):
+        self.cerebellar = postcode_dictionaries(cerebellar=True)
+
+        for k, v in self.cerebellar.items():
+            self.hierarchy_reversal(
+                k, v)
+        self.cerebellar_hr = self.new_df
+
