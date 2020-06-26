@@ -43,11 +43,6 @@ COLORMAPS = [
   'Magenta',
 ]
 
-
-#
-# SemiologyVisualisation
-#
-
 class SemiologyVisualisation(ScriptedLoadableModule):
 
   def __init__(self, parent):
@@ -73,9 +68,6 @@ class SemiologyVisualisation(ScriptedLoadableModule):
     linkText = f'See <a href="{repoUrl}">the documentation</a> for more information.'
     return linkText
 
-#
-# SemiologyVisualisationWidget
-#
 class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
   def setup(self):
@@ -141,7 +133,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
   def getInclusionsWidget(self):
     inclusionsGroupBox = qt.QGroupBox('Inclusions')
     inclusionsLayout = qt.QVBoxLayout(inclusionsGroupBox)
-
 
     ezgtGroupBox = qt.QGroupBox('Epileptogenic zone ground truth')
     inclusionsLayout.addWidget(ezgtGroupBox)
@@ -440,8 +431,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     termsAndSides = None if not termsAndSides else termsAndSides
     return termsAndSides
 
-  def getScoresFromGUI(self):
-    from mega_analysis.semiology import Semiology, combine_semiologies
+  def getSemiologiesListFromGUI(self):
+    from mega_analysis.semiology import Semiology
     termsAndSides = self.getSemiologyTermsAndSidesFromGUI()
     if termsAndSides is None:
       slicer.util.messageBox('Please select at least one semiology and laterality')
@@ -460,14 +451,18 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
       )
       semiologies.append(semiology)
+    return semiologies
+
+  def getSemiologiesDataFrameFromGUI(self):
+    from mega_analysis.semiology import get_df_from_semiologies
+    semiologies = self.getSemiologiesListFromGUI()
     try:
       box = qt.QMessageBox()
       box.setStandardButtons(0)
       box.setText('Querying mega_analysis module...')
       box.show()
       slicer.app.processEvents()
-      normalise = len(semiologies) > 1
-      scoresDict = combine_semiologies(semiologies, normalise=normalise)
+      dataFrame = get_df_from_semiologies(semiologies)
     except Exception as e:
       message = (
         'Error retrieving semiology information from mega_analysis module.'
@@ -476,11 +471,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
       )
       slicer.util.errorDisplay(message)
-      scoresDict = None
+      dataFrame = None
       raise
     finally:
       box.accept()
-    return scoresDict
+    return dataFrame
 
   def getDominantHemisphereFromGUI(self):
     from mega_analysis.semiology import Laterality
@@ -566,12 +561,22 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
 
   def updateColors(self):
+    from mega_analysis.semiology import (
+      normalise_semiologies_df,
+      combine_semiologies_df,
+    )
+
     colorNode = self.getColorNode()
     if colorNode is None:
       slicer.util.errorDisplay('No color node is selected')
       return
 
-    scoresDict = self.getScoresFromGUI()
+    semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
+    normalise = len(semiologiesDataFrame) > 1
+    if normalise:
+      semiologiesDataFrame = normalise_semiologies_df(semiologiesDataFrame)
+    combinedDf = combine_semiologies_df(semiologiesDataFrame, normalise=normalise)
+    scoresDict = dict(combinedDf)
     if scoresDict is None:
       return
     self.scoresVolumeNode = self.logic.getScoresVolumeNode(
@@ -839,9 +844,9 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     # Fill columns
     table = tableNode.GetTable()
     for label, score in scoresDict.items():
-        rowIndex = tableNode.AddEmptyRow()
-        table.GetColumn(0).SetValue(rowIndex, str(label))
-        table.GetColumn(1).SetValue(rowIndex, score)
+      rowIndex = tableNode.AddEmptyRow()
+      table.GetColumn(0).SetValue(rowIndex, str(label))
+      table.GetColumn(1).SetValue(rowIndex, score)
     tableNode.Modified()
     tableNode.EndModify(tableWasModified)
     return tableNode

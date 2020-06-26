@@ -219,8 +219,8 @@ def combine_semiologies(
     df = get_df_from_semiologies(semiologies)
     if normalise:
         df = normalise_semiologies_df(df)
-    scores_dict = combine_semiologies_df(df, normalise=normalise)
-    return scores_dict
+    combined_df = combine_semiologies_df(df, normalise=normalise)
+    return combined_df
 
 
 def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
@@ -272,5 +272,4 @@ def combine_semiologies_df(
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
-    scores_dict = dict(combined_df)
-    return scores_dict
+    return combined_df
