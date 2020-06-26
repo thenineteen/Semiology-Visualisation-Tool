@@ -11,6 +11,7 @@ from mega_analysis.semiology import (
     QUERY_LATERALISATION,
     melt_then_pivot_query,
     pivot_result_to_one_map,
+    Semiology,
 )
 
 
