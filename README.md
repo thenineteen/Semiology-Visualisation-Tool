@@ -10,7 +10,7 @@ Figure:
 124 of these lateralise, mainly ipsilaterally.
 
 
-Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting a certain seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria to establish epileptogeniz zone's localisation and/ or lateralisation was satisfied:
+Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting a certain seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria to establish epileptogenic zone's localisation and/ or lateralisation was satisfied:
 
 * Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I), confirmed at a minimum follow-up of 12 months;
 * Invasive EEG recording and/ or electrical stimulation, mapping seizure semiology;
