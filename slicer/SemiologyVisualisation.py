@@ -128,6 +128,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     inclusionsGroupBox = self.getInclusionsWidget()
     querySettingsLayout.addWidget(inclusionsGroupBox)
 
+    self.granularCheckBox = qt.QCheckBox('Granular as reported (non postcode)')
+    querySettingsLayout.addWidget(self.granularCheckBox)
+
     return querySettingsWidget
 
   def getInclusionsWidget(self):
@@ -449,6 +452,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
         include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
         include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
+        granular=self.granularCheckBox.isChecked(),
       )
       semiologies.append(semiology)
     return semiologies
