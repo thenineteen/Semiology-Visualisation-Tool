@@ -100,7 +100,7 @@ class Semiology:
             include_et_topology_ez: bool = True,
             include_spontaneous_semiology: bool = True,
             include_paediatric_cases: bool = True,
-            include_postictals: bool = True,
+            include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
