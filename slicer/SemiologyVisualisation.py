@@ -112,12 +112,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.settingsLayout.addWidget(self.settingsTabWidget)
 
     queryTab = self.getQuerySettingsTab()
-    moduleTab = self.getModuleSettingsTab()
     visualisationTab = self.getVisualisationSettingsTab()
 
     self.settingsTabWidget.addTab(queryTab, 'Query')
     self.settingsTabWidget.addTab(visualisationTab, 'Visualisation')
-    self.settingsTabWidget.addTab(moduleTab, 'Module')
 
     self.layout.addWidget(self.settingsCollapsibleButton)
 
@@ -253,17 +251,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       self.colorSelector,
     )
 
-    return visualisationSettingsWidget
-
-  def getModuleSettingsTab(self):
-    self.autoUpdateCheckBox = qt.QCheckBox()
+    self.autoUpdateCheckBox = qt.QCheckBox('Auto-update')
     self.autoUpdateCheckBox.setChecked(False)
     self.autoUpdateCheckBox.toggled.connect(self.onAutoUpdateCheckBox)
+    visualisationSettingsLayout.addWidget(self.autoUpdateCheckBox)
 
-    moduleSettingsWidget = qt.QWidget()
-    moduleSettingsLayout = qt.QFormLayout(moduleSettingsWidget)
-    moduleSettingsLayout.addRow('Auto-update: ', self.autoUpdateCheckBox)
-    return moduleSettingsWidget
+    return visualisationSettingsWidget
 
   def getDominantHemisphereLayout(self):
     self.leftDominantRadioButton = qt.QRadioButton('Left')
