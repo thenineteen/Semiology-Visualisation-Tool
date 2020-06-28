@@ -9,23 +9,25 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from mega_analysis.crosstab.file_paths import file_paths
-from mega_analysis.crosstab.hierarchy_class import Hierarchy
-from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
-from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclude_cortical_stimulation, exclude_ET, exclude_sEEG,
-    exclude_seizure_free, exclude_spontaneous_semiology, exclusions)
-from mega_analysis.crosstab.mega_analysis.mapping import \
-    pivot_result_to_one_map
-from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
-from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import \
-    melt_then_pivot_query
-from mega_analysis.crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
+from .crosstab.file_paths import file_paths
+from .crosstab.hierarchy_class import Hierarchy
+from .crosstab.gif_sheet_names import gif_sheet_names
+from .crosstab.mega_analysis.exclusions import (
+    exclude_cortical_stimulation,
+    exclude_ET,
+    exclude_sEEG,
+    exclude_seizure_free,
+    exclude_spontaneous_semiology,
+    exclude_paediatric_cases,
+    exclusions,
+)
+from .crosstab.mega_analysis.mapping import pivot_result_to_one_map
+from .crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
+from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
+from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
-from mega_analysis.crosstab.mega_analysis.QUERY_LATERALISATION import \
-    QUERY_LATERALISATION
-from mega_analysis.crosstab.mega_analysis.QUERY_SEMIOLOGY import \
-    QUERY_SEMIOLOGY
+from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
+from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -89,13 +91,14 @@ class Semiology:
             term: str,
             symptoms_side: Laterality,
             dominant_hemisphere: Laterality,
-            granular: bool = False,
+            granular: bool = True,
             include_seizure_freedom: bool = True,
             include_concordance: bool = True,
             include_seeg: bool = True,
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
             include_spontaneous_semiology: bool = True,
+            include_paediatric_cases: bool = True,
             possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
@@ -109,6 +112,7 @@ class Semiology:
             include_cortical_stimulation,
             include_et_topology_ez,
             include_spontaneous_semiology,
+            include_paediatric_cases,
         )
         if possible_lateralities is None:
             possible_lateralities = get_possible_lateralities(self.term)
@@ -124,6 +128,7 @@ class Semiology:
             include_cortical_stimulation: bool,
             include_et_topology_ez: bool,
             include_spontaneous_semiology: bool,
+            include_paediatric_cases: bool,
             ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
@@ -137,6 +142,8 @@ class Semiology:
             df = exclude_cortical_stimulation(df)
         if not include_spontaneous_semiology:
             df = exclude_spontaneous_semiology(df)
+        if not include_paediatric_cases:
+            df = exclude_paediatric_cases(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
@@ -279,4 +286,6 @@ def combine_semiologies_df(
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
+    combined_df = pd.DataFrame(combined_df).T
+    combined_df.index = ['Score']
     return combined_df

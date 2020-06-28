@@ -43,6 +43,7 @@ COLORMAPS = [
   'Magenta',
 ]
 
+
 class SemiologyVisualisation(ScriptedLoadableModule):
 
   def __init__(self, parent):
@@ -67,6 +68,7 @@ class SemiologyVisualisation(ScriptedLoadableModule):
     repoUrl = 'https://github.com/thenineteen/Semiology-Visualisation-Tool'
     linkText = f'See <a href="{repoUrl}">the documentation</a> for more information.'
     return linkText
+
 
 class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
@@ -129,6 +131,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     querySettingsLayout.addWidget(inclusionsGroupBox)
 
     self.granularCheckBox = qt.QCheckBox('Granular as reported (non postcode)')
+    self.granularCheckBox.setChecked(True)
     querySettingsLayout.addWidget(self.granularCheckBox)
 
     return querySettingsWidget
@@ -209,6 +212,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     publicationLayout.addWidget(self.epilepsyTopologyCheckBox)
     publicationLayout.addWidget(self.seizureSemiologyCheckBox)
     publicationLayout.addWidget(self.brainStimulationCheckBox)
+
+    ageGroupBox = qt.QGroupBox('Age')
+    inclusionsLayout.addWidget(ageGroupBox)
+    ageLayout = qt.QVBoxLayout(ageGroupBox)
+    self.paediatricCheckBox = qt.QCheckBox('Paediatric under seven years')
+    ageLayout.addWidget(self.paediatricCheckBox)
+
+    self.postSurgicalSzFreedomCheckBox = qt.QCheckBox('Postoperative seizure freedom')
 
     return inclusionsGroupBox
 
@@ -446,13 +457,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologyTerm,
         symptomsSide,
         self.getDominantHemisphereFromGUI(),
+        granular=self.granularCheckBox.isChecked(),
         include_seizure_freedom=self.seizureSemiologyCheckBox.isChecked(),
         include_concordance=self.concordanceCheckBox.isChecked(),
         include_seeg=self.invasiveEegCheckBox.isChecked(),
         include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
         include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
         include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
-        granular=self.granularCheckBox.isChecked(),
+        include_paediatric_cases=self.paediatricCheckBox.isChecked(),
       )
       semiologies.append(semiology)
     return semiologies
@@ -578,9 +590,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
     normalise = len(semiologiesDataFrame) > 1
     if normalise:
-      semiologiesDataFrame = normalise_semiologies_df(semiologiesDataFrame)
-    combinedDf = combine_semiologies_df(semiologiesDataFrame, normalise=normalise)
-    scoresDict = dict(combinedDf)
+      normalisedDataFrame = normalise_semiologies_df(semiologiesDataFrame)
+      combinedDataFrame = combine_semiologies_df(normalisedDataFrame, normalise=True)
+    else:
+      combinedDataFrame = combine_semiologies_df(semiologiesDataFrame, normalise=False)
+
+    scoresDict = dict(combinedDataFrame.iloc[0])
     if scoresDict is None:
       return
     self.scoresVolumeNode = self.logic.getScoresVolumeNode(
@@ -609,8 +624,21 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
     self.logic.showForegroundScalarBar()
     self.logic.jumpToMax(self.scoresVolumeNode)
-    scoresDict = self.parcellation.getScoresDictWithNames(scoresDict)
-    self.tableNode = self.logic.exportToTable(self.tableNode, scoresDict)
+
+    self.parcellation.useNamesForDataFramesColumns(
+      semiologiesDataFrame,
+      combinedDataFrame,
+    )
+
+    stringsDataFrame = self.logic.getStringsDataFrame(
+      semiologiesDataFrame,
+      combinedDataFrame,
+    )
+
+    self.tableNode = self.logic.dataFrameToTable(
+      stringsDataFrame.T,
+      self.tableNode,
+    )
 
     self.tableCollapsibleButton.visible = True
     self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
@@ -638,7 +666,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       self.semiologiesWidget.layout().removeWidget(widget)
     del customSemiology
     self.removeLineEditButton.setEnabled(self.customSemiologies)
-
 
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
@@ -805,7 +832,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     sys.path.insert(0, str(repoDir))
     box = qt.QMessageBox()
     box.setStandardButtons(0)
-    box.setText('Importing mega analysis Python module...')
+    box.setText('Importing mega_analysis Python module...')
     box.show()
     slicer.app.processEvents()
     try:
@@ -817,15 +844,42 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       slicer.util.pip_install(
         f'-r {requirementsPath}'
       )
+    finally:
+      box.accept()
     import matplotlib
     matplotlib.use('agg')
-    box.accept()
 
   def showForegroundScalarBar(self):
     qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarEnabled', 1)
     qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarSelectedLayer', 'foreground')
     import DataProbeLib
     DataProbeLib.SliceAnnotations().updateSliceViewFromGUI()
+
+  def dataFrameToTable(self, dataFrame, tableNode, indexName='Structure'):
+    if tableNode is None:
+      tableNode = slicer.mrmlScene.AddNewNodeByClass('vtkMRMLTableNode')
+      tableNode.SetUseColumnNameAsColumnHeader(True)
+      tableNode.SetUseFirstColumnAsRowHeader(True)
+      tableNode.SetLocked(True)
+    tableWasModified = tableNode.StartModify()
+    tableNode.RemoveAllColumns()
+
+    indexColumn = tableNode.AddColumn()
+    indexColumn.SetName(indexName)
+
+    for columnName in dataFrame.columns:
+      column = tableNode.AddColumn()
+      column.SetName(columnName)
+
+    for i, (rowName, row) in enumerate(dataFrame.iterrows()):
+      tableNode.AddEmptyRow()
+      tableNode.SetCellText(i, 0, rowName)
+      for j, value in enumerate(row.values, start=1):
+        tableNode.SetCellText(i, j, value)
+
+    tableNode.Modified()  # is this necessary?
+    tableNode.EndModify(tableWasModified)
+    return tableNode
 
   def exportToTable(self, tableNode, scoresDict):
     if tableNode is None:
@@ -915,6 +969,17 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     slicer.result = result
     return result
 
+  def getStringsDataFrame(self, semiologiesDataFrame, combinedDataFrame):
+    combinedDataFrame = combinedDataFrame.sort_values(by='Score', axis=1, ascending=False)
+    combinedDataFrame = combinedDataFrame.apply(lambda x: [f'{n:.2f}' for n in x])
+    semiologiesDataFrame = semiologiesDataFrame.T.reindex(combinedDataFrame.T.index).T
+    semiologiesDataFrame = semiologiesDataFrame.fillna(0)
+    semiologiesDataFrame = semiologiesDataFrame.astype(int)
+    semiologiesDataFrame = semiologiesDataFrame.astype(str)
+    stringsDataFrame = combinedDataFrame.append(semiologiesDataFrame)
+    stringsDataFrame.columns = [n.replace('-', ' ') for n in stringsDataFrame.columns]
+    return stringsDataFrame
+
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
   """
@@ -935,27 +1000,10 @@ class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
     self.test_SemiologyVisualisation1()
 
   def test_SemiologyVisualisation1(self):
-    """ Ideally you should have several levels of tests.  At the lowest level
-    tests should exercise the functionality of the logic with different inputs
-    (both valid and invalid).  At higher levels your tests should emulate the
-    way the user would interact with your code and confirm that it still works
-    the way you intended.
-    One of the most important features of the tests is that it should alert other
-    developers when their changes will have an impact on the behavior of your
-    module.  For example, if a developer removes a feature that you depend on,
-    your test should break so they know that the feature is needed.
-    """
-
     self.delayDisplay("Starting the test")
-    #
-    # first, get some data
-    #
+
     widget = slicer.semiologyVisualisation
     self.delayDisplay('Finished with download and loading')
-
-    volumeNode = slicer.util.getNode(pattern="FA")
-    logic = SemiologyVisualisationLogic()
-    self.assertIsNotNone( logic.hasImageData(volumeNode) )
     self.delayDisplay('Test passed!')
 
 
@@ -1141,8 +1189,9 @@ class Parcellation(ABC):
   def getNameFromLabel(self, label):
     return self.colorTable.getStructureNameFromLabelNumber(label)
 
-  def getScoresDictWithNames(self, scoresDict):
-    return {self.getNameFromLabel(k): v for k, v in scoresDict.items()}
+  def useNamesForDataFramesColumns(self, *dataFrames):
+    for df in dataFrames:
+      df.columns = [self.getNameFromLabel(n) for n in df.columns]
 
 
 class GIFParcellation(Parcellation):
@@ -1220,8 +1269,6 @@ class GIFColorTable(ColorTable):
 
     result['cerebellum'] = [72, 73, 74]
     return result
-
-
 
 
 class CustomSemiology:

@@ -1,3 +1,6 @@
+from . import crosstab
+from .crosstab.gif_lobes_from_excel_sheets import gif_lobes_from_excel_sheets
+
 from .semiology import (
     Semiology,
     Laterality,
@@ -5,6 +8,5 @@ from .semiology import (
     get_possible_lateralities,
 )
 
-from .crosstab.gif_lobes_from_excel_sheets import gif_lobes_from_excel_sheets
 
 __version__ = '0.1.0'
