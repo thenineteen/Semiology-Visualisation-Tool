@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 from mega_analysis.crosstab.file_paths import file_paths
+from mega_analysis.crosstab.hierarchy_class import Hierarchy
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_cortical_stimulation, exclude_ET, exclude_sEEG,
@@ -88,6 +89,7 @@ class Semiology:
             term: str,
             symptoms_side: Laterality,
             dominant_hemisphere: Laterality,
+            granular: bool = False,
             include_seizure_freedom: bool = True,
             include_concordance: bool = True,
             include_seeg: bool = True,
@@ -111,6 +113,7 @@ class Semiology:
         if possible_lateralities is None:
             possible_lateralities = get_possible_lateralities(self.term)
         self.possible_lateralities = possible_lateralities
+        self.granular = granular
 
     @staticmethod
     def remove_exclusions(
@@ -146,6 +149,10 @@ class Semiology:
             semiology_term=self.term,
             semiology_dict_path=path,
         )
+        if self.granular:
+            hierarchy_df = Hierarchy(inspect_result)
+            hierarchy_df.all_hierarchy_reversal()
+            inspect_result = hierarchy_df.new_df
         return inspect_result
 
     def query_lateralisation(self) -> Optional[pd.DataFrame]:
