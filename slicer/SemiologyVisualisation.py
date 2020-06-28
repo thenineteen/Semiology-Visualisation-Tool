@@ -91,18 +91,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.makeLoadDataButton()
     self.makeSettingsButton()
     self.makeUpdateButton()
-    self.semiologiesTableSplitter = qt.QSplitter()
-    self.semiologiesTableSplitter.setOrientation(qt.Qt.Vertical)
-    self.layout.addWidget(self.semiologiesTableSplitter)
-    self.makeSemiologiesButton()
+    #self.semiologiesTableSplitter = qt.QSplitter()
+    #self.semiologiesTableSplitter.setOrientation(qt.Qt.Vertical)
+    #self.layout.addWidget(self.semiologiesTableSplitter)
+    #self.makeSemiologiesButton()
     self.makeTableButton()
 
     # Add vertical spacer
-    self.layout.addStretch(1)
+    # self.layout.addStretch(1)
 
   def makeSettingsButton(self):
     self.settingsCollapsibleButton = ctk.ctkCollapsibleButton()
-    self.settingsCollapsibleButton.setChecked(False)
     self.settingsCollapsibleButton.hide()
     self.settingsCollapsibleButton.text = 'Settings'
 
@@ -111,28 +110,28 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.settingsTabWidget = qt.QTabWidget()
     self.settingsLayout.addWidget(self.settingsTabWidget)
 
-    queryTab = self.getQuerySettingsTab()
+    patientQueryTab = self.getPatientQueryTab()
+    databaseTab = self.getDatabaseTab()
     visualisationTab = self.getVisualisationSettingsTab()
 
-    self.settingsTabWidget.addTab(queryTab, 'Query')
+    self.settingsTabWidget.addTab(patientQueryTab, 'Patient query')
+    self.settingsTabWidget.addTab(databaseTab, 'Database')
     self.settingsTabWidget.addTab(visualisationTab, 'Visualisation')
 
     self.layout.addWidget(self.settingsCollapsibleButton)
 
-  def getQuerySettingsTab(self):
-    querySettingsWidget = qt.QWidget()
-    querySettingsLayout = qt.QVBoxLayout(querySettingsWidget)
+  def getPatientQueryTab(self):
+    patientQueryTabWidget = qt.QWidget()
+    patientQueryLayout = qt.QVBoxLayout(patientQueryTabWidget)
+
     dominantHemisphereLayout = qt.QHBoxLayout()
-    querySettingsLayout.addLayout(self.getDominantHemisphereLayout())
+    patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
 
-    inclusionsGroupBox = self.getInclusionsWidget()
-    querySettingsLayout.addWidget(inclusionsGroupBox)
+    semiologiesGroupBox = qt.QGroupBox('Semiologies')
+    semiologiesGroupBox.setLayout(self.getSemiologiesLayout())
+    patientQueryLayout.addWidget(semiologiesGroupBox)
 
-    self.granularCheckBox = qt.QCheckBox('Granular as reported (non postcode)')
-    self.granularCheckBox.setChecked(True)
-    querySettingsLayout.addWidget(self.granularCheckBox)
-
-    return querySettingsWidget
+    return patientQueryTabWidget
 
   def getInclusionsWidget(self):
     inclusionsGroupBox = qt.QGroupBox('Inclusions')
@@ -221,6 +220,19 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     return inclusionsGroupBox
 
+  def getDatabaseTab(self):
+    dataBaseTabWidget = qt.QWidget()
+    dataBaseTabLayout = qt.QVBoxLayout(dataBaseTabWidget)
+
+    inclusionsGroupBox = self.getInclusionsWidget()
+    dataBaseTabLayout.addWidget(inclusionsGroupBox)
+
+    self.granularCheckBox = qt.QCheckBox('Granular as reported (non postcode)')
+    self.granularCheckBox.setChecked(True)
+    dataBaseTabLayout.addWidget(self.granularCheckBox)
+
+    return dataBaseTabWidget
+
   def getVisualisationSettingsTab(self):
     visualisationSettingsWidget = qt.QWidget()
     visualisationSettingsLayout = qt.QFormLayout(visualisationSettingsWidget)
@@ -273,13 +285,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     return dominantHemisphereLayout
 
-  def makeSemiologiesButton(self):
-    self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
-    self.semiologiesCollapsibleButton.hide()
-    self.semiologiesCollapsibleButton.text = 'Semiologies'
-    self.semiologiesTableSplitter.addWidget(self.semiologiesCollapsibleButton)
+  # def makeSemiologiesButton(self):
+  #   self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
+  #   self.semiologiesCollapsibleButton.hide()
+  #   self.semiologiesCollapsibleButton.text = 'Semiologies'
+  #   self.semiologiesTableSplitter.addWidget(self.semiologiesCollapsibleButton)
 
-    semiologiesFormLayout = qt.QFormLayout(self.semiologiesCollapsibleButton)
+  def getSemiologiesLayout(self):
+    semiologiesFormLayout = qt.QFormLayout()
     semiologiesScrollArea = self.getSemiologiesScrollArea()
     self.semiologiesWidget = semiologiesScrollArea.widget()
     semiologiesFormLayout.addWidget(semiologiesScrollArea)
@@ -290,17 +303,22 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     addLineEditButton = qt.QPushButton('Add custom semiology')
     addLineEditButton.clicked.connect(self.addCustomSemiology)
 
-    lineEditsFrame = qt.QFrame()
-    lineEditsLayout = qt.QHBoxLayout(lineEditsFrame)
-    lineEditsLayout.addWidget(self.removeLineEditButton)
-    lineEditsLayout.addWidget(addLineEditButton)
-    semiologiesFormLayout.addWidget(lineEditsFrame)
+    customSemiologiesFrame = qt.QFrame()
+    customSemiologiesLayout = qt.QHBoxLayout(customSemiologiesFrame)
+    customSemiologiesLayout.addWidget(self.removeLineEditButton)
+    customSemiologiesLayout.addWidget(addLineEditButton)
+    semiologiesFormLayout.addWidget(customSemiologiesFrame)
+    return semiologiesFormLayout
 
   def makeTableButton(self):
     self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
     self.tableCollapsibleButton.visible = False
     self.tableCollapsibleButton.text = 'Scores'
-    self.semiologiesTableSplitter.addWidget(self.tableCollapsibleButton)
+
+    try:
+      self.semiologiesTableSplitter.addWidget(self.tableCollapsibleButton)
+    except Exception:
+      self.layout.addWidget(self.tableCollapsibleButton)
 
     tableLayout = qt.QFormLayout(self.tableCollapsibleButton)
     self.tableView = slicer.qMRMLTableView()
@@ -308,6 +326,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
   def makeLoadDataButton(self):
     self.loadDataButton = qt.QPushButton('Load data')
+    self.loadDataButton.setStyleSheet('font: bold')
     self.loadDataButton.clicked.connect(self.onLoadDataButton)
     self.layout.addWidget(self.loadDataButton)
 
@@ -350,6 +369,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
   def makeUpdateButton(self):
     self.updateButton = qt.QPushButton('Update visualisation')
+    self.updateButton.setStyleSheet('font: bold')
     self.updateButton.hide()
     self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
     self.updateButton.clicked.connect(self.updateColors)
@@ -563,7 +583,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     )
     self.parcellation.load()
     self.addGifStructuresToComboBox()
-    self.semiologiesCollapsibleButton.show()
     self.settingsCollapsibleButton.show()
     self.updateButton.show()
     self.loadDataButton.hide()
@@ -639,6 +658,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
 
     # self.logic.showTableInViewLayout(self.tableNode)
+
+    self.settingsCollapsibleButton.setChecked(False)
 
   def onColorBlindCheckBox(self):
     self.colorSelector.setDisabled(self.colorBlindCheckbox.isChecked())
