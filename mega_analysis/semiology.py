@@ -19,6 +19,7 @@ from .crosstab.mega_analysis.exclusions import (
     exclude_seizure_free,
     exclude_spontaneous_semiology,
     exclude_paediatric_cases,
+    exclude_postictals,
     exclusions,
 )
 from .crosstab.mega_analysis.mapping import pivot_result_to_one_map
@@ -99,6 +100,7 @@ class Semiology:
             include_et_topology_ez: bool = True,
             include_spontaneous_semiology: bool = True,
             include_paediatric_cases: bool = True,
+            include_postictals: bool = True,
             possible_lateralities: Optional[List[Laterality]] = None,
             ):
         self.term = term
@@ -113,6 +115,7 @@ class Semiology:
             include_et_topology_ez,
             include_spontaneous_semiology,
             include_paediatric_cases,
+            include_postictals,
         )
         if possible_lateralities is None:
             possible_lateralities = get_possible_lateralities(self.term)
@@ -129,6 +132,7 @@ class Semiology:
             include_et_topology_ez: bool,
             include_spontaneous_semiology: bool,
             include_paediatric_cases: bool,
+            include_postictals: bool,
             ) -> pd.DataFrame:
         if not include_concordance:
             df = exclusions(df, CONCORDANCE=True)
@@ -144,6 +148,8 @@ class Semiology:
             df = exclude_spontaneous_semiology(df)
         if not include_paediatric_cases:
             df = exclude_paediatric_cases(df)
+        if not include_postictals:
+            df = exclude_postictals(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
