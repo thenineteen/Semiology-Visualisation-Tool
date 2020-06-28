@@ -635,9 +635,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     del customSemiology
     self.removeLineEditButton.setEnabled(self.customSemiologies)
 
-#
-# SemiologyVisualisationLogic
-#
+
+
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
   def getSemiologiesWidgetsDict(
@@ -880,6 +879,37 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     for (color, offset) in zip(colors, center):
       sliceLogic = slicer.app.layoutManager().sliceWidget(color).sliceLogic()
       sliceLogic.SetSliceOffset(offset)
+
+  def combineByLobe(self, dataFrame, lobesMapping):
+    """This method is not working yet."""
+    from collections import defaultdict
+    slicer.df = dataFrame
+    dataFrame = dataFrame.copy()
+    result = dataFrame.copy()
+
+    dataFrame.columns = [str(n) for n in dataFrame.columns]
+    resultArray = np.zeros_like(np.array(dataFrame))
+
+    # https://stackoverflow.com/a/42636819/3956024
+    for col in result.columns:
+      if np.issubdtype(result[col].dtype, np.number):
+        result[col].values[:] = 0
+
+    for i, row in enumerate(list(dataFrame.itertuples())):
+      totals = defaultdict(int)
+      for lobe, labels in lobesMapping.items():
+        for label in labels:
+          try:
+            slicer.df = dataFrame
+            totals[lobe] += dataFrame.at[row.Index, str(label)]
+          except KeyError:
+            pass
+      for lobe, labels in lobesMapping.items():
+        for label in labels:
+          result.at[row.Index, str(label)] = totals[lobe]
+    result.columns = [int(n) for n in result.columns]
+    slicer.result = result
+    return result
 
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
@@ -1167,7 +1197,27 @@ class ColorTable(ABC):
 
 
 class GIFColorTable(ColorTable):
-  pass
+  def getLobesMapping(self):
+    from mega_analysis import gif_lobes_from_excel_sheets
+    result = {}
+    for key, labels in gif_lobes_from_excel_sheets().items():
+        lobe = key.split()[1]
+        lobe = lobe.lower() if len(lobe) > 2 else lobe
+        left_key = f'Left {lobe}'
+        right_key = f'Right {lobe}'
+        result[left_key] = []
+        result[right_key] = []
+        for label in labels:
+            name = self.getStructureNameFromLabelNumber(label)
+            if 'Left' in name:
+                result[left_key].append(label)
+            elif 'Right' in name:
+                result[right_key].append(label)
+
+    result['cerebellum'] = [72, 73, 74]
+    return result
+
+
 
 
 class CustomSemiology:
