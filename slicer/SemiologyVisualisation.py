@@ -964,7 +964,12 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     slicer.result = result
     return result
 
-  def getStringsDataFrame(self, semiologiesDataFrame, combinedDataFrame):
+  def getStringsDataFrame(
+      self,
+      semiologiesDataFrame,
+      combinedDataFrame,
+      removeScoresIfSingle=True,
+      ):
     combinedDataFrame = combinedDataFrame.sort_values(by='Score', axis=1, ascending=False)
     combinedDataFrame = combinedDataFrame.apply(lambda x: [f'{n:.2f}' for n in x])
     semiologiesDataFrame = semiologiesDataFrame.T.reindex(combinedDataFrame.T.index).T
@@ -973,6 +978,8 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     semiologiesDataFrame = semiologiesDataFrame.astype(str)
     stringsDataFrame = combinedDataFrame.append(semiologiesDataFrame)
     stringsDataFrame.columns = [n.replace('-', ' ') for n in stringsDataFrame.columns]
+    if removeScoresIfSingle and len(stringsDataFrame) == 2:
+      stringsDataFrame.drop(index='Score', inplace=True)
     return stringsDataFrame
 
 
