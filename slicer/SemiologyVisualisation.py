@@ -427,8 +427,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         raise ValueError(message)
 
     for customSemiology in self.customSemiologies:
-      if customSemiology.isEmpty(): continue
-      semiologyTerm = customSemiology.text
+      if not customSemiology.isChecked(): continue
+      semiologyTerm = customSemiology.term
       laterality = customSemiology.laterality
       if laterality is None:
         message = f'Please select a laterality for custom semiology term "{semiologyTerm}"'
@@ -465,6 +465,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
   def getSemiologiesDataFrameFromGUI(self):
     from mega_analysis.semiology import get_df_from_semiologies
     semiologies = self.getSemiologiesListFromGUI()
+    if semiologies is None:  # No semiologies selected
+      return
     try:
       box = qt.QMessageBox()
       box.setStandardButtons(0)
@@ -643,10 +645,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.onAutoUpdateButton()
 
   def addCustomSemiology(self):
-    customSemiology = CustomSemiology()
+    customSemiology = CustomSemiology(self.parent)
     gridLayout = self.semiologiesWidget.layout()
     numRows = gridLayout.rowCount()
-    gridLayout.addWidget(customSemiology.lineEdit, numRows, 0)
+    gridLayout.addWidget(customSemiology.checkBox, numRows, 0)
     for i, radioButton in enumerate(customSemiology.radioButtons.values(), start=1):
       gridLayout.addWidget(radioButton, numRows, i, *ALIGN_ARGS)
     self.customSemiologies.append(customSemiology)
@@ -1265,8 +1267,12 @@ class GIFColorTable(ColorTable):
 
 
 class CustomSemiology:
-  def __init__(self):
-    self.lineEdit = qt.QLineEdit()
+  def __init__(self, parent):
+    dialog = qt.QInputDialog()
+    self.term = dialog.getText(
+      parent, 'Add custom semiology term', 'Enter a semiology term:')
+    self.checkBox = qt.QCheckBox(self.term)
+    self.checkBox.toggled.connect(self.onCheckBox)
     self.radioButtons = {
       'left': qt.QRadioButton('Left'),
       'right': qt.QRadioButton('Right'),
@@ -1275,17 +1281,18 @@ class CustomSemiology:
     self.buttonGroup = qt.QButtonGroup()
     for button in self.radioButtons.values():
       self.buttonGroup.addButton(button)
+      button.hide()
 
-  @property
-  def text(self):
-    return self.lineEdit.text
+  def onCheckBox(self, checked):
+    for button in self.radioButtons.values():
+      button.setVisible(checked)
 
-  def isEmpty(self):
-    return not self.text
+  def isChecked(self):
+    return self.checkBox.isChecked()
 
   @property
   def widgets(self):
-    return [self.lineEdit, *self.radioButtons.values()]
+    return [self.checkBox, *self.radioButtons.values()]
 
   @property
   def laterality(self):
