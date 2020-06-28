@@ -90,15 +90,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
   def makeGUI(self):
     self.makeLoadDataButton()
     self.makeSettingsButton()
+
     self.makeUpdateButton()
-    #self.semiologiesTableSplitter = qt.QSplitter()
-    #self.semiologiesTableSplitter.setOrientation(qt.Qt.Vertical)
-    #self.layout.addWidget(self.semiologiesTableSplitter)
-    #self.makeSemiologiesButton()
     self.makeTableButton()
 
+    # self.semiologiesTableSplitter = qt.QSplitter()
+    # self.semiologiesTableSplitter.setOrientation(qt.Qt.Vertical)
+    # self.layout.addWidget(self.semiologiesTableSplitter)
+    # self.semiologiesTableSplitter.addWidget(self.settingsCollapsibleButton)
+    # self.semiologiesTableSplitter.addWidget(self.updateButton)
+
     # Add vertical spacer
-    # self.layout.addStretch(1)
 
   def makeSettingsButton(self):
     self.settingsCollapsibleButton = ctk.ctkCollapsibleButton()
@@ -285,12 +287,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
     return dominantHemisphereLayout
 
-  # def makeSemiologiesButton(self):
-  #   self.semiologiesCollapsibleButton = ctk.ctkCollapsibleButton()
-  #   self.semiologiesCollapsibleButton.hide()
-  #   self.semiologiesCollapsibleButton.text = 'Semiologies'
-  #   self.semiologiesTableSplitter.addWidget(self.semiologiesCollapsibleButton)
-
   def getSemiologiesLayout(self):
     semiologiesFormLayout = qt.QFormLayout()
     semiologiesScrollArea = self.getSemiologiesScrollArea()
@@ -315,10 +311,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.tableCollapsibleButton.visible = False
     self.tableCollapsibleButton.text = 'Scores'
 
-    try:
-      self.semiologiesTableSplitter.addWidget(self.tableCollapsibleButton)
-    except Exception:
-      self.layout.addWidget(self.tableCollapsibleButton)
+    self.layout.addWidget(self.tableCollapsibleButton)
 
     tableLayout = qt.QFormLayout(self.tableCollapsibleButton)
     self.tableView = slicer.qMRMLTableView()
@@ -660,6 +653,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     # self.logic.showTableInViewLayout(self.tableNode)
 
     self.settingsCollapsibleButton.setChecked(False)
+    self.tableCollapsibleButton.setChecked(True)
 
   def onColorBlindCheckBox(self):
     self.colorSelector.setDisabled(self.colorBlindCheckbox.isChecked())
