@@ -90,7 +90,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
   def makeGUI(self):
     self.makeLoadDataButton()
     self.makeSettingsButton()
-
     self.makeUpdateButton()
     self.makeTableButton()
 
@@ -542,8 +541,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.onAutoUpdateButton()
 
   def onAutoUpdateButton(self):
-    if self.autoUpdateCheckBox.isChecked():
-      self.updateColors()
+    try:
+      if self.autoUpdateCheckBox.isChecked():
+        self.updateColors()
+    except AttributeError:
+      # autoUpdateCheckBox not created yet
+      pass
 
   def onshowGifButton(self):
     self.parcellation.setOriginalColors(
