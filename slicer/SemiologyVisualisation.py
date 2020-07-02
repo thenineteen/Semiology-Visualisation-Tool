@@ -304,8 +304,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     addLineEditButton = qt.QPushButton('Add custom semiology')
     addLineEditButton.clicked.connect(self.addCustomSemiology)
 
+    self.deselectAllButton = qt.QPushButton('Deselect all')
+    self.deselectAllButton.clicked.connect(self.unselectAllSemiologies)
+
     customSemiologiesFrame = qt.QFrame()
     customSemiologiesLayout = qt.QHBoxLayout(customSemiologiesFrame)
+    customSemiologiesLayout.addWidget(self.deselectAllButton)
     customSemiologiesLayout.addWidget(self.removeLineEditButton)
     customSemiologiesLayout.addWidget(addLineEditButton)
     semiologiesFormLayout.addWidget(customSemiologiesFrame)
@@ -700,6 +704,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       self.semiologiesWidget.layout().removeWidget(widget)
     del customSemiology
     self.removeLineEditButton.setEnabled(self.customSemiologies)
+
+  def unselectAllSemiologies(self):
+    for widgetsDict in self.semiologiesWidgetsDict.values():
+      checkBox = widgetsDict['checkBox']
+      # checkBox.blockSignals(True)
+      checkBox.setChecked(False)
 
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
