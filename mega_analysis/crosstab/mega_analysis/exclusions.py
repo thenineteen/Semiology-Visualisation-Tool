@@ -173,8 +173,18 @@ def exclude_seizure_free(df):
 def exclude_paediatric_cases(df):
     """
     Exclude ALL cases labelled as paediatric, i.e. < 7 years old.
-    (If the data is mixed and undifferentiated by < 7 yrs, the data is excluded)
+    (If the data is mixed and undifferentiated by < 7 yrs, the data is excluded only if the label 'y' was added during data collection.
+    This decision was made based on the number of cases under or above 7. If left blank, cases are included.)
     """
     PAED = 'padeiatric? <7 years (0-6 yrs) y/n'
     df_exclusions_paeds = df.loc[~(df[PAED] == 'y'), :]
     return df_exclusions_paeds
+
+
+def only_paediatric_cases(df):
+    """
+    Only query paediatric cases under 7 years
+    """
+    PAED = 'padeiatric? <7 years (0-6 yrs) y/n'
+    df_only_paeds = df.loc[(df[PAED] == 'y'), :]
+    return df_only_paeds
