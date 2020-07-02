@@ -670,25 +670,26 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.logic.showForegroundScalarBar()
     self.logic.jumpToMax(self.scoresVolumeNode)
 
-    self.parcellation.useNamesForDataFramesColumns(
-      semiologiesDataFrame,
-      combinedDataFrame,
-    )
+    with messageContextManager('Creating data points table...'):
+      self.parcellation.useNamesForDataFramesColumns(
+        semiologiesDataFrame,
+        combinedDataFrame,
+      )
 
-    stringsDataFrame = self.logic.getStringsDataFrame(
-      semiologiesDataFrame,
-      combinedDataFrame,
-    )
+      stringsDataFrame = self.logic.getStringsDataFrame(
+        semiologiesDataFrame,
+        combinedDataFrame,
+      )
 
-    self.tableNode = self.logic.dataFrameToTable(
-      stringsDataFrame.T,
-      self.tableNode,
-    )
+      self.tableNode = self.logic.dataFrameToTable(
+        stringsDataFrame.T,
+        self.tableNode,
+      )
 
-    self.tableCollapsibleButton.visible = True
-    self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
+      self.tableCollapsibleButton.visible = True
+      self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
 
-    # self.logic.showTableInViewLayout(self.tableNode)
+      # self.logic.showTableInViewLayout(self.tableNode)
 
     self.settingsCollapsibleButton.setChecked(False)
     self.tableCollapsibleButton.setChecked(True)
