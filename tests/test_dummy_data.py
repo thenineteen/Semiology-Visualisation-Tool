@@ -181,6 +181,23 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             new_all_combined_gifindexed.values.all() == fixture.values.all())
 #         print('6 query lat')
 
+    def test_paed_default_query_semio(self):
+        """
+        Test query_semiology for excluding paediatric cases.
+        This test shows the default query_semiology() doesn't filter paediatric cases.
+
+        """
+        patient = Semiology('spasm', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        all_gifs = patient.query_semiology()
+
+        self.assertIs(type(all_gifs), pd.DataFrame)
+        assert not all_gifs.empty
+        assert(all_gifs['Localising'].sum() == 10+5+1)
+        assert(all_gifs['Lateralising'].sum() == 0)
+        print('7 paed query_semio()')
+
+
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
 # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
