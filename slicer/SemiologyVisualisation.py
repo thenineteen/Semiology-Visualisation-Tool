@@ -827,6 +827,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       colorNode,
       parcellationLabelMapNode,
       outputNode,
+      showProgress=True,
       ):
     """Create a scalar volume node so that the colorbar is correct."""
 
@@ -836,11 +837,25 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       scoresArray = np.zeros_like(parcellationArray, np.float)
 
       if scoresDict is not None:
-        for (label, score) in scoresDict.items():
+        numSegments = len(scoresDict)
+        if showProgress:
+          progressDialog = slicer.util.createProgressDialog(
+            value=0,
+            maximum=numSegments,
+            windowTitle='Creating scores volume node...',
+          )
+        for i, (label, score) in enumerate(scoresDict.items()):
+          if showProgress:
+            progressDialog.setValue(i)
+            slicer.app.processEvents()
           label = int(label)
           score = float(score)
           labelMask = parcellationArray == label
           scoresArray[labelMask] = score
+        if showProgress:
+          progressDialog.setValue(numSegments)
+          slicer.app.processEvents()
+          progressDialog.close()
 
       scoresImage = self.getImageFromArray(scoresArray, parcellationImage)
       scoresName = 'Scores'
