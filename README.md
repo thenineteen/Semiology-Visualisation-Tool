@@ -1,4 +1,4 @@
-## Epilepsy Seizure Semiology Visualisation Tool (SVT)
+# Epilepsy Seizure Semiology Visualisation Tool (SVT)
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
 
@@ -9,13 +9,16 @@ Figure:
 124 of these lateralise, mainly ipsilaterally.
 
  
-We integrated the *database*, *taxonomy*, brain region *mappings* to gif MNI space parcellations, *ground truths* and developed flexible *Bayesian filters* (for exclusion of patients from studies that preselected patients based on prior knowledge of the region of seizure onset, to mitigate the publication bias that favours temporal lobe epilepsy) in a Python module for the 3D Slicer program, to create a novel user-friendly and open-source *Semiology Visualisation Tool (SVT)* which allows 3D-brain visualisations of semiologies and their simultaneous combinations. Instead of idenitifying symptomatogenic zones, we therefore visualise the most likely original sources of the seizures from initial or most prominent semiology.
+We integrated the *database*, *taxonomy*, brain region *mappings* to gif MNI space parcellations, *ground truths* and *Bayesian filters* (for exclusion of patients from studies that preselected patients based on prior knowledge of the region of seizure onset, to mitigate the publication bias that favours temporal lobe epilepsy) in a Python module for the 3D Slicer program, to create a novel user-friendly and open-source *Semiology Visualisation Tool (SVT)* in the form of a GUI. This allows 3D-brain visualisations of semiologies and their simultaneous combinations. Instead of idenitifying symptomatogenic zones, we therefore visualise the most likely original sources of the seizures from initial or most prominent semiology.
 
-Further details on the above can be found in the description of the mega_analysis module below
+GUI options include filtering paediatric cases and determining the laterality of your patient's dominant hemisphere, ticking checkboxes for your patient's semiology and determining the laterality of the semiology. 
+
+Further details on the above can be found in the description of the mega_analysis module below.
 
 
-# mega_analysis module
+## mega_analysis module
 
+### 1. Resources: SemioBrain Database
 We curated the largest patient-level database of 4454 unique patients from 282 studies, yielding 2368 lateralising and 10917 localising datapoints for initial or most prominently reported seizure semiologies. These patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
 
 * Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I if not otherwise specified), confirmed at a minimum follow-up of 12 months;
@@ -31,10 +34,12 @@ The data are also tagged to allow Beaysian filtering of patient semiologies from
   pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement 
+### 3. Resources: lateralisation and localisation mappings
 To query this database, we developed a taxonomy of 47 semiological terms, mapped reported categorical brain regions to 55 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
 
-This module cleans the DataFrame of data, pivots occurences of semiology, allowing for semiology_dictionary taxonomy replacement regex searches, maps the documented localisations to gif parcellations and can scale these mappings using different scalers/transformers.
+The mega_analysis module cleans the DataFrame of data, pivots occurences of semiology, allowing for semiology_dictionary taxonomy replacement regex searches, maps the documented localisations to gif parcellations and can scale these mappings using different scalers/transformers.
 Data can be filtered based on the above ground truths and Bayesian priors.
 
 
