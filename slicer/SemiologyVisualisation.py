@@ -699,7 +699,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.onAutoUpdateButton()
 
   def addCustomSemiology(self):
-    customSemiology = CustomSemiology(self.parent)
+    term = self.logic.getTextFromDialog(
+      self.parent,
+      'Add custom semiology term',
+      'Enter a semiology term:',
+    )
+    if term is None:
+      return
+    customSemiology = CustomSemiology(term)
     gridLayout = self.semiologiesWidget.layout()
     numRows = gridLayout.rowCount()
     gridLayout.addWidget(customSemiology.checkBox, numRows, 0)
@@ -1076,6 +1083,14 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     else:
       slicer.util.delayDisplay(f'Cache file does not exist yet: {path}')
 
+  def getTextFromDialog(self, parent, title, message):
+    dialog = qt.QInputDialog()
+    text = dialog.getText(
+      parent, 'Add custom semiology term', 'Enter a semiology term:')
+    if not text or text.isspace():
+      text = None
+    return text
+
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
   """
@@ -1381,10 +1396,8 @@ class GIFColorTable(ColorTable):
 
 
 class CustomSemiology:
-  def __init__(self, parent):
-    dialog = qt.QInputDialog()
-    self.term = dialog.getText(
-      parent, 'Add custom semiology term', 'Enter a semiology term:')
+  def __init__(self, term):
+    self.term = term
     self.checkBox = qt.QCheckBox(self.term)
     self.checkBox.toggled.connect(self.onCheckBox)
     self.radioButtons = {
