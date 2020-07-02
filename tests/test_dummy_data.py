@@ -65,7 +65,11 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         print('setup')
 
     def test_default_vs_exclusions(self):
-        assert not self.df.equals(exclusions(self.df))
+        # self.df.to_csv(r'D:\self_df.csv')
+        # exclusions(self.df).to_csv(r'D:\self_df_exclusions.csv')
+
+        not pd.testing.assert_frame_equal(self.df, exclusions(self.df))
+        # assert not self.df.equals(exclusions(self.df))
         # exclusions default is to exclude postictals and PETs only
         # print('\n1\n')
 
@@ -81,7 +85,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category',
         )
-        assert(query['Localising'].sum() == 13)
+        assert(query['Localising'].sum() == 14)
         assert(query['Lateralising'].sum() == 6)
         # print('\n2\n')
 
@@ -100,7 +104,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category',
         )
-        assert(query['Localising'].sum() == 12)
+        assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 5)
         print('\n2.2 postictal\n')
 
@@ -117,7 +121,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category',
         )
-        assert(query['Localising'].sum() == 12)
+        assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
         # print('\n3\n')
 
@@ -131,7 +135,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             col1='Reported Semiology',
             col2='Semiology Category',
         )
-        assert(query['Localising'].sum() == 13)
+        assert(query['Localising'].sum() == 14)
         assert(query['Lateralising'].sum() == 6)
         # print('\n4\n')
 
@@ -148,7 +152,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
         # deafult excludes postictals
-        assert(inspect_result['Localising'].sum() == 13-1)
+        assert(inspect_result['Localising'].sum() == 14-1)
         assert(inspect_result['Lateralising'].sum() == 6-1)
         # print('\n5\n')
 
