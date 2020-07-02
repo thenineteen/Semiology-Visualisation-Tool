@@ -10,13 +10,13 @@ Figure:
 124 of these lateralise, mainly ipsilaterally.
 
 
-Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting a certain seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria to establish epileptogenic zone's localisation and/ or lateralisation was satisfied:
+Thousands of patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
 
 * Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I), confirmed at a minimum follow-up of 12 months;
 * Invasive EEG recording and/ or electrical stimulation, mapping seizure semiology;
 * Multi-modal concordance between brain imaging & neurophysiology (e.g. PET, SPECT, MEG, EEG, fMRI) in pointing towards a highly probable epileptogenic zone.
 
-The data are also tagged to reduce publications bias and/or enhance data visualisation (e.g. of invasive EEG electrode targets) to allow filtering out specific paper/patient-level priors:
+The data are also tagged to allow Beaysian filtering of patient semiologies from studies which preselected patients with known brain regional zones (whether this be epileptogenic zones or seizure onset zones) in order to allow mitigation of publications bias which favours temporal lobe epilepsy (e.g. of invasive EEG electrode targets) to allow filtering out specific paper/patient-level priors:
 
 * Epilepsy Topology (ET): when the paper selects sample of patients based on their established epileptogenic zone (site of surgical resection) or seizure onset zone (neurophysiological/anatomical), and describes the related seizure semiology - e.g. papers looking at TLE, FLE, OLE;
 * Spontaneous Semiology (SS): when the paper pre-selects a sample of patients based on their seizure semiology
@@ -29,13 +29,14 @@ The data are also tagged to reduce publications bias and/or enhance data visuali
 ## Brief workings:
 In brief, this software cleans the DataFrame of data, pivots occurences of semiology, allowing for semiology_dictionary ontology replacement regex searches, maps the documented localisations to gif parcellations and can scale these mappings using different scalers/transformers.
 Data can be filtered based on the above ground truth and journal priors.
+The visualisation uses a mapping of the reported brain regions to gif parcellations in MNI space.
 
 
 ## Branches
 * Master branch - to be used with slicer module for 3D visualisation
   ** (merged from separate repo (https://github.com/fepegar/EpilepsySemiology))
 * MegaAnalysis-March2020 branch - original verbose module for development and progress stats
-  ** (thenineteen jupyter backwards compatibility)
+  ** (thenineteen jupyter backwards compatibility. pre-Beta version)
 
 
 ## Installation Guide
