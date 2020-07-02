@@ -4,6 +4,7 @@ import warnings
 from typing import Dict
 from pathlib import Path
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 
 import numpy as np
 import SimpleITK as sitk
@@ -516,28 +517,22 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       scores = Scores(cache[hashedQuery])
       dataFrame = scores.df
     else:
-      try:
-        box = qt.QMessageBox()
-        box.setStandardButtons(0)
-        box.setText('Querying mega_analysis module...')
-        box.show()
-        slicer.app.processEvents()
-        dataFrame = get_df_from_semiologies(semiologies)
-        scores = Scores(dataFrame)
-        cache[hashedQuery] = scores.toDict()
-        self.logic.writeCache(cache)
-      except Exception as e:
-        message = (
-          'Error retrieving semiology information from mega_analysis module.'
-          f' Details:\n\n{e}\n\n'
-          'If you think this is a bug, please report this issue on the repository:'
-          ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
-        )
-        slicer.util.errorDisplay(message)
-        dataFrame = None
-        raise
-      finally:
-        box.accept()
+      with messageContextManager('Querying mega_analysis module...'):
+        try:
+          dataFrame = get_df_from_semiologies(semiologies)
+          scores = Scores(dataFrame)
+          cache[hashedQuery] = scores.toDict()
+          self.logic.writeCache(cache)
+        except Exception as e:
+          message = (
+            'Error retrieving semiology information from mega_analysis module.'
+            f' Details:\n\n{e}\n\n'
+            'If you think this is a bug, please report this issue on the repository:'
+            ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
+          )
+          slicer.util.errorDisplay(message)
+          dataFrame = None
+          raise
     return dataFrame
 
   def getDominantHemisphereFromGUI(self):
@@ -834,41 +829,35 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       ):
     """Create a scalar volume node so that the colorbar is correct."""
 
-    box = qt.QMessageBox()
-    box.setStandardButtons(0)
-    box.setText('Creating scores volume node...')
-    box.show()
-    slicer.app.processEvents()
+    with messageContextManager('Creating scores volume node...'):
+      parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
+      parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
+      scoresArray = np.zeros_like(parcellationArray, np.float)
 
-    parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
-    parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
-    scoresArray = np.zeros_like(parcellationArray, np.float)
+      if scoresDict is not None:
+        for (label, score) in scoresDict.items():
+          label = int(label)
+          score = float(score)
+          labelMask = parcellationArray == label
+          scoresArray[labelMask] = score
 
-    if scoresDict is not None:
-      for (label, score) in scoresDict.items():
-        label = int(label)
-        score = float(score)
-        labelMask = parcellationArray == label
-        scoresArray[labelMask] = score
+      scoresImage = self.getImageFromArray(scoresArray, parcellationImage)
+      scoresName = 'Scores'
+      scoresVolumeNode = su.PushVolumeToSlicer(
+        scoresImage,
+        name=scoresName,
+        targetNode=outputNode,
+      )
+      displayNode = scoresVolumeNode.GetDisplayNode()
+      displayNode.SetAutoThreshold(False)
+      displayNode.SetAndObserveColorNodeID(colorNode.GetID())
+      displayNode.SetLowerThreshold(1)
+      displayNode.ApplyThresholdOn()
+      displayNode.SetAutoWindowLevel(False)
+      windowMin = scoresArray[scoresArray > 0].min() if scoresArray.any() else 0
+      windowMax = scoresArray.max()
+      displayNode.SetWindowLevelMinMax(windowMin, windowMax)
 
-    scoresImage = self.getImageFromArray(scoresArray, parcellationImage)
-    scoresName = 'Scores'
-    scoresVolumeNode = su.PushVolumeToSlicer(
-      scoresImage,
-      name=scoresName,
-      targetNode=outputNode,
-    )
-    displayNode = scoresVolumeNode.GetDisplayNode()
-    displayNode.SetAutoThreshold(False)
-    displayNode.SetAndObserveColorNodeID(colorNode.GetID())
-    displayNode.SetLowerThreshold(1)
-    displayNode.ApplyThresholdOn()
-    displayNode.SetAutoWindowLevel(False)
-    windowMin = scoresArray[scoresArray > 0].min() if scoresArray.any() else 0
-    windowMax = scoresArray.max()
-    displayNode.SetWindowLevelMinMax(windowMin, windowMax)
-
-    box.accept()
     return scoresVolumeNode
 
   def getImageFromArray(self, array, referenceImage):
@@ -898,24 +887,18 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     repoDir = Path(__file__).parent.parent
     import sys
     sys.path.insert(0, str(repoDir))
-    box = qt.QMessageBox()
-    box.setStandardButtons(0)
-    box.setText('Importing mega_analysis Python module...')
-    box.show()
-    slicer.app.processEvents()
-    try:
-      with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        import mega_analysis
-    except ImportError:
-      requirementsPath = repoDir / 'requirements.txt'
-      slicer.util.pip_install(
-        f'-r {requirementsPath}'
-      )
-    finally:
-      box.accept()
-    import matplotlib
-    matplotlib.use('agg')
+    with messageContextManager('Importing mega_analysis Python module...'):
+      try:
+        with warnings.catch_warnings():
+          warnings.simplefilter("ignore")
+          import mega_analysis
+      except ImportError:
+        requirementsPath = repoDir / 'requirements.txt'
+        slicer.util.pip_install(
+          f'-r {requirementsPath}'
+        )
+      import matplotlib
+      matplotlib.use('agg')
 
   def showForegroundScalarBar(self):
     qt.QSettings().setValue('DataProbe/sliceViewAnnotations.scalarBarEnabled', 1)
@@ -1477,6 +1460,17 @@ class Scores:
 
   def toDict(self):
     return self.df.to_dict()
+
+
+@contextmanager
+def messageContextManager(message):
+  box = qt.QMessageBox()
+  box.setStandardButtons(0)
+  box.setText(message)
+  box.show()
+  slicer.app.processEvents()
+  yield
+  box.accept()
 
 
 # https://stackoverflow.com/a/42151923/3956024
