@@ -1427,6 +1427,7 @@ class Query:
       semiology_dict = dict(
         term=semiology.term,
         symptoms_side=semiology.symptoms_side.value,
+        dominant_hemisphere=semiology.dominant_hemisphere,
         include_concordance=semiology.include_concordance,
         include_seeg=semiology.include_seeg,
         include_cortical_stimulation=semiology.include_cortical_stimulation,
