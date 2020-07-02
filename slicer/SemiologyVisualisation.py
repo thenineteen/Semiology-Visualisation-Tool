@@ -1,4 +1,3 @@
-import csv
 import time
 import logging
 import warnings
@@ -868,17 +867,6 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     image.SetOrigin(referenceImage.GetOrigin())
     image.SetSpacing(referenceImage.GetSpacing())
     return image
-
-  def readScores(self, scoresPath):
-    with open(scoresPath) as csvfile:
-      reader = csv.reader(csvfile)
-      next(reader)  # assume there is a header row
-      scoresDict = {int(label): float(score) for (label, score) in reader}
-    return scoresDict
-
-  def getTestScores(self):
-    scoresPath = self.getResourcesDir() / 'Test' / 'head.csv'
-    return self.readScores(scoresPath)
 
   def removeColorMaps(self):
     for colorNode in slicer.util.getNodesByClass('vtkMRMLColorNode'):
