@@ -119,10 +119,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     patientQueryTab = self.getPatientQueryTab()
     databaseTab = self.getDatabaseTab()
     visualisationTab = self.getVisualisationSettingsTab()
+    advancedTab = self.getAdvancedSettingsTab()
 
     self.settingsTabWidget.addTab(patientQueryTab, 'Patient query')
     self.settingsTabWidget.addTab(databaseTab, 'Database')
     self.settingsTabWidget.addTab(visualisationTab, 'Visualisation')
+    self.settingsTabWidget.addTab(advancedTab, 'Advanced')
 
     self.layout.addWidget(self.settingsCollapsibleButton)
 
@@ -315,6 +317,20 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     semiologiesFormLayout.addWidget(customSemiologiesFrame)
     return semiologiesFormLayout
 
+  def getAdvancedSettingsTab(self):
+    advancedTabWidget = qt.QWidget()
+    advancedTabLayout = qt.QVBoxLayout(advancedTabWidget)
+
+    self.useCacheCheckBox = qt.QCheckBox('Use cached queries if available')
+    self.useCacheCheckBox.setChecked(True)
+    advancedTabLayout.addWidget(self.useCacheCheckBox)
+
+    self.clearCacheButton = qt.QPushButton('Clear cache')
+    self.clearCacheButton.clicked.connect(self.logic.clearCache)
+    advancedTabLayout.addWidget(self.clearCacheButton)
+
+    return advancedTabWidget
+
   def makeTableButton(self):
     self.tableCollapsibleButton = ctk.ctkCollapsibleButton()
     self.tableCollapsibleButton.visible = False
@@ -495,12 +511,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     cache = self.logic.readCache()
     query = Query(semiologies)
     hashedQuery = query.hash()
-    if hashedQuery in cache:
+    if hashedQuery in cache and self.useCacheCheckBox.isChecked():
       logging.info(f'Query found in cache: {hashedQuery}')
       scores = Scores(cache[hashedQuery])
       dataFrame = scores.df
     else:
-      logging.info(f'Query not found in cache: {hashedQuery}')
       try:
         box = qt.QMessageBox()
         box.setStandardButtons(0)
@@ -1047,12 +1062,13 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
   def getCachePath(self):
     path = self.getCacheDir() / 'queries.yml'
-    path.touch()
     return path
 
   def readCache(self):
     import yaml
-    with open(self.getCachePath()) as f:
+    path = self.getCachePath()
+    path.touch()  # in case it doesn't exist yet
+    with open(path) as f:
       cache = yaml.full_load(f)
     if cache is None:
       cache = {}
@@ -1063,6 +1079,14 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     with open(self.getCachePath(), 'w') as f:
       documents = yaml.dump(cache, f)
     return documents
+
+  def clearCache(self):
+    path = self.getCachePath()
+    if path.is_file():
+      path.unlink()
+      slicer.util.delayDisplay(f'Cache removed: {path}')
+    else:
+      slicer.util.delayDisplay(f'Cache file does not exist yet: {path}')
 
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
