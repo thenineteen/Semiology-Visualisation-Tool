@@ -205,14 +205,28 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('spasm', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        all_gifs = patient.query_semiology()
+        inspect_result = patient.query_semiology()
 
-        self.assertIs(type(all_gifs), pd.DataFrame)
-        assert not all_gifs.empty
-        assert(all_gifs['Localising'].sum() == 10+5+1)
-        assert(all_gifs['Lateralising'].sum() == 0)
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert(inspect_result['Localising'].sum() == 10+5+1)
+        assert(inspect_result['Lateralising'].sum() == 0)
         print('\n7 paed query_semio()\n')
 
+    def test_paed_exclusions_query_semio(self):
+        """
+        Test query_semiology then exclude paediatric cases.
+        """
+        patient = Semiology('spasm', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+        inspect_result = exclude_paediatric_cases(inspect_result)
+
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert(inspect_result['Localising'].sum() == 5+1)
+        assert(inspect_result['Lateralising'].sum() == 0)
+        print('\n8 paed exclusions query_semio()\n')
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
