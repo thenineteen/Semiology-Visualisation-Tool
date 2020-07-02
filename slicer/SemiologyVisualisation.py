@@ -1,4 +1,5 @@
 import csv
+import time
 import logging
 import warnings
 from typing import Dict
@@ -661,34 +662,34 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       min2dOpacity=self.min2dOpacitySlider.value,
     )
 
-    slicer.util.setSliceViewerLayers(
-      foreground=self.scoresVolumeNode,
-      foregroundOpacity=0,
-      labelOpacity=0,
-    )
-    self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
-    self.logic.showForegroundScalarBar()
-    self.logic.jumpToMax(self.scoresVolumeNode)
+    with messageContextManager('Showing volumes on 2D slices...'):
+      slicer.util.setSliceViewerLayers(
+        foreground=self.scoresVolumeNode,
+        foregroundOpacity=0,
+        labelOpacity=0,
+      )
+    with messageContextManager('Disabling interpolation for scores volume node...'):
+      self.scoresVolumeNode.GetDisplayNode().SetInterpolate(False)
+    with messageContextManager('Showing scalar bar...'):
+      self.logic.showForegroundScalarBar()
+    with messageContextManager('Jumping to structure with highest score...'):
+      self.logic.jumpToMax(self.scoresVolumeNode)
 
     with messageContextManager('Creating data points table...'):
       self.parcellation.useNamesForDataFramesColumns(
         semiologiesDataFrame,
         combinedDataFrame,
       )
-
       stringsDataFrame = self.logic.getStringsDataFrame(
         semiologiesDataFrame,
         combinedDataFrame,
       )
-
       self.tableNode = self.logic.dataFrameToTable(
         stringsDataFrame.T,
         self.tableNode,
       )
-
       self.tableCollapsibleButton.visible = True
       self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
-
       # self.logic.showTableInViewLayout(self.tableNode)
 
     self.settingsCollapsibleButton.setChecked(False)
@@ -1198,6 +1199,7 @@ class Parcellation(ABC):
         showProgress (bool, optional): [description]. Defaults to True.
         min2dOpacity (int, optional): [description]. Defaults to 1.
     """
+    tic = time.time()
     if not showProgress:
       box = qt.QMessageBox()
       box.setStandardButtons(0)
@@ -1248,6 +1250,9 @@ class Parcellation(ABC):
       progressDialog.close()
     else:
       box.accept()
+    toc = time.time()
+    slicer.util.delayDisplay(f'Updating colours took {int(toc - tic)} seconds')
+    slicer.app.processEvents()
 
   def getColorFromScore(self, normalizedScore, colorNode):
     """This method is very important"""
