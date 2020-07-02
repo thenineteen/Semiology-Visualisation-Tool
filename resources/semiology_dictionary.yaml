@@ -468,10 +468,12 @@
       ]
     "Ictal Speech":
       [
-        "ictal speech",
+        "ictal speech((?! arrest)(?! impairment))",
+        "speech \\(ictal\\)",
         "ictal talk",
         "palilalia",
         "coprolalia",
+        "corprolalia",
         "swear",
         "expletive",
       ]
