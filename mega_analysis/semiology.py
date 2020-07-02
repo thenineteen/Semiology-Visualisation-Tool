@@ -106,49 +106,36 @@ class Semiology:
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
-        self.data_frame = self.remove_exclusions(
-            mega_analysis_df,  # global variable
-            include_seizure_freedom,
-            include_concordance,
-            include_seeg,
-            include_cortical_stimulation,
-            include_et_topology_ez,
-            include_spontaneous_semiology,
-            include_paediatric_cases,
-            include_postictals,
-        )
+        self.include_seizure_freedom = include_seizure_freedom
+        self.include_concordance = include_concordance
+        self.include_seeg = include_seeg
+        self.include_cortical_stimulation = include_cortical_stimulation
+        self.include_et_topology_ez = include_et_topology_ez
+        self.include_spontaneous_semiology = include_spontaneous_semiology
+        self.include_paediatric_cases = include_paediatric_cases
+        self.include_postictals = include_postictals
+        self.data_frame = mega_analysis_df
         if possible_lateralities is None:
             possible_lateralities = get_possible_lateralities(self.term)
         self.possible_lateralities = possible_lateralities
         self.granular = granular
 
-    @staticmethod
-    def remove_exclusions(
-            df: pd.DataFrame,
-            include_seizure_freedom: bool,
-            include_concordance: bool,
-            include_seeg: bool,
-            include_cortical_stimulation: bool,
-            include_et_topology_ez: bool,
-            include_spontaneous_semiology: bool,
-            include_paediatric_cases: bool,
-            include_postictals: bool,
-            ) -> pd.DataFrame:
-        if not include_concordance:
+    def remove_exclusions(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not self.include_concordance:
             df = exclusions(df, CONCORDANCE=True)
-        if not include_seizure_freedom:
+        if not self.include_seizure_freedom:
             df = exclude_seizure_free(df)
-        if not include_et_topology_ez:
+        if not self.include_et_topology_ez:
             df = exclude_ET(df)
-        if not include_seeg:
+        if not self.include_seeg:
             df = exclude_sEEG(df)
-        if not include_cortical_stimulation:
+        if not self.include_cortical_stimulation:
             df = exclude_cortical_stimulation(df)
-        if not include_spontaneous_semiology:
+        if not self.include_spontaneous_semiology:
             df = exclude_spontaneous_semiology(df)
-        if not include_paediatric_cases:
+        if not self.include_paediatric_cases:
             df = exclude_paediatric_cases(df)
-        if not include_postictals:
+        if not self.include_postictals:
             df = exclude_postictals(df)
         return df
 
@@ -157,6 +144,7 @@ class Semiology:
             path = semiology_dict_path
         else:
             path = None
+        self.data_frame = self.remove_exclusions(self.data_frame)
         inspect_result = QUERY_SEMIOLOGY(
             self.data_frame,
             semiology_term=self.term,

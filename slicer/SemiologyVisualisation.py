@@ -10,7 +10,12 @@ import SimpleITK as sitk
 
 import vtk, qt, ctk, slicer
 import sitkUtils as su
-from slicer.ScriptedLoadableModule import *
+from slicer.ScriptedLoadableModule import (
+  ScriptedLoadableModule,
+  ScriptedLoadableModuleWidget,
+  ScriptedLoadableModuleLogic,
+  ScriptedLoadableModuleTest,
+)
 
 
 BLACK = 0, 0, 0
@@ -242,7 +247,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.segmentsComboBox = qt.QComboBox()
     visualisationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
 
-    self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colors')
+    self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colours')
+    self.showProgressCheckBox.setChecked(True)
     visualisationSettingsLayout.addWidget(self.showProgressCheckBox)
 
     self.min2dOpacitySlider = slicer.qMRMLSliderWidget()
@@ -254,7 +260,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       self.min2dOpacitySlider,
     )
 
-    self.colorBlindCheckbox = qt.QCheckBox('Color-blind mode')
+    self.colorBlindCheckbox = qt.QCheckBox('Colour-blind mode')
     self.colorBlindCheckbox.toggled.connect(self.onColorBlindCheckBox)
     visualisationSettingsLayout.addWidget(self.colorBlindCheckbox)
 
@@ -475,29 +481,44 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     return semiologies
 
   def getSemiologiesDataFrameFromGUI(self):
-    from mega_analysis.semiology import get_df_from_semiologies
     semiologies = self.getSemiologiesListFromGUI()
     if semiologies is None:  # No semiologies selected
       return
-    try:
-      box = qt.QMessageBox()
-      box.setStandardButtons(0)
-      box.setText('Querying mega_analysis module...')
-      box.show()
-      slicer.app.processEvents()
-      dataFrame = get_df_from_semiologies(semiologies)
-    except Exception as e:
-      message = (
-        'Error retrieving semiology information from mega_analysis module.'
-        f' Details:\n\n{e}\n\n'
-        'If you think this is a bug, please report this issue on the repository:'
-        ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
-      )
-      slicer.util.errorDisplay(message)
-      dataFrame = None
-      raise
-    finally:
-      box.accept()
+    return self.getScoresFromCache(semiologies)
+
+  def getScoresFromCache(self, semiologies):
+    from mega_analysis.semiology import get_df_from_semiologies
+    cache = self.logic.readCache()
+    query = Query(semiologies)
+    hashedQuery = query.hash()
+    if hashedQuery in cache:
+      logging.info(f'Query found in cache: {hashedQuery}')
+      scores = Scores(cache[hashedQuery])
+      dataFrame = scores.df
+    else:
+      logging.info(f'Query not found in cache: {hashedQuery}')
+      try:
+        box = qt.QMessageBox()
+        box.setStandardButtons(0)
+        box.setText('Querying mega_analysis module...')
+        box.show()
+        slicer.app.processEvents()
+        dataFrame = get_df_from_semiologies(semiologies)
+        scores = Scores(dataFrame)
+        cache[hashedQuery] = scores.toDict()
+        self.logic.writeCache(cache)
+      except Exception as e:
+        message = (
+          'Error retrieving semiology information from mega_analysis module.'
+          f' Details:\n\n{e}\n\n'
+          'If you think this is a bug, please report this issue on the repository:'
+          ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new'
+        )
+        slicer.util.errorDisplay(message)
+        dataFrame = None
+        raise
+      finally:
+        box.accept()
     return dataFrame
 
   def getDominantHemisphereFromGUI(self):
@@ -787,6 +808,13 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       outputNode,
       ):
     """Create a scalar volume node so that the colorbar is correct."""
+
+    box = qt.QMessageBox()
+    box.setStandardButtons(0)
+    box.setText('Creating scores volume node...')
+    box.show()
+    slicer.app.processEvents()
+
     parcellationImage = su.PullVolumeFromSlicer(parcellationLabelMapNode)
     parcellationArray = sitk.GetArrayViewFromImage(parcellationImage)
     scoresArray = np.zeros_like(parcellationArray, np.float)
@@ -814,6 +842,8 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     windowMin = scoresArray[scoresArray > 0].min() if scoresArray.any() else 0
     windowMax = scoresArray.max()
     displayNode.SetWindowLevelMinMax(windowMin, windowMax)
+
+    box.accept()
     return scoresVolumeNode
 
   def getImageFromArray(self, array, referenceImage):
@@ -1000,6 +1030,30 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
       stringsDataFrame.drop(index='Score', inplace=True)
     return stringsDataFrame
 
+  def getCacheDir(self):
+    cacheDir = Path('~/.cache/svt').expanduser()
+    cacheDir.mkdir(exist_ok=True, parents=True)
+    return cacheDir
+
+  def getCachePath(self):
+    path = self.getCacheDir() / 'queries.yml'
+    path.touch()
+    return path
+
+  def readCache(self):
+    import yaml
+    with open(self.getCachePath()) as f:
+      cache = yaml.full_load(f)
+    if cache is None:
+      cache = {}
+    return cache
+
+  def writeCache(self, cache):
+    import yaml
+    with open(self.getCachePath(), 'w') as f:
+      documents = yaml.dump(cache, f)
+    return documents
+
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
   """
@@ -1126,13 +1180,20 @@ class Parcellation(ABC):
         showProgress (bool, optional): [description]. Defaults to True.
         min2dOpacity (int, optional): [description]. Defaults to 1.
     """
+    if not showProgress:
+      box = qt.QMessageBox()
+      box.setStandardButtons(0)
+      box.setText('Setting colours...')
+      box.show()
+      slicer.app.processEvents()
+
     segments = self.getSegments()
     numSegments = len(segments)
     if showProgress:
       progressDialog = slicer.util.createProgressDialog(
         value=0,
         maximum=numSegments,
-        windowTitle='Setting colors...',
+        windowTitle='Setting colours...',
       )
     for i, segment in enumerate(segments):
       if showProgress:
@@ -1167,6 +1228,8 @@ class Parcellation(ABC):
       progressDialog.setValue(numSegments)
       slicer.app.processEvents()
       progressDialog.close()
+    else:
+      box.accept()
 
   def getColorFromScore(self, normalizedScore, colorNode):
     """This method is very important"""
@@ -1331,3 +1394,71 @@ class CustomSemiology:
       widget = self.radioButtons[lateralityName]
       if widget.isChecked():
         return laterality
+
+
+class Query:
+  def __init__(self, semiologies):
+    if isinstance(semiologies, (str, Path)):
+      self.semiologies = self.read(semiologies)
+    else:
+      self.semiologies = semiologies
+
+  def toDicts(self):
+    content = []
+    for semiology in self.semiologies:
+      semiology_dict = dict(
+        term=semiology.term,
+        symptoms_side=semiology.symptoms_side.value,
+        include_concordance=semiology.include_concordance,
+        include_seeg=semiology.include_seeg,
+        include_cortical_stimulation=semiology.include_cortical_stimulation,
+        include_et_topology_ez=semiology.include_et_topology_ez,
+        include_spontaneous_semiology=semiology.include_spontaneous_semiology,
+        include_paediatric_cases=semiology.include_paediatric_cases,
+        include_postictals=semiology.include_postictals,
+      )
+      content.append(semiology_dict)
+    return content
+
+  def hash(self):
+    return make_hash_sha256(self.toDicts())
+
+  def write(self, path):
+    import yaml
+    with open(path, 'w') as f:
+      documents = yaml.dump(self.toDicts(), f)
+    return documents
+
+  def read(self, path):
+    pass
+
+
+class Scores:
+  def __init__(self, scores):
+    import pandas as pd
+    if isinstance(scores, pd.DataFrame):
+      self.df = scores
+    elif isinstance(scores, dict):
+      self.df = pd.DataFrame.from_records(scores)
+
+  def toDict(self):
+    return self.df.to_dict()
+
+
+# https://stackoverflow.com/a/42151923/3956024
+import hashlib
+import base64
+
+def make_hash_sha256(o):
+  hasher = hashlib.sha256()
+  hasher.update(repr(make_hashable(o)).encode())
+  return base64.b64encode(hasher.digest()).decode()
+
+def make_hashable(o):
+  if isinstance(o, (tuple, list)):
+    return tuple((make_hashable(e) for e in o))
+  if isinstance(o, dict):
+    return tuple(sorted((k, make_hashable(v)) for k, v in o.items()))
+  if isinstance(o, (set, frozenset)):
+    return tuple(sorted(make_hashable(e) for e in o))
+  return o
