@@ -47,6 +47,10 @@ gif_lat_file = pd.read_excel(
 
 class TestDummyDataDummyDictionary(unittest.TestCase):
     """
+    any tests/fixtures with gifs, rely on the mapping strategy used.
+    Therefore these can be commented out or updated when mapping is updated.
+    Note this uses the dummy data mapping not the live SemioBrain Database.
+
     for debugging run as such (at end of file) if def __init__(self):
         query = TestDummyDataDummyDictionary()
         query.test_default_no_exclusions()
@@ -63,9 +67,12 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     def test_default_vs_exclusions(self):
         assert not self.df.equals(exclusions(self.df))
         # exclusions default is to exclude postictals and PETs only
-        # print('1')
+        # print('\n1\n')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_regex_pickup(self):
+        """
+        default QUERY_SEMIOLOGY doesn't exclude paed cases
+        """
         query = QUERY_SEMIOLOGY(
             self.df,
             semiology_term=['aphasia'],
@@ -76,11 +83,13 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
-        # print('2')
+        # print('\n2\n')
 
     def test_postictal_exclusion(self):
         """
-        Exclude the single postictal aphasia
+        Exclude the single postictal aphasia.
+        After update in June, default is to exclude postictals.
+        So the result of this should be the same as query_semiology()
         """
         df_excl = exclusions(self.df)
         query = QUERY_SEMIOLOGY(
@@ -110,7 +119,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         )
         assert(query['Localising'].sum() == 12)
         assert(query['Lateralising'].sum() == 6)
-        # print('3')
+        # print('\n3\n')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
         query = QUERY_SEMIOLOGY(
@@ -124,7 +133,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         )
         assert(query['Localising'].sum() == 13)
         assert(query['Lateralising'].sum() == 6)
-        # print('4')
+        # print('\n4\n')
 
     def test_toplevel_aphasia_parentheses_and_caps(self):
         """
@@ -138,14 +147,16 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
-        assert(inspect_result['Localising'].sum() == 13)
-        assert(inspect_result['Lateralising'].sum() == 6)
-        # print('5')
+        # deafult excludes postictals
+        assert(inspect_result['Localising'].sum() == 13-1)
+        assert(inspect_result['Lateralising'].sum() == 6-1)
+        # print('\n5\n')
 
     def test_toplevel_query_lat(self):
         """
         Need to change the call to the semiology_dictionary to
             make it the dummy_semio_dict
+        Relies on mapping strategy as uses gifs
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
@@ -171,6 +182,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             index_col=0,
         )
         # fixture.sort_index(inplace=True)
+        # new_all_combined_gifindexed.to_csv(r'D:\fixture_aphasia.csv')
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))
 #         print('new_all_combined_gifindexed.shape is: ',
 #               new_all_combined_gifindexed.shape)
@@ -179,7 +191,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
         assert(
             new_all_combined_gifindexed.values.all() == fixture.values.all())
-#         print('6 query lat')
+#         print('\n6 query lat\n')
 
     def test_paed_default_query_semio(self):
         """
@@ -195,7 +207,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert not all_gifs.empty
         assert(all_gifs['Localising'].sum() == 10+5+1)
         assert(all_gifs['Lateralising'].sum() == 0)
-        print('7 paed query_semio()')
+        print('\n7 paed query_semio()\n')
 
 
 # for debugging with __init__():
