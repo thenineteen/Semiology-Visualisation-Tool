@@ -21,6 +21,7 @@ from .crosstab.mega_analysis.exclusions import (
     exclude_paediatric_cases,
     exclude_postictals,
     exclusions,
+    only_paediatric_cases,
 )
 from .crosstab.mega_analysis.mapping import pivot_result_to_one_map
 from .crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
