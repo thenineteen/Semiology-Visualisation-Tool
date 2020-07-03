@@ -241,15 +241,7 @@
           "(?<!no )eyes? deviate",
           "(?<!no )gaze deviate",
         ]
-      "Tonic":
-        [
-          "(?<!asymmetric )tonic limb posturing",
-          "(?<!asymmetric )tonic postur",
-          "((?<!asymmetric )(?<!no ))posturing",
-          "contraction",
-          "((?<!asymmetric )(?<!generalised )(?<!generalized )(?!a))tonic((?!-clonic)(?!/clonic)(?! clonic))",
-          "(?<!no )stiff",
-        ]
+      "Tonic": ["error"]
       "Asymmetric Tonic":
         [
           "asymmetric tonic",
