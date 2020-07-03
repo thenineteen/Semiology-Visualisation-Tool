@@ -200,16 +200,18 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     def test_paed_default_query_semio(self):
         """
         Test query_semiology for excluding paediatric cases.
-        This test shows the default query_semiology() doesn't filter paediatric cases.
+        This test now shows that default query_semiology() DOES filter paediatric cases.
 
         """
         patient = Semiology('spasm', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
+        # revert default paed exclusions
+        patient.include_only_paediatric_cases = True
         inspect_result = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
-        assert(inspect_result['Localising'].sum() == 10+5+1)
+        assert(inspect_result['Localising'].sum() == 10)
         assert(inspect_result['Lateralising'].sum() == 0)
         print('\n7 paed query_semio()\n')
 
@@ -227,6 +229,21 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(inspect_result['Localising'].sum() == 5+1)
         assert(inspect_result['Lateralising'].sum() == 0)
         print('\n8 paed exclusions query_semio()\n')
+
+    def test_NegativeLookBehind_Regex(self):
+        """
+        Test the NLB regex used in differentiating Tonic vs Asymmetric Tonic, atonic, generalised tonic, tonic-clonic etc in SemioDict .
+        """
+        patient = Semiology('tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+        inspect_result.to_csv(r'D:/inspect_result_LB.csv')
+
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert(inspect_result['Localising'].sum() == 1+10)
+        assert(inspect_result['Lateralising'].sum() == 1)
+        print('\n9 negative lookbehind regex\n')
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
