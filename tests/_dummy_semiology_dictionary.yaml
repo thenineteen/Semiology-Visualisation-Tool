@@ -241,7 +241,7 @@
           "(?<!no )eyes? deviate",
           "(?<!no )gaze deviate",
         ]
-      "Tonic": ["error"]
+      "Tonic": ["(?<!asymmetric) tonic"]
       "Asymmetric Tonic":
         [
           "asymmetric tonic",

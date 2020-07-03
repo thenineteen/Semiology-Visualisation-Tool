@@ -234,7 +234,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         Test the NLB regex used in differentiating Tonic vs Asymmetric Tonic, atonic, generalised tonic, tonic-clonic etc in SemioDict .
         """
-        patient = Semiology('tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient = Semiology('Tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
         inspect_result = patient.query_semiology()
 
