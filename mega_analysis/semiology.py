@@ -113,7 +113,7 @@ class Semiology:
         self.include_cortical_stimulation = include_cortical_stimulation
         self.include_et_topology_ez = include_et_topology_ez
         self.include_spontaneous_semiology = include_spontaneous_semiology
-        self.include_paediatric_cases = include_paediatric_cases
+        self.include_only_paediatric_cases = include_only_paediatric_cases
         self.include_postictals = include_postictals
         self.data_frame = mega_analysis_df
         if possible_lateralities is None:

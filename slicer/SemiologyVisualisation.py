@@ -1459,7 +1459,7 @@ class Query:
         include_cortical_stimulation=semiology.include_cortical_stimulation,
         include_et_topology_ez=semiology.include_et_topology_ez,
         include_spontaneous_semiology=semiology.include_spontaneous_semiology,
-        include_paediatric_cases=semiology.include_paediatric_cases,
+        include_only_paediatric_cases=semiology.include_only_paediatric_cases,
         include_postictals=semiology.include_postictals,
       )
       content.append(semiology_dict)
