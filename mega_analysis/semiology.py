@@ -133,10 +133,12 @@ class Semiology:
             df = exclude_cortical_stimulation(df)
         if not self.include_spontaneous_semiology:
             df = exclude_spontaneous_semiology(df)
-        if not self.include_paediatric_cases:
-            df = exclude_paediatric_cases(df)
         if not self.include_postictals:
             df = exclude_postictals(df)
+        if self.include_paediatric_cases:
+            df = only_paediatric_cases(df)
+        else:
+            df = exclude_paediatric_cases(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
