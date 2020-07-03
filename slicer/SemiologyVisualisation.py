@@ -223,6 +223,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     inclusionsLayout.addWidget(ageGroupBox)
     ageLayout = qt.QVBoxLayout(ageGroupBox)
     self.paediatricCheckBox = qt.QCheckBox('Paediatric under seven years')
+    self.paediatricCheckBox.setToolTip(
+      'Exclude all cases for which we are certain that the semiology was'
+      ' reported in a patient under 7-years old'
+    )
     ageLayout.addWidget(self.paediatricCheckBox)
 
     self.postSurgicalSzFreedomCheckBox = qt.QCheckBox('Postoperative seizure freedom')
