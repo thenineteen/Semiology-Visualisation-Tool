@@ -247,7 +247,7 @@
           "(?<!asymmetric )tonic postur",
           "((?<!asymmetric )(?<!no ))posturing",
           "contraction",
-          "((?<!asymmetric )(?<!generalised )(?<!generalized ))tonic((?!-clonic)(?!/clonic)(?! clonic))",
+          "((?<!asymmetric )(?<!generalised )(?<!generalized )(?<!a))tonic((?!-clonic)(?!/clonic)(?! clonic))",
           "(?<!no )stiff",
         ]
       "Asymmetric Tonic":
