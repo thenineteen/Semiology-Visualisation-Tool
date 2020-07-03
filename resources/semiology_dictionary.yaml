@@ -247,7 +247,7 @@
           "(?<!asymmetric )tonic postur",
           "((?<!asymmetric )(?<!no ))posturing",
           "contraction",
-          "((?<!asymmetric )(?<!generalised)(?<!generalized))tonic((?!-clonic)(?!/clonic)(?! clonic))",
+          "((?<!asymmetric )(?<!generalised )(?<!generalized ))tonic((?!-clonic)(?!/clonic)(?! clonic))",
           "(?<!no )stiff",
         ]
       "Asymmetric Tonic":
@@ -257,8 +257,6 @@
           "assymetric tonic",
           "assymmetric tonic",
           "fencing",
-          "extension [a-z]* ?[a-z]* ?flexion",
-          "flexion [a-z]* ?[a-z]* ?extension",
           "figure of 4",
           "figure of four",
           "fig of 4",
