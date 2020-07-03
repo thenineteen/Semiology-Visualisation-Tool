@@ -237,7 +237,6 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient = Semiology('tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
         inspect_result = patient.query_semiology()
-        inspect_result.to_csv(r'D:/inspect_result_LB.csv')
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
