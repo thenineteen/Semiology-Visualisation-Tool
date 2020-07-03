@@ -100,7 +100,7 @@ class Semiology:
             include_cortical_stimulation: bool = True,
             include_et_topology_ez: bool = True,
             include_spontaneous_semiology: bool = True,
-            include_paediatric_cases: bool = True,
+            include_only_paediatric_cases: bool = False,
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             ):
@@ -136,7 +136,7 @@ class Semiology:
             df = exclude_spontaneous_semiology(df)
         if not self.include_postictals:
             df = exclude_postictals(df)
-        if self.include_paediatric_cases:
+        if self.include_only_paediatric_cases:
             df = only_paediatric_cases(df)
         else:
             df = exclude_paediatric_cases(df)

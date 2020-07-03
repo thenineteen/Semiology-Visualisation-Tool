@@ -501,7 +501,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         include_cortical_stimulation=self.brainStimulationCheckBox.isChecked(),
         include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
         include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
-        include_paediatric_cases=self.paediatricCheckBox.isChecked(),
+        include_only_paediatric_cases=self.paediatricCheckBox.isChecked(),
       )
       semiologies.append(semiology)
     return semiologies
