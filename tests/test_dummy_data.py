@@ -235,7 +235,9 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
     def test_NegativeLookBehind_Regex(self):
         """
-        Test the NLB regex used in differentiating Tonic vs Asymmetric Tonic, atonic, generalised tonic, tonic-clonic etc in SemioDict .
+        Test the NLB regex used in differentiating Tonic vs Asymmetric Tonic, atonic, generalised tonic, tonic-clonic etc in SemioDict.
+        Note also that the SemioDict is the live one unless specifically specified:
+            e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path=dummy_semiology_dict_path)
         """
         patient = Semiology('Tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
