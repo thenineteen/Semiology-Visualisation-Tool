@@ -131,7 +131,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
         query = QUERY_SEMIOLOGY(
             self.df,
-            semiology_term='aphasia',
+            # see dummy_SemioDict: equivalent to "Aphasia"
+            semiology_term='dummy_test_link_aphasia',
             ignore_case=False,
             # in QUERY_SEMIO re.IGNORECASE is used for dictionary anyway
             semiology_dict_path=dummy_semiology_dict_path,
@@ -241,12 +242,23 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('Tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        tonic_result = patient.query_semiology()
 
-        self.assertIs(type(inspect_result), pd.DataFrame)
-        assert not inspect_result.empty
-        assert(inspect_result['Localising'].sum() == 1+10)
-        assert(inspect_result['Lateralising'].sum() == 1)
+        self.assertIs(type(tonic_result), pd.DataFrame)
+        assert not tonic_result.empty
+        assert(tonic_result['Localising'].sum() == 1+10)
+        assert(tonic_result['Lateralising'].sum() == 1)
+
+        # # Now test for Atonic
+        # patient = Semiology('Atonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        # patient.data_frame = self.df
+        # atonic_result = patient.query_semiology()
+
+        # self.assertIs(type(atonic_result), pd.DataFrame)
+        # assert not atonic_result.empty
+        # assert(atonic_result['Localising'].sum() == 999)
+        # assert(atonic_result['Lateralising'].sum() == 2)
+
         print('\n9 negative lookbehind regex\n')
 
 # for debugging with __init__():
