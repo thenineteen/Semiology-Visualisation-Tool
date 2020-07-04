@@ -49,7 +49,10 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     """
     any tests/fixtures with gifs, rely on the mapping strategy used.
     Therefore these can be commented out or updated when mapping is updated.
+
     Note this uses the dummy data mapping not the live SemioBrain Database.
+    Note also that the SemioDict is the live one unless specifically specified
+        e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path=dummy_semiology_dict_path)
 
     for debugging run as such (at end of file) if def __init__(self):
         query = TestDummyDataDummyDictionary()
