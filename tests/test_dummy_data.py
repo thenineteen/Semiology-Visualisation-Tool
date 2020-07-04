@@ -249,15 +249,16 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(tonic_result['Localising'].sum() == 1+10)
         assert(tonic_result['Lateralising'].sum() == 1)
 
-        # # Now test for Atonic
-        # patient = Semiology('Atonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
-        # patient.data_frame = self.df
-        # atonic_result = patient.query_semiology()
+        # Now test for Atonic
+        patient_two = Semiology(
+            'Atonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
+        patient_two.data_frame = self.df
+        atonic_result = patient_two.query_semiology()
 
-        # self.assertIs(type(atonic_result), pd.DataFrame)
-        # assert not atonic_result.empty
-        # assert(atonic_result['Localising'].sum() == 999)
-        # assert(atonic_result['Lateralising'].sum() == 2)
+        self.assertIs(type(atonic_result), pd.DataFrame)
+        assert not atonic_result.empty
+        assert(atonic_result['Localising'].sum() == 999)
+        assert(atonic_result['Lateralising'].sum() == 2)
 
         print('\n9 negative lookbehind regex\n')
 
