@@ -444,6 +444,7 @@
         "unable to talk",
         "(?<!no )speech arrest",
       ]
+    "dummy_test_link_aphasia": ["aphasia"]
     "Dysphasia":
       [
         "(?<!no )dysphasia",
