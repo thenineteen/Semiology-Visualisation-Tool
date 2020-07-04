@@ -323,7 +323,7 @@
         ["Other Complex Motor", "complex motor", "complicated motor"]
 
     special seizures:
-      "Atonic": ["atonic", "flaccid", "loss of tone", "jelly"]
+      "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly"]
       "Ictal Limb Paresis": ["Ictal Limb Paresis", "unilateral ictal paresis"]
       "Astatic":
         [
