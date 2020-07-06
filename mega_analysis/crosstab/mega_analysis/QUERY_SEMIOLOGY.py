@@ -1,9 +1,9 @@
-import re
 import logging
+import re
 import warnings
 
-import yaml
 import pandas as pd
+import yaml
 
 
 def make_simple_list(allv, allv_simple_list=[]):
@@ -48,11 +48,12 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
     Ali Alim-Marvasti Aug 2019
 
     """
+    semiology_key = semiology_key.lower()
     if isinstance(dictionary, list):
         print('No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
     for k, v in dictionary.items():
-        search = re.search(k, semiology_key, re.IGNORECASE)
+        search = semiology_key == k.lower()
         if search:
             logging.debug('dictionary_key_recursion_2 found values of key')
             if isinstance(v, list):
@@ -160,6 +161,7 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
     """
     # initialise return object
     inspect_result = pd.DataFrame()
+    original_semiology_term = semiology_term
 
     # main body of function
     if isinstance(semiology_term, list):
@@ -178,7 +180,7 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
 
     if semiology_dict_path is not None:
         values_dict_or_list = use_semiology_dictionary_(
-            semiology_term,
+            original_semiology_term,
             semiology_dict_path,
         )
 
