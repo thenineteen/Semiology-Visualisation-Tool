@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology Visualisation Tool (SVT)
+# Epilepsy Seizure Semiology Visualisation Tool (SVT) - Beta v 0.2.0
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
 
@@ -18,7 +18,7 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: SemioBrain Database
+### 1. Resources: SemioBrain Database - Beta 51% (146/287 included studies integrated)
 We curated the largest patient-level database of 4454 unique patients from 282 studies, yielding 2368 lateralising and 10917 localising datapoints for initial or most prominently reported seizure semiologies. These patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
 
 * Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I if not otherwise specified), confirmed at a minimum follow-up of 12 months;
@@ -34,8 +34,8 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
   pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement 
-### 3. Resources: lateralisation and localisation mappings
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 0.9.1
+### 3. Resources: lateralisation and localisation mappings - v 0.2.1
 To query this database, we developed a taxonomy of 47 semiological terms, mapped reported categorical brain regions to 55 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
 
