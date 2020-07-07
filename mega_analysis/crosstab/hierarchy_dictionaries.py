@@ -120,6 +120,9 @@ occipital_postcodes = {
         'Mesial Occipital',
         'Lateral Occipital',
         'Posterior Occipital Gyrus',
+        'Superior Occipital Gyrus',
+        'Middle Occipital Gyrus',
+        'Inferior Occipital Gyrus',
     ],
     'Mesial Occipital': [
         'Lingual gyrus ',
