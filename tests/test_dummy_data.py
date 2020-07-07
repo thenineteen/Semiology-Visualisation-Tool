@@ -160,7 +160,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(inspect_result['Lateralising'].sum() == 6-1)
         # print('\n5\n')
 
-    def test_toplevel_query_lat(self):
+    def test_toplevel_query_lat_mappings(self):
         """
         Need to change the call to the semiology_dictionary to
             make it the dummy_semio_dict
@@ -181,6 +181,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         new_all_combined_gifindexed.set_index(
             'Gif Parcellations', inplace=True)
 
+        new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
         # load fixture:
         fixture = pd.read_excel(
             dummy_data_path,
