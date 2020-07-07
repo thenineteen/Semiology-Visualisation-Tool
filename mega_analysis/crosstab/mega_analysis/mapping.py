@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 import numpy as np
 
+
 def mapping(map_df_dict):
     """
     Uses Ali and Gloria's brain reported localisation in literature to GIF parcellations,
@@ -42,14 +43,12 @@ def big_map(map_df_dict):
     return one_map
 
 
-
 def pivot_result_to_one_map(
         pivot_result,
         *one_map,
         raw_pt_numbers_string='pt #s',
-        suppress_prints=False,
         map_df_dict=None,
-        ):
+):
     """
     Run after pivot_result_to_pixel_intensities - unless being called as part of QUERY_LATERALISATION.
     This is the Final Step without lateralisation.
@@ -63,19 +62,23 @@ def pivot_result_to_one_map(
     """
     if not one_map:
         if map_df_dict is None:
-            raise ValueError('If one_map not provided, map_df_dict cannot be None')
+            raise ValueError(
+                'If one_map not provided, map_df_dict cannot be None')
         one_map = big_map(map_df_dict)
         # one_map = one_map[0]
     if isinstance(one_map, tuple):
         one_map = one_map[0]
 
     # checks
-    if not suppress_prints:
-        if ( len([col for col in pivot_result if col not in one_map])  > 0):
-            print(len([col for col in pivot_result if col not in one_map]), 'localisation column(s) in the pivot_result which cannot be found in one_map')
-            print([col for col in pivot_result if col not in one_map])
-        else:
-            print('No issues: pivot_result compared to one_map and all localisations are ready for analysis.')
+    if (len([col for col in pivot_result if col not in one_map]) > 0):
+        logging.error(len([col for col in pivot_result if col not in one_map]),
+                      'localisation column(s) in the pivot_result which cannot be found in one_map',
+                      'These columns are: ',
+                      str([col for col in pivot_result if col not in one_map])
+                      )
+    else:
+        pass
+        # print('No issues: pivot_result compared to one_map and all localisations are ready for analysis.')
 
     # initialisations
     individual_cols = [col for col in pivot_result if col in one_map]
@@ -88,36 +91,37 @@ def pivot_result_to_one_map(
         col_gifs.loc[:, raw_pt_numbers_string] = int(pivot_result[col].values)
         all_gifs = all_gifs.append(col_gifs, sort=False)
 
-
     try:
         # stack the resulting all_gifs (values are in 3rd column)
-        all_gifs = all_gifs.melt(id_vars = raw_pt_numbers_string,
-                                var_name='Localisation', value_name='Gif Parcellations')  # df
+        all_gifs = all_gifs.melt(id_vars=raw_pt_numbers_string,
+                                 var_name='Localisation', value_name='Gif Parcellations')  # df
         all_gifs = all_gifs.dropna(axis='rows', how='any')
     #     all_gifs = all_gifs.stack()  #  gives a series
     except KeyError:
         logging.debug(f'\nKeyError. all_gifs={all_gifs}')
-        logging.debug('CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
-
+        logging.debug(
+            'CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
     # this is for Rachel Sparks's requirement:
     all_gifs.insert(0, 'Semiology Term', np.nan)
     all_gifs.loc[0, 'Semiology Term'] = str(list(pivot_result.index.values))
 
-        # reorder the columns:
+    # reorder the columns:
     all_gifs = all_gifs.reindex(columns=['Semiology Term',
-                                        'Localisation',
-                                        'Gif Parcellations',
-                                        raw_pt_numbers_string])
+                                         'Localisation',
+                                         'Gif Parcellations',
+                                         raw_pt_numbers_string])
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
-    fixed = all_gifs.pivot_table(columns='Gif Parcellations', values=raw_pt_numbers_string, aggfunc='sum')
+    fixed = all_gifs.pivot_table(
+        columns='Gif Parcellations', values=raw_pt_numbers_string, aggfunc='sum')
     fixed2 = fixed.melt()
     fixed2.insert(0, 'Semiology Term', np.nan)
-    fixed2.loc[0, 'Semiology Term'] = str( list(pivot_result.index.values) )
+    fixed2.loc[0, 'Semiology Term'] = str(list(pivot_result.index.values))
     all_gifs = fixed2
 
-    all_gifs.columns = ['Semiology Term', 'Gif Parcellations', raw_pt_numbers_string]
+    all_gifs.columns = ['Semiology Term',
+                        'Gif Parcellations', raw_pt_numbers_string]
 
     return all_gifs

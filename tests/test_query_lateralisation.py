@@ -40,7 +40,6 @@ class TestQueryLateralisation(unittest.TestCase):
             )
             all_combined_gifs = pivot_result_to_one_map(
                 pivot_result,
-                suppress_prints=True,
                 map_df_dict=map_df_dict,
             )
         return all_combined_gifs
@@ -61,7 +60,6 @@ class TestQueryLateralisation(unittest.TestCase):
         )
         assert not all_combined_gifs.empty
 
-
     def test_aphemia(self):
         all_combined_gifs = self.query(
             'Aphemia',
@@ -77,7 +75,6 @@ class TestQueryLateralisation(unittest.TestCase):
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
-
 
     def test_blink(self):
         all_combined_gifs = self.query(
@@ -103,7 +100,6 @@ class TestQueryLateralisation(unittest.TestCase):
         )
         assert not all_combined_gifs.empty
 
-
     def test_head_version(self):
         all_combined_gifs = self.query(
             'Head version',
@@ -119,7 +115,6 @@ class TestQueryLateralisation(unittest.TestCase):
             Laterality.NEUTRAL,
         )
         assert not all_combined_gifs.empty
-
 
     def test_asymmetric_tonic(self):
         all_combined_gifs = self.query(

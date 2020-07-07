@@ -194,7 +194,6 @@ class Semiology:
                     )
                     all_combined_gifs = pivot_result_to_one_map(
                         pivot_result,
-                        suppress_prints=True,
                         map_df_dict=map_df_dict,
                     )
         return all_combined_gifs
