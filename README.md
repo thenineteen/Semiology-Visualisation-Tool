@@ -35,7 +35,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 0.9.1
-### 3. Resources: lateralisation and localisation mappings - v 0.2.1
+### 3. Resources: lateralisation and localisation mappings - v 1.0.8
 To query this database, we developed a taxonomy of 47 semiological terms, mapped reported categorical brain regions to 55 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
 
