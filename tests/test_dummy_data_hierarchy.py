@@ -250,6 +250,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         assert(
             inspect_result_reversed['STG (includes Transverse Temporal Gyrus, Both Planum)'].sum() == 1)
         assert 'Planum Temporale' not in inspect_result
+        assert 'Planum Polare' not in inspect_result
 
 
 # for debugging with setUp(self):
