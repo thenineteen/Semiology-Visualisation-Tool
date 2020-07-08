@@ -22,7 +22,7 @@ def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
         elif len(semiology_exists_already) == 1:
             pop-up window("Note this custom semiology may already exist within the category {}".format(semiology_exists_already[0]))
         elif len(semiology_exists_already) > 1:
-            pop-up window("Note this custom semiology may already exist within the following categories: {}".format(str(semiology_exists_already)))
+            pop-up window("Note this custom semiology term occurs in various ways within the following categories: {}".format(str(semiology_exists_already)))
 
     Alim-Marvasti 2020
     """
@@ -36,6 +36,8 @@ def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
             for regex_item in v:
                 if re.search(r'(?i)' + regex_item, custom_semiology):
                     found.append(k)
+                if re.search(r'(?i)' + custom_semiology, regex_item):
+                    found.append(k)
         elif isinstance(v, dict):
             # run it again to open nested dict values:
             custom_semiology_lookup(
@@ -43,5 +45,7 @@ def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
         else:  # single regex term in the value of the key
             if re.search(r'(?i)' + v, custom_semiology):
                 found.append(k)
+            if re.search(r'(?i)' + custom_semiology, v):
+                found.append(k)
 
-    return found
+    return list(set(found))
