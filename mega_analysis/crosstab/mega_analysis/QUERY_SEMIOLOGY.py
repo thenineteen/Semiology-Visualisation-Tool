@@ -50,7 +50,8 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
     """
     semiology_key = semiology_key.lower()
     if isinstance(dictionary, list):
-        print('No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
+        logging.debug(
+            'No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
     for k, v in dictionary.items():
         search = semiology_key == k.lower()
@@ -102,12 +103,13 @@ def use_semiology_dictionary_(semiology_term, semiology_dict_path):
     dict_comprehension = {key: values for (key, values) in semiology_dictionary['semiology'].items(
     ) if key.lower() == semiology_key.lower()}
     if dict_comprehension:
-        print('dict_comprehension = \n', dict_comprehension)
+        logging.debug('dict_comprehension = \n', dict_comprehension)
         _, values = dictionary_key_recursion_(dict_comprehension)
         # # this returns a single list of single items and removes the nested lists
         # values = make_simple_list(values)
 
-        print('values from dictionary_key_recursion_(dict_comprehension): \n', values)
+        logging.debug(
+            'values from dictionary_key_recursion_(dict_comprehension): \n', values)
         return values
 
     # if the key wasn't found then it is nested:
@@ -193,7 +195,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
             _, values = dictionary_key_recursion_(values_dict_or_list)
             values = make_simple_list(values)
         else:
-            print('What just happened? Neither dict nor list.')
+            print(
+                'Error Please report this bug. What just happened? Neither dict nor list.')
             return
         # turn these values to regexes too:
         values = regex_ignore_case(values)

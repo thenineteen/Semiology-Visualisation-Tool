@@ -68,7 +68,7 @@ def MEGA_ANALYSIS(
                             SPECT_PET=kwargs['SPECT_PET'],
                             CONCORDANCE=kwargs['CONCORDANCE'])
 
-        print('\ndf.shape after exclusions: ', df.shape)
+        logging.debug('\ndf.shape after exclusions: {}'.format(df.shape))
     else:
         logging.debug('1. No Exclusions.')
 

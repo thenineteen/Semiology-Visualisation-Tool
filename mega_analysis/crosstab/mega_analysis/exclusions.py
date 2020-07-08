@@ -2,7 +2,7 @@ from .QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 import numpy as np
 import pandas as pd
 from pathlib import Path
-
+import logging
 
 POST_OP = 'Post-op Sz Freedom (Engel Ia, Ib; ILAE 1, 2)'
 CONCORDANT = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
@@ -19,7 +19,7 @@ def exclude_postictals(df):
                                             ignore_case=True, semiology_dict_path=None)
     df.drop(labels=post_ictal_inspection.index,
             axis='index', inplace=True, errors='ignore')
-    print('Excluded post-ictal semiology in specific query')
+    logging.debug('Excluded post-ictal semiology in specific query')
     return df
 
 
@@ -71,7 +71,8 @@ def exclusions(df,
         # mixed_ground_truth_index = [item for item in list(ans.index) if item not in list(ans3.index)]
         # df.loc[mixed_ground_truth_index][CONCORDANT] =  np.nan # doesn't drop, as meet other ground truth criteria. Just turn concordance to null.
 
-        print('Excluded cases where PET hypermetabolism was the only grund truth criteria from the query, converted rest to nulls')
+        logging.debug(
+            'Excluded cases if PET hypermetabolism was the only grund truth, converted rest to nulls')
 
     if SPECT_PET:
         col1 = 'Concordant Neurophys & Imaging (MRI, PET, SPECT)'
@@ -96,15 +97,16 @@ def exclusions(df,
             df.loc[df[SEEG_ES].isnull()], how='inner').set_index('index')
         df.drop(labels=list(ans2.index), axis='index',
                 inplace=True, errors='ignore')
-        print('Excluded cases where concordance involved SPECT or PET without MRI or other ground truths,')
-        print('converted rest to nulls')
+        logging.debug(
+            'Excluded cases where concordance involved SPECT or PET without MRI or other ground truths,')
+        logging.debug('converted rest to nulls')
 
     df = df.dropna(axis='columns', how='all')
 
     # concordance after dropping columns, otherwise would drop this column
     if CONCORDANCE:
         df.loc[:, CONCORDANT] = np.nan
-        print('\nEntirely replaced concordant column with nans')
+        logging.debug('\nEntirely replaced concordant column with nans')
         # now need to recheck and drop any rows which have no ground truth:
         df.dropna(subset=[POST_OP, CONCORDANT, SEEG_ES],
                   thresh=1, axis=0, inplace=True)
