@@ -181,7 +181,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         new_all_combined_gifindexed.set_index(
             'Gif Parcellations', inplace=True)
 
-        new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
+        # new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
         # load fixture:
         fixture = pd.read_excel(
             dummy_data_path,
