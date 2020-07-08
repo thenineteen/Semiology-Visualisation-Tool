@@ -174,6 +174,84 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         assert(inspect_result_reversed['IFG (F3)\n(BA 44,45,47)'].sum() == 1)
         print('\n11 all_hierarchy reversals\n')
 
+    def use_SemioBrainBeta_notDummyData(self):
+        """
+        factor function.
+        """
+        # load the Beta SemioBrain Database:
+        repo_dir, resources_dir, SemioBrainBeta_data_path, SemioDict_path = \
+            file_paths(dummy_data=False)
+        SemioBrainBeta_df, _, _ = MEGA_ANALYSIS(
+            excel_data=SemioBrainBeta_data_path,
+            n_rows=2500,
+            usecols="A:DH",
+            header=1,
+            exclude_data=False,
+            plot=True,
+        )
+        return SemioBrainBeta_df
+
+    def test_MappingsCalibration_HierarchyReversal_SemioBrainBeta_TLf(self):
+        """
+        Test the mappings TL for mapping calibration visualisation in the systReview (SemioBrain Database - beta version)
+        i.e.  not dummy data
+        """
+        patient = Semiology(
+            'mappings TLf', Laterality.NEUTRAL, Laterality.NEUTRAL)
+
+        patient.data_frame = self.use_SemioBrainBeta_notDummyData()
+        patient.granular = False
+        inspect_result = patient.query_semiology()
+
+        hierarchy_df = Hierarchy(inspect_result)
+        hierarchy_df.all_hierarchy_reversal()  # deafult max option
+        inspect_result_reversed = hierarchy_df.new_df
+
+        # test postcodes
+        assert(inspect_result['TL'].sum() == 1)
+        assert(inspect_result['Lateral Temporal'].sum() == 1)
+        assert(
+            inspect_result['STG (includes Transverse Temporal Gyrus, Both Planum)'].sum() == 1)
+        assert(inspect_result['Planum Temporale'].sum() == 1)
+
+        # test hierarchy reversal
+        assert(inspect_result_reversed['TL'].sum() == 0)
+        assert(inspect_result_reversed['Lateral Temporal'].sum() == 0)
+        assert(
+            inspect_result_reversed['STG (includes Transverse Temporal Gyrus, Both Planum)'].sum() == 0)
+        assert(inspect_result_reversed['Planum Temporale'].sum() == 1)
+
+    def test_MappingsCalibration_HierarchyReversal_SemioBrainBeta_TLd(self):
+        """
+        Test the mappings TL for mapping calibration visualisation in the systReview (SemioBrain Database - beta version)
+        i.e.  not dummy data
+        """
+        patient = Semiology(
+            'mappings TLd', Laterality.NEUTRAL, Laterality.NEUTRAL)
+
+        patient.data_frame = self.use_SemioBrainBeta_notDummyData()
+        patient.granular = False
+        inspect_result = patient.query_semiology()
+
+        hierarchy_df = Hierarchy(inspect_result)
+        hierarchy_df.all_hierarchy_reversal()  # deafult max option
+        inspect_result_reversed = hierarchy_df.new_df
+
+        # test postcodes
+        assert(inspect_result['TL'].sum() == 1)
+        assert(inspect_result['Lateral Temporal'].sum() == 1)
+        assert(
+            inspect_result['STG (includes Transverse Temporal Gyrus, Both Planum)'].sum() == 1)
+        assert 'Planum Temporale' not in inspect_result
+
+        # test hierarchy reversal
+        assert(inspect_result_reversed['TL'].sum() == 0)
+        assert(inspect_result_reversed['Lateral Temporal'].sum() == 0)
+        assert(
+            inspect_result_reversed['STG (includes Transverse Temporal Gyrus, Both Planum)'].sum() == 1)
+        assert 'Planum Temporale' not in inspect_result
+        assert 'Planum Polare' not in inspect_result
+
 
 # for debugging with setUp(self):
 if __name__ == '__main__':
