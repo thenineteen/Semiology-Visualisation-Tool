@@ -1255,11 +1255,11 @@ class Parcellation(ABC):
         score = scoresDict[label]
         if score > 0:
           opacity3D = 1
-          normalizedScore = score - minScore
-          normalizedScore /= (maxScore - minScore)
+          normalisedScore = score - minScore
+          normalisedScore /= (maxScore - minScore)
           # opacity2D goes from minOpacity2d to 1.0
-          opacity2D = normalizedScore * (1 - min2dOpacity) + min2dOpacity
-          color = self.getColorFromScore(normalizedScore, colorNode)
+          opacity2D = normalisedScore * (1 - min2dOpacity) + min2dOpacity
+          color = self.getColorFromScore(normalisedScore, colorNode)
       if not showLeft and 'Left' in segment.GetName():
         opacity3D = 0
       if not showRight and 'Right' in segment.GetName():
@@ -1277,10 +1277,10 @@ class Parcellation(ABC):
     slicer.util.delayDisplay(f'Updating colours took {int(toc - tic)} seconds')
     slicer.app.processEvents()
 
-  def getColorFromScore(self, normalizedScore, colorNode):
+  def getColorFromScore(self, normalisedScore, colorNode):
     """This method is very important"""
     numColors = colorNode.GetNumberOfColors()
-    scoreIndex = int(round((numColors - 1) * normalizedScore))
+    scoreIndex = int(round((numColors - 1) * normalisedScore))
     colorAlpha = 4 * [0]
     colorNode.GetColor(scoreIndex, colorAlpha)
     color = np.array(colorAlpha[:3])
@@ -1304,7 +1304,7 @@ class Parcellation(ABC):
     slicer.app.processEvents()
     progressDialog.close()
 
-  def getRandomColor(self, normalized=True):
+  def getRandomColor(self, normalised=True):
     return np.random.rand(3)
 
   def setSegmentOpacity(self, segment, opacity, dimension):
