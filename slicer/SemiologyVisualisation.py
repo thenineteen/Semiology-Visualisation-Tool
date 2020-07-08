@@ -1255,8 +1255,11 @@ class Parcellation(ABC):
         score = scoresDict[label]
         if score > 0:
           opacity3D = 1
-          normalisedScore = score - minScore
-          normalisedScore /= (maxScore - minScore)
+          if minScore == maxScore:  # All regions with datapoints have same score
+            normalisedScore = 1
+          else:
+            normalisedScore = score - minScore
+            normalisedScore /= (maxScore - minScore)
           # opacity2D goes from minOpacity2d to 1.0
           opacity2D = normalisedScore * (1 - min2dOpacity) + min2dOpacity
           color = self.getColorFromScore(normalisedScore, colorNode)
