@@ -187,11 +187,11 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
             file_paths(dummy_data=False)
         SemioBrainBeta_df, _, _ = MEGA_ANALYSIS(
             excel_data=SemioBrainBeta_data_path,
-            n_rows=100,
+            n_rows=2500,
             usecols="A:DH",
             header=1,
             exclude_data=False,
-            plot=False,
+            plot=True,
         )
         patient.data_frame = SemioBrainBeta_df
 
