@@ -10,12 +10,18 @@ def test_custom_semiology_lookup():
     does_exist_epigastric = custom_semiology_lookup('Epigastric', found=[])
     does_exist_butterflies = custom_semiology_lookup('butterflies', found=[])
     does_exist_Caps_Cephalic = custom_semiology_lookup('Cephalic', found=[])
+    does_exist_hEaDrUsh = custom_semiology_lookup('hEaD rUsh', found=[])
+    does_exist_hEaD_multiple = custom_semiology_lookup('hEaD', found=[])
 
     assert not does_not_exist
     assert does_exist_Semio
     assert 'Epigastric' in does_exist_epigastric
     assert 'Epigastric' in does_exist_butterflies
     assert 'Non-Specific Aura' in does_exist_Caps_Cephalic
+    assert 'Non-Specific Aura' in does_exist_hEaDrUsh
+    assert 'Non-Specific Aura' in does_exist_hEaD_multiple
+    assert 'Head Turn' in does_exist_hEaD_multiple
+    assert 'Head Version' in does_exist_hEaD_multiple
 
 
 if __name__ == "__main__":
