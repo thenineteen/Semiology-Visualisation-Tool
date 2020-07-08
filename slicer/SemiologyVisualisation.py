@@ -645,6 +645,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     else:
       combinedDataFrame = combine_semiologies_df(semiologiesDataFrame, normalise=False)
 
+    if self.logic.dataFrameIsEmpty(combinedDataFrame):
+      slicer.util.errorDisplay('The combined results are empty')
+      return
+
     scoresDict = dict(combinedDataFrame.iloc[0])
     if scoresDict is None:
       return
@@ -1095,6 +1099,9 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     if not text or text.isspace():
       text = None
     return text
+
+  def dataFrameIsEmpty(self, dataFrame):
+    return dataFrame.isna().all().all()
 
 
 class SemiologyVisualisationTest(ScriptedLoadableModuleTest):
