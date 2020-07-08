@@ -14,16 +14,17 @@ with open(semiology_dict_path) as f:
 def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
                             found=[]) -> list:
     """
-    User enters custom semiology.
+    User enters custom semiology. This checks if we already have a catch-all in taxonomy replacement SemioDict.
     Top level function will use this to find a match within SemioDict:
-        semiology_exists_already = custom_semiology_lookup(custom_semiology)
-        if semiology_exists_already is None:
+        semiology_exists_already = custom_semiology_lookup(custom_semiology, found=[])
+        if not semiology_exists_already:
             pass
-        else:
-            pop-up window("Note this custom semiology may already exist within the category {}".format(k))
+        elif len(semiology_exists_already) == 1:
+            pop-up window("Note this custom semiology may already exist within the category {}".format(semiology_exists_already[0]))
+        elif len(semiology_exists_already) > 1:
+            pop-up window("Note this custom semiology may already exist within the following categories: {}".format(str(semiology_exists_already)))
 
-    Depending on what functionality is required, could change returns to yield:
-        could use yield if potentially more than one match
+    Alim-Marvasti 2020
     """
     for k, v in nested_dict.items():
         # look for matching keys only in top level
