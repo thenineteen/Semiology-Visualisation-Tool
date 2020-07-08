@@ -1,8 +1,6 @@
-
+from pathlib import Path
 import re
 import yaml
-
-from ...semiology.py import
 
 repo_dir = Path(__file__).parent.parent.parent.parent
 resources_dir = repo_dir / 'resources'
@@ -13,7 +11,8 @@ with open(semiology_dict_path) as f:
     SemioDict = yaml.load(f, Loader=yaml.FullLoader)
 
 
-def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict):
+def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
+                            found=[]) -> list:
     """
     User enters custom semiology.
     Top level function will use this to find a match within SemioDict:
@@ -22,22 +21,26 @@ def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict):
             pass
         else:
             pop-up window("Note this custom semiology may already exist within the category {}".format(k))
-    """
-    for k, v in nested_dict.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
-        if isinstance(v, dict):
-            # look for matching keys only in top level
-            if re.search(custom_semiology, k) | re.search(k, custom_semiology):
-                return k
-            else:
-                # run it again to open nested dict values:
-                custom_semiology_lookup(
-                    custom_semiology, nested_dict=v)
-        else:
-            if re.search(custom_semiology, k) | re.search(custom_semiology, str(v)):
-                # could use yield if potentially more than one match
-                return k
-            if re.search(k, custom_semiology) | re.search(str(v), custom_semiology):
-                # could use yield if potentially more than one match
-                return k
 
-    return None
+    Depending on what functionality is required, could change returns to yield:
+        could use yield if potentially more than one match
+    """
+    for k, v in nested_dict.items():
+        # look for matching keys only in top level
+        if re.search(r'(?i)' + custom_semiology, k):
+            found.append(k)
+        elif re.search(r'(?i)' + k, custom_semiology):
+            found.append(k)
+        elif isinstance(v, list):
+            for regex_item in v:
+                if re.search(r'(?i)' + regex_item, custom_semiology):
+                    found.append(k)
+        elif isinstance(v, dict):
+            # run it again to open nested dict values:
+            custom_semiology_lookup(
+                custom_semiology, nested_dict=v, found=found)
+        else:  # single regex term in the value of the key
+            if re.search(r'(?i)' + v, custom_semiology):
+                found.append(k)
+
+    return found
