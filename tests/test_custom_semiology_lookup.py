@@ -4,14 +4,14 @@ from mega_analysis.crosstab.mega_analysis.custom_semiology_SemioDict_lookup impo
 
 def test_custom_semiology_lookup():
     does_not_exist = custom_semiology_lookup(
-        'custom_semio_does_not_exist', found=[])
+        'custom_semio_does_not_exist')
 
-    does_exist_Semio = custom_semiology_lookup('Semiology', found=[])
-    does_exist_epigastric = custom_semiology_lookup('Epigastric', found=[])
-    does_exist_butterflies = custom_semiology_lookup('butterflies', found=[])
-    does_exist_Caps_Cephalic = custom_semiology_lookup('Cephalic', found=[])
-    does_exist_hEaDrUsh = custom_semiology_lookup('hEaD rUsh', found=[])
-    does_exist_hEaD_multiple = custom_semiology_lookup('hEaD', found=[])
+    does_exist_Semio = custom_semiology_lookup('Semiology')
+    does_exist_epigastric = custom_semiology_lookup('Epigastric')
+    does_exist_butterflies = custom_semiology_lookup('butterflies')
+    does_exist_Caps_Cephalic = custom_semiology_lookup('Cephalic')
+    does_exist_hEaDrUsh = custom_semiology_lookup('hEaD rUsh')
+    does_exist_hEaD_multiple = custom_semiology_lookup('hEaD')
 
     assert not does_not_exist
     assert does_exist_Semio

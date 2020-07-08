@@ -12,7 +12,7 @@ with open(semiology_dict_path) as f:
 
 
 def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
-                            found=[]) -> list:
+                            found=None) -> list:
     """
     User enters custom semiology. This checks if we already have a catch-all in taxonomy replacement SemioDict.
     Top level function will use this to find a match within SemioDict:
@@ -26,6 +26,7 @@ def custom_semiology_lookup(custom_semiology, nested_dict=SemioDict,
 
     Alim-Marvasti 2020
     """
+    found = [] if found is None else found
     for k, v in nested_dict.items():
         # look for matching keys only in top level
         if re.search(r'(?i)' + custom_semiology, k):
