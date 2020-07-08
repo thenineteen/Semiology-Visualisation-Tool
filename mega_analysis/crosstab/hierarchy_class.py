@@ -10,7 +10,7 @@ all_locs = all_localisations()
 
 class Hierarchy():
     """
-    The alphabet referrals to localisations are correct for the _dummy_data
+    To reverse the postcode system. See docstrings below.
     """
 
     def __init__(self, original_df):
@@ -36,10 +36,10 @@ class Hierarchy():
         * postcode: leaves the data without hierarchy reversal
 
         > top_level_col: the localisation to be cleaned e.g. TL (single)
-        > low_level_cols: the granular column localisation e.g. mTL as a list
+        > low_level_cols: the granular column localisations e.g. mTL as a list
 
         note that the order matters because self.new_df.copy() is used in all the methods:
-            e.g. Hierarchy.temporal_hierarchy_reversal() method:
+            e.g. Hierarchy.temporal_hierarchy_reversal() method.
 
         """
         skip = False
