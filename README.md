@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology Visualisation Tool (SVT) - Beta v 0.2.0
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - Beta v 0.2.0
 For research purposes only. Not for clinical use. 
  
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
