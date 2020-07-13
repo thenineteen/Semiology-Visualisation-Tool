@@ -707,14 +707,18 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.colorSelector.setDisabled(self.colorBlindCheckbox.isChecked())
     self.onAutoUpdateButton()
 
-  def addCustomSemiology(self):
-    term = self.logic.getTextFromDialog(
+  def getCustomSemiologyTermFromUser(self):
+    return self.logic.getTextFromDialog(
       self.parent,
       'Add custom semiology term',
       'Enter a semiology term:',
     )
+
+  def addCustomSemiology(self, term=None):
     if term is None:
-      return
+      term = self.getCustomSemiologyTermFromUser()
+      if term is None:
+        return
     customSemiology = CustomSemiology(term)
     gridLayout = self.semiologiesWidget.layout()
     numRows = gridLayout.rowCount()
