@@ -32,13 +32,13 @@
   auras:
     "Epigastric":
       [
-        "((?<!no )(?<!denies )(?<!deny ))epigastric ?(sensation)?",
+        "((?<!no )(?<!denies )(?<!deny ))epigastric",
         "((?<!no )(?<!denies )(?<!deny ))epigastric rising",
         "rising epigastric",
-        "((?<!no )(?<!denies )(?<!deny ))epigastric aura",
+        "((?<!no )(?<!denies )(?<!deny ))epigastric \\(?aura\\)?",
         "((?<!no )(?<!denies )(?<!deny ))epigastric feeling",
         "characteristics? epigatric pain",
-        "epigastric disturbance sensation",
+        "epigastric disturbance",
         "(?:aura of)? epigastric (?:& chest)? discomfort",
         'epigastric "funny feeling"',
         "((?<!no )(?<!denies )(?<!deny ))epigastric tightness",
@@ -48,11 +48,11 @@
         "(?<!no )(abdo[a-z]* aura)|(abdo.* ((sens[a-z]*)|(feeling)))",
         "(butterfly (feel|sens|in stomach))",
         "butterfly-? ?like",
-        "butterflies",
+        "butterfl",
       ]
     "Fear-Anxiety":
       [
-        "Fear-Anxiety",
+        "Fear-? ?Anxiety",
         "((?<!no )(?<!denies )(?<!deny ))fear",
         "frighten(ed)?",
         "scare(d)?",
@@ -77,8 +77,7 @@
         "affective",
         "(?<!no )panic",
       ] #deja vu
-    "Autonomous-Vegetative":
-      [
+    "Autonomous-Vegetative": [
         "vegetative ((?=)(aura)|(?<=)(aura))",
         "autonomous-?.?vegetative",
         "((?<!no )(?<!denies )(?<!deny ))autonomic",
@@ -89,7 +88,7 @@
         "ictal hypertension",
         "ictal hypotension",
         "ictal asystole",
-        "lightheadedness",
+        "lightheaded", # here or under cephalic/non-specific?
         "(?<!no )heart racing",
         "(?<!no )hyper-?ventilation",
         "heavy-? ?breathing",
@@ -101,7 +100,7 @@
         "pilo-?erection",
         "hair-? ?sticking",
         "fuzzy ?(?:sensation|feeling)",
-        "sweating",
+        "sweat",
         "hyper-? ?hydrosis",
         "((?<!no )(?<!denies )(?<!deny ))hyper-? ?salivation",
         "drool(ing)?",
@@ -123,7 +122,7 @@
       ]
     "Olfactory-Gustatory":
       [
-        "Olfactory-Gustatory",
+        "Olfactory-? ?Gustatory",
         "(?<!no )olfactory",
         "((?<!no )(?<!denies )(?<!deny ))gustatory",
         "(?<!no )odd smell",
@@ -197,7 +196,7 @@
       ]
     "Non-Specific Aura":
       [
-        "non-?.?specific (aura)?",
+        "non-?.?specific ?(aura)?",
         "vague ?(aura)?",
         "unspecified aura",
         "unclear aura",
@@ -235,7 +234,7 @@
         ]
       "Eye Version":
         [
-          "eye version",
+          "eye-? ?version",
           "(?<!no )eye deviation",
           "gaze deviation",
           "(?<!no )eyes? deviate",
@@ -313,6 +312,7 @@
         ]
       "Behavioural Arrest or immobility":
         [
+          "behaviour",
           "behaviour(?:al)? arrest",
           "akinetic attack",
           "(?:relative )?ictal immobility",
@@ -345,6 +345,7 @@
       "Oral Automatisms":
         [
           "Oral Automatisms",
+          "Automatisms? \\(Oral\\)",
           "oro-?alimentary",
           "(?<!no )oral automatism",
           "(?<!no )lip-? ?smac?k?",
@@ -356,6 +357,7 @@
       "Upper Limb Automatism":
         [
           "upper limb autom",
+          "Automatisms? \\(Upper Limb\\)",
           "hand automatism",
           "unilateral hand automatism",
           "fiddl",
@@ -370,6 +372,7 @@
       "Lower Limb Automatism":
         [
           "Lower Limb Automatism",
+          "Automatisms? \\(Lower Limb\\)",
           "leg automatism",
           "lower-? ?limb automatism",
           "lower-? ?limb automotor",
@@ -398,13 +401,13 @@
       "Cough": ["Cough", "ictal cough", "cough seizure"]
       "Nose-wiping":
         [
-          "Nose-wiping",
+          "Nose-? ?wiping",
           "(?<!no )nose-? ?wip",
           "rubs? nose",
           "nose rub",
           "wipes? nose",
         ]
-      "Spitting": [" spit", "spitting"]
+      "Spitting": ["spit", "spitting"]
       "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
       "Gelastic":
         ["laughter", "(?<!no )laughing", "laugh", "(?<!no )gelastic", "giggl"]
@@ -431,6 +434,7 @@
     "Vocalisation": # non-sensical sounds
       [
         "Vocalisation",
+        "Vocalization",
         "ictal vocalis?z?ation",
         "grunt",
         "(?<!no )vocalis?z?",
@@ -510,7 +514,7 @@
       [
         "((?<!no )(?<!without ))loss of consciouesness",
         "(?<!not )unconscious",
-        "knocked out",
+        "black out",
         "((?<!b)(?<!ve)(?<!no )(?<!without ))LOC((?!k)(?!us)(?!at)(?!al))",
       ]
     # "TEST": ["and"]
