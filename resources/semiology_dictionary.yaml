@@ -272,16 +272,7 @@
           "((?<!no )(?<!myoclonic )(?<!ankle )(?<!single ))jerk",
         ]
       "Tonic-Clonic":
-        [
-          "tonic-? ?clonic",
-          "GTCS?",
-          "SGTCS",
-          "tonic and clonic",
-          "generalised tonic-?/? ?clonic",
-          "generalised seizures",
-          "generalized TCS",
-          "secondary tonic-?/? ?clonic",
-        ]
+        ["tonic-? ?clonic", "tonic and clonic", "secondary tonic-?/? ?clonic"]
       "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
 
     complex:
