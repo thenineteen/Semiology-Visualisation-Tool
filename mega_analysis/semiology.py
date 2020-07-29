@@ -209,6 +209,7 @@ class Semiology:
             int(label): float(num_datapoints)
             for (label, num_datapoints)
             in zip(labels, patients)
+            if num_datapoints > 0
         }
         return num_datapoints_dict
 
