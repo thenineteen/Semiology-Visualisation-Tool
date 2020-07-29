@@ -731,7 +731,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     )
 
   def addCustomSemiology(self, term=None):
-    if term is None:
+    if not term or term is None:
       term = self.getCustomSemiologyTermFromUser()
       if term is None:
         return
