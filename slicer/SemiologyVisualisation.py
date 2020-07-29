@@ -252,8 +252,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     visualisationSettingsLayout = qt.QFormLayout(visualisationSettingsWidget)
     visualisationSettingsLayout.addWidget(self.getShowGIFButton())
     visualisationSettingsLayout.addRow('Show hemispheres: ', self.getHemispheresVisibleLayout())
-    self.segmentsComboBox = qt.QComboBox()
-    visualisationSettingsLayout.addRow('Go to structure: ', self.segmentsComboBox)
+    self.segmentsComboBox = self.getGoToStructureWidget()
+    self.segmentsComboBox.currentIndexChanged.connect(self.onSegmentsComboBox)
+    visualisationSettingsLayout.addRow('Jump to structure: ', self.segmentsComboBox)
 
     self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colours')
     self.showProgressCheckBox.setChecked(True)
@@ -284,6 +285,20 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     visualisationSettingsLayout.addWidget(self.autoUpdateCheckBox)
 
     return visualisationSettingsWidget
+
+  def getGoToStructureWidget(self):
+    from mega_analysis import gif_lobes_from_excel_sheets
+    lobesToLabels = gif_lobes_from_excel_sheets()
+    self.gifComboBoxItemsToLabels = {}
+    for key, labels in lobesToLabels.items():
+      lobe = key.split()[1]
+      for label in labels:
+        structureName = self.parcellation.getNameFromLabel(label)
+        item = f'{lobe} - {structureName}'
+        self.gifComboBoxItemsToLabels[item] = structureName
+    widget = qt.QComboBox()
+    widget.addItems(list(self.gifComboBoxItemsToLabels.keys()))
+    return widget
 
   def getDominantHemisphereLayout(self):
     self.leftDominantRadioButton = qt.QRadioButton('Left')
@@ -549,6 +564,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     if self.unknownDominantRadioButton.isChecked():
       return Laterality.NEUTRAL
 
+  # Currently unused
   def addGifStructuresToComboBox(self):
     structures = self.parcellation.getSegmentIDs()
     labels = [
@@ -618,7 +634,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       label=None,
     )
     self.parcellation.load()
-    self.addGifStructuresToComboBox()
+    # self.addGifStructuresToComboBox()
     self.settingsCollapsibleButton.show()
     self.updateButton.show()
     self.loadDataButton.hide()
@@ -741,6 +757,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
       checkBox = widgetsDict['checkBox']
       # checkBox.blockSignals(True)
       checkBox.setChecked(False)
+
+  def onSegmentsComboBox(self):
+    name = self.gifComboBoxItemsToLabels[self.segmentsComboBox.currentText]
+    self.parcellation.jumpToStructure(name)
 
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
@@ -1013,6 +1033,12 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     for (color, offset) in zip(colors, center):
       sliceLogic = slicer.app.layoutManager().sliceWidget(color).sliceLogic()
       sliceLogic.SetSliceOffset(offset)
+
+  def jump3D(self, center):
+    layoutManager = slicer.app.layoutManager()
+    threeDWidget = layoutManager.threeDWidget(0)
+    threeDView = threeDWidget.threeDView()
+    threeDView.setFocalPoint(*center)
 
   def combineByLobe(self, dataFrame, lobesMapping):
     """This method is not working yet."""
@@ -1336,20 +1362,23 @@ class Parcellation(ABC):
     for df in dataFrames:
       df.columns = [self.getNameFromLabel(n) for n in df.columns]
 
+  def jumpToStructure(self, name):
+    segmentID = name
+    centerRas = self.segmentationNode.GetSegmentCenter(segmentID)
+    logic = SemiologyVisualisationLogic()
+    logic.jumpSlices(centerRas)
+    logic.jump3D(centerRas)
+
 
 class GIFParcellation(Parcellation):
   def __init__(self, segmentationPath, colorTablePath):
     Parcellation.__init__(self, segmentationPath)
     self.colorTablePath = colorTablePath
-    self._colorTable = None
+    self._colorTable = GIFColorTable(self.colorTablePath)
 
   @property
   def colorTable(self):
     return self._colorTable
-
-  def load(self):
-    super().load()
-    self._colorTable = GIFColorTable(self.colorTablePath)
 
 
 class ColorTable(ABC):
