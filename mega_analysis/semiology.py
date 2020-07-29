@@ -247,6 +247,7 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
         else:
             num_datapoints_dicts[semiology.term] = num_datapoints_dict
     df = get_df_from_dicts(num_datapoints_dicts)
+    df.fillna(value=0, inplace=True)
     return df
 
 
