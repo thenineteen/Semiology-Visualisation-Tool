@@ -724,11 +724,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     self.onAutoUpdateButton()
 
   def getCustomSemiologyTermFromUser(self):
-    return self.logic.getTextFromDialog(
-      self.parent,
-      'Add custom semiology term',
-      'Enter a semiology term:',
-    )
+    return self.logic.getCustomSemiologyTermFromDialog()
 
   def addCustomSemiology(self, term=None):
     if not term or term is None:
@@ -1129,6 +1125,14 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     if not text or text.isspace():
       text = None
     return text
+
+  def getCustomSemiologyTermFromDialog(self):
+    dialog = CustomSemiologyDialog()
+    accept = dialog.exec()
+    if not accept:
+      term = None
+    else:
+      return dialog.term
 
   def dataFrameIsEmpty(self, dataFrame):
     return dataFrame.isna().all().all()
@@ -1561,3 +1565,53 @@ def make_hashable(o):
   if isinstance(o, (set, frozenset)):
     return tuple(sorted(make_hashable(e) for e in o))
   return o
+
+
+class CustomSemiologyDialog(qt.QDialog):
+  def __init__(self, minimumTermLength=3):
+    super().__init__()
+    self.minimumTermLength = minimumTermLength
+    self.verticalLayout = qt.QVBoxLayout(self)
+    self.verticalLayout.setObjectName("verticalLayout")
+    self.label = qt.QLabel('Enter a custom semiology term:')
+    self.verticalLayout.addWidget(self.label)
+    self.lineEdit = qt.QLineEdit()
+    self.verticalLayout.addWidget(self.lineEdit)
+    # spacerItem = qt.QSpacerItem(20, 40, qt.QSizePolicy.Minimum, qt.QSizePolicy.Expanding)
+    # self.verticalLayout.addItem(spacerItem)
+    self.label_2 = qt.QLabel()
+    self.verticalLayout.addWidget(self.label_2)
+    self.buttonBox = qt.QDialogButtonBox()
+    self.buttonBox.setOrientation(qt.Qt.Horizontal)
+    self.buttonBox.setStandardButtons(qt.QDialogButtonBox.Cancel | qt.QDialogButtonBox.Ok)
+    self.buttonBox.setObjectName("buttonBox")
+    self.verticalLayout.addWidget(self.buttonBox)
+    self.buttonBox.accepted.connect(self.accept)
+    self.buttonBox.rejected.connect(self.reject)
+    self.lineEdit.textChanged.connect(self.textChanged)
+    self.searchFunction = self.getSearchFunction()
+
+  @property
+  def term(self):
+    return self.lineEdit.text
+
+  def getSearchFunction(self):
+    from mega_analysis import custom_semiology_lookup
+    return custom_semiology_lookup
+
+  def textChanged(self):
+    if not self.term or len(self.term) < self.minimumTermLength:
+      self.label_2.setText('')
+      return
+    terms = self.searchFunction(self.term)
+    if not terms:
+      self.label_2.setText('')
+      return
+    lines = ['This semiology term exists under the following categories:\n']
+    for term in terms:
+      lines.append(f'- {term}')
+    lines.append(
+      f'\nIf you wish to only search for "{self.term}", press OK.'
+      '\nOtherwise, select the previous categories in the main module interface'
+    )
+    self.label_2.setText('\n'.join(lines))
