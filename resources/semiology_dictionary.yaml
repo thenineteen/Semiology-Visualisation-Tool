@@ -242,11 +242,12 @@
       "Head Version":
         [
           "((?<!no )(?<!denies )(?<!deny ))head version",
-          "versive",
+          "Version \\(Head\\)",
+          "(?<!eye )versive",
           "turns? over shoulder",
           "head deviation",
           "extreme head turn",
-          "version",
+          "(?<!eye )version",
           "((?<!non)(?<!non-)(?<!un))forced head turn",
         ]
       "Eye Version":
