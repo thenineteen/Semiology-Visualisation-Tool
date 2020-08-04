@@ -6,6 +6,9 @@ from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclude_sEEG,
     exclude_cortical_stimulation,
     exclude_seizure_free,
+    exclude_paediatric_cases,
+    exclude_postictals,
+    exclude_spontaneous_semiology
 )
 
 
@@ -31,6 +34,15 @@ class TestExclusions(unittest.TestCase):
     def test_exclude_cortical_stimulation(self):
         assert not self.df.equals(exclude_cortical_stimulation(self.df))
 
+    def test_exclude_paeds(self):
+        assert not self.df.equals(exclude_paediatric_cases(self.df))
+
+    # def test_exclude_postictal(self):
+    #     assert not self.df.equals(exclude_postictals(self.df))
+
+    def test_exclude_spontaneous(self):
+        assert not self.df.equals(exclude_spontaneous_semiology(self.df))
+
     # def test_cortical_stimulation_columns_data_integrity(self):
     #     """
     #     A test to ensure all SEEG_ES = 'ES' are the same as CES.notnull() in the data.
@@ -40,6 +52,6 @@ class TestExclusions(unittest.TestCase):
     #     """
     #     CS = 'Cortical Stimulation (CS)'
     #     SEEG_ES = 'sEEG (y) and/or ES (ES)'
-    #     indices1 = (self.df.loc[self.df[SEEG_ES]=='ES', :]).index
+    #     indices1 = (self.df.loc[self.df[SEEG_ES] == 'ES', :]).index
     #     indices2 = (self.df.loc[self.df[CS].notnull(), :]).index
     #     assert (indices1 == indices2)
