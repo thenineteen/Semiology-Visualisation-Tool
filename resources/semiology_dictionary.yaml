@@ -316,15 +316,8 @@
           "head rock",
           "rocks from side",
         ]
-      "Behavioural Arrest or immobility":
-        [
-          "Behaviour(?:al)? Arrest",
-          "psychomotor arrest",
-          "akinetic attack",
-          "Ictal Immobility",
-          "freeze",
-          "unable to move",
-        ]
+      "Behavioural Arrest or Akinesis":
+        ["Behaviour(?:al)? Arrest", "psychomotor arrest", "akinetic"]
       "Other Complex Behavioural":
         [
           "Other Complex Motor",
@@ -345,7 +338,13 @@
 
     special seizures:
       "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
-      "Ictal Limb Paresis": ["Ictal Limb Paresis", "unilateral ictal paresis"]
+      "Ictal Limb Paresis":
+        [
+          "Ictal Limb Paresis",
+          "unilateral ictal paresis",
+          "Ictal Immobility",
+          "ictal hemiparesis",
+        ]
       "Astatic":
         [
           "astatic",

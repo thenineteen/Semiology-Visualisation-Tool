@@ -1,16 +1,17 @@
 All Automatisms oral-automotor
-Behavioural Arrest or immobility
+Behavioural Arrest or Akinesis
 Blink
+Complex Visual
 Mimetic Automatisms
 Hypermotor
 Hypomotor
+Ictal Limb Paresis
 Lower Limb Automatism
 Myoclonic
 Other Complex Behavioural
 Other Simple Motor
+Simple Visual
+Spasms - epileptic/infantile
 Tonic
 Tonic-Clonic
 Upper Limb Automatism
-Simple Visual
-Complex Visual
-Spasms - epileptic/infantile

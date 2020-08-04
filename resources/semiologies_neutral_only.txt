@@ -16,6 +16,7 @@ Gelastic
 Ictal Pout
 Ictal Speech
 LOC
+No Semiology (Stimulation)
 Non-Specific Aura
 Olfactory-Gustatory
 Oral Automatisms
@@ -26,4 +27,3 @@ Spitting
 Vestibular
 Vocalisation
 Whistling
-No Semiology (Stimulation)
