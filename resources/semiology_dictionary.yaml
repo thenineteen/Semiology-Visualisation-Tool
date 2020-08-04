@@ -360,6 +360,32 @@
           "epileptic spasm",
           "((?<!hemifacial )(?<!facial )(?<!hemi-facial ))spasm",
         ]
+      "Post-ictal Hemiparesis or Hemiplegia":
+        [
+          "Post-? ?ictal Hemiparesis",
+          "Post-? ?ictal Hemiplegia",
+          "Post-? ?ictal Todd",
+        ]
+      "Post-ictal Nose-wiping":
+        ["Nose-? ?Wiping \\(Post-? ?Ictal\\)", "Post-? ?Ictal Nose"]
+      "Post-ictal Oral or Manual Automatisms": # includes postictal drinking
+        [
+          "Post-? ?ictal manual",
+          "Automatisms \\(Post-? ?ictal\\)",
+          "post-? ?ictal automatism",
+          "post-? ?ictal Drink",
+        ]
+      "Post-ictal Dysphasia":
+        ["Dysphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Dysphasia"]
+      "Post-ictal Aphasia":
+        ["Aphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Aphasia"]
+      "Post-ictal Cough":
+        [
+          "post-? ?ictal cough",
+          "cough \\(post-? ?ictal\\)",
+          "post-? ?ictal \\(cough\\)",
+        ]
+      "Post-ictal Aggressive": ["post-? ?ictal aggressive"]
 
     automatisms:
       "Oral Automatisms":
