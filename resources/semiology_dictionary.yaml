@@ -303,15 +303,25 @@
         ]
       "Behavioural Arrest or immobility":
         [
-          "behaviour",
-          "behaviour(?:al)? arrest",
+          "Behaviour(?:al)? Arrest",
+          "psychomotor arrest",
           "akinetic attack",
-          "(?:relative )?ictal immobility",
+          "Ictal Immobility",
           "freeze",
           "unable to move",
         ]
       "Other Complex Motor":
-        ["Other Complex Motor", "complex motor", "complicated motor"]
+        [
+          "Other Complex Motor",
+          "Complex Motor",
+          "complicated motor",
+          "psychomotor agitation",
+          "aggressive",
+          "Motor \\(Complex\\)",
+          "looking around",
+          "agitation",
+          "behavioural change",
+        ]
 
     special seizures:
       "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly"]
@@ -415,10 +425,12 @@
           "((?<!no )(?<!denies )(?<!deny ))chapeau",
           "((?<!no )(?<!denies )(?<!deny ))pout",
         ]
-      "Grimace":
+      "Mimetic Automatisms":
         [
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
+          "Mimetic Automatism",
+          "Automatisms? \\(Mimetic\\)",
         ]
 
   speech:
