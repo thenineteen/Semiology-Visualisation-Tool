@@ -262,8 +262,8 @@
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
-          "((?<!asymmetric )(?<!dys))tonic postur",
-          "((?<!asymmetric )(?<!no )(?<!dys))posturing",
+          "((?<!asymmetric )(?<!dys)(?<!a))tonic postur",
+          "((?<!asymmetric )(?<!no )(?<!dys)(?<!a))posturing",
           "contraction",
           "((?<!asymmetric )(?<!generalised )(?<!generalized )(?<!a)(?<!dys))tonic((?!-clonic)(?!/clonic)(?! clonic))",
           "(?<!no )stiff",
@@ -280,11 +280,7 @@
           "fig of 4",
           "figure 4",
         ]
-      "Dystonic": [
-          "(?<!no )dystonic",
-          "twisted postur",
-          "twisting", #"supinat"
-        ]
+      "Dystonic": ["(?<!no )dystonic"]
       "Clonic":
         [
           "((?<!tonic-)(?<!tonic )(?<!tonic/)(?<!myo))clonic",
@@ -329,21 +325,26 @@
           "freeze",
           "unable to move",
         ]
-      "Other Complex Motor":
+      "Other Complex Behavioural":
         [
           "Other Complex Motor",
           "Complex Motor",
+          "Complex Behaviour",
           "complicated motor",
           "psychomotor agitation",
           "aggressive",
+          "biting",
           "Motor \\(Complex\\)",
           "looking around",
           "agitation",
           "behavioural change",
+          "wandering",
+          "bed leaving",
+          "compulsive checking or washing",
         ]
 
     special seizures:
-      "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly"]
+      "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
       "Ictal Limb Paresis": ["Ictal Limb Paresis", "unilateral ictal paresis"]
       "Astatic":
         [
@@ -445,12 +446,13 @@
           "((?<!no )(?<!denies )(?<!deny ))chapeau",
           "((?<!no )(?<!denies )(?<!deny ))pout",
         ]
-      "Mimetic Automatisms": # except for dacrystic and gelastic
+      "Mimetic Automatisms": # except for dacrystic,  gelastic and ictal pout
         [
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
           "Mimetic Automatism",
           "Automatisms? \\(Mimetic\\)",
+          "fearful behaviour",
         ]
 
   speech:

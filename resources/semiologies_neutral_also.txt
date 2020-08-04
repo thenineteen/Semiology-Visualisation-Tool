@@ -6,7 +6,7 @@ Hypermotor
 Hypomotor
 Lower Limb Automatism
 Myoclonic
-Other Complex Motor
+Other Complex Behavioural
 Other Simple Motor
 Tonic
 Tonic-Clonic
