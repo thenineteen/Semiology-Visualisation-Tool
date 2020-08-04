@@ -11,5 +11,6 @@ Other Simple Motor
 Tonic
 Tonic-Clonic
 Upper Limb Automatism
-Visual
+Simple Visual
+Complex Visual
 Spasms - epileptic/infantile

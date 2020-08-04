@@ -157,14 +157,30 @@
         "whistle",
         "whistling",
       ]
-    "Visual":
+    "Simple Visual":
       [
-        "Visual",
+        "Simple Visual",
+        "phosphene",
+        "multicoloured vision",
+        "blurred vision",
+        "visual illusion",
+        "loss of vision",
+        "macropsia",
+        "micropsia",
+        "metamorphopsia",
         "Aura \\(Visual\\)",
         "vision",
         "((?<!no )(?<!denies )(?<!migraine with )(?<!migraine without ))visual aura",
+        "Aura \\(Visual\\)",
         "(?:flashing )?(?:colou?r.{0,2} )lights?",
         "visual field",
+      ]
+    "Complex Visual":  # formed figures, communication
+      [
+        "Complex Visual",
+        "object movement",
+        "kinetic visual",
+        "sharpened visual",
       ]
     "Somatosensory":
       [
@@ -231,6 +247,7 @@
       "Eye Version":
         [
           "eye-? ?version",
+          "Version \\(Eye\\)",
           "(?<!no )eye deviation",
           "gaze deviation",
           "(?<!no )eyes? deviate",
