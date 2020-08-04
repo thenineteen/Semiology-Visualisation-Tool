@@ -77,8 +77,11 @@
         "affective",
         "(?<!no )panic",
         "strange",
+        "Déjà vécu",
+        "déjà vu",
       ]
-    "Autonomous-Vegetative": [
+    "Autonomous-Vegetative":
+      [
         "vegetative ((?=)(aura)|(?<=)(aura))",
         "autonomous-?.?vegetative",
         "((?<!no )(?<!denies )(?<!deny ))autonomic",
@@ -89,7 +92,6 @@
         "ictal hypertension",
         "ictal hypotension",
         "ictal asystole",
-        "lightheaded", # here or under cephalic/non-specific?
         "(?<!no )heart racing",
         "(?<!no )hyper-?ventilation",
         "heavy-? ?breathing",
@@ -110,6 +112,7 @@
         "vomit",
         "borborygmi",
         "encoparesis",
+        "nausea",
         "burp",
         "ictal urinary urge",
         "((?<!no )(?<!denies )(?<!deny ))urinary urge",
@@ -158,9 +161,10 @@
         "whistle",
         "whistling",
       ]
-    "Simple Visual":
+    "Visual - Elementary":
       [
         "Simple Visual",
+        "elementary visual",
         "phosphene",
         "multicoloured vision",
         "blurred vision",
@@ -176,12 +180,13 @@
         "(?:flashing )?(?:colou?r.{0,2} )lights?",
         "visual field",
       ]
-    "Complex Visual": # formed figures, communication
+    "Visual - Complex": # formed figures, communication
       [
         "Complex Visual",
         "object movement",
         "kinetic visual",
         "sharpened visual",
+        "3D movie",
       ]
     "Somatosensory":
       [
@@ -200,17 +205,15 @@
         "Aura \\(Vertigo\\)",
         "((?<!no )(?<!denies )(?<!deny ))vertigo",
         "vertiginous",
-        "((?<!no )(?<!denies )(?<!deny ))dizzy",
-        "((?<!no )(?<!denies )(?<!deny ))dizziness",
         "spinning",
         "rocking-? ?boat",
         "float",
         "vestibular component",
       ]
-    "Non-Specific Aura":
-      [
+    "Non-Specific Aura": [
         "non-?.?specific ?(aura)?",
         "Aura \\(Non-? ?Specific\\)",
+        "Aura \\(Unspecified\\)",
         "Aura \\(Other\\)",
         "vague ?(aura)?",
         "unspecified aura",
@@ -225,7 +228,9 @@
         "indefinable feeling",
         "cephalic",
         "head rush",
-        "lightheaded",
+        "lightheaded", # here rather than under cephalic
+        "((?<!no )(?<!denies )(?<!deny ))dizzy", # here rather than under Vestibular
+        "((?<!no )(?<!denies )(?<!deny ))dizziness", # here rather than under Vestibular
       ]
 
   motor:
@@ -251,7 +256,7 @@
           "(?<!eye )version",
           "((?<!non)(?<!non-)(?<!un))forced head turn",
         ]
-      "Eye Version":
+      "Eye Version": # excludes saccade "minor gaze deviation" currently orphan
         [
           "eye-? ?version",
           "Version \\(Eye\\)",
@@ -260,7 +265,7 @@
           "(?<!no )eyes? deviate",
           "(?<!no )gaze deviate",
         ]
-      "Eye Nystagmus": ["Nystagmus", "ocular flutter"]
+      "Eye Nystagmus and Ocular Flutter": ["Nystagmus", "ocular flutter"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
@@ -286,6 +291,7 @@
       "Clonic":
         [
           "((?<!tonic-)(?<!tonic )(?<!tonic/)(?<!myo))clonic",
+          "(?<!myo)clonus",
           "((?<!no )(?<!myoclonic )(?<!ankle )(?<!single ))jerk",
         ]
       "Tonic-Clonic":
@@ -319,8 +325,8 @@
           "rocks from side",
         ]
       "Behavioural Arrest or Akinesis":
-        ["Behaviour(?:al)? Arrest", "psychomotor arrest", "akinetic"]
-      "Other Complex Behavioural":
+        ["Behaviou?r(?:al)? Arrest", "psychomotor arrest", "akinetic"]
+      "Other Complex Behavioural": # cf e.g. 'fearful expression' and 'fearful behaviour'
         [
           "Other Complex Motor",
           "Complex Motor",
@@ -336,16 +342,20 @@
           "wandering",
           "bed leaving",
           "compulsive checking or washing",
+          "awakening",
+          "arousal",
+          "fearful behaviour",
         ]
 
     special seizures:
       "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
-      "Ictal Limb Paresis":
+      "Ictal Limb Paresis": # cf global behavioural arrest
         [
           "Ictal Limb Paresis",
-          "unilateral ictal paresis",
+          "ictal paresis",
           "Ictal Immobility",
           "ictal hemiparesis",
+          "hypokin",
         ]
       "Astatic": ["astatic", "fall", "drop attack"]
       "Hypomotor": ["hypomotor", "Motor \\(Hypomotor\\)"]
@@ -402,6 +412,7 @@
           "Automatisms? \\(Upper Limb\\)",
           "Automatisms? \\(UL\\)",
           "Automatisms? \\(?Manual\\)?",
+          "manual automatism",
           "hand automatism",
           "unilateral hand automatism",
           "fiddl",
@@ -414,7 +425,7 @@
         ]
       "Lower Limb Automatism": # non hypermotor
         [
-          "Lower Limb Automatism",
+          "Lower Limb Autom",
           "Automatisms? \\(Lower Limb\\)",
           "Automatisms? \\(LL\\)",
           "leg automatism",
@@ -448,6 +459,7 @@
           "rubs? nose",
           "nose rub",
           "wipes? nose",
+          "face rub",
         ]
       "Spitting": ["spit", "spitting"]
       "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
@@ -470,9 +482,10 @@
         [
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
-          "Mimetic Automatism",
+          "Mimetic",
           "Automatisms? \\(Mimetic\\)",
-          "fearful behaviour",
+          "fearful expression",
+          "raising of eyebrow",
         ]
 
   speech:
@@ -539,6 +552,7 @@
         "dialeptic",
         "(?<!no )blank",
         "stare",
+        "staring",
         "(((becomes? )|(became )|(looks? ))distant)|(distant ((look)|(stare)|(gaze)))",
         "unresponsive",
         "absence(?! of)",

@@ -1,8 +1,7 @@
 All Automatisms oral-automotor
 Behavioural Arrest or Akinesis
 Blink
-Complex Visual
-Eye Nystagmus
+Eye Nystagmus and Flutter
 Hypermotor
 Hypomotor
 Ictal Limb Paresis
@@ -11,8 +10,9 @@ Mimetic Automatisms
 Myoclonic
 Other Complex Behavioural
 Other Simple Motor
-Simple Visual
 Spasms - epileptic/infantile
 Tonic
 Tonic-Clonic
 Upper Limb Automatism
+Visual - Complex
+Visual - Elementary
