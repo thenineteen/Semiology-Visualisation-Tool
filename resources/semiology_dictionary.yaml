@@ -64,7 +64,7 @@
         "panic",
         "negative emotion",
       ]
-    "Psychic":
+    "Psychic": # except fear-anxiety
       [
         "psychic",
         "((?<!no )(?<!denies )(?<!deny ))de.?ja.?vu",
@@ -76,6 +76,7 @@
         "experiential",
         "affective",
         "(?<!no )panic",
+        "strange",
       ]
     "Autonomous-Vegetative": [
         "vegetative ((?=)(aura)|(?<=)(aura))",
@@ -115,7 +116,7 @@
         "urgency aura",
         "aura of (:?urinary)? ?urge",
         "flush",
-        "laryngeal spasm",
+        "laryngeal",
         "throat",
         "constrictive",
         "constriction",
@@ -175,7 +176,7 @@
         "(?:flashing )?(?:colou?r.{0,2} )lights?",
         "visual field",
       ]
-    "Complex Visual":  # formed figures, communication
+    "Complex Visual": # formed figures, communication
       [
         "Complex Visual",
         "object movement",
@@ -184,19 +185,18 @@
       ]
     "Somatosensory":
       [
-        "((?<!no )(?<!denies )(?<!deny ))somato-?sensory",
+        "((?<!no )(?<!denies )(?<!deny ))Somato-?sensory",
         "((?<!no )(?<!denies )(?<!deny ))sensory aura",
         "positive sensory",
         "((?<!no )(?<!denies )(?<!deny ))parasthesia",
         "tingling aura",
         "((?<!no )(?<!denies )(?<!deny ))tingling",
-        "aura:? ?sensation",
-        "pins [&+]?(?:and)? ?needles (warning|aura)?",
-        "((?<!no )(?<!denies )(?<!deny ))sensory",
+        "Aura \\(Somatosensory\\)",
       ]
     "Vestibular":
       [
         "Vestibular",
+        "Aura \\(Vestibular\\)",
         "((?<!no )(?<!denies )(?<!deny ))vertigo",
         "vertiginous",
         "((?<!no )(?<!denies )(?<!deny ))dizzy",
@@ -209,8 +209,11 @@
     "Non-Specific Aura":
       [
         "non-?.?specific ?(aura)?",
+        "Aura \\(Non-? ?Specific\\)",
+        "Aura \\(Other\\)",
         "vague ?(aura)?",
         "unspecified aura",
+        "undescribable",
         "unclear aura",
         "somesthetic",
         "alice in wonder",
@@ -221,6 +224,7 @@
         "indefinable feeling",
         "cephalic",
         "head rush",
+        "lightheaded",
       ]
 
   motor:
@@ -229,6 +233,7 @@
         [
           "((?<!no )(?<!denies )(?<!deny ))head turn",
           "turn of head",
+          "Turning \\(Head\\)",
           "turn head",
           "turns? towards",
           "((?<!re))turns? to",
