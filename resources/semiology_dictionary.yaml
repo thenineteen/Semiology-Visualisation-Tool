@@ -62,8 +62,10 @@
         "impending (?:sensation)? ?doom",
         "doom",
         "panic",
+        "negative emotion",
       ]
-    "Psychic": [
+    "Psychic":
+      [
         "psychic",
         "((?<!no )(?<!denies )(?<!deny ))de.?ja.?vu",
         "jamais.?vu",
@@ -71,12 +73,10 @@
         "sexual",
         "de-?personali[sz]ation",
         "de-?reali[sz]ation",
-        "negative emotion",
-        "affective expression",
         "experiential",
         "affective",
         "(?<!no )panic",
-      ] #deja vu
+      ]
     "Autonomous-Vegetative": [
         "vegetative ((?=)(aura)|(?<=)(aura))",
         "autonomous-?.?vegetative",
@@ -160,15 +160,11 @@
     "Visual":
       [
         "Visual",
+        "Aura \\(Visual\\)",
+        "vision",
         "((?<!no )(?<!denies )(?<!migraine with )(?<!migraine without ))visual aura",
-        "(?:flashing)?(?:colou?r.{0,2}) lights?",
-        "blurr(?:y)?(?:ed)? vision",
-        "vision (?:is)? not right",
-        "tunnel vision",
-        "brightness",
-        "disturbed vision",
-        "darkening of hemifield",
-        "darkening of visual field",
+        "(?:flashing )?(?:colou?r.{0,2} )lights?",
+        "visual field",
       ]
     "Somatosensory":
       [
@@ -359,6 +355,7 @@
         [
           "upper limb autom",
           "Automatisms? \\(Upper Limb\\)",
+          "Automatisms? \\(?Manual\\)?",
           "hand automatism",
           "unilateral hand automatism",
           "fiddl",
@@ -425,7 +422,7 @@
           "((?<!no )(?<!denies )(?<!deny ))chapeau",
           "((?<!no )(?<!denies )(?<!deny ))pout",
         ]
-      "Mimetic Automatisms":
+      "Mimetic Automatisms": # except for dacrystic and gelastic
         [
           "((?<!no )(?<!denies )(?<!deny ))grimace",
           "((?<!no )(?<!denies )(?<!deny ))grimacing",
