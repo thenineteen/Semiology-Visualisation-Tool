@@ -197,6 +197,7 @@
       [
         "Vestibular",
         "Aura \\(Vestibular\\)",
+        "Aura \\(Vertigo\\)",
         "((?<!no )(?<!denies )(?<!deny ))vertigo",
         "vertiginous",
         "((?<!no )(?<!denies )(?<!deny ))dizzy",
@@ -259,6 +260,7 @@
           "(?<!no )eyes? deviate",
           "(?<!no )gaze deviate",
         ]
+      "Eye Nystagmus": ["Nystagmus", "ocular flutter"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
@@ -324,7 +326,7 @@
           "Complex Motor",
           "Complex Behaviour",
           "complicated motor",
-          "psychomotor agitation",
+          "psychomotor (agitation)?",
           "aggressive",
           "biting",
           "Motor \\(Complex\\)",
@@ -345,15 +347,8 @@
           "Ictal Immobility",
           "ictal hemiparesis",
         ]
-      "Astatic":
-        [
-          "astatic",
-          "collapse",
-          "falls? to floor",
-          "falls? to ground",
-          "drop attack",
-        ]
-      "Hypomotor": ["hypomotor"]
+      "Astatic": ["astatic", "fall", "drop attack"]
+      "Hypomotor": ["hypomotor", "Motor \\(Hypomotor\\)"]
       "Spasms - epileptic/infantile":
         [
           "infantile spasm",
@@ -390,8 +385,9 @@
     automatisms:
       "Oral Automatisms":
         [
-          "Oral Automatisms",
+          "Oral Automatism",
           "Automatisms? \\(Oral\\)",
+          "Automatisms \\(Oro-? ?alimentary\\)",
           "oro-?alimentary",
           "(?<!no )oral automatism",
           "(?<!no )lip-? ?smac?k?",
@@ -404,6 +400,7 @@
         [
           "upper limb autom",
           "Automatisms? \\(Upper Limb\\)",
+          "Automatisms? \\(UL\\)",
           "Automatisms? \\(?Manual\\)?",
           "hand automatism",
           "unilateral hand automatism",
@@ -411,15 +408,15 @@
           "(?<!no )fidget",
           "stereotypy(?:ed)?",
           "hand rubbing",
-          "distal automotor",
-          "arm automatism",
+          "automotor",
           "(?<!no )manual automat",
           "fumbl",
         ]
-      "Lower Limb Automatism":
+      "Lower Limb Automatism": # non hypermotor
         [
           "Lower Limb Automatism",
           "Automatisms? \\(Lower Limb\\)",
+          "Automatisms? \\(LL\\)",
           "leg automatism",
           "lower-? ?limb automatism",
           "lower-? ?limb automotor",
@@ -428,8 +425,6 @@
         ]
       "Blink":
         [
-          "(?<!no )eye-? blink",
-          "(?<!no )blink?",
           "(?<!no )blink",
           "(?<!no )eyelid flick",
           "(?<!no )eye flick",
