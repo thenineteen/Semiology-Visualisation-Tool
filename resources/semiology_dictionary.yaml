@@ -261,11 +261,11 @@
         ]
       "Tonic":
         [
-          "(?<!asymmetric )tonic limb posturing",
-          "(?<!asymmetric )tonic postur",
-          "((?<!asymmetric )(?<!no ))posturing",
+          "((?<!asymmetric )(?<!dys))tonic limb posturing",
+          "((?<!asymmetric )(?<!dys))tonic postur",
+          "((?<!asymmetric )(?<!no )(?<!dys))posturing",
           "contraction",
-          "((?<!asymmetric )(?<!generalised )(?<!generalized )(?<!a))tonic((?!-clonic)(?!/clonic)(?! clonic))",
+          "((?<!asymmetric )(?<!generalised )(?<!generalized )(?<!a)(?<!dys))tonic((?!-clonic)(?!/clonic)(?! clonic))",
           "(?<!no )stiff",
         ]
       "Asymmetric Tonic":
