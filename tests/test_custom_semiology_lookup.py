@@ -20,7 +20,7 @@ def test_custom_semiology_lookup():
     assert 'Non-Specific Aura' in does_exist_Caps_Cephalic
     assert 'Non-Specific Aura' in does_exist_hEaDrUsh
     assert 'Non-Specific Aura' in does_exist_hEaD_multiple
-    assert 'Head Turn' in does_exist_hEaD_multiple
+    assert 'Head or Body Turn' in does_exist_hEaD_multiple
     assert 'Head Version' in does_exist_hEaD_multiple
 
 

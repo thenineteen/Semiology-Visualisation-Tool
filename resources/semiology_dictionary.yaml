@@ -131,7 +131,7 @@
         "Olfactory-? ?Gustatory",
         "olfactory",
         "gustatory",
-        "Aura \\(Gustatory\\)"
+        "Aura \\(Gustatory\\)",
         "(?<!no )odd smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
         "(metallic)?.?taste",
@@ -148,7 +148,7 @@
     "Auditory":
       [
         "((?<!no )(?<!denies )(?<!deny ))auditory ?(hallucination)?(illusion)?",
-        "Aura \\(Auditory\\)"
+        "Aura \\(Auditory\\)",
         "altered hearing",
         "voices? illusion",
         "voices? in head",
@@ -273,7 +273,8 @@
           "(?<!no )gaze deviate",
           "eye turn",
         ]
-      "Eye Nystagmus and Ocular Flutter": ["Nystagmus", "ocular flutter", "Complex Ocular"]
+      "Eye Nystagmus and Ocular Flutter":
+        ["Nystagmus", "ocular flutter", "Complex Ocular"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
@@ -291,7 +292,7 @@
           "figure of four",
           "fig of 4",
           "figure 4",
-          "Tonic \\(Ass?ymm?etric\\)"
+          "Tonic \\(Ass?ymm?etric\\)",
         ]
       "Dystonic": ["(?<!no )dystonic"]
       "Clonic":
