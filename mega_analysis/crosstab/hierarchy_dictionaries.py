@@ -54,10 +54,13 @@ frontal_postcodes = {
     ],
     'SFG (F1)': [
         'Med SFG',
+        'Post SFG',
         'Ant SFG',
     ],
     'MFG (F2)': [
         'Ant MFG',
+        'Mid MFG',
+        'Post MFG',
     ],
     'IFG (F3)\n(BA 44,45,47)': [
         'Pars orbitalis (subgroup of IFG)\n(BA 47)',
