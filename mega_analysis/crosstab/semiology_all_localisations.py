@@ -2,15 +2,16 @@ import pandas as pd
 from pathlib import Path
 
 
-def all_localisations(excel_columns="R:CZ"):
+def all_localisations(excel_columns="R:DP"):
     """
-    Import the excel spreadsheet of 1,171 journal paper reviews and return a list of the anatomical brain region terms.
+    Import the excel spreadsheet of 312 included journal paper reviews (4649 patients) and
+    return a list of the anatomical brain region terms.
     Used as default when importing the spreadsheet in semiology_lateralisation_localisation.
     """
 # set the path to excel file:
     repo_dir = Path(__file__).parent.parent.parent
     resources_dir = repo_dir / 'resources'
-    excel_path = resources_dir / 'syst_review_single_table.xlsx'
+    excel_path = resources_dir / 'Semio2Brain Database.xlsx'
 
 # import the columns containing the localisation terms
     df_all_localisations = pd.read_excel(
