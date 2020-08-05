@@ -2,6 +2,7 @@ All Automatisms oral-automotor
 Behavioural Arrest or Akinesis
 Blink
 Eye Nystagmus and Flutter
+Head or Body Turn
 Hypermotor
 Hypomotor
 Ictal Limb Paresis

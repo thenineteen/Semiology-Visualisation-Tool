@@ -35,7 +35,8 @@
         "((?<!no )(?<!denies )(?<!deny ))epigastric",
         "((?<!no )(?<!denies )(?<!deny ))epigastric rising",
         "rising epigastric",
-        "((?<!no )(?<!denies )(?<!deny ))epigastric \\(?aura\\)?",
+        "epigastric \\(?aura\\)?",
+        "Aura \\(Epigastric\\)",
         "((?<!no )(?<!denies )(?<!deny ))epigastric feeling",
         "characteristics? epigatric pain",
         "epigastric disturbance",
@@ -67,6 +68,7 @@
     "Psychic": # except fear-anxiety
       [
         "psychic",
+        "Aura \\(Psychic\\)",
         "((?<!no )(?<!denies )(?<!deny ))de.?ja.?vu",
         "jamais.?vu",
         "erotic",
@@ -127,8 +129,9 @@
     "Olfactory-Gustatory":
       [
         "Olfactory-? ?Gustatory",
-        "(?<!no )olfactory",
-        "((?<!no )(?<!denies )(?<!deny ))gustatory",
+        "olfactory",
+        "gustatory",
+        "Aura \\(Gustatory\\)"
         "(?<!no )odd smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
         "(metallic)?.?taste",
@@ -145,6 +148,7 @@
     "Auditory":
       [
         "((?<!no )(?<!denies )(?<!deny ))auditory ?(hallucination)?(illusion)?",
+        "Aura \\(Auditory\\)"
         "altered hearing",
         "voices? illusion",
         "voices? in head",
@@ -228,6 +232,7 @@
         "indefinable feeling",
         "cephalic",
         "head rush",
+        "headache", # categorised as cephalic
         "lightheaded", # here rather than under cephalic
         "((?<!no )(?<!denies )(?<!deny ))dizzy", # here rather than under Vestibular
         "((?<!no )(?<!denies )(?<!deny ))dizziness", # here rather than under Vestibular
@@ -235,7 +240,7 @@
 
   motor:
     simple:
-      "Head Turn":
+      "Head or Body Turn":
         [
           "((?<!no )(?<!denies )(?<!deny ))head turn",
           "turn of head",
@@ -244,6 +249,8 @@
           "turns? towards",
           "((?<!re))turns? to",
           "((?<!no )(?<!denies )(?<!deny )(?<!noc)(?<!re)(?<!funny ))turns? (to)? ?(right)?(left)?R?L?(side)?",
+          "body turn",
+          "Turn(ing)? \\(Body\\)",
         ]
       "Head Version":
         [
@@ -264,8 +271,9 @@
           "gaze deviation",
           "(?<!no )eyes? deviate",
           "(?<!no )gaze deviate",
+          "eye turn",
         ]
-      "Eye Nystagmus and Ocular Flutter": ["Nystagmus", "ocular flutter"]
+      "Eye Nystagmus and Ocular Flutter": ["Nystagmus", "ocular flutter", "Complex Ocular"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
@@ -277,15 +285,13 @@
         ]
       "Asymmetric Tonic":
         [
-          "asymmetric tonic",
-          "asymetric tonic",
-          "assymetric tonic",
-          "assymmetric tonic",
+          "ass?ym?metric tonic",
           "fencing",
           "figure of 4",
           "figure of four",
           "fig of 4",
           "figure 4",
+          "Tonic \\(Ass?ymm?etric\\)"
         ]
       "Dystonic": ["(?<!no )dystonic"]
       "Clonic":
@@ -294,8 +300,7 @@
           "(?<!myo)clonus",
           "((?<!no )(?<!myoclonic )(?<!ankle )(?<!single ))jerk",
         ]
-      "Tonic-Clonic":
-        ["tonic-? ?clonic", "tonic and clonic", "secondary tonic-?/? ?clonic"]
+      "Tonic-Clonic": ["tonic-? ?clonic", "tonic and clonic"]
       "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
 
     complex:
@@ -323,6 +328,8 @@
           "rocks head",
           "head rock",
           "rocks from side",
+          "ballic",
+          "ballistic",
         ]
       "Behavioural Arrest or Akinesis":
         ["Behaviou?r(?:al)? Arrest", "psychomotor arrest", "akinetic"]
@@ -332,7 +339,7 @@
           "Complex Motor",
           "Complex Behaviour",
           "complicated motor",
-          "psychomotor (agitation)?",
+          "psychomotor \\(?agitation\\)?",
           "aggressive",
           "biting",
           "Motor \\(Complex\\)",
@@ -381,7 +388,11 @@
           "post-? ?ictal Drink",
         ]
       "Post-ictal Dysphasia":
-        ["Dysphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Dysphasia"]
+        [
+          "Dysphasia \\(Post-? ?Ictal\\)",
+          "Post-? ?Ictal Dysphasia",
+          "paraphasia",
+        ]
       "Post-ictal Aphasia":
         ["Aphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Aphasia"]
       "Post-ictal Cough":
