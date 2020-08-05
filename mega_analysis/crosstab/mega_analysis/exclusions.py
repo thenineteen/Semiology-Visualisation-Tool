@@ -155,6 +155,13 @@ def exclude_sEEG(df):
     """
     Exclude cases where the only ground truth is stereo EEG cases.
     I recommend also excluding exclude_cortical_stimulation if running this.
+
+    NB
+        df.loc[df[SEEG_ES] == 'y', SEEG_ES] = np.nan
+            looks for exact match.
+    Whereas
+        df.loc[df[SEEG_ES].str.contains('y', na=False), SEEG_ES] = np.nan
+            removes sEEG and ES cases.
     """
     df.loc[df[SEEG_ES] == 'y', SEEG_ES] = np.nan
     df_exclusions_sEEG = df.dropna(
