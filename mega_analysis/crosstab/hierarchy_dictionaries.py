@@ -116,16 +116,17 @@ parietal_postscodes = {
 
 occipital_postcodes = {
     'OL': [
-        'Cuneus ',
         'Mesial Occipital',
-        'Lateral Occipital',
+        'Lateral Occipital (SOG, IOG, LOG)',
         'Posterior Occipital Gyrus',
         'Superior Occipital Gyrus',
         'Middle Occipital Gyrus',
         'Inferior Occipital Gyrus',
     ],
     'Mesial Occipital': [
+        'Cuneus',
         'Lingual gyrus ',
+        'Calcarine Cortex',
     ]
 }
 
