@@ -127,8 +127,8 @@ def MEGA_ANALYSIS(
         progress_venn_2(df_study_type, method='Lateralising')
         progress_venn_2(df_study_type, method='Localising')
 
-    other_ = df.loc[df["Other factors (e.g. Abs, genetic mutations)"].notnull(),
-                    "Other factors (e.g. Abs, genetic mutations)"].unique()
+    other_ = df.loc[df["Other factors (e.g. Abs, genetic mutations)"].notnull(),
+                    "Other factors (e.g. Abs, genetic mutations)"].unique()
     lat_other_exc = df_study_type.loc["OTHER",
                                       ("Lateralising Datapoints", "Exclusive")]
     logging.debug(
