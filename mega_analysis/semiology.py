@@ -103,7 +103,7 @@ class Semiology:
             include_only_paediatric_cases: bool = False,
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
-            ):
+    ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -159,7 +159,7 @@ class Semiology:
             inspect_result = hierarchy_df.new_df
         return inspect_result
 
-    def query_lateralisation(self) -> Optional[pd.DataFrame]:
+    def query_lateralisation(self, map_df_dict=map_df_dict) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
         if query_semiology_result is None:
             print('No such semiology found')
@@ -226,7 +226,7 @@ def get_possible_lateralities(term) -> List[Laterality]:
 def combine_semiologies(
         semiologies: List[Semiology],
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
     if normalise:
         df = normalise_semiologies_df(df)
@@ -253,7 +253,7 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
 
 def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
-        ) -> pd.DataFrame:
+) -> pd.DataFrame:
     records = []
     semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
@@ -280,7 +280,7 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 def combine_semiologies_df(
         df: pd.DataFrame,
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
