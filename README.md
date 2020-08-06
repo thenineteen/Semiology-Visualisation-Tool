@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - Beta v 0.2.0
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.2.0
 For research purposes only. Not for clinical use. 
  
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
@@ -19,8 +19,10 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: SemioBrain Database - Beta 51% (146/287 included studies integrated)
-We curated the largest patient-level database of 4454 unique patients from 282 studies, yielding 2368 lateralising and 10917 localising datapoints for initial or most prominently reported seizure semiologies. These patient-level semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
+### 1. Resources: Semio2Brain Database  v 1.0.0 (Aug 2020)
+100% of the Data: 4,649 patients' data from 312 included original journal papers
+#### Until the 5th Aug 2020 the Beta version was used, named syst_review_single_table - 47% (146/312 included studies integrated)
+We curated the largest patient-level database of 4649 unique patients' semiologies from 312 studies, yielding over ten thousand lateralising and localising datapoints for initial or most prominently reported seizure semiologies. These patient-level seizure-semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
 
 * Post-operative seizure freedom (ILAE 1,2 = Engel Ia,Ib; but also Engel I if not otherwise specified), confirmed at a minimum follow-up of 12 months;
 * Invasive EEG recording and/ or electrical stimulation, mapping seizure semiology;
@@ -35,9 +37,11 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
   pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 0.9.1
-### 3. Resources: lateralisation and localisation mappings - v 1.0.8
-To query this database, we developed a taxonomy of 47 semiological terms, mapped reported categorical brain regions to 55 localising cerebral atlas labels and 5 lateralising
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.0 (Aug 2020, 55+1 semiologies)
+In May/June - v 0.9.1 (47 semiologies)
+### 3. Resources: lateralisation and localisation mappings - v 1.1.0 (Aug 2020, 103 localisation labels) 
+until 5th Aug - v 1.0.8 (55 localisation labels)
+To query this database, we developed a taxonomy of 55 semiological terms (+ 1 "no semiology" for cortical stimulation studies), mapped reported categorical brain regions to 103 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
 
 The mega_analysis module cleans the DataFrame of data, pivots occurences of semiology, allowing for semiology_dictionary taxonomy replacement regex searches, maps the documented localisations to gif parcellations and can scale these mappings using different scalers/transformers.
