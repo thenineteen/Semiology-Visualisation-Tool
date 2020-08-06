@@ -54,10 +54,13 @@ frontal_postcodes = {
     ],
     'SFG (F1)': [
         'Med SFG',
+        'Post SFG',
         'Ant SFG',
     ],
     'MFG (F2)': [
         'Ant MFG',
+        'Mid MFG',
+        'Post MFG',
     ],
     'IFG (F3)\n(BA 44,45,47)': [
         'Pars orbitalis (subgroup of IFG)\n(BA 47)',
@@ -116,16 +119,17 @@ parietal_postscodes = {
 
 occipital_postcodes = {
     'OL': [
-        'Cuneus ',
         'Mesial Occipital',
-        'Lateral Occipital',
+        'Lateral Occipital (SOG, IOG, LOG)',
         'Posterior Occipital Gyrus',
         'Superior Occipital Gyrus',
         'Middle Occipital Gyrus',
         'Inferior Occipital Gyrus',
     ],
     'Mesial Occipital': [
+        'Cuneus',
         'Lingual gyrus ',
+        'Calcarine Cortex',
     ]
 }
 

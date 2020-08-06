@@ -33,15 +33,10 @@ test_df, _, _ = MEGA_ANALYSIS(
     plot=True,
 )
 
-map_df_dict = pd.read_excel(
+dummy_map_df_dict = pd.read_excel(
     dummy_data_path,
     header=1,
     sheet_name=gif_sheet_names
-)
-gif_lat_file = pd.read_excel(
-    dummy_data_path,
-    header=0,
-    sheet_name='Full GIF Map for Review '
 )
 
 
@@ -51,8 +46,10 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
     Therefore these can be commented out or updated when mapping is updated.
 
     Note this uses the dummy data mapping not the live SemioBrain Database.
+        to use dummy data mappings for top level query_lat, need to pass the argument
+        map_df_dict=dummy_map_df_dict
     Note also that the SemioDict is the live one unless specifically specified
-        e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path=dummy_semiology_dict_path)
+        e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path)
 
     for debugging run as such (at end of file) if def __init__(self):
         query = TestDummyDataDummyDictionary()
@@ -168,7 +165,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        all_combined_gifs = patient.query_lateralisation()
+        all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
@@ -181,7 +179,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         new_all_combined_gifindexed.set_index(
             'Gif Parcellations', inplace=True)
 
-        # new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
+        new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
         # load fixture:
         fixture = pd.read_excel(
             dummy_data_path,
@@ -191,7 +189,6 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             index_col=0,
         )
         # fixture.sort_index(inplace=True)
-        # new_all_combined_gifindexed.to_csv(r'D:\fixture_aphasia.csv')
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))
 #         print('new_all_combined_gifindexed.shape is: ',
 #               new_all_combined_gifindexed.shape)

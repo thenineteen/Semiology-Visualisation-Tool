@@ -7,10 +7,10 @@ def gif_sheet_names():
     Used by semiology.py and gif_lobed_from_excel_sheets.py
     """
 
-    gif_sheet_names=[
+    gif_sheet_names = [
         'GIF TL', 'GIF FL', 'GIF PL', 'GIF OL',
         'GIF CING', 'GIF INSULA',
-        'GIF HYPOTHALAMUS', 'GIF CEREBELLUM',
-        ]
+        'GIF HYPOTHALAMUS', 'GIF CEREBELLUM', 'GIF MIXED',
+    ]
 
     return gif_sheet_names

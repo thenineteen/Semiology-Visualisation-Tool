@@ -24,7 +24,7 @@ def progress_study_type(df):
     CES = 'Cortical Stimulation (CS)'
     SS = 'Spontaneous Semiology (SS)'
     ET = 'Epilepsy Topology (ET)'
-    OTHER = 'Other (e.g. Abs)'
+    OTHER = 'Other factors (e.g. Abs, genetic mutations)'
 
     # initialise the df_study_type df:
     colx = pd.MultiIndex.from_product([['Lateralising Datapoints', 'Localising Datapoints'], ['Exclusive', 'Total']],

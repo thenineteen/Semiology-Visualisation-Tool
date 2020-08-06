@@ -8,7 +8,7 @@ def semiology_lateralisation_localisation(
     semiologies_to_extract=['Semiology'],
     localisations_to_extract=[],
     extract_lateralisation=True,
-    n_rows=2500,
+    n_rows=2815,
     **kwargs,
 ):
     """
@@ -26,7 +26,7 @@ def semiology_lateralisation_localisation(
 # set the path to excel file:
     repo_dir = Path(__file__).parent.parent.parent
     resources_dir = repo_dir / 'resources'
-    excel_path = resources_dir / 'syst_review_single_table.xlsx'
+    excel_path = resources_dir / 'Semio2Brain Database.xlsx'
 
 # set the localisations as all the anatomical columns of the excel file if not specified:
     if not localisations_to_extract:
@@ -35,7 +35,7 @@ def semiology_lateralisation_localisation(
 
 # load the spreadsheet with semiology and paper as multiindex:
     df_multiindex = pd.read_excel(
-        excel_path, nrows=n_rows, usecols="A:CZ", header=1, index_col=[3, 0])
+        excel_path, nrows=n_rows, usecols="A:DP", header=1, index_col=[3, 0])
     df_clean = df_multiindex.dropna(axis=0, how='all')
 
 # rename the indices to ensure we are consistent no matter what they were called in excel

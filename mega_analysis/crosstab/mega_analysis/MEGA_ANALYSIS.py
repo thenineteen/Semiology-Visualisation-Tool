@@ -16,8 +16,8 @@ from .progress_study_type import progress_study_type, progress_venn_2
 
 def MEGA_ANALYSIS(
     excel_data,
-    n_rows=2500,
-    usecols="A:DH",
+    n_rows=2815,
+    usecols="A:DY",
     header=1,
     exclude_data=False,
     plot=True,
@@ -127,8 +127,8 @@ def MEGA_ANALYSIS(
         progress_venn_2(df_study_type, method='Lateralising')
         progress_venn_2(df_study_type, method='Localising')
 
-    other_ = df.loc[df["Other (e.g. Abs)"].notnull(),
-                    "Other (e.g. Abs)"].unique()
+    other_ = df.loc[df["Other factors (e.g. Abs, genetic mutations)"].notnull(),
+                    "Other factors (e.g. Abs, genetic mutations)"].unique()
     lat_other_exc = df_study_type.loc["OTHER",
                                       ("Lateralising Datapoints", "Exclusive")]
     logging.debug(

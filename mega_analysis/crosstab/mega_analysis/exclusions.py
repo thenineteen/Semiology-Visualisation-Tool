@@ -140,7 +140,7 @@ def exclude_cortical_stimulation(df):
     will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
     if they don't, then needs a manual check. See tests.
     """
-    df.loc[df[SEEG_ES] == 'ES', SEEG_ES] = np.nan
+    df.loc[df[SEEG_ES].str.contains('ES', na=False), SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
     df_exclusions_CES = df.dropna(
         subset=subset, thresh=1, axis=0, inplace=False)
@@ -155,6 +155,13 @@ def exclude_sEEG(df):
     """
     Exclude cases where the only ground truth is stereo EEG cases.
     I recommend also excluding exclude_cortical_stimulation if running this.
+
+    NB
+        df.loc[df[SEEG_ES] == 'y', SEEG_ES] = np.nan
+            looks for exact match.
+    Whereas
+        df.loc[df[SEEG_ES].str.contains('y', na=False), SEEG_ES] = np.nan
+            removes sEEG and ES cases.
     """
     df.loc[df[SEEG_ES] == 'y', SEEG_ES] = np.nan
     df_exclusions_sEEG = df.dropna(
@@ -178,7 +185,7 @@ def exclude_paediatric_cases(df):
     (If the data is mixed and undifferentiated by < 7 yrs, the data is excluded only if the label 'y' was added during data collection.
     This decision was made based on the number of cases under or above 7. If left blank, cases are included.)
     """
-    PAED = 'padeiatric? <7 years (0-6 yrs) y/n'
+    PAED = 'paediatric subgroup <7 years (0-6 yrs) y/n'
     df_exclusions_paeds = df.loc[~(df[PAED] == 'y'), :]
     return df_exclusions_paeds
 
@@ -187,6 +194,6 @@ def only_paediatric_cases(df):
     """
     Only query paediatric cases under 7 years
     """
-    PAED = 'padeiatric? <7 years (0-6 yrs) y/n'
+    PAED = 'paediatric subgroup <7 years (0-6 yrs) y/n'
     df_only_paeds = df.loc[(df[PAED] == 'y'), :]
     return df_only_paeds
