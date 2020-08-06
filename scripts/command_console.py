@@ -20,8 +20,8 @@ def run_preprocess():
     arguments = parser.parse_args()
 
     output1 = MEGA_ANALYSIS (excel_data=arguments.excel_data,
-                             n_rows=2500,
-                             usecols="A:DH",
+                             n_rows=2815,
+                             usecols="A:DY",
                              header=1,
                              exclude_data=False,
                              plot=True,
