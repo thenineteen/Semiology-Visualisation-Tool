@@ -177,10 +177,12 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
     def use_SemioBrainBeta_notDummyData(self):
         """
         factor function.
+        Uses the beta version callled syst_review_single_table.
+        Note the arguments for MEGA_ANALYSIS differ for the beta version.
         """
         # load the Beta SemioBrain Database:
         repo_dir, resources_dir, SemioBrainBeta_data_path, SemioDict_path = \
-            file_paths(dummy_data=False)
+            file_paths(dummy_data=False, Beta=True)
         SemioBrainBeta_df, _, _ = MEGA_ANALYSIS(
             excel_data=SemioBrainBeta_data_path,
             n_rows=2500,
