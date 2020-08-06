@@ -3,7 +3,9 @@ Aphemia
 Astatic
 Atonic
 Auditory
+Automatisms - Oral
 Autonomous-Vegetative
+Complex Behavioural
 Coprolalia
 Cough
 Dacrystic
@@ -16,11 +18,10 @@ Gelastic
 Ictal Pout
 Ictal Speech
 LOC
+Mimetic Automatisms
 No Semiology (Stimulation)
 Non-Specific Aura
 Olfactory-Gustatory
-Oral Automatisms
-Other Automatism
 Palilalia
 Psychic
 Spitting

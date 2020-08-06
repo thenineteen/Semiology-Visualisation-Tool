@@ -334,7 +334,7 @@
         ]
       "Behavioural Arrest or Akinesis":
         ["Behaviou?r(?:al)? Arrest", "psychomotor arrest", "akinetic"]
-      "Other Complex Behavioural": # cf e.g. 'fearful expression' and 'fearful behaviour'
+      "Complex Behavioural": # cf e.g. 'fearful expression' and 'fearful behaviour'
         [
           "Other Complex Motor",
           "Complex Motor",
@@ -405,7 +405,7 @@
       "Post-ictal Aggressive": ["post-? ?ictal aggressive"]
 
     automatisms:
-      "Oral Automatisms":
+      "Automatisms - Oral":
         [
           "Oral Automatism",
           "Automatisms? \\(Oral\\)",
@@ -418,7 +418,7 @@
           "(?<!no )oro-? ?facial",
           "((?<!f)(?<!c))lick",
         ]
-      "Upper Limb Automatism":
+      "Automatism - Automotor Manual":
         [
           "upper limb autom",
           "Automatisms? \\(Upper Limb\\)",
@@ -435,7 +435,7 @@
           "(?<!no )manual automat",
           "fumbl",
         ]
-      "Lower Limb Automatism": # non hypermotor
+      "Automatism - Lower Limb Non Hypermotor": # non hypermotor
         [
           "Lower Limb Autom",
           "Automatisms? \\(Lower Limb\\)",
