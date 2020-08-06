@@ -1,4 +1,5 @@
 # Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.2.0
+# Seizure Semiology lateralisation and localisation information from 4,649 patients' data from 312 included original journal papers
 For research purposes only. Not for clinical use. 
  
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
@@ -37,8 +38,9 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
   pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.0 (Aug 2020, 55+1 semiologies)
-In May/June - v 0.9.1 (47 semiologies)
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.1
+Aug 2020: v 1.0.0, 55+1 semiologies
+Up to May 2020: v 0.9.1 (47 semiologies)
 ### 3. Resources: lateralisation and localisation mappings - v 1.1.0 (Aug 2020, 103 localisation labels) 
 until 5th Aug - v 1.0.8 (55 localisation labels)
 To query this database, we developed a taxonomy of 55 semiological terms (+ 1 "no semiology" for cortical stimulation studies), mapped reported categorical brain regions to 103 localising cerebral atlas labels and 5 lateralising
