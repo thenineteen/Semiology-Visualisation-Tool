@@ -359,10 +359,10 @@
       "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
       "Ictal Limb Paresis": # cf global behavioural arrest
         [
-          "(?<!post-? ?)ictal Limb Paresis",
-          "(?<!post-? ?)ictal paresis",
-          "(?<!post-? ?)ictal Immobility",
-          "(?<!post-? ?)ictal hemiparesis",
+          "(?<!post)ictal Limb Paresis",
+          "(?<!post)ictal paresis",
+          "(?<!post)ictal Immobility",
+          "(?<!post)ictal hemiparesis",
           "hypokin",
         ]
       "Astatic": ["astatic", "fall", "drop attack"]
@@ -407,32 +407,32 @@
     automatisms:
       "Automatisms - Oral":
         [
-          "(?<!post-? ?ictal )Oral Automatism",
-          "(?<!post-? ?ictal )Automatisms? \\(Oral\\)",
-          "(?<!post-? ?ictal )Automatisms \\(Oro-? ?alimentary\\)",
-          "(?<!post-? ?ictal )oro-?alimentary",
-          "((?<!post-? ?ictal )(?<!no ))oral automatism",
-          "((?<!post-? ?ictal )(?<!no ))lip-? ?smac?k?",
+          "(?<!postictal )Oral Automatism",
+          "(?<!postictal )Automatisms? \\(Oral\\)",
+          "(?<!postictal )Automatisms \\(Oro-? ?alimentary\\)",
+          "(?<!postictal )oro-?alimentary",
+          "((?<!postictal )(?<!no ))oral automatism",
+          "((?<!postictal )(?<!no ))lip-? ?smac?k?",
           "((?<!calci)(?<!no ))chew",
           "sucking",
-          "((?<!post-? ?ictal )(?<!no ))oro-? ?facial",
+          "((?<!postictal )(?<!no ))oro-? ?facial",
           "((?<!f)(?<!c))lick",
         ]
       "Automatism - Automotor Manual":
         [
-          "(?<!post-? ?ictal )upper limb autom",
-          "(?<!post-? ?ictal )Automatisms? \\(Upper Limb\\)",
-          "(?<!post-? ?ictal )Automatisms? \\(UL\\)",
-          "(?<!post-? ?ictal )Automatisms? \\(?Manual\\)?",
-          "(?<!post-? ?ictal )manual automatism",
-          "(?<!post-? ?ictal )hand automatism",
-          "(?<!post-? ?ictal )unilateral hand automatism",
-          "(?<!post-? ?ictal )fiddl",
+          "(?<!postictal )upper limb autom",
+          "(?<!postictal )Automatisms? \\(Upper Limb\\)",
+          "(?<!postictal )Automatisms? \\(UL\\)",
+          "(?<!postictal )Automatisms? \\(?Manual\\)?",
+          "(?<!postictal )manual automatism",
+          "(?<!postictal )hand automatism",
+          "(?<!postictal )unilateral hand automatism",
+          "(?<!postictal )fiddl",
           "(?<!no )fidget",
-          "(?<!post-? ?ictal )hand rubbing",
-          "(?<!post-? ?ictal )automotor",
-          "((?<!post-? ?ictal )(?<!no ))manual automat",
-          "(?<!post-? ?ictal )fumbl",
+          "(?<!postictal )hand rubbing",
+          "(?<!postictal )automotor",
+          "((?<!postictal )(?<!no ))manual automat",
+          "(?<!postictal )fumbl",
         ]
       "Automatism - Lower Limb (Non Hypermotor)": # non hypermotor
         [
@@ -465,18 +465,18 @@
         ]
       "Cough":
         [
-          "(?<!post-? ?ictal )Cough",
-          "(?<!post-? ?ictal )ictal cough",
-          "(?<!post-? ?ictal )cough seizure",
+          "(?<!postictal )Cough",
+          "(?<!postictal )ictal cough",
+          "(?<!postictal )cough seizure",
         ]
       "Nose-wiping":
         [
-          "(?<!post-? ?ictal )Nose-? ?wiping",
-          "((?<!post-? ?ictal )(?<!no ))nose-? ?wip",
-          "(?<!post-? ?ictal )rubs? nose",
-          "(?<!post-? ?ictal )nose rub",
-          "(?<!post-? ?ictal )wipes? nose",
-          "(?<!post-? ?ictal )face rub",
+          "(?<!postictal )Nose-? ?wiping",
+          "((?<!postictal )(?<!no ))nose-? ?wip",
+          "(?<!postictal )rubs? nose",
+          "(?<!postictal )nose rub",
+          "(?<!postictal )wipes? nose",
+          "(?<!postictal )face rub",
         ]
       "Spitting": ["spit", "spitting"]
       "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
@@ -520,28 +520,28 @@
       ]
     "Aphasia":
       [
-        "((?<!post-? ?ictal )(?<!no ))aphasia",
-        "((?<!post-? ?ictal )(?<!no ))mute",
+        "((?<!postictal )(?<!no ))aphasia",
+        "((?<!postictal )(?<!no ))mute",
         "no speech ?((?!disorder)(?!disturbance)(?!deficit)(?!problem))",
-        "((?<!post-? ?ictal )(?<!no ))unable to speak",
-        "((?<!post-? ?ictal )(?<!no ))unable to talk",
-        "((?<!post-? ?ictal )(?<!no ))speech arrest",
+        "((?<!postictal )(?<!no ))unable to speak",
+        "((?<!postictal )(?<!no ))unable to talk",
+        "((?<!postictal )(?<!no ))speech arrest",
       ]
     "Dysphasia":
       [
-        "((?<!post-? ?ictal )(?<!no ))dysphasia",
+        "((?<!postictal )(?<!no ))dysphasia",
         "(?<!no )difficulty speak(?:ing)?",
         "(?<!no )difficulty talk(?:ing)?",
         "speech difficult",
         "difficult speech",
-        "((?<!post-? ?ictal )(?<!no ))distortion of speech",
-        "((?<!post-? ?ictal )(?<!no ))speech disturbance",
-        "((?<!post-? ?ictal )(?<!no ))garbled speech",
-        "((?<!post-? ?ictal )(?<!no ))speech production problem",
-        "((?<!post-? ?ictal )(?<!no ))incomprehensible speech",
-        "((?<!post-? ?ictal )(?<!no ))incoherent speech",
-        "((?<!post-? ?ictal )(?<!no ))none?-? ?sense",
-        "((?<!post-? ?ictal )(?<!no ))none? ?-?sensical",
+        "((?<!postictal )(?<!no ))distortion of speech",
+        "((?<!postictal )(?<!no ))speech disturbance",
+        "((?<!postictal )(?<!no ))garbled speech",
+        "((?<!postictal )(?<!no ))speech production problem",
+        "((?<!postictal )(?<!no ))incomprehensible speech",
+        "((?<!postictal )(?<!no ))incoherent speech",
+        "((?<!postictal )(?<!no ))none?-? ?sense",
+        "((?<!postictal )(?<!no ))none? ?-?sensical",
       ]
     "Ictal Speech":
       [
