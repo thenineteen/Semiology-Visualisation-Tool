@@ -122,6 +122,7 @@
         "throat",
         "constrictive",
         "constriction",
+        "pilomotor",
       ]
     "Olfactory-Gustatory":
       [
@@ -291,7 +292,7 @@
           "figure 4",
           "Tonic \\(Ass?ymm?etric\\)",
         ]
-      "Dystonic": ["(?<!no )dystonic"]
+      "Dystonic": ["(?<!no )dystonic", "dystonia"]
       "Clonic":
         [
           "((?<!tonic-)(?<!tonic )(?<!tonic/)(?<!myo))clonic",
@@ -328,6 +329,8 @@
           "rocks from side",
           "ballic",
           "ballistic",
+          "pedalling",
+          "pedaling",
         ]
       "Behavioural Arrest or Akinesis":
         ["Behaviou?r(?:al)? Arrest", "psychomotor arrest", "akinetic"]
@@ -356,15 +359,15 @@
       "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
       "Ictal Limb Paresis": # cf global behavioural arrest
         [
-          "Ictal Limb Paresis",
-          "ictal paresis",
-          "Ictal Immobility",
-          "ictal hemiparesis",
+          "(?<!post-? ?)ictal Limb Paresis",
+          "(?<!post-? ?)ictal paresis",
+          "(?<!post-? ?)ictal Immobility",
+          "(?<!post-? ?)ictal hemiparesis",
           "hypokin",
         ]
       "Astatic": ["astatic", "fall", "drop attack"]
       "Hypomotor": ["hypomotor", "Motor \\(Hypomotor\\)"]
-      "Spasms - epileptic/infantile":
+      "Spasms - epileptic/infantile": # NB description dependent for adults e.g. tonic/myoclonic?
         [
           "infantile spasm",
           "epileptic spasm",
@@ -404,35 +407,34 @@
     automatisms:
       "Automatisms - Oral":
         [
-          "Oral Automatism",
-          "Automatisms? \\(Oral\\)",
-          "Automatisms \\(Oro-? ?alimentary\\)",
-          "oro-?alimentary",
-          "(?<!no )oral automatism",
-          "(?<!no )lip-? ?smac?k?",
+          "(?<!post-? ?ictal )Oral Automatism",
+          "(?<!post-? ?ictal )Automatisms? \\(Oral\\)",
+          "(?<!post-? ?ictal )Automatisms \\(Oro-? ?alimentary\\)",
+          "(?<!post-? ?ictal )oro-?alimentary",
+          "((?<!post-? ?ictal )(?<!no ))oral automatism",
+          "((?<!post-? ?ictal )(?<!no ))lip-? ?smac?k?",
           "((?<!calci)(?<!no ))chew",
           "sucking",
-          "(?<!no )oro-? ?facial",
+          "((?<!post-? ?ictal )(?<!no ))oro-? ?facial",
           "((?<!f)(?<!c))lick",
         ]
       "Automatism - Automotor Manual":
         [
-          "upper limb autom",
-          "Automatisms? \\(Upper Limb\\)",
-          "Automatisms? \\(UL\\)",
-          "Automatisms? \\(?Manual\\)?",
-          "manual automatism",
-          "hand automatism",
-          "unilateral hand automatism",
-          "fiddl",
+          "(?<!post-? ?ictal )upper limb autom",
+          "(?<!post-? ?ictal )Automatisms? \\(Upper Limb\\)",
+          "(?<!post-? ?ictal )Automatisms? \\(UL\\)",
+          "(?<!post-? ?ictal )Automatisms? \\(?Manual\\)?",
+          "(?<!post-? ?ictal )manual automatism",
+          "(?<!post-? ?ictal )hand automatism",
+          "(?<!post-? ?ictal )unilateral hand automatism",
+          "(?<!post-? ?ictal )fiddl",
           "(?<!no )fidget",
-          "stereotypy(?:ed)?",
-          "hand rubbing",
-          "automotor",
-          "(?<!no )manual automat",
-          "fumbl",
+          "(?<!post-? ?ictal )hand rubbing",
+          "(?<!post-? ?ictal )automotor",
+          "((?<!post-? ?ictal )(?<!no ))manual automat",
+          "(?<!post-? ?ictal )fumbl",
         ]
-      "Automatism - Lower Limb Non Hypermotor": # non hypermotor
+      "Automatism - Lower Limb (Non Hypermotor)": # non hypermotor
         [
           "Lower Limb Autom",
           "Automatisms? \\(Lower Limb\\)",
@@ -442,6 +444,7 @@
           "lower-? ?limb automotor",
           "leg automotor",
           "foot autom",
+          "pedal automatism",
         ]
       "Blink":
         [
@@ -460,15 +463,20 @@
           "(?<!no )flickering of? ?eyes",
           "(?<!no )flicker(ing)? of eye",
         ]
-      "Cough": ["Cough", "ictal cough", "cough seizure"]
+      "Cough":
+        [
+          "(?<!post-? ?ictal )Cough",
+          "(?<!post-? ?ictal )ictal cough",
+          "(?<!post-? ?ictal )cough seizure",
+        ]
       "Nose-wiping":
         [
-          "Nose-? ?wiping",
-          "(?<!no )nose-? ?wip",
-          "rubs? nose",
-          "nose rub",
-          "wipes? nose",
-          "face rub",
+          "(?<!post-? ?ictal )Nose-? ?wiping",
+          "((?<!post-? ?ictal )(?<!no ))nose-? ?wip",
+          "(?<!post-? ?ictal )rubs? nose",
+          "(?<!post-? ?ictal )nose rub",
+          "(?<!post-? ?ictal )wipes? nose",
+          "(?<!post-? ?ictal )face rub",
         ]
       "Spitting": ["spit", "spitting"]
       "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
@@ -512,28 +520,28 @@
       ]
     "Aphasia":
       [
-        "(?<!no )aphasia",
-        "mute",
+        "((?<!post-? ?ictal )(?<!no ))aphasia",
+        "((?<!post-? ?ictal )(?<!no ))mute",
         "no speech ?((?!disorder)(?!disturbance)(?!deficit)(?!problem))",
-        "unable to speak",
-        "unable to talk",
-        "(?<!no )speech arrest",
+        "((?<!post-? ?ictal )(?<!no ))unable to speak",
+        "((?<!post-? ?ictal )(?<!no ))unable to talk",
+        "((?<!post-? ?ictal )(?<!no ))speech arrest",
       ]
     "Dysphasia":
       [
-        "(?<!no )dysphasia",
+        "((?<!post-? ?ictal )(?<!no ))dysphasia",
         "(?<!no )difficulty speak(?:ing)?",
         "(?<!no )difficulty talk(?:ing)?",
         "speech difficult",
         "difficult speech",
-        "(?<!no )distortion of speech",
-        "(?<!no )speech disturbance",
-        "(?<!no )garbled speech",
-        "(?<!no )speech production problem",
-        "(?<!no )incomprehensible speech",
-        "(?<!no )incoherent speech",
-        "(?<!no )none?-? ?sense",
-        "(?<!no )none? ?-?sensical",
+        "((?<!post-? ?ictal )(?<!no ))distortion of speech",
+        "((?<!post-? ?ictal )(?<!no ))speech disturbance",
+        "((?<!post-? ?ictal )(?<!no ))garbled speech",
+        "((?<!post-? ?ictal )(?<!no ))speech production problem",
+        "((?<!post-? ?ictal )(?<!no ))incomprehensible speech",
+        "((?<!post-? ?ictal )(?<!no ))incoherent speech",
+        "((?<!post-? ?ictal )(?<!no ))none?-? ?sense",
+        "((?<!post-? ?ictal )(?<!no ))none? ?-?sensical",
       ]
     "Ictal Speech":
       [
