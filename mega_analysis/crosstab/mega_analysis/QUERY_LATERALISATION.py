@@ -201,9 +201,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # hence normalise by dividing by proportion_lateralising (which is between (0,1])
 
         gifs_right, gifs_left = gifs_lat(gif_lat_file)
-#         row_to_one_map
-#         proportion_lateralising
-#         Right, Left
+        #         row_to_one_map
+        #         proportion_lateralising
+        #         Right, Left
 
         # find lowest value of R or L
         lower_postn = np.argmin([Right, Left])
