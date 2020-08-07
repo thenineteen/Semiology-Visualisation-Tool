@@ -586,7 +586,7 @@
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC":
       [
-        "((?<!no )(?<!without ))loss of consciouesness",
+        "((?<!no )(?<!without ))loss of consciousness",
         "(?<!not )unconscious",
         "black out",
         "((?<!b)(?<!ve)(?<!no )(?<!without ))LOC((?!k)(?!us)(?!at)(?!al))",
