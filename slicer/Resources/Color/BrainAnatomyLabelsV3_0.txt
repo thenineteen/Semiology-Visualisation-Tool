@@ -49,7 +49,7 @@
 81 Right-Temporal-White-Matter 245 255 200 255
 82 Right-Insula-White-Matter 255 230 255 255
 83 Right-Cingulate-White-Matter 245 245 245 255
-84 Right-Frontal-White-Matter  220 255 220 255
+84 Right-Frontal-White-Matter 220 255 220 255
 85 Right-Occipital-White-Matter 220 220 220 255
 86 Right-Parietal-White-Matter 200 255 255 255
 87 Corpus-Callosum 250 220 200 255
