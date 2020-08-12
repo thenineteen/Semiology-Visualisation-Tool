@@ -444,7 +444,7 @@
           "lower-? ?limb automotor",
           "leg automotor",
           "foot autom",
-          "pedal automatism",
+          "pedal((?!ing)(?!ling)) automatism",
         ]
       "Blink":
         [
