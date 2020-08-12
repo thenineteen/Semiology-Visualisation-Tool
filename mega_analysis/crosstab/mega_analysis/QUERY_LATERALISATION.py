@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 import numpy as np
-from .mapping import mapping, big_map, pivot_result_to_one_map
+from .mapping import big_map, pivot_result_to_one_map
 from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 
 
