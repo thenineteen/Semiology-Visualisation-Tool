@@ -3,7 +3,7 @@ import unittest
 
 from mega_analysis.crosstab.gif_lobes_from_excel_sheets import \
     gif_lobes_from_excel_sheets
-from mega_analysis.crosstab.semiology_all_localisations import \
+from mega_analysis.crosstab.all_localisations import \
     all_localisations
 from mega_analysis.crosstab.semiology_lateralisation_localisation import \
     semiology_lateralisation_localisation

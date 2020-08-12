@@ -1,5 +1,5 @@
 import pandas as pd
-from ..semiology_all_localisations import all_localisations
+from ..all_localisations import all_localisations
 
 
 # note 'Localising' is in id_cols not localisation_labels

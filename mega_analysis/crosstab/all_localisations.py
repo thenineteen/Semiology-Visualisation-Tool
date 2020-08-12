@@ -7,6 +7,8 @@ def all_localisations(excel_columns="R:DP"):
     Import the excel spreadsheet of 312 included journal paper reviews (4649 patients) and
     return a list of the anatomical brain region terms.
     Used as default when importing the spreadsheet in semiology_lateralisation_localisation.
+
+    The important argument here is "R:DP" based on excel column names for Semio2Brain Database Aug 2020 (v 1.0.0)
     """
 # set the path to excel file:
     repo_dir = Path(__file__).parent.parent.parent

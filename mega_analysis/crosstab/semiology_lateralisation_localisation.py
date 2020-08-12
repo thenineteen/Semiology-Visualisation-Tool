@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .semiology_all_localisations import all_localisations
+from .all_localisations import all_localisations
 from pathlib import Path
 
 

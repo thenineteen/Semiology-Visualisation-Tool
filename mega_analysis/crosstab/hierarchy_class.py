@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from mega_analysis.crosstab.semiology_all_localisations import all_localisations
+from mega_analysis.crosstab.all_localisations import all_localisations
 from mega_analysis.crosstab.hierarchy_dictionaries import postcode_dictionaries
 
 
