@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 import numpy as np
+from .group_columns import full_id_vars, lateralisation_vars
 
 
 def mapping(map_df_dict):
@@ -15,9 +16,9 @@ def mapping(map_df_dict):
     #     mapping_OL = map_df_dict['GIF OL']
     #     mapping_CING = map_df_dict['GIF CING']
     #     mapping_INSULA = map_df_dict['GIF INSULA']
-    #     mapping_HYPOTHALAMUS = map_df_dict['GIF HYPOTHALAMUS']
+    #     mapping_HYPOTHALAMUS = map_df_dict['GIF HYPOTHALAMUS'] NB GIF parcellation missing hypothalamic parcellation so using thalamus instead.
     #     mapping_CEREBELLUM = map_df_dict['GIF CEREBELLUM']
-    GIF parcellation missing hypothalamic parcellation?
+    #     mapping_MIXED = map_df_dict['GIF_MIXED']
 
     Aug 2019/2020 Ali Alim-Marvasti
 
@@ -70,8 +71,12 @@ def pivot_result_to_one_map(
         one_map = one_map[0]
 
     # checks
+    lat_vars = lateralisation_vars()
+    id_cols = full_id_vars()
+    pivot_result_loc_cols = pivot_result.drop(
+        lat_vars + id_cols, axis=1, errors='ignore')
     if (len([col for col in pivot_result if col not in one_map]) > 0):
-        logging.error(len([col for col in pivot_result if col not in one_map]),
+        logging.error(len([col for col in pivot_result_loc_cols if col not in one_map]),
                       'localisation column(s) in the pivot_result which cannot be found in one_map',
                       'These columns are: ',
                       str([col for col in pivot_result if col not in one_map])
