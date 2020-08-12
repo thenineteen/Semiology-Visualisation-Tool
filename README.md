@@ -37,6 +37,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
   reports on a cohort of unselected patients with epilepsy, or
   pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD) and provides details of epileptogenic zone localisation/lateralisation
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
+* If new data is to be added, must include paediatric under 7 label, and if postictal, must be typed "postictal" and not in any other format.
 
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.1
 Aug 2020: v 1.0.0, 55+1 semiologies
