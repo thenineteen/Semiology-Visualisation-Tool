@@ -72,16 +72,29 @@ def lateralising_but_not_localising(full_row,
 
 
 def lateralising_but_not_localising_GIF(
+        all_combined_gifs,
         lat_only_Right, lat_only_Left,
-        gifs_right, gifs_left):
+        gifs_right, gifs_left,
+        exclusively_lateralising=False):
     """
     Part 2 of 2
     Keep the lateralising values: map to unilateral gif parcellations.
         instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
 
     """
+    if exclusively_lateralising:  # all_combined_gifs is None
 
-    return
+        return
+    else:  # concat with all_combined_gifs
+        lat_only_df = pd.DataFrame().reindex_like(all_combined_gifs)
+        lat_only_df.reset_index(drop=True)
+        gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
+        lat_only_df['Gif Parcellations'] = gifs_right_and_left
+        lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+            gifs_right), 'pt #s'] = lat_only_Right  # broadcast
+        lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+            gifs_left), 'pt #s'] = lat_only_Left  # broadcast
+        return lat_only_df
 
 
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
@@ -352,12 +365,16 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # here add the lateralising_but_not_localising data to the all_combined_gifs (or fixed, or fixed2):
     # if all_combined_gifs is None then use the unilteral_gifs
     # if all_combined_Gifs is not None then only add values to the unilateral gifs if they are already in all_combined_gifs
-    # if (lat_only_Right is not None) | (lat_only_Left is not None):
-    #     if all_combined_gifs is None:  # means both lateralising and gifs_not_lat were none
-    #         lat_only_Right * gifs_right
-    #         lat_only_Left * gifs_left
-    #     else:
-    #         lateralising_but_not_localising_GIF(lat_only_Right, lat_only_Left,
-    #                                             gifs_right, gifs_left)
+    if (lat_only_Right != 0) | (lat_only_Left != 0):
+        if all_combined_gifs is None:  # means both lateralising and gifs_not_lat were none
+            lateralising_but_not_localising_GIF(all_combined_gifs,
+                                                lat_only_Right, lat_only_Left,
+                                                gifs_right, gifs_left,
+                                                exclusively_lateralising=True)
+        else:
+            lateralising_but_not_localising_GIF(all_combined_gifs,
+                                                lat_only_Right, lat_only_Left,
+                                                gifs_right, gifs_left,
+                                                exclusively_lateralising=False)
 
     return all_combined_gifs.round()
