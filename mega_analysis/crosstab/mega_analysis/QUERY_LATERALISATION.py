@@ -51,13 +51,25 @@ def summarise_overall_lat_values(row,
     return Right, Left
 
 
-def lateralising_but_no_localising(gif_lat_file):
+def lateralising_but_not_localising(gif_lat_file,
+                                    full_row,
+                                    side_of_symptoms_signs,
+                                    pts_dominant_hemisphere_R_or_L,
+                                    lat_only_Right,
+                                    lat_only_Left):
     """
     Keep the lateralising values: map to unilateral gif parcellations.
-        instead of SVT v 1.2.0 (Aug 2020) which ignores this data if there is no localising value.
+        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
 
     """
     gifs_right, gifs_left = gifs_lat(gif_lat_file)
+    lat_only_Right, lat_only_Left = summarise_overall_lat_values(full_row,
+                                                                 side_of_symptoms_signs,
+                                                                 pts_dominant_hemisphere_R_or_L,
+                                                                 lat_only_Right,
+                                                                 lat_only_Left)
+
+    return lat_only_Right, lat_only_Left
 
 
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
@@ -145,9 +157,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     logging.debug(f'Dominant Hemisphere: {DomH.sum()} datapoints')
     logging.debug(f'Non-Dominant Hemisphere: {NonDomH.sum()} datapoints')
 
-    # initialise:
-    Right = 0
-    Left = 0
+    # Global initialisation:
+    lat_only_Right = 0
+    lat_only_Left = 0
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
     ), :].copy()  # only those with lat
     no_rows = inspect_result_lat.shape[0]
@@ -183,8 +195,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             #  or actually, to count this full_row['Lateralising'] as data for localising, useing the lateralised gif parcellations from the sheet called
             #       'Full GIF Map for Review '
 
-            # unilateral_gifs = lateralising_but_no_localising(gif_lat_file)
-
+            lat_only_Right, lat_only_Left = lateralising_but_not_localising(gif_lat_file,
+                                                                            full_row,
+                                                                            side_of_symptoms_signs,
+                                                                            pts_dominant_hemisphere_R_or_L,
+                                                                            lat_only_Right,
+                                                                            lat_only_Left)
             continue
 
         # set the scale of influence of lateralisation on the gif parcellations:
