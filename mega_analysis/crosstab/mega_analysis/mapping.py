@@ -103,9 +103,9 @@ def pivot_result_to_one_map(
         all_gifs = all_gifs.dropna(axis='rows', how='any')
     #     all_gifs = all_gifs.stack()  #  gives a series
     except KeyError:
-        logging.debug(f'\nKeyError. all_gifs={all_gifs}')
-        logging.debug(
-            'CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
+        logging.warning(f'\nKeyError. all_gifs={all_gifs}')
+        logging.warning(
+            'EMPTY DATAFRAME? SKIPPED THIS ROW. Due to absence of lateralising_but_not_localising function and/or col name mismatch between database and GIF mapping.')
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
     # this is for Rachel Sparks's requirement:
