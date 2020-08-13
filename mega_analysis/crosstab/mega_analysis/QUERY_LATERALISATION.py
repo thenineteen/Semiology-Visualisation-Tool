@@ -181,12 +181,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
-        row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
-                                                 )
-        # ^ row_to_one_map now contains all the lateralising gif parcellations
-
         # some pts will have lateralising but no localising values:
-        if (('Localising' not in full_row.columns) | (full_row['Localising'].sum() == 0)):
+        if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
             logging.debug(
                 '\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
             logging.debug(f'row# = {i}')
@@ -202,6 +198,11 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                                                             lat_only_Right,
                                                                             lat_only_Left)
             continue
+
+        # otherwise if there is localising value (and lateralising value):
+        row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
+                                                 )
+        # ^ row_to_one_map now contains all the lateralising gif parcellations
 
         # set the scale of influence of lateralisation on the gif parcellations:
         proportion_lateralising = full_row['Lateralising'].sum(
