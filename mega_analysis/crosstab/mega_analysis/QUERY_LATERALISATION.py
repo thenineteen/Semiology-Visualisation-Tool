@@ -18,6 +18,48 @@ def gifs_lat(gif_lat_file):
     return gifs_right, gifs_left
 
 
+def summarise_overall_lat_values(row,
+                                 side_of_symptoms_signs,
+                                 pts_dominant_hemisphere_R_or_L,
+                                 Right,
+                                 Left):
+    """
+    Factor function for Q_L. Calculated IL, CL, DomH and NonDomH lateralisations.
+    """
+    IL_row = row['IL'].sum()
+    CL_row = row['CL'].sum()
+    DomH_row = row['DomH'].sum()
+    NonDomH_row = row['NonDomH'].sum()
+    BL_row = row['BL (Non-lateralising)'].sum()
+
+    # pt input
+    if side_of_symptoms_signs == 'R':
+        Right += IL_row
+        Left += CL_row
+
+    elif side_of_symptoms_signs == 'L':
+        Right += CL_row
+        Left += IL_row
+
+    if pts_dominant_hemisphere_R_or_L:
+        if pts_dominant_hemisphere_R_or_L == 'R':
+            Right += DomH_row
+            Left += NonDomH_row
+        elif pts_dominant_hemisphere_R_or_L == 'L':
+            Right += NonDomH_row
+            Left += DomH_row
+    return Right, Left
+
+
+def lateralising_but_no_localising(gif_lat_file):
+    """
+    Keep the lateralising values: map to unilateral gif parcellations.
+        instead of SVT v 1.2.0 (Aug 2020) which ignores this data if there is no localising value.
+
+    """
+    gifs_right, gifs_left = gifs_lat(gif_lat_file)
+
+
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                          side_of_symptoms_signs=None,
                          pts_dominant_hemisphere_R_or_L=None,
@@ -137,7 +179,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 '\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
             logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
-            # full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
+            #       full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
+            #  or actually, to count this full_row['Lateralising'] as data for localising, useing the lateralised gif parcellations from the sheet called
+            #       'Full GIF Map for Review '
+
+            # unilateral_gifs = lateralising_but_no_localising(gif_lat_file)
+
             continue
 
         # set the scale of influence of lateralisation on the gif parcellations:
@@ -159,28 +206,11 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 continue
 
         # summarise overall lat values
-        IL_row = row['IL'].sum()
-        CL_row = row['CL'].sum()
-        DomH_row = row['DomH'].sum()
-        NonDomH_row = row['NonDomH'].sum()
-        BL_row = row['BL (Non-lateralising)'].sum()
-
-        # pt input
-        if side_of_symptoms_signs == 'R':
-            Right += IL_row
-            Left += CL_row
-
-        elif side_of_symptoms_signs == 'L':
-            Right += CL_row
-            Left += IL_row
-
-        if pts_dominant_hemisphere_R_or_L:
-            if pts_dominant_hemisphere_R_or_L == 'R':
-                Right += DomH_row
-                Left += NonDomH_row
-            elif pts_dominant_hemisphere_R_or_L == 'L':
-                Right += NonDomH_row
-                Left += DomH_row
+        Right, Left = summarise_overall_lat_values(row,
+                                                   side_of_symptoms_signs,
+                                                   pts_dominant_hemisphere_R_or_L,
+                                                   Right,
+                                                   Left)
 
         Total = Right+Left
         if Right == Left:
@@ -294,5 +324,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # fixed2.loc[0, 'Semiology Term'] = str( list(inspect_result.index.values) )
     all_combined_gifs = fixed2
     all_combined_gifs
+
+    # here add the lateralising_but_not_localising data to the all_combined_gifs (or fixed, or fixed2):
+    # if all_combined_gifs is None then use the unilteral_gifs
+    # if all_combined_Gifs is not None then only add values to the unilateral gifs if they are already in all_combined_gifs
 
     return all_combined_gifs.round()
