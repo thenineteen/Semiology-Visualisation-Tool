@@ -165,6 +165,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     no_rows = inspect_result_lat.shape[0]
     one_map = big_map(map_df_dict)
     all_combined_gifs = None
+    gifs_right, gifs_left = gifs_lat(gif_lat_file)
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']
@@ -246,11 +247,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # if there are 100 localisations in one row, and only 1 IL And 3 CL, it would be too much
         # to say the IL side gets one third of the CL side as number of lat is too low
         # hence normalise by dividing by proportion_lateralising (which is between (0,1])
-
-        gifs_right, gifs_left = gifs_lat(gif_lat_file)
-        #         row_to_one_map
-        #         proportion_lateralising
-        #         Right, Left
 
         # find lowest value of R or L
         lower_postn = np.argmin([Right, Left])
@@ -345,5 +341,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # here add the lateralising_but_not_localising data to the all_combined_gifs (or fixed, or fixed2):
     # if all_combined_gifs is None then use the unilteral_gifs
     # if all_combined_Gifs is not None then only add values to the unilateral gifs if they are already in all_combined_gifs
+    # if all_combined_gifs is None:  # means both lateralising and gifs_not_lat were none
+    #     lat_only_Right * gifs_right
+    #     lat_only_Left * gifs_left
 
     return all_combined_gifs.round()
