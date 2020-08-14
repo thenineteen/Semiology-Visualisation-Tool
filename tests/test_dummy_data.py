@@ -159,8 +159,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
     def test_toplevel_query_lat_mappings(self):
         """
-        Need to change the call to the semiology_dictionary to
-            make it the dummy_semio_dict
+        The call to the semiology_dictionary is the dummy_semio_dict as passed as an argument to q_l
         Relies on mapping strategy as uses gifs
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
@@ -259,6 +258,22 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert(atonic_result['Lateralising'].sum() == 2)
 
         print('\n9 negative lookbehind regex\n')
+
+    def test_lat_not_loc(self):
+        """
+        Test capturing the lateralising but not localising data rather than skipping it.
+        As implemented in QUERY_LATERALISATION in branch "Lateralising but no localising value".
+        """
+        patient = Semiology('lat_not_loc', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        lat_not_loc_result = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        self.assertIs(type(lat_not_loc_result), pd.DataFrame)
+        assert not lat_not_loc_result.empty
+        assert('Localising' not in lat_not_loc_result)
+        assert(lat_not_loc_result['Lateralising'].sum() == 1)
+
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
