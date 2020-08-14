@@ -305,6 +305,52 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert lat_not_loc_gifsclean['pt #s'].sum(
         ) == lat_not_loc_gifsclean.shape[0]
 
+    def test_latnotloc_and_latandloc(self):
+        """
+        Test capturing the lateralising but not localising data rather than skipping it.
+        integrated with lat and loc data.
+        """
+        patient = Semiology('lat_', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        lat_not_loc_all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        # inspect result
+        lat_not_loc_result = patient.query_semiology()
+
+        self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
+        assert not lat_not_loc_all_combined_gifs.empty
+
+        # drop the zero entries - should be only the IL left ones which aren't MTG of TL:
+        lat_not_loc_all_combined_gifs = lat_not_loc_all_combined_gifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_not_loc_all_combined_gifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_not_loc_gifsclean = lat_not_loc_all_combined_gifs.loc[
+            lat_not_loc_all_combined_gifs['pt #s'] != 0, :]
+
+        gifs_right, gifs_left = gifs_lat_factor()
+        lat_not_loc_gifsclean_rights = (
+            lat_not_loc_gifsclean.drop(index=156).index.isin(gifs_right).all()
+        )
+
+        # inspect result assertions
+        assert(lat_not_loc_result.Localising.sum() == 1)
+        assert(lat_not_loc_result['Lateralising'].sum() == 2)
+
+        # all_combined_gifs assertions
+        # all except GIF 156 (L MTG) are in the right GIFs:
+        assert((
+            lat_not_loc_gifsclean_rights == True)
+        )
+        assert(
+            (
+                lat_not_loc_gifsclean.index.isin(gifs_left)).any() == True
+        )
+        # assert using shape as all pt #s are 1:
+        assert lat_not_loc_gifsclean['pt #s'].sum(
+        ) == lat_not_loc_gifsclean.shape[0]
+
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
