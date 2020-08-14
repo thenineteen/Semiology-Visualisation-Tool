@@ -75,11 +75,11 @@ def pivot_result_to_one_map(
     id_cols = full_id_vars()
     pivot_result_loc_cols = pivot_result.drop(
         lat_vars + id_cols, axis=1, errors='ignore')
-    if (len([col for col in pivot_result if col not in one_map]) > 0):
+    if (len([col for col in pivot_result_loc_cols if col not in one_map]) > 0):
         logging.error(len([col for col in pivot_result_loc_cols if col not in one_map]),
                       'localisation column(s) in the pivot_result which cannot be found in one_map',
                       'These columns are: ',
-                      str([col for col in pivot_result if col not in one_map])
+                      str([col for col in pivot_result_loc_cols if col not in one_map])
                       )
     else:
         pass
