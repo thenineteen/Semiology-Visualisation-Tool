@@ -290,6 +290,11 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             lat_not_loc_gifsclean.index.isin(gifs_right).all()
         )
 
+        # inspect result assertions
+        assert(lat_not_loc_result.Localising.sum() == 0)
+        assert(lat_not_loc_result['Lateralising'].sum() == 1)
+
+        # all_combined_gifs assertions
         assert((
             lat_not_loc_gifsclean_rights == True)
         )
@@ -297,16 +302,13 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             (
                 lat_not_loc_gifsclean.index.isin(gifs_left)).any() == False
         )
-
-        assert(lat_not_loc_result.Localising.sum() == 0)
-        assert(lat_not_loc_result['Lateralising'].sum() == 1)
+        assert lat_not_loc_gifsclean['pt #s'].sum(
+        ) == lat_not_loc_gifsclean.shape[0]
 
 
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
 # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
-
-
 # for debugging with setUp(self):
 if __name__ == '__main__':
     sys.argv.insert(1, '--verbose')
