@@ -30,7 +30,7 @@ def summarise_overall_lat_values(row,
     CL_row = row['CL'].sum()
     DomH_row = row['DomH'].sum()
     NonDomH_row = row['NonDomH'].sum()
-    BL_row = row['BL (Non-lateralising)'].sum()
+    # BL_row = row['BL (Non-lateralising)'].sum()
 
     # pt input
     if side_of_symptoms_signs == 'R':
@@ -157,9 +157,10 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                       (inspect_result2['NonDomH'].notnull()), :].copy()
     missing_lat_null_mask = missing_lat['Lateralising'].isnull()
     if not missing_lat_null_mask.all():
-        logging.debug('\nNo missing Lateralising data points.')
+        # logging.debug('\nNo missing Lateralising data points.')
+        pass
     else:  # semiology term not recognised
-        logging.warning(
+        logging.debug(
             'The inspect_result lat col has NaNs/zero where it should not: autofilled')
         df_of_missing_lats = missing_lat.loc[missing_lat_null_mask].copy()
         df.loc[df_of_missing_lats.index, 'Lateralising'] = df_of_missing_lats[[
@@ -188,7 +189,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     lat_only_Right = 0
     lat_only_Left = 0
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
-    ), :].copy()  # only those with lat
+    ), :].copy()  # only those with lat (with or without localising)
     no_rows = inspect_result_lat.shape[0]
     one_map = big_map(map_df_dict)
     all_combined_gifs = None
@@ -216,7 +217,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
             #       full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
-            #  or actually, to count this full_row['Lateralising'] as data for localising, useing the lateralised gif parcellations from the sheet called
+            #  or actually, to count this full_row['Lateralising'] as data for localising, using the lateralised gif parcellations from the sheet called
             #       'Full GIF Map for Review '
 
             lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row,
@@ -317,7 +318,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 [all_combined_gifs, row_to_one_map], join='outer', sort=False)
         logging.debug(f'end of i {i}')
 
-    # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
+    # Need to recombine the inspect_result_lat (also had loc) used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
     inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(
     ), :].copy()
@@ -348,7 +349,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             elif j != 0:
                 gifs_not_lat = pd.concat(
                     [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
-    # now combine the lateralised and non-lateralised:
+    # now combine the lateralised+loc and non-lateralised(=only localised):
     # all_combined_gifs may still be None if after running above with some lateralised...
         # ...semiology or dominance, there is no lateralising data.
     if all_combined_gifs is None:
@@ -361,7 +362,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # if all_combined_gifs is None then use the unilteral_gifs
     # if all_combined_Gifs is not None then only add values to the unilateral gifs if they are already in all_combined_gifs
     if (lat_only_Right != 0) | (lat_only_Left != 0):
-        # means both lateralising and gifs_not_lat were none. Should not occur this far down in Q_L.
+        # means both lateralising+loc and gifs_not_lat were none. occurs usually in dummy_data only.
         if all_combined_gifs is None:
             lat_only_df = lateralising_but_not_localising_GIF(all_combined_gifs,
                                                               lat_only_Right, lat_only_Left,
