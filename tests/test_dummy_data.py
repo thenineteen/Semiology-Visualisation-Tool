@@ -302,8 +302,13 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             (
                 lat_not_loc_gifsclean.index.isin(gifs_left)).any() == False
         )
-        assert lat_not_loc_gifsclean['pt #s'].sum(
-        ) == lat_not_loc_gifsclean.shape[0]
+        assert (lat_not_loc_gifsclean['pt #s'].sum()
+                == lat_not_loc_gifsclean.shape[0])
+
+        # test MTG on right 155 gif # gives 1:
+        heatmap = patient.get_num_datapoints_dict()
+        assert 156 not in heatmap  # left
+        assert heatmap[155] == 1  # right
 
     def test_latnotloc_and_latandloc_2(self):
         """
@@ -348,12 +353,16 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
                 lat_not_loc_gifsclean.index.isin(gifs_left)).any() == True
         )
         # assert using shape as all pt #s are 1:
-        assert lat_not_loc_gifsclean['pt #s'].sum(
-        ) == lat_not_loc_gifsclean.shape[0]
+        assert (lat_not_loc_gifsclean['pt #s'].sum()
+                == lat_not_loc_gifsclean.shape[0])
+
+        # check that latnotloc gives 1 and latandloc adds zero to right MTG GIF #155
+        heatmap = patient.get_num_datapoints_dict()
+        assert heatmap[155] == 1  # right
 
     def test_latexceedsloc_3(self):
         """
-        Test capturing lateralisation value when it exceeds localising value and combining with lat_no_loc and lat_and_loc.
+        Test capturing lateralisation value when it exceeds localising value (part1) and combining with lat_no_loc and lat_and_loc (part 2).
         Note that the default in Q_L of  normalise_lat_to_loc = False and using norm_ratio = lower_value / higher_value
             results in capping of lateralisation influence on data visualisation.
 
@@ -364,13 +373,38 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient = Semiology('latexceedsloc', Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
 
-        # test latexceedsloc alone:
+        # test latexceedsloc alone (part 1) using norm_ratio/oddsratio method of Q_L:
         heatmap = patient.get_num_datapoints_dict()
         assert heatmap[156] == 1.0
         assert heatmap[155] == 2.0
 
-        latexceedsloc = patient.query_lateralisation(
+        # (part 2) combine above with lat_not_loc and lat_and_loc:
+        patient = Semiology('lat', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+
+        lat_allgifs = patient.query_lateralisation(
             map_df_dict=dummy_map_df_dict)
+
+        # drop the zero entries - should be only the IL left ones which aren't MTG of TL:
+        lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_allgifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_allgifs = lat_allgifs.loc[
+            lat_allgifs['pt #s'] != 0, :]
+
+        # assert using shape this not all are 1 so should not be the same:
+        assert not lat_allgifs['pt #s'].sum() == lat_allgifs.shape[0]
+        # check the MTG on the left (IL) GIF # 156 is == 3,
+        #   which it isn't due to the norm_ratio method in Q_L - as can be seen from part 1
+        #   so instead we see in part 1 156 was 1, but in the spreadsheet it was 2. so will give 2.
+        #   3 is better but lost due to norm_ratio method in Q_L
+        assert (lat_allgifs.loc[156, 'pt #s'] == 2)
+
+        # for the right sided GIF, 155, latexceedsloc gives 2 [/],
+        #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
+        #   lat_and_loc adds none []
+        assert (lat_allgifs.loc[155, 'pt #s'] == 3)  # currently returning 2
 
 
 # for debugging with __init__():

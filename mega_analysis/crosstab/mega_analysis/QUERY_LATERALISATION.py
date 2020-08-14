@@ -376,6 +376,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                                               exclusively_lateralising=False)
             all_combined_gifs = pd.concat([all_combined_gifs, lat_only_df],
                                           join='outer', sort=False)
+            # all_combined_gifs.append(lat_only_df) # equivalent to above concat.
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
     fixed = all_combined_gifs.pivot_table(
