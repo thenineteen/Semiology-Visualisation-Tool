@@ -85,8 +85,6 @@ def lateralising_but_not_localising_GIF(
     if exclusively_lateralising:  # all_combined_gifs is None
         lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
     else:  # concat with all_combined_gifs
-        # lat_only_df = pd.DataFrame().reindex_like(all_combined_gifs)
-        # lat_only_df.reset_index(drop=True)
         lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
 
     gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
