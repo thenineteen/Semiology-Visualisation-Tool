@@ -261,7 +261,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         print('\n9 negative lookbehind regex\n')
 
-    def test_lat_not_loc(self):
+    def test_lat_not_loc_1(self):
         """
         Test capturing the lateralising but not localising data rather than skipping it.
         As implemented in QUERY_LATERALISATION in branch "Lateralising but no localising value".
@@ -305,7 +305,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert lat_not_loc_gifsclean['pt #s'].sum(
         ) == lat_not_loc_gifsclean.shape[0]
 
-    def test_latnotloc_and_latandloc(self):
+    def test_latnotloc_and_latandloc_2(self):
         """
         Test capturing the lateralising but not localising data rather than skipping it.
         integrated with lat and loc data.
@@ -350,6 +350,27 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         # assert using shape as all pt #s are 1:
         assert lat_not_loc_gifsclean['pt #s'].sum(
         ) == lat_not_loc_gifsclean.shape[0]
+
+    def test_latexceedsloc_3(self):
+        """
+        Test capturing lateralisation value when it exceeds localising value and combining with lat_no_loc and lat_and_loc.
+        Note that the default in Q_L of  normalise_lat_to_loc = False and using norm_ratio = lower_value / higher_value
+            results in capping of lateralisation influence on data visualisation.
+
+        In this specific case of latexceedsloc semiology, despite 500 lat cumulative datapoints and 2 localising points,
+            the GIF results are:
+            {155: 2.0, 156:1.0}
+        """
+        patient = Semiology('latexceedsloc', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+
+        # test latexceedsloc alone:
+        heatmap = patient.get_num_datapoints_dict()
+        assert heatmap[156] == 1.0
+        assert heatmap[155] == 2.0
+
+        latexceedsloc = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
 
 
 # for debugging with __init__():
