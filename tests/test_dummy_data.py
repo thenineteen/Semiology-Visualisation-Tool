@@ -14,6 +14,8 @@ from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology,
     all_semiology_terms, gif_lat_file, map_df_dict, mega_analysis_df,
     melt_then_pivot_query, pivot_result_to_one_map)
+from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
+
 
 # define paths: note dummy data has a tab called test_counts
 # a hand crafted test fixture count
@@ -266,12 +268,37 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('lat_not_loc', Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
-        lat_not_loc_result = patient.query_lateralisation(
+        lat_not_loc_all_combined_gifs = patient.query_lateralisation(
             map_df_dict=dummy_map_df_dict)
 
-        self.assertIs(type(lat_not_loc_result), pd.DataFrame)
-        assert not lat_not_loc_result.empty
-        assert('Localising' not in lat_not_loc_result)
+        # inspect result
+        lat_not_loc_result = patient.query_semiology()
+
+        self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
+        assert not lat_not_loc_all_combined_gifs.empty
+
+        # drop the zero entries as these are from the CL/IL zeros:
+        lat_not_loc_all_combined_gifs = lat_not_loc_all_combined_gifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_not_loc_all_combined_gifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_not_loc_gifsclean = lat_not_loc_all_combined_gifs.loc[
+            lat_not_loc_all_combined_gifs['pt #s'] != 0, :]
+        # now we know only the CL data remains in this dummy data, which is on the RIGHT.
+        gifs_right, gifs_left = gifs_lat_factor()
+        lat_not_loc_gifsclean_rights = (
+            lat_not_loc_gifsclean.index.isin(gifs_right).all()
+        )
+
+        assert((
+            lat_not_loc_gifsclean_rights == True)
+        )
+        assert(
+            (
+                lat_not_loc_gifsclean.index.isin(gifs_left)).any() == False
+        )
+
+        assert(lat_not_loc_result.Localising.sum() == 0)
         assert(lat_not_loc_result['Lateralising'].sum() == 1)
 
 
