@@ -85,7 +85,7 @@ def lateralising_but_not_localising_GIF(
     if exclusively_lateralising:  # all_combined_gifs is None
         raise Exception(
             'exclusively lateralising data in query without localising values. Currently unsupported but can be fixed.')
-        return
+        
     else:  # concat with all_combined_gifs
         lat_only_df = pd.DataFrame().reindex_like(all_combined_gifs)
         lat_only_df.reset_index(drop=True)
@@ -116,6 +116,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     > df as per pivot_result_to_pixel_intensities's df
     > side_of_symptoms_signs: 'R' or 'L' - side of symptoms/signs on limbs
     > pts_dominant_hemisphere_R_or_L: if known from e.g. fMRI language 'R' or 'L'
+    >> gifs_not_lat is the same as localising_only
+    >> lat_only_Right/Left lateralising only data
 
     returns all_combined_gifs which is similar in structure to output of pivot_result_to_one_map (final step),
         but in this case, the output column is pt #s rather than pixel intensity.
@@ -327,29 +329,31 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         how='all', axis='columns', inplace=True)
     # now map row by row otherwise you get a "TypeError: only size-1 arrays can be converted to Python scalars":
     nonlat_no_rows = inspect_result_nulllateralising.shape[0]
-    for j in range(nonlat_no_rows):
-        full_row = inspect_result_nulllateralising.iloc[[j], :]
-        row = full_row.drop(labels=id_cols, axis='columns',
-                            inplace=False, errors='ignore')
-        row = row.dropna(how='all', axis='columns')
-        row_nonlat_to_one_map = pivot_result_to_one_map(row,
-                                                        one_map, raw_pt_numbers_string='pt #s',
-                                                        )
-        if j == 0:
-            # can't merge first row
-            gifs_not_lat = row_nonlat_to_one_map
-            logging.debug('j zero gifs_not_lat set to row_nonlat_to_one_map')
-            continue
-        elif j != 0:
-            gifs_not_lat = pd.concat(
-                [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
+    if (nonlat_no_rows == 0) | inspect_result_nulllateralising.empty:
+        gifs_not_lat = None
+    elif nonlat_no_rows != 0:
+        for j in range(nonlat_no_rows):
+            full_row = inspect_result_nulllateralising.iloc[[j], :]
+            row = full_row.drop(labels=id_cols, axis='columns',
+                                inplace=False, errors='ignore')
+            row = row.dropna(how='all', axis='columns')
+            row_nonlat_to_one_map = pivot_result_to_one_map(row,
+                                                            one_map, raw_pt_numbers_string='pt #s',
+                                                            )
+            if j == 0:
+                # can't merge first row
+                gifs_not_lat = row_nonlat_to_one_map
+                logging.debug(
+                    'j zero gifs_not_lat set to row_nonlat_to_one_map')
+                continue
+            elif j != 0:
+                gifs_not_lat = pd.concat(
+                    [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
     # now combine the lateralised and non-lateralised:
     # all_combined_gifs may still be None if after running above with some lateralised...
         # ...semiology or dominance, there is no lateralising data.
     if all_combined_gifs is None:
         all_combined_gifs = gifs_not_lat
-    if inspect_result_nulllateralising.empty:
-        pass
     elif all_combined_gifs is not None:
         all_combined_gifs = pd.concat(
             [all_combined_gifs, gifs_not_lat], join='outer', sort=False)
