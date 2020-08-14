@@ -366,14 +366,14 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         Note that the default in Q_L of  normalise_lat_to_loc = False and using norm_ratio = lower_value / higher_value
             results in capping of lateralisation influence on data visualisation.
 
-        In this specific case of latexceedsloc semiology, despite 500 lat cumulative datapoints and 2 localising points,
+        In the specific case of latexceedsloc semiology, despite 500 lat cumulative datapoints and 2 localising points,
             the GIF results are:
             {155: 2.0, 156:1.0}
         """
         patient = Semiology('latexceedsloc', Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
 
-        # test latexceedsloc alone (part 1) using norm_ratio/oddsratio method of Q_L:
+        # (part 1) test latexceedsloc alone using norm_ratio/oddsratio method of Q_L:
         heatmap = patient.get_num_datapoints_dict()
         assert heatmap[156] == 1.0
         assert heatmap[155] == 2.0
@@ -403,8 +403,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         # for the right sided GIF, 155, latexceedsloc gives 2 [/],
         #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
-        #   lat_and_loc adds none []
-        assert (lat_allgifs.loc[155, 'pt #s'] == 3)  # currently returning 2
+        #   lat_and_loc adds none [/]
+        assert (lat_allgifs.loc[155, 'pt #s'] == 3)
 
 
 # for debugging with __init__():
