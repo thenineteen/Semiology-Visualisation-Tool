@@ -213,7 +213,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # some pts will have lateralising but no localising values:
         if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
             logging.debug(
-                '\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
+                '\nsome of the extracted lateralisation have no localisation - these are mapped to entire hemispheric GIFs')
             logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
             #       full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
@@ -311,12 +311,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if i == 0:
             # can't merge first row
             all_combined_gifs = row_to_one_map
-            logging.debug('end of zeroo')
+            # logging.debug('end of zeroo')
             continue
         elif i != 0:
             all_combined_gifs = pd.concat(
                 [all_combined_gifs, row_to_one_map], join='outer', sort=False)
-        logging.debug(f'end of i {i}')
+        # logging.debug(f'end of i {i}')
 
     # Need to recombine the inspect_result_lat (also had loc) used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
