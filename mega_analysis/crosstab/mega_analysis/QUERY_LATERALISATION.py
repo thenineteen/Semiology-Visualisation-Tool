@@ -83,19 +83,18 @@ def lateralising_but_not_localising_GIF(
 
     """
     if exclusively_lateralising:  # all_combined_gifs is None
-        raise Exception(
-            'exclusively lateralising data in query without localising values. Currently unsupported but can be fixed.')
-        
+        lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
     else:  # concat with all_combined_gifs
         lat_only_df = pd.DataFrame().reindex_like(all_combined_gifs)
         lat_only_df.reset_index(drop=True)
-        gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
-        lat_only_df['Gif Parcellations'] = gifs_right_and_left
-        lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
-            gifs_right), 'pt #s'] = lat_only_Right  # broadcast
-        lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
-            gifs_left), 'pt #s'] = lat_only_Left  # broadcast
-        return lat_only_df
+
+    gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
+    lat_only_df['Gif Parcellations'] = gifs_right_and_left
+    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+        gifs_right), 'pt #s'] = lat_only_Right  # broadcast
+    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+        gifs_left), 'pt #s'] = lat_only_Left  # broadcast
+    return lat_only_df
 
 
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
