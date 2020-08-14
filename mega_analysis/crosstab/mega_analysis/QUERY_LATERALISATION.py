@@ -363,10 +363,11 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if (lat_only_Right != 0) | (lat_only_Left != 0):
         # means both lateralising and gifs_not_lat were none. Should not occur this far down in Q_L.
         if all_combined_gifs is None:
-            lateralising_but_not_localising_GIF(all_combined_gifs,
-                                                lat_only_Right, lat_only_Left,
-                                                gifs_right, gifs_left,
-                                                exclusively_lateralising=True)
+            lat_only_df = lateralising_but_not_localising_GIF(all_combined_gifs,
+                                                              lat_only_Right, lat_only_Left,
+                                                              gifs_right, gifs_left,
+                                                              exclusively_lateralising=True)
+            all_combined_gifs = lat_only_df
         else:
             lat_only_df = lateralising_but_not_localising_GIF(all_combined_gifs,
                                                               lat_only_Right, lat_only_Left,
