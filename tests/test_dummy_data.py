@@ -14,6 +14,8 @@ from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology,
     all_semiology_terms, gif_lat_file, map_df_dict, mega_analysis_df,
     melt_then_pivot_query, pivot_result_to_one_map)
+from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
+
 
 # define paths: note dummy data has a tab called test_counts
 # a hand crafted test fixture count
@@ -159,8 +161,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
     def test_toplevel_query_lat_mappings(self):
         """
-        Need to change the call to the semiology_dictionary to
-            make it the dummy_semio_dict
+        The call to the semiology_dictionary is the dummy_semio_dict as passed as an argument to q_l
         Relies on mapping strategy as uses gifs
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
@@ -179,7 +180,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         new_all_combined_gifindexed.set_index(
             'Gif Parcellations', inplace=True)
 
-        new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
+        # new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
         # load fixture:
         fixture = pd.read_excel(
             dummy_data_path,
@@ -260,11 +261,155 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         print('\n9 negative lookbehind regex\n')
 
+    def test_lat_not_loc_1(self):
+        """
+        Test capturing the lateralising but not localising data rather than skipping it.
+        As implemented in QUERY_LATERALISATION in branch "Lateralising but no localising value".
+        """
+        patient = Semiology('lat_not_loc', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        lat_not_loc_all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        # inspect result
+        lat_not_loc_result = patient.query_semiology()
+
+        self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
+        assert not lat_not_loc_all_combined_gifs.empty
+
+        # drop the zero entries as these are from the CL/IL zeros:
+        lat_not_loc_all_combined_gifs = lat_not_loc_all_combined_gifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_not_loc_all_combined_gifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_not_loc_gifsclean = lat_not_loc_all_combined_gifs.loc[
+            lat_not_loc_all_combined_gifs['pt #s'] != 0, :]
+        # now we know only the CL data remains in this dummy data, which is on the RIGHT.
+        gifs_right, gifs_left = gifs_lat_factor()
+        lat_not_loc_gifsclean_rights = (
+            lat_not_loc_gifsclean.index.isin(gifs_right).all()
+        )
+
+        # inspect result assertions
+        assert(lat_not_loc_result.Localising.sum() == 0)
+        assert(lat_not_loc_result['Lateralising'].sum() == 1)
+
+        # all_combined_gifs assertions
+        assert((
+            lat_not_loc_gifsclean_rights == True)
+        )
+        assert(
+            (
+                lat_not_loc_gifsclean.index.isin(gifs_left)).any() == False
+        )
+        assert (lat_not_loc_gifsclean['pt #s'].sum()
+                == lat_not_loc_gifsclean.shape[0])
+
+        # test MTG on right 155 gif # gives 1:
+        heatmap = patient.get_num_datapoints_dict()
+        assert 156 not in heatmap  # left
+        assert heatmap[155] == 1  # right
+
+    def test_latnotloc_and_latandloc_2(self):
+        """
+        Test capturing the lateralising but not localising data rather than skipping it.
+        integrated with lat and loc data.
+        """
+        patient = Semiology('lat_', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        lat_not_loc_all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        # inspect result
+        lat_not_loc_result = patient.query_semiology()
+
+        self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
+        assert not lat_not_loc_all_combined_gifs.empty
+
+        # drop the zero entries - should be only the IL left ones which aren't MTG of TL:
+        lat_not_loc_all_combined_gifs = lat_not_loc_all_combined_gifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_not_loc_all_combined_gifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_not_loc_gifsclean = lat_not_loc_all_combined_gifs.loc[
+            lat_not_loc_all_combined_gifs['pt #s'] != 0, :]
+
+        gifs_right, gifs_left = gifs_lat_factor()
+        lat_not_loc_gifsclean_rights = (
+            lat_not_loc_gifsclean.drop(index=156).index.isin(gifs_right).all()
+        )
+
+        # inspect result assertions
+        assert(lat_not_loc_result.Localising.sum() == 1)
+        assert(lat_not_loc_result['Lateralising'].sum() == 2)
+
+        # all_combined_gifs assertions
+        # all except GIF 156 (L MTG) are in the right GIFs:
+        assert((
+            lat_not_loc_gifsclean_rights == True)
+        )
+        assert(
+            (
+                lat_not_loc_gifsclean.index.isin(gifs_left)).any() == True
+        )
+        # assert using shape as all pt #s are 1:
+        assert (lat_not_loc_gifsclean['pt #s'].sum()
+                == lat_not_loc_gifsclean.shape[0])
+
+        # check that latnotloc gives 1 and latandloc adds zero to right MTG GIF #155
+        heatmap = patient.get_num_datapoints_dict()
+        assert heatmap[155] == 1  # right
+
+    def test_latexceedsloc_3(self):
+        """
+        Test capturing lateralisation value when it exceeds localising value (part1) and combining with lat_no_loc and lat_and_loc (part 2).
+        Note that the default in Q_L of  normalise_lat_to_loc = False and using norm_ratio = lower_value / higher_value
+            results in capping of lateralisation influence on data visualisation.
+
+        In the specific case of latexceedsloc semiology, despite 500 lat cumulative datapoints and 2 localising points,
+            the GIF results are:
+            {155: 2.0, 156:1.0}
+        """
+        patient = Semiology('latexceedsloc', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+
+        # (part 1) test latexceedsloc alone using norm_ratio/oddsratio method of Q_L:
+        heatmap = patient.get_num_datapoints_dict()
+        assert heatmap[156] == 1.0
+        assert heatmap[155] == 2.0
+
+        # (part 2) combine above with lat_not_loc and lat_and_loc:
+        patient = Semiology('lat', Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+
+        lat_allgifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        # drop the zero entries - should be only the IL left ones which aren't MTG of TL:
+        lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_allgifs.set_index(
+            'Gif Parcellations', inplace=True)
+        lat_allgifs = lat_allgifs.loc[
+            lat_allgifs['pt #s'] != 0, :]
+
+        # assert using shape this not all are 1 so should not be the same:
+        assert not lat_allgifs['pt #s'].sum() == lat_allgifs.shape[0]
+        # check the MTG on the left (IL) GIF # 156 is == 3,
+        #   which it isn't due to the norm_ratio method in Q_L - as can be seen from part 1
+        #   so instead we see in part 1 156 was 1, but in the spreadsheet it was 2. so will give 2.
+        #   3 is better but lost due to norm_ratio method in Q_L
+        assert (lat_allgifs.loc[156, 'pt #s'] == 2)
+
+        # for the right sided GIF, 155, latexceedsloc gives 2 [/],
+        #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
+        #   lat_and_loc adds none [/]
+        assert (lat_allgifs.loc[155, 'pt #s'] == 3)
+
+
 # for debugging with __init__():
 # query = TestDummyDataDummyDictionary()
 # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
-
-
 # for debugging with setUp(self):
 if __name__ == '__main__':
     sys.argv.insert(1, '--verbose')

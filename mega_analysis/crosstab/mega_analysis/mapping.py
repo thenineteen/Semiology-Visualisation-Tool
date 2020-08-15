@@ -75,11 +75,11 @@ def pivot_result_to_one_map(
     id_cols = full_id_vars()
     pivot_result_loc_cols = pivot_result.drop(
         lat_vars + id_cols, axis=1, errors='ignore')
-    if (len([col for col in pivot_result if col not in one_map]) > 0):
+    if (len([col for col in pivot_result_loc_cols if col not in one_map]) > 0):
         logging.error(len([col for col in pivot_result_loc_cols if col not in one_map]),
                       'localisation column(s) in the pivot_result which cannot be found in one_map',
                       'These columns are: ',
-                      str([col for col in pivot_result if col not in one_map])
+                      str([col for col in pivot_result_loc_cols if col not in one_map])
                       )
     else:
         pass
@@ -103,9 +103,9 @@ def pivot_result_to_one_map(
         all_gifs = all_gifs.dropna(axis='rows', how='any')
     #     all_gifs = all_gifs.stack()  #  gives a series
     except KeyError:
-        logging.debug(f'\nKeyError. all_gifs={all_gifs}')
-        logging.debug(
-            'CAN NOT FIGURE THIS OUT. WHY EMPTY DATAFRAME? SKIPPED THIS ROW...? USUAL FROM QUERY_LATERALISATION call.')
+        logging.warning(f'\nKeyError. all_gifs={all_gifs}')
+        logging.warning(
+            'EMPTY DATAFRAME? SKIPPED THIS ROW. Due to absence of lateralising_but_not_localising function and/or col name mismatch between database and GIF mapping.')
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
     # this is for Rachel Sparks's requirement:

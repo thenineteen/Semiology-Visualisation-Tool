@@ -18,6 +18,80 @@ def gifs_lat(gif_lat_file):
     return gifs_right, gifs_left
 
 
+def summarise_overall_lat_values(row,
+                                 side_of_symptoms_signs,
+                                 pts_dominant_hemisphere_R_or_L,
+                                 Right,
+                                 Left):
+    """
+    Factor function for Q_L. Calculated IL, CL, DomH and NonDomH lateralisations.
+    """
+    IL_row = row['IL'].sum()
+    CL_row = row['CL'].sum()
+    DomH_row = row['DomH'].sum()
+    NonDomH_row = row['NonDomH'].sum()
+    # BL_row = row['BL (Non-lateralising)'].sum()
+
+    # pt input
+    if side_of_symptoms_signs == 'R':
+        Right += IL_row
+        Left += CL_row
+
+    elif side_of_symptoms_signs == 'L':
+        Right += CL_row
+        Left += IL_row
+
+    if pts_dominant_hemisphere_R_or_L:
+        if pts_dominant_hemisphere_R_or_L == 'R':
+            Right += DomH_row
+            Left += NonDomH_row
+        elif pts_dominant_hemisphere_R_or_L == 'L':
+            Right += NonDomH_row
+            Left += DomH_row
+    return Right, Left
+
+
+def lateralising_but_not_localising(full_row,
+                                    side_of_symptoms_signs,
+                                    pts_dominant_hemisphere_R_or_L,
+                                    lat_only_Right,
+                                    lat_only_Left):
+    """
+    Part 1 of 2
+    Keep the lateralising values: map to unilateral gif parcellations.
+        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
+
+    """
+    lat_only_Right, lat_only_Left = summarise_overall_lat_values(full_row,
+                                                                 side_of_symptoms_signs,
+                                                                 pts_dominant_hemisphere_R_or_L,
+                                                                 lat_only_Right,
+                                                                 lat_only_Left)
+
+    return lat_only_Right, lat_only_Left
+
+
+def lateralising_but_not_localising_GIF(
+        all_combined_gifs,
+        lat_only_Right, lat_only_Left,
+        gifs_right, gifs_left):
+    """
+    Part 2 of 2
+    Keep the lateralising values: map to unilateral gif parcellations.
+        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
+
+    """
+    lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
+
+    gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
+    lat_only_df['Gif Parcellations'] = gifs_right_and_left
+    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+        gifs_right), 'pt #s'] = lat_only_Right  # broadcast
+    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+        gifs_left), 'pt #s'] = lat_only_Left  # broadcast
+    return lat_only_df
+
+
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                          side_of_symptoms_signs=None,
                          pts_dominant_hemisphere_R_or_L=None,
@@ -36,6 +110,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     > df as per pivot_result_to_pixel_intensities's df
     > side_of_symptoms_signs: 'R' or 'L' - side of symptoms/signs on limbs
     > pts_dominant_hemisphere_R_or_L: if known from e.g. fMRI language 'R' or 'L'
+    >> gifs_not_lat is the same as localising_only
+    >> lat_only_Right/Left lateralising only data
 
     returns all_combined_gifs which is similar in structure to output of pivot_result_to_one_map (final step),
         but in this case, the output column is pt #s rather than pixel intensity.
@@ -76,9 +152,10 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                       (inspect_result2['NonDomH'].notnull()), :].copy()
     missing_lat_null_mask = missing_lat['Lateralising'].isnull()
     if not missing_lat_null_mask.all():
-        logging.debug('\nNo missing Lateralising data points.')
+        # logging.debug('\nNo missing Lateralising data points.')
+        pass
     else:  # semiology term not recognised
-        logging.warning(
+        logging.debug(
             'The inspect_result lat col has NaNs/zero where it should not: autofilled')
         df_of_missing_lats = missing_lat.loc[missing_lat_null_mask].copy()
         df.loc[df_of_missing_lats.index, 'Lateralising'] = df_of_missing_lats[[
@@ -103,14 +180,15 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     logging.debug(f'Dominant Hemisphere: {DomH.sum()} datapoints')
     logging.debug(f'Non-Dominant Hemisphere: {NonDomH.sum()} datapoints')
 
-    # initialise:
-    Right = 0
-    Left = 0
+    # Global initialisation:
+    lat_only_Right = 0
+    lat_only_Left = 0
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
-    ), :].copy()  # only those with lat
+    ), :].copy()  # only those with lat (with or without localising)
     no_rows = inspect_result_lat.shape[0]
     one_map = big_map(map_df_dict)
     all_combined_gifs = None
+    gifs_right, gifs_left = gifs_lat(gif_lat_file)
 
     # cycle through rows of inspect_result_lat:
     id_cols = [i for i in full_id_vars() if i not in ['Localising']
@@ -127,18 +205,27 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
+        # some pts will have lateralising but no localising values:
+        if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
+            logging.debug(
+                '\nsome of the extracted lateralisation have no localisation - these are mapped to entire hemispheric GIFs')
+            logging.debug(f'row# = {i}')
+            # probably, in future, instead of break we want to compare this row's:
+            #       full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
+            #  or actually, to count this full_row['Lateralising'] as data for localising, using the lateralised gif parcellations from the sheet called
+            #       'Full GIF Map for Review '
+
+            lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row,
+                                                                            side_of_symptoms_signs,
+                                                                            pts_dominant_hemisphere_R_or_L,
+                                                                            lat_only_Right,
+                                                                            lat_only_Left)
+            continue
+
+        # otherwise if there is localising value (and lateralising value):
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
                                                  )
         # ^ row_to_one_map now contains all the lateralising gif parcellations
-
-        # some pts will have lateralising but no localising values:
-        if (('Localising' not in full_row.columns) | (full_row['Localising'].sum() == 0)):
-            logging.debug(
-                '\nsome of the extracted lateralisation have no localisation - for now these are ignored but re-inspect!')
-            logging.debug(f'row# = {i}')
-            # probably, in future, instead of break we want to compare this row's:
-            # full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
-            continue
 
         # set the scale of influence of lateralisation on the gif parcellations:
         proportion_lateralising = full_row['Lateralising'].sum(
@@ -159,28 +246,11 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 continue
 
         # summarise overall lat values
-        IL_row = row['IL'].sum()
-        CL_row = row['CL'].sum()
-        DomH_row = row['DomH'].sum()
-        NonDomH_row = row['NonDomH'].sum()
-        BL_row = row['BL (Non-lateralising)'].sum()
-
-        # pt input
-        if side_of_symptoms_signs == 'R':
-            Right += IL_row
-            Left += CL_row
-
-        elif side_of_symptoms_signs == 'L':
-            Right += CL_row
-            Left += IL_row
-
-        if pts_dominant_hemisphere_R_or_L:
-            if pts_dominant_hemisphere_R_or_L == 'R':
-                Right += DomH_row
-                Left += NonDomH_row
-            elif pts_dominant_hemisphere_R_or_L == 'L':
-                Right += NonDomH_row
-                Left += DomH_row
+        Right, Left = summarise_overall_lat_values(row,
+                                                   side_of_symptoms_signs,
+                                                   pts_dominant_hemisphere_R_or_L,
+                                                   Right,
+                                                   Left)
 
         Total = Right+Left
         if Right == Left:
@@ -199,11 +269,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # if there are 100 localisations in one row, and only 1 IL And 3 CL, it would be too much
         # to say the IL side gets one third of the CL side as number of lat is too low
         # hence normalise by dividing by proportion_lateralising (which is between (0,1])
-
-        gifs_right, gifs_left = gifs_lat(gif_lat_file)
-        #         row_to_one_map
-        #         proportion_lateralising
-        #         Right, Left
 
         # find lowest value of R or L
         lower_postn = np.argmin([Right, Left])
@@ -241,14 +306,14 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if i == 0:
             # can't merge first row
             all_combined_gifs = row_to_one_map
-            logging.debug('end of zeroo')
+            # logging.debug('end of zeroo')
             continue
         elif i != 0:
             all_combined_gifs = pd.concat(
                 [all_combined_gifs, row_to_one_map], join='outer', sort=False)
-        logging.debug(f'end of i {i}')
+        # logging.debug(f'end of i {i}')
 
-    # Need to recombine the inspect_result_lat used in for loop to give all_combined_gifs
+    # Need to recombine the inspect_result_lat (also had loc) used in for loop to give all_combined_gifs
     # with inspect_result that had null lateralising:
     inspect_result_nulllateralising = inspect_result.loc[inspect_result['Lateralising'].isnull(
     ), :].copy()
@@ -259,32 +324,52 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         how='all', axis='columns', inplace=True)
     # now map row by row otherwise you get a "TypeError: only size-1 arrays can be converted to Python scalars":
     nonlat_no_rows = inspect_result_nulllateralising.shape[0]
-    for j in range(nonlat_no_rows):
-        full_row = inspect_result_nulllateralising.iloc[[j], :]
-        row = full_row.drop(labels=id_cols, axis='columns',
-                            inplace=False, errors='ignore')
-        row = row.dropna(how='all', axis='columns')
-        row_nonlat_to_one_map = pivot_result_to_one_map(row,
-                                                        one_map, raw_pt_numbers_string='pt #s',
-                                                        )
-        if j == 0:
-            # can't merge first row
-            gifs_not_lat = row_nonlat_to_one_map
-            logging.debug('j zero gifs_not_lat set to row_nonlat_to_one_map')
-            continue
-        elif j != 0:
-            gifs_not_lat = pd.concat(
-                [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
-    # now combine the lateralised and non-lateralised:
+    if (nonlat_no_rows == 0) | inspect_result_nulllateralising.empty:
+        gifs_not_lat = None
+    elif nonlat_no_rows != 0:
+        for j in range(nonlat_no_rows):
+            full_row = inspect_result_nulllateralising.iloc[[j], :]
+            row = full_row.drop(labels=id_cols, axis='columns',
+                                inplace=False, errors='ignore')
+            row = row.dropna(how='all', axis='columns')
+            row_nonlat_to_one_map = pivot_result_to_one_map(row,
+                                                            one_map, raw_pt_numbers_string='pt #s',
+                                                            )
+            if j == 0:
+                # can't merge first row
+                gifs_not_lat = row_nonlat_to_one_map
+                logging.debug(
+                    'j zero gifs_not_lat set to row_nonlat_to_one_map')
+                continue
+            elif j != 0:
+                gifs_not_lat = pd.concat(
+                    [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
+    # now combine the lateralised+loc and non-lateralised(=only localised):
     # all_combined_gifs may still be None if after running above with some lateralised...
         # ...semiology or dominance, there is no lateralising data.
     if all_combined_gifs is None:
         all_combined_gifs = gifs_not_lat
-    if inspect_result_nulllateralising.empty:
-        pass
     elif all_combined_gifs is not None:
         all_combined_gifs = pd.concat(
             [all_combined_gifs, gifs_not_lat], join='outer', sort=False)
+
+    # here add the lateralising_but_not_localising data to the all_combined_gifs (or fixed, or fixed2):
+    # if all_combined_gifs is None then use the unilteral_gifs
+    # if all_combined_Gifs is not None then only add values to the unilateral gifs if they are already in all_combined_gifs
+    if (lat_only_Right != 0) | (lat_only_Left != 0):
+        # means both lateralising+loc and gifs_not_lat were none. occurs usually in dummy_data only.
+        if all_combined_gifs is None:
+            lat_only_df = lateralising_but_not_localising_GIF(all_combined_gifs,
+                                                              lat_only_Right, lat_only_Left,
+                                                              gifs_right, gifs_left)
+            all_combined_gifs = lat_only_df.copy()
+        else:
+            lat_only_df = lateralising_but_not_localising_GIF(all_combined_gifs,
+                                                              lat_only_Right, lat_only_Left,
+                                                              gifs_right, gifs_left)
+            all_combined_gifs = pd.concat([all_combined_gifs, lat_only_df],
+                                          join='outer', sort=False)
+            # all_combined_gifs.append(lat_only_df) # equivalent to above concat.
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
     fixed = all_combined_gifs.pivot_table(
