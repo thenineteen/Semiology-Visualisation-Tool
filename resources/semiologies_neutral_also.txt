@@ -12,7 +12,6 @@ Hypomotor
 Ictal Limb Paresis
 Mimetic Automatisms
 Myoclonic
-Other Simple Motor
 Spasms - epileptic/infantile
 Tonic
 Tonic-Clonic
