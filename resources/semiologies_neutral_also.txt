@@ -5,6 +5,7 @@ Automatism - Lower Limb - Non Hypermotor
 Behavioural Arrest or Akinesis
 Blink
 Complex Behavioural
+Dystonic
 Eye Nystagmus and Ocular Flutter
 Head or Body Turn
 Hypermotor
@@ -12,6 +13,7 @@ Hypomotor
 Ictal Limb Paresis
 Mimetic Automatisms
 Myoclonic
+Somatosensory
 Spasms - epileptic/infantile
 Tonic
 Tonic-Clonic
