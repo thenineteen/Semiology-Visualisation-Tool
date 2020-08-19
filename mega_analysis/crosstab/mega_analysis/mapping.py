@@ -105,7 +105,9 @@ def pivot_result_to_one_map(
     except KeyError:
         logging.warning(f'\nKeyError. all_gifs={all_gifs}')
         logging.warning(
-            'EMPTY DATAFRAME? SKIPPED THIS ROW. Due to absence of lateralising_but_not_localising function and/or col name mismatch between database and GIF mapping.')
+            'EMPTY DATAFRAME? SKIPPED THIS ROW. \
+                Multiple causes e.g. missing localising values.\
+                    See GitHub issue #168 for full details.')
 
     # insert a new first col which contains the index value of pivot_result (i.e. the semiology term)
     # this is for Rachel Sparks's requirement:
