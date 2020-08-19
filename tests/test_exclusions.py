@@ -58,6 +58,10 @@ class TestExclusions(unittest.TestCase):
         i1noti2 = [i for i in indices1 if i not in indices2]
         i2noti1 = [i for i in indices2 if i not in indices1]
 
+        # test nothing besides np.nan and 'y' in CS
+        assert len(set(self.df[CS])) == 2
+
+        # test all ES in sEEG_ES are marked as y in CS
         if indices1.all() != indices2.all():
             print('\n\nsEEG_ES indices1 not in CES: ',
                   self.df.loc[i1noti2, 'Reference'])
