@@ -373,36 +373,40 @@
           "epileptic spasm",
           "((?<!hemifacial )(?<!facial )(?<!hemi-facial ))spasm",
         ]
-      "Post-ictal Hemiparesis or Hemiplegia":
+      "Postictal Hemiparesis or Hemiplegia":
         [
           "Post-? ?ictal Hemiparesis",
           "Post-? ?ictal Hemiplegia",
           "Post-? ?ictal Todd",
+          "\\(Post-? ?ictal\\) Hemip",
+          "Hemiparesis \\(Post-? ?ictal\\)",
+          "Todd",
+          "Hemiplegia \\(Post-? ?ictal\\)",
         ]
-      "Post-ictal Nose-wiping":
+      "Postictal Nose-wiping":
         ["Nose-? ?Wiping \\(Post-? ?Ictal\\)", "Post-? ?Ictal Nose"]
-      "Post-ictal Oral or Manual Automatisms": # includes postictal drinking
+      "Postictal Oral or Manual Automatisms": # includes postictal drinking
         [
           "Post-? ?ictal manual",
           "Automatisms \\(Post-? ?ictal\\)",
           "post-? ?ictal automatism",
           "post-? ?ictal Drink",
         ]
-      "Post-ictal Dysphasia":
+      "Postictal Dysphasia":
         [
           "Dysphasia \\(Post-? ?Ictal\\)",
           "Post-? ?Ictal Dysphasia",
           "paraphasia",
         ]
-      "Post-ictal Aphasia":
+      "Postictal Aphasia":
         ["Aphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Aphasia"]
-      "Post-ictal Cough":
+      "Postictal Cough":
         [
           "post-? ?ictal cough",
           "cough \\(post-? ?ictal\\)",
           "post-? ?ictal \\(cough\\)",
         ]
-      "Post-ictal Aggressive": ["post-? ?ictal aggressive"]
+      "Postictal Aggressive": ["post-? ?ictal aggressive"]
 
     automatisms:
       "Automatisms - Oral":

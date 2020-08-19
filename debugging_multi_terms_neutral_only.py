@@ -5,7 +5,10 @@ from pathlib import Path
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 
-file = Path(__file__).parent/'resources'/'semiologies_neutral_only.txt'
+# file = Path(__file__).parent/'resources'/'semiologies_neutral_only.txt'
+file = Path(__file__).parent/'resources' / \
+    'semiologies_postictalsonly_neutral_only.txt'
+
 list_of_terms = list(open(file, 'r'))
 
 # list_of_terms = ['Mimetic Automatisms',
