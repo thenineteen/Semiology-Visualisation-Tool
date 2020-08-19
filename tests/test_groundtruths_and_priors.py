@@ -50,7 +50,7 @@ class TestGroundTruthsAndPriors(unittest.TestCase):
         if (df_ground_truths_at_least_one_notNaN.shape != self.df.shape):
             indices = [
                 i for i in self.df.index if i not in df_ground_truths_at_least_one_notNaN.index]
-            print('\n\nThese are the discrepancies: ',
+            print('\n\nThese are the GT discrepancies: ',
                   self.df.loc[indices, ['Reference', 'Reported Semiology']])
 
         # now for the actual test assertion
@@ -68,4 +68,10 @@ class TestGroundTruthsAndPriors(unittest.TestCase):
         df_Bayesian_priors_atleast_one_notNaN = self.df.dropna(
             subset=Bayesian_priors, thresh=1, axis=0, inplace=False)
 
+        indices = [
+            i for i in self.df.index if i not in df_Bayesian_priors_atleast_one_notNaN.index]
+
+        if (df_Bayesian_priors_atleast_one_notNaN.shape != self.df.shape):
+            print('\n\nBayesian discrepancies: ',
+                  self.df.loc[indices, ['Reference', 'Reported Semiology']])
         assert (df_Bayesian_priors_atleast_one_notNaN.shape == self.df.shape)
