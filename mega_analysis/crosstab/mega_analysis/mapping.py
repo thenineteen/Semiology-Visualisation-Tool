@@ -98,6 +98,10 @@ def pivot_result_to_one_map(
 
     try:
         # stack the resulting all_gifs (values are in 3rd column)
+        # debug:
+        from mega_analysis.semiology import mega_analysis_df
+        debug_df_Ref_with_issue = mega_analysis_df.loc[pivot_result.index, [
+            'Reference', 'Reported Semiology']]
         all_gifs = all_gifs.melt(id_vars=raw_pt_numbers_string,
                                  var_name='Localisation', value_name='Gif Parcellations')  # df
         all_gifs = all_gifs.dropna(axis='rows', how='any')
