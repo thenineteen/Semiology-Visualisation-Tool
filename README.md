@@ -20,7 +20,8 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: Semio2Brain Database  v 1.0.0 (Aug 2020)
+### 1. Resources: Semio2Brain Database  v 1.1.0 (19th Aug 2020)
+v 1.0.0 (early Aug 2020)
 100% of the Data: 4,649 patients' data from 312 included original journal papers
 #### Until the 5th Aug 2020 the Beta version was used, named syst_review_single_table - 47% (146/312 included studies integrated)
 We curated the largest patient-level database of 4649 unique patients' semiologies from 312 studies, yielding over ten thousand lateralising and localising datapoints for initial or most prominently reported seizure semiologies. These patient-level seizure-semiology data-points (where 1 point corresponds to 1 patient, presenting with a particular seizure semiology) were extracted from selected peer-reviewed journal publications, if at least one of the following ground-truth criteria regarding the certainty of lateralisation and/or localisation was satisfied:
