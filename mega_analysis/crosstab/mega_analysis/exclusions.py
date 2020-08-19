@@ -140,7 +140,8 @@ def exclude_cortical_stimulation(df):
     will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
     if they don't, then needs a manual check. See tests.
     """
-    df.loc[df[SEEG_ES].str.contains('ES', na=False), SEEG_ES] = np.nan
+    df.loc[df[SEEG_ES].str.contains(
+        'ES', case=False, na=False), SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
     df_exclusions_CES = df.dropna(
         subset=subset, thresh=1, axis=0, inplace=False)
@@ -161,7 +162,7 @@ def exclude_sEEG(df):
             looks for exact match.
     Whereas
         df.loc[df[SEEG_ES].str.contains('y', na=False), SEEG_ES] = np.nan
-            removes sEEG and ES cases.
+            will match both sEEG (y), and sEEG and cortical stimulation (ES), but not ES on its own.
     """
     df.loc[df[SEEG_ES] == 'y', SEEG_ES] = np.nan
     df_exclusions_sEEG = df.dropna(
