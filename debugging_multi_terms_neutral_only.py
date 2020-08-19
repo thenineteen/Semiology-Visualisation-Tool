@@ -5,10 +5,10 @@ from pathlib import Path
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 
-file = Path(__file__).parent/'resources'/'semiologies_neutral_also.txt'
+file = Path(__file__).parent/'resources'/'semiologies_neutral_only.txt'
 list_of_terms = list(open(file, 'r'))
-for term in list_of_terms:
 
+for term in list_of_terms:
     patient = Semiology(
         # 'Figure of 4',
         # symptoms_side=Laterality.LEFT,
