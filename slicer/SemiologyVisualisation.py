@@ -354,7 +354,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         advancedTabLayout = qt.QVBoxLayout(advancedTabWidget)
 
         self.useCacheCheckBox = qt.QCheckBox('Use cached queries if available')
-        self.useCacheCheckBox.setChecked(True)
+        self.useCacheCheckBox.setChecked(False)
         advancedTabLayout.addWidget(self.useCacheCheckBox)
 
         self.clearCacheButton = qt.QPushButton('Clear cache')
