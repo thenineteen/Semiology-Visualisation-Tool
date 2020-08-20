@@ -14,7 +14,7 @@ def file_paths(dummy_data=False, **kwargs):
         excel_path = resources_dir / 'syst_review_single_table.xlsx'
         semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
     else:
-        excel_path = resources_dir / 'Semio2Brain Database.xlsx'
+        excel_path = resources_dir / 'Semio2Brain Database_Mappings_Calibration.xlsx'
         semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
     return repo_dir, resources_dir, excel_path, semiology_dict_path

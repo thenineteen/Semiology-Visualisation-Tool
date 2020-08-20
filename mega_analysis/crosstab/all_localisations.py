@@ -13,7 +13,7 @@ def all_localisations(excel_columns="R:DP"):
 # set the path to excel file:
     repo_dir = Path(__file__).parent.parent.parent
     resources_dir = repo_dir / 'resources'
-    excel_path = resources_dir / 'Semio2Brain Database.xlsx'
+    excel_path = resources_dir / 'Semio2Brain Database_Mappings_Calibration.xlsx'
 
 # import the columns containing the localisation terms
     df_all_localisations = pd.read_excel(

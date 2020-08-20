@@ -5,7 +5,7 @@ from pathlib import Path
 # Define paths
 repo_dir = Path(__file__).parent.parent.parent.parent
 resources_dir = repo_dir / 'resources'
-excel_path = resources_dir / 'Semio2Brain Database.xlsx'
+excel_path = resources_dir / 'Semio2Brain Database_Mappings_Calibration.xlsx'
 
 
 def gifs_lat_factor(*gif_lat_file):

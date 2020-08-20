@@ -37,7 +37,7 @@ GIF_SHEET_NAMES = gif_sheet_names()
 # Define paths
 repo_dir = Path(__file__).parent.parent
 resources_dir = repo_dir / 'resources'
-excel_path = resources_dir / 'Semio2Brain Database.xlsx'
+excel_path = resources_dir / 'Semio2Brain Database_Mappings_Calibration.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 # Read Excel file only three times at initialisation
