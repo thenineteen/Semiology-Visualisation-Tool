@@ -8,7 +8,7 @@ def semiology_lateralisation_localisation(
     semiologies_to_extract=['Semiology'],
     localisations_to_extract=[],
     extract_lateralisation=True,
-    n_rows=2815,
+    n_rows=3200,
     **kwargs,
 ):
     """

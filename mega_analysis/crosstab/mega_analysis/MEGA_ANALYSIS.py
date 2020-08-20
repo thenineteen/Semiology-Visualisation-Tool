@@ -16,7 +16,7 @@ from .progress_study_type import progress_study_type, progress_venn_2
 
 def MEGA_ANALYSIS(
     excel_data,
-    n_rows=2815,
+    n_rows=3200,
     usecols="A:DY",
     header=1,
     exclude_data=False,
