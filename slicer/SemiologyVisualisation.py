@@ -772,8 +772,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     def unselectAllSemiologies(self):
         for widgetsDict in self.semiologiesWidgetsDict.values():
             checkBox = widgetsDict['checkBox']
-            # checkBox.blockSignals(True)
             checkBox.setChecked(False)
+        for customSemiology in self.customSemiologies:
+            customSemiology.unCheck()
 
     def onSegmentsComboBox(self):
         name = self.gifComboBoxItemsToLabels[self.segmentsComboBox.currentText]
@@ -1501,6 +1502,9 @@ class CustomSemiology:
 
     def isChecked(self):
         return self.checkBox.isChecked()
+
+    def unCheck(self):
+        self.checkBox.setChecked(False)
 
     @property
     def widgets(self):
