@@ -1477,7 +1477,7 @@ class GIFColorTable(ColorTable):
                 elif 'Right' in name:
                     result[right_key].append(label)
 
-        result['cerebellum'] = [72, 73, 74]
+        result['Cerebellum'] = [72, 73, 74]
         return result
 
 
