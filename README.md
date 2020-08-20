@@ -1,7 +1,7 @@
 # Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.2.1
 # Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
-For research purposes only. Not for clinical use. 
- 
+For research purposes only. Not for clinical use.
+
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
 
 
@@ -10,10 +10,10 @@ Figure:
 849 Patients with automatisms have an epileptogenic zone localising mostly to the mesial temporal lobe.
 124 of these lateralise, mainly ipsilaterally.
 
-## slicer module 
+## slicer module
 We integrated the **SemioBrain database**, **taxonomy**, brain region **mappings** to gif MNI space parcellations, **ground truths** and **Bayesian filters** (for exclusion of patients from studies that preselected patients based on prior knowledge of the region of seizure onset, to mitigate the publication bias that favours temporal lobe epilepsy) in a Python module for the 3D Slicer program, to create a novel user-friendly and open-source **Semiology Visualisation Tool (SVT)** in the form of a GUI. This allows 3D-brain visualisations of semiologies and their simultaneous combinations. Instead of idenitifying symptomatogenic zones, we therefore visualise the most likely original sources of the seizures from initial or most prominent semiology.
 
-GUI options include filtering paediatric cases and determining the laterality of your patient's dominant hemisphere, ticking checkboxes for your patient's semiology and determining the laterality of the semiology. 
+GUI options include filtering paediatric cases and determining the laterality of your patient's dominant hemisphere, ticking checkboxes for your patient's semiology and determining the laterality of the semiology.
 
 Further details on the above can be found in the description of the (backend) mega_analysis module below.
 
@@ -43,7 +43,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.1
 Aug 2020: v 1.0.0, 55+1 semiologies
 Up to May 2020: v 0.9.1 (47 semiologies)
-### 3. Resources: lateralisation and localisation mappings - v 1.1.0 (Aug 2020, 103 localisation labels) 
+### 3. Resources: lateralisation and localisation mappings - v 1.1.2 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
 until 5th Aug - v 1.0.8 (55 localisation labels)
 To query this database, we developed a taxonomy of 55 semiological terms (+ 1 "no semiology" for cortical stimulation studies), mapped reported categorical brain regions to 103 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
@@ -56,6 +56,7 @@ Data can be filtered based on the above ground truths, Bayesian priors and other
 ## Branches
 * Master branch - to be used with slicer module for 3D visualisation
   ** (merged from separate repo (https://github.com/fepegar/EpilepsySemiology))
+* Mappings Calibrations starting at v 1.1.0: use this branch (do not merge with master) for claibration of visualisations of GIF mappings.
 * MegaAnalysis-March2020 branch - original verbose module for development and progress stats
   ** (thenineteen jupyter backwards compatibility. pre-Beta version)
 
