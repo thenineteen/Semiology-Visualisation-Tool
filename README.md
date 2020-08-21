@@ -20,7 +20,7 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: Semio2Brain Database  v 1.1.0 (19th Aug 2020)
+### 1. Resources: Semio2Brain Database  v 1.1.1 (19th Aug 2020, 310 studies)
 v 1.0.0 (early Aug 2020)
 100% of the Data: 4,649 patients' data from 312 included original journal papers
 #### Until the 5th Aug 2020 the Beta version was used, named syst_review_single_table - 47% (146/312 included studies integrated)
