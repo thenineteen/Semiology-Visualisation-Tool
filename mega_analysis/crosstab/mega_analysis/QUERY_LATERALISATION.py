@@ -121,6 +121,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     Alim-Marvasti Aug 2019
     """
+    pd.options.mode.chained_assignment = 'raise'
+    df = df.copy()
 
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
