@@ -70,8 +70,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         # self.df.to_csv(r'D:\self_df.csv')
         # exclusions(self.df).to_csv(r'D:\self_df_exclusions.csv')
 
-        not pd.testing.assert_frame_equal(self.df, exclusions(self.df))
-        # assert not self.df.equals(exclusions(self.df))
+        # not pd.testing.assert_frame_equal(self.df, exclusions(self.df))
+        assert not self.df.equals(exclusions(self.df))
         # exclusions default is to exclude postictals and PETs only
         # print('\n1\n')
 
