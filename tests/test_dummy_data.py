@@ -375,8 +375,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         # (part 1) test latexceedsloc alone using norm_ratio/oddsratio method of Q_L:
         heatmap = patient.get_num_datapoints_dict()
-        assert heatmap[156] == 1.0
-        assert heatmap[155] == 2.0
+        assert heatmap[156] == 200.0
+        assert heatmap[155] == 300.0
 
         # (part 2) combine above with lat_not_loc and lat_and_loc:
         patient = Semiology('lat', Laterality.LEFT, Laterality.LEFT)
