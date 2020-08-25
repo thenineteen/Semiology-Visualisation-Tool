@@ -1,4 +1,6 @@
 import unittest
+import sys
+
 from mega_analysis.semiology import mega_analysis_df
 from mega_analysis.crosstab.mega_analysis.exclusions import (
     exclusions,
@@ -17,7 +19,9 @@ class TestExclusions(unittest.TestCase):
         self.df = mega_analysis_df.copy()
 
     def test_default_no_exclusions(self):
-        assert self.df.equals(exclusions(self.df))
+        # excl_df = exclusions(self.df)
+        # assert not self.df.shape == excl_df.shape
+        assert not self.df.equals(exclusions(self.df))
 
     def test_exclude_concordance(self):
         assert not self.df.equals(exclusions(self.df, CONCORDANCE=True))
@@ -68,3 +72,8 @@ class TestExclusions(unittest.TestCase):
             print('\n\nCES indices 2 not in sEEG_ES: ',
                   self.df.loc[i2noti1, 'Reference'])
         assert (indices1.all() == indices2.all())
+
+
+if __name__ == '__main__':
+    sys.argv.insert(1, '--verbose')
+    unittest.main(argv=sys.argv)
