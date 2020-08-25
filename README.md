@@ -43,7 +43,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.1
 Aug 2020: v 1.0.0, 55+1 semiologies
 Up to May 2020: v 0.9.1 (47 semiologies)
-### 3. Resources: lateralisation and localisation mappings - v 1.1.2 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
+### 3. Resources: lateralisation and localisation mappings - v 1.1.9 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
 until 5th Aug - v 1.0.8 (55 localisation labels)
 To query this database, we developed a taxonomy of 55 semiological terms (+ 1 "no semiology" for cortical stimulation studies), mapped reported categorical brain regions to 103 localising cerebral atlas labels and 5 lateralising
 possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and bilateral).
