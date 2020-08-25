@@ -207,6 +207,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
+        #
+        #
+        #
         # some pts/rows will have lateralising but no localising values:
         if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
             logging.debug(
@@ -223,7 +226,9 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                                                             lat_only_Right,
                                                                             lat_only_Left)
             continue
-
+        #
+        #
+        #
         # otherwise if there is localising value (and lateralising value):
         row_to_one_map = pivot_result_to_one_map(row, one_map, raw_pt_numbers_string='pt #s',
                                                  )
@@ -233,12 +238,21 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         proportion_lateralising = full_row['Lateralising'].sum(
         ) / full_row['Localising'].sum()
 
+        # some rows will have lateralisng exceed localising values:
+        #
+        #
+        #
         if proportion_lateralising > 1:
             proportion_lateralising = 1
             logging.debug(
                 'some extracted lateralising data exceed the localising data,')
             logging.debug(
                 'for now these are taken as proportion_lateralising=1.0 !')
+
+            # now deal with lat_exceed_loc excess as we did with lat_but_not_loc
+            lat_exceed_loc = True
+        else:
+            lat_exceed_loc = False
 
         # check columns exist in this particular row:
         for col in lat_vars:
@@ -276,8 +290,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         lower_postn = np.argmin([Right, Left])
         if lower_postn == 0:
             isin = gifs_right  # reduce right sided intensities/pt #s
+            isin_right = True
+            isin_left = False
         elif lower_postn == 1:
             isin = gifs_left
+            isin_left = True
+            isin_right = False
 
         lower_value = [Right, Left][lower_postn]
         higher_value = [Right, Left]
@@ -303,6 +321,32 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # re attribute these corrected reduced lateralised values to the entire row's data:
         row_to_one_map.loc[df_lower_lat_to_be_reduced.index,
                            :] = df_lower_lat_to_be_reduced
+
+        #
+        #
+        #
+        # now deal with lat_exceed_loc excess as we did with lat_but_not_loc
+        if lat_exceed_loc:
+            full_row_lat_excess = full_row.copy()
+            # remove loc data and keep only lat data:
+            full_row_lat_excess = full_row_lat_excess[lat_vars]
+            # now deal with lat_exceed_loc excess as we did with lat_but_not_loc (these aren't lat_only or lat_excess yet)
+            lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row_lat_excess,
+                                                                            side_of_symptoms_signs,
+                                                                            pts_dominant_hemisphere_R_or_L,
+                                                                            lat_only_Right,
+                                                                            lat_only_Left)
+            # now adjust for the already calculated "proportion_lateralising = 1" locs:
+            loc_adjust = full_row['Localising'].sum()
+            R_to_L_ratio = lat_only_Right / lat_only_Left
+            if isin_left:  # left gifs are smaller than right and were reduced.
+                lat_only_Right = lat_only_Right - loc_adjust
+                # left gifs were smaller and so less used from the lateralising, more left for lat_excess:
+                lat_only_Left = lat_only_Left - (loc_adjust * (1/R_to_L_ratio))
+            # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
+        #
+        #
+        #
 
         # now need to merge/concat these rows-(pivot-result)-to-one-map as the cycle goes through each row:
         if i == 0:
