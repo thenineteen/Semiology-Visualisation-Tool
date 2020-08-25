@@ -14,13 +14,14 @@ def exclude_postictals(df):
     Exclude post-ictal semiology.
     This is an individual semiology option.
     """
+    df2 = df.copy()
     post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
-    post_ictal_inspection = QUERY_SEMIOLOGY(df, semiology_term=post_ictals,
+    post_ictal_inspection = QUERY_SEMIOLOGY(df2, semiology_term=post_ictals,
                                             ignore_case=True, semiology_dict_path=None)
-    df.drop(labels=post_ictal_inspection.index,
-            axis='index', inplace=True, errors='ignore')
+    df2.drop(labels=post_ictal_inspection.index,
+             axis='index', inplace=True, errors='ignore')
     logging.debug('Excluded post-ictal semiology in specific query')
-    return df
+    return df2
 
 
 def exclusions(df,
