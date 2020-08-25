@@ -59,7 +59,7 @@ def lateralising_but_not_localising(full_row,
     """
     Part 1 of 2
     Keep the lateralising values: map to unilateral gif parcellations.
-        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
+        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there was no localising value.
 
     """
     lat_only_Right, lat_only_Left = summarise_overall_lat_values(full_row,
@@ -156,7 +156,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if not missing_lat_null_mask.all():
         # logging.debug('\nNo missing Lateralising data points.')
         pass
-    else:  # semiology term not recognised
+    else:
         logging.debug(
             'The inspect_result lat col has NaNs/zero where it should not: autofilled')
         df_of_missing_lats = missing_lat.loc[missing_lat_null_mask].copy()
@@ -207,7 +207,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         row = row.dropna(how='all', axis='columns')
         # row = row.dropna(how='all', axis='rows')
 
-        # some pts will have lateralising but no localising values:
+        # some pts/rows will have lateralising but no localising values:
         if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
             logging.debug(
                 '\nsome of the extracted lateralisation have no localisation - these are mapped to entire hemispheric GIFs')
