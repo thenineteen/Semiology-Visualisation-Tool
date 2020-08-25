@@ -399,12 +399,12 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         #   which it isn't due to the norm_ratio method in Q_L - as can be seen from part 1
         #   so instead we see in part 1 156 was 1, but in the spreadsheet it was 2. so will give 2.
         #   3 is better but lost due to norm_ratio method in Q_L
-        assert (lat_allgifs.loc[156, 'pt #s'] == 2)
+        assert (lat_allgifs.loc[156, 'pt #s'] == 201)
 
         # for the right sided GIF, 155, latexceedsloc gives 2 [/],
         #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
         #   lat_and_loc adds none [/]
-        assert (lat_allgifs.loc[155, 'pt #s'] == 3)
+        assert (lat_allgifs.loc[155, 'pt #s'] == 301)
 
 
 # for debugging with __init__():
