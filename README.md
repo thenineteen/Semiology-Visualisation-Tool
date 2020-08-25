@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.2.1
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.3.1
 # Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
 For research purposes only. Not for clinical use.
 
@@ -40,7 +40,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 * If new data is to be added, must include paediatric under 7 label, and if postictal, must be typed "postictal" and not in any other format.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement - v 1.0.1
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.0.1
 Aug 2020: v 1.0.0, 55+1 semiologies
 Up to May 2020: v 0.9.1 (47 semiologies)
 ### 3. Resources: lateralisation and localisation mappings - v 1.1.9 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
@@ -58,7 +58,7 @@ Data can be filtered based on the above ground truths, Bayesian priors and other
   ** (merged from separate repo (https://github.com/fepegar/EpilepsySemiology))
 * Mappings Calibrations starting at v 1.1.0: use this branch (do not merge with master) for claibration of visualisations of GIF mappings.
 * MegaAnalysis-March2020 branch - original verbose module for development and progress stats
-  ** (thenineteen jupyter backwards compatibility. pre-Beta version)
+  ** (thenineteen jupyter backwards compatibility. pre-Beta release)
 
 
 ## Installation Guide
