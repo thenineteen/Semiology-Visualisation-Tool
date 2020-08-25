@@ -92,6 +92,46 @@ def lateralising_but_not_localising_GIF(
     return lat_only_df
 
 
+def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
+        full_row, lat_vars,
+        side_of_symptoms_signs,
+        pts_dominant_hemisphere_R_or_L,
+        lat_only_Right,
+        lat_only_Left,
+        isin_left, isin_right):
+    """ Factor function.
+    Calculates the excess of lat over loc values.
+    Then maps these to GIFs as per lat_but_not_loc.
+    Then adjusts for the values already used in Q_L for the localisation GIFs
+        i.e. keeps proportion of right/left the same and
+        the values not more than lateralisation - localisation
+    """
+    full_row_lat_excess = full_row.copy()
+    # remove loc data and keep only lat data:
+    full_row_lat_excess = full_row_lat_excess[lat_vars]
+    # now deal with lat_exceed_loc excess as we did with lat_but_not_loc (these aren't lat_only or lat_excess yet)
+    lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row_lat_excess,
+                                                                    side_of_symptoms_signs,
+                                                                    pts_dominant_hemisphere_R_or_L,
+                                                                    lat_only_Right,
+                                                                    lat_only_Left)
+    # now adjust for the already calculated "proportion_lateralising = 1" locs:
+    loc_adjust = full_row['Localising'].sum()
+    R_to_L_ratio = lat_only_Right / lat_only_Left
+
+    if isin_left:  # left gifs are smaller than right and were reduced.
+        lat_only_Right = lat_only_Right - loc_adjust
+        # left gifs were smaller and so less used from the lateralising, more left for lat_excess:
+        lat_only_Left = lat_only_Left - (loc_adjust * (1/R_to_L_ratio))
+        # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
+
+    else:  # invert above
+        lat_only_Left = lat_only_Left - loc_adjust
+        lat_only_Right = lat_only_Right - (loc_adjust * (R_to_L_ratio))
+
+    return lat_only_Right, lat_only_Left
+
+
 def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                          side_of_symptoms_signs=None,
                          pts_dominant_hemisphere_R_or_L=None,
@@ -327,23 +367,15 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         #
         # now deal with lat_exceed_loc excess as we did with lat_but_not_loc
         if lat_exceed_loc:
-            full_row_lat_excess = full_row.copy()
-            # remove loc data and keep only lat data:
-            full_row_lat_excess = full_row_lat_excess[lat_vars]
-            # now deal with lat_exceed_loc excess as we did with lat_but_not_loc (these aren't lat_only or lat_excess yet)
-            lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row_lat_excess,
-                                                                            side_of_symptoms_signs,
-                                                                            pts_dominant_hemisphere_R_or_L,
-                                                                            lat_only_Right,
-                                                                            lat_only_Left)
-            # now adjust for the already calculated "proportion_lateralising = 1" locs:
-            loc_adjust = full_row['Localising'].sum()
-            R_to_L_ratio = lat_only_Right / lat_only_Left
-            if isin_left:  # left gifs are smaller than right and were reduced.
-                lat_only_Right = lat_only_Right - loc_adjust
-                # left gifs were smaller and so less used from the lateralising, more left for lat_excess:
-                lat_only_Left = lat_only_Left - (loc_adjust * (1/R_to_L_ratio))
-            # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
+            lat_only_Right, lat_only_Left = lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
+                full_row, lat_vars,
+                side_of_symptoms_signs,
+                pts_dominant_hemisphere_R_or_L,
+                lat_only_Right,
+                lat_only_Left,
+                isin_left=isin_left, isin_right=isin_right,
+            )
+
         #
         #
         #
