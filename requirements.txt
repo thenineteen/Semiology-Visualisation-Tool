@@ -5,3 +5,4 @@ PyYAML
 seaborn
 scikit-learn
 xlrd
+tqdm
