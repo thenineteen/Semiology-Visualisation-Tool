@@ -43,7 +43,8 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.0.1
 [See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 
-* Aug 2020: v 1.0.0, 55+1 semiologies
+* Aug 2020:v 1.0.1 56+1 semiology categories
+* v 1.0.0, 55+1 semiologies
 * Up to May 2020: v 0.9.1 (47 semiologies)
 
 ### 3. Resources: lateralisation and localisation mappings - v 1.1.9 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
