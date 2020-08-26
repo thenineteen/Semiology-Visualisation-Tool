@@ -1,5 +1,5 @@
 # Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.3.1
-# Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
+## Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
 For research purposes only. Not for clinical use.
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)
@@ -41,8 +41,10 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 * If new data is to be added, must include paediatric under 7 label, and if postictal, must be typed "postictal" and not in any other format.
 
 ### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.0.1
+[See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 Aug 2020: v 1.0.0, 55+1 semiologies
 Up to May 2020: v 0.9.1 (47 semiologies)
+
 ### 3. Resources: lateralisation and localisation mappings - v 1.1.9 (Aug 2020, 103 localisation labels, Calibrations for minor versions)
 until 5th Aug - v 1.0.8 (55 localisation labels)
 To query this database, we developed a taxonomy of 55 semiological terms (+ 1 "no semiology" for cortical stimulation studies), mapped reported categorical brain regions to 103 localising cerebral atlas labels and 5 lateralising
@@ -51,14 +53,6 @@ possibilities (contra- or ipsi- lateral, dominant or non-dominant hemisphere and
 The mega_analysis module cleans the DataFrame of data, pivots occurences of semiology, allowing for semiology_dictionary taxonomy replacement regex searches, maps the documented localisations to gif parcellations and can scale these mappings using different scalers/transformers.
 
 Data can be filtered based on the above ground truths, Bayesian priors and other exclusions.
-
-
-## Branches
-* Master branch - to be used with slicer module for 3D visualisation
-  ** (merged from separate repo (https://github.com/fepegar/EpilepsySemiology))
-* Mappings Calibrations starting at v 1.1.0: use this branch (do not merge with master) for claibration of visualisations of GIF mappings.
-* MegaAnalysis-March2020 branch - original verbose module for development and progress stats
-  ** (thenineteen jupyter backwards compatibility. pre-Beta release)
 
 
 ## Installation Guide
