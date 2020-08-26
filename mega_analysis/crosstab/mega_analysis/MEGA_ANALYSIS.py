@@ -49,12 +49,12 @@ def MEGA_ANALYSIS(
     )
 
     # 0. CLEANUPS: remove empty rows and columns
-    logging.debug('\n0. DataFrame pre-processing and cleaning:')
+    logging.debug('\n\n0. DataFrame pre-processing and cleaning:')
     df = cleaning(df)
 
     # 1. Exclusions
     if exclude_data:
-        logging.debug('\n\n1. Excluding some data based on ground truths')
+        logging.debug('\n\n1. Filtering data')
         if not kwargs:
             df = exclusions(df,
                             POST_ictals=True,
@@ -68,20 +68,20 @@ def MEGA_ANALYSIS(
                             SPECT_PET=kwargs['SPECT_PET'],
                             CONCORDANCE=kwargs['CONCORDANCE'])
 
-        logging.debug('\ndf.shape after exclusions: {}'.format(df.shape))
+        # logging.debug('\ndf.shape after exclusions: {}'.format(df.shape))
     else:
-        logging.debug('1. No Exclusions.')
+        logging.debug('\n\n1. Data not filtered.')
 
     # 2. checking for missing labels e.g. Semiology Categories Labels:
-    logging.debug('\n2. Checking for missing values for columns')
+    logging.debug('\n\n2. Checking for missing column values')
     missing_columns(df)
 
     # localisation_labels = run anatomical regions
     localisation_labels = anatomical_regions(df)
     first_ = localisation_labels[0]
     logging.debug(
-        f'\n Checking dtypes: first localisation_labels column is: {first_}.')
-    logging.debug(f'...last one is {localisation_labels[-1]}')
+        f'\n\nChecking dtypes: first localisation_labels column is: {first_}.')
+    logging.debug(f'\n...last one is {localisation_labels[-1]}')
     for col in df[localisation_labels]:
         for val in df[col]:
             if (type(val) != (np.float)) & (type(val) != (np.int)):
@@ -89,18 +89,14 @@ def MEGA_ANALYSIS(
 
     # 3 ffill References:
     df.Reference.fillna(method='ffill', inplace=True)
-    logging.debug('\n3. forward filled references')
+    logging.debug('\n\n3. forward filled references')
 
     # 4 check no other entries besides "ES" and "y" in
     # list(df['sEEG and/or ES'].unique())
     # March 2020 updated sEEG_ES = 'sEEG (y) and/or ES (ES)'
     sEEG_ES = 'sEEG (y) and/or ES (ES)'  # March 2020 version
-
     logging.debug(
-        "\n4. 'sEEG and/or ES' column only contains ['ES', nan, 'y']: ")
-    logging.debug(str(list(df[sEEG_ES].unique()) == ['ES', np.nan, 'y']))
-    if not (list(df[sEEG_ES].unique()) == ['ES', np.nan, 'y']):
-        logging.debug(f'the set includes: {list(df[sEEG_ES].unique())}')
+        f'\n\n4. sEEG and/or ES set labels include: {list(df[sEEG_ES].unique())}')
 
     # 5. print some basic progress stats:
     logging.debug('\n\n 5. BASIC PROGRESS:')
@@ -122,7 +118,7 @@ def MEGA_ANALYSIS(
     # 6. plot progress by study type (CS, SS, ET, Other)
     if plot:
         logging.debug(
-            "6. Venn diagrams by patient selection priors (study type)")
+            "\n\n6. Venn diagrams by patient selection priors (study type)")
         df_study_type = progress_study_type(df)
         progress_venn_2(df_study_type, method='Lateralising')
         progress_venn_2(df_study_type, method='Localising')

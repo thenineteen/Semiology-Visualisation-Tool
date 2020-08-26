@@ -76,11 +76,11 @@ def pivot_result_to_one_map(
     pivot_result_loc_cols = pivot_result.drop(
         lat_vars + id_cols, axis=1, errors='ignore')
     if (len([col for col in pivot_result_loc_cols if col not in one_map]) > 0):
-        logging.error(len([col for col in pivot_result_loc_cols if col not in one_map]),
-                      'localisation column(s) in the pivot_result which cannot be found in one_map',
-                      'These columns are: ',
-                      str([col for col in pivot_result_loc_cols if col not in one_map])
-                      )
+        raise Exception(len([col for col in pivot_result_loc_cols if col not in one_map]),
+                        'localisation column(s) in the pivot_result which cannot be found in one_map',
+                        'These columns are: ',
+                        str([col for col in pivot_result_loc_cols if col not in one_map])
+                        )
     else:
         pass
         # print('No issues: pivot_result compared to one_map and all localisations are ready for analysis.')
@@ -107,9 +107,8 @@ def pivot_result_to_one_map(
         all_gifs = all_gifs.dropna(axis='rows', how='any')
     #     all_gifs = all_gifs.stack()  #  gives a series
     except KeyError:
-        logging.warning(f'\nKeyError. all_gifs={all_gifs}')
-        logging.warning(
-            'EMPTY DATAFRAME? SKIPPED THIS ROW. \
+        logging.error(f'\nKeyError. all_gifs={all_gifs}')
+        logging.error('EMPTY DATAFRAME? SKIPPED THIS ROW. \
                 Multiple causes e.g. missing localising values.\
                     See GitHub issue #168 for full details.')
 

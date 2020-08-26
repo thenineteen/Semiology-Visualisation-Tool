@@ -1,6 +1,7 @@
 import logging
 import re
 import warnings
+from tqdm import tqdm
 
 import pandas as pd
 import yaml
@@ -53,7 +54,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
         logging.debug(
             'No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
-    for k, v in dictionary.items():
+    for k, v in tqdm(dictionary.items(), desc='Searching for Nested SemioDict Key...'):
         search = semiology_key == k.lower()
         if search:
             logging.debug('dictionary_key_recursion_2 found values of key')
@@ -66,7 +67,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
                 yield allv
                 break
         else:
-            logging.debug('searching for nested key...')
+            # logging.debug('searching for nested key...')
             if isinstance(v, dict):
                 for result in dictionary_key_recursion_2(dictionary[k], semiology_key):
                     yield result
@@ -74,7 +75,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
 
 def use_semiology_dictionary_(semiology_term, semiology_dict_path):
     logging.debug(
-        'using option use_semiology_dictionary as taxonomy replacement')
+        '\nusing option use_semiology_dictionary as taxonomy replacement')
     # define the key rather than the terms
 
     semiology_key = semiology_term
@@ -103,13 +104,13 @@ def use_semiology_dictionary_(semiology_term, semiology_dict_path):
     dict_comprehension = {key: values for (key, values) in semiology_dictionary['semiology'].items(
     ) if key.lower() == semiology_key.lower()}
     if dict_comprehension:
-        logging.debug('dict_comprehension = \n', dict_comprehension)
+        # logging.debug('dict_comprehension = \n', dict_comprehension)
         _, values = dictionary_key_recursion_(dict_comprehension)
         # # this returns a single list of single items and removes the nested lists
         # values = make_simple_list(values)
 
-        logging.debug(
-            'values from dictionary_key_recursion_(dict_comprehension): \n', values)
+        # logging.debug(
+        #     'values from dictionary_key_recursion_(dict_comprehension): \n', values)
         return values
 
     # if the key wasn't found then it is nested:
@@ -189,19 +190,19 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         if isinstance(values_dict_or_list, list):
             values = values_dict_or_list
         elif isinstance(values_dict_or_list, dict):
-            print(
+            logging.debug(
                 "this shouldn't occur: use_semiology_dictionary_ has returned a dict. Attempted to correct... ")
             # when the semiology_term used in the dictionary refers to a top level key which is itself a dictionary
             _, values = dictionary_key_recursion_(values_dict_or_list)
             values = make_simple_list(values)
         else:
-            print(
+            logging.warning(
                 'Error Please report this bug. What just happened? Neither dict nor list.')
             return
         # turn these values to regexes too:
         values = regex_ignore_case(values)
 
-    for term in values:
+    for term in tqdm(values, desc='QUERY_SEMIOLOGY'):
         # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', 'This pattern has match groups')
@@ -221,12 +222,13 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
     try:
         inspect_result.drop_duplicates(inplace=True)
     except ValueError:
-        print('QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
+        logging.error(
+            'QUERY SEMIOLOGY ERROR: This semiology was not found within the reported literature nor in the semiology categories')
         return
 
     try:
         logging.debug(
-            f'\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+            f'\n\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
     except KeyError:
         # user tried a semiology which doesn't have a key in semiology_dictionary
         # run again and set semiology_dict to None
@@ -237,5 +239,5 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
     except:
         num_datapoints = 0
     logging.debug(
-        f'Lateralising Datapoints relevant to query: {num_datapoints}')
+        f'\n\nLateralising Datapoints relevant to query: {num_datapoints}')
     return inspect_result.sort_index()

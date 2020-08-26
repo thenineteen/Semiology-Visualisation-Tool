@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
+
 from .mapping import big_map, pivot_result_to_one_map
 from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
 
@@ -166,16 +168,16 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
 
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
-        print('Please note you must determine at least one of side_of_symptoms_signs or')
-        print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
+        # print('Please note you must determine at least one of side_of_symptoms_signs or')
+        # print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
         return
 
     # check there is lateralising value
     try:
         Lat = inspect_result['Lateralising']
-        logging.debug(f'Lateralisation based on: {Lat.sum()} datapoints')
+        logging.debug(f'\n\nLateralisation based on: {Lat.sum()} datapoints')
     except KeyError:
-        print('No Lateralising values found for this query of the database.')
+        # print('No Lateralising values found for this query of the database.')
         return
 
     lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
@@ -215,7 +217,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     NonDomH = inspect_result['NonDomH']
     BL = inspect_result['BL (Non-lateralising)']
 
-    logging.debug(f'Overall Contralateral: {CL.sum()} datapoints')
+    logging.debug(f'\n\nOverall Contralateral: {CL.sum()} datapoints')
     logging.debug(f'Ipsilateral: {IL.sum()} datapoints')
     logging.debug(
         f'Bilateral/Non-lateralising: {BL.sum()} datapoints. This is not utilised in our analysis/visualisation.')
@@ -236,8 +238,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     id_cols = [i for i in full_id_vars() if i not in ['Localising']
                ]  # note 'Localising' is in id_cols
 
-    for i in range(no_rows):
-        logging.debug(str(i))
+    for i in tqdm(range(no_rows), desc='QUERY LATERALISTION: main'):
+        # logging.debug(str(i))
         Right = 0
         Left = 0
 
@@ -253,8 +255,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         # some pts/rows will have lateralising but no localising values:
         if (('Localising' not in row.columns) | (full_row['Localising'].sum() == 0)):
             logging.debug(
-                '\nsome of the extracted lateralisation have no localisation - these are mapped to entire hemispheric GIFs')
-            logging.debug(f'row# = {i}')
+                '\n\nSome extracted lateralisations have no specific localisation - these are mapped to entire hemispheric GIFs')
+            # logging.debug(f'row# = {i}')
             # probably, in future, instead of break we want to compare this row's:
             #       full_row['Lateralising']    to the overall    inspect_result['Lateralising']    and use that proportion
             #  or actually, to count this full_row['Lateralising'] as data for localising, using the lateralised gif parcellations from the sheet called
@@ -285,9 +287,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         if proportion_lateralising > 1:
             proportion_lateralising = 1
             logging.debug(
-                'some extracted lateralising data exceed the localising data,')
-            logging.debug(
-                'for now these are taken as proportion_lateralising=1.0 !')
+                '\n\nSome lateralising data exceed localising data, excess are mapped to entire hemispheric GIFs')
 
             # now deal with lat_exceed_loc excess as we did with lat_but_not_loc
             lat_exceed_loc = True
@@ -348,7 +348,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             norm_ratio = ratio / proportion_lateralising
             if norm_ratio > 1:
                 norm_ratio = 1
-                print('norm_ratio capped at 1: small proportion of data lateralised')
+                logging.debug(
+                    'norm_ratio capped at 1: small proportion of data lateralised')
         elif normalise_lat_to_loc == False:
             norm_ratio = lower_value / higher_value
 
@@ -405,7 +406,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if (nonlat_no_rows == 0) | inspect_result_nulllateralising.empty:
         gifs_not_lat = None
     elif nonlat_no_rows != 0:
-        for j in range(nonlat_no_rows):
+        for j in tqdm(range(nonlat_no_rows), desc='QUERY LATERALISATION: non-lateralising data'):
             full_row = inspect_result_nulllateralising.iloc[[j], :]
             row = full_row.drop(labels=id_cols, axis='columns',
                                 inplace=False, errors='ignore')
@@ -416,8 +417,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             if j == 0:
                 # can't merge first row
                 gifs_not_lat = row_nonlat_to_one_map
-                logging.debug(
-                    'j zero gifs_not_lat set to row_nonlat_to_one_map')
+                # logging.debug(
+                #     'j zero gifs_not_lat set to row_nonlat_to_one_map')
                 continue
             elif j != 0:
                 gifs_not_lat = pd.concat(
