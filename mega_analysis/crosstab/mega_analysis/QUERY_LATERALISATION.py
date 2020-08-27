@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+from colorama import Fore
 
 from .mapping import big_map, pivot_result_to_one_map
 from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
@@ -238,7 +239,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     id_cols = [i for i in full_id_vars() if i not in ['Localising']
                ]  # note 'Localising' is in id_cols
 
-    for i in tqdm(range(no_rows), desc='QUERY LATERALISTION: main'):
+    for i in tqdm(range(no_rows), desc='QUERY LATERALISTION: main',
+                  bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.BLUE, Fore.RESET)):
         # logging.debug(str(i))
         Right = 0
         Left = 0
@@ -406,7 +408,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if (nonlat_no_rows == 0) | inspect_result_nulllateralising.empty:
         gifs_not_lat = None
     elif nonlat_no_rows != 0:
-        for j in tqdm(range(nonlat_no_rows), desc='QUERY LATERALISATION: non-lateralising data'):
+        for j in tqdm(range(nonlat_no_rows), desc='QUERY LATERALISATION: non-lateralising data',
+                      bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.CYAN, Fore.RESET)):
             full_row = inspect_result_nulllateralising.iloc[[j], :]
             row = full_row.drop(labels=id_cols, axis='columns',
                                 inplace=False, errors='ignore')

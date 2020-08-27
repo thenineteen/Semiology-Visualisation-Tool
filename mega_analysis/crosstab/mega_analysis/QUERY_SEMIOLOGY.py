@@ -2,6 +2,7 @@ import logging
 import re
 import warnings
 from tqdm import tqdm
+from colorama import Fore
 
 import pandas as pd
 import yaml
@@ -202,7 +203,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         # turn these values to regexes too:
         values = regex_ignore_case(values)
 
-    for term in tqdm(values, desc='QUERY_SEMIOLOGY'):
+    for term in tqdm(values, desc='QUERY_SEMIOLOGY',
+                     bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.GREEN, Fore.RESET)):
         # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', 'This pattern has match groups')
