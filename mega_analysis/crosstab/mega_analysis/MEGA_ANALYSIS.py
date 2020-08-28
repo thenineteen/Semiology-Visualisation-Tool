@@ -150,8 +150,8 @@ def MEGA_ANALYSIS(
         f'{df_study_type.loc["OTHER", ("Localising Datapoints","Exclusive")]}'
     )
 
-    df['Localising'].astype('Int16', copy=False)
-    df['Lateralising'].astype('Int16', copy=False)
+    # df['Localising'].astype('Int16', copy=False)
+    # df['Lateralising'].astype('Int16', copy=False)
 
     return (df, df_ground_truth, df_study_type,
             num_database_articles, num_database_patients, num_database_lat, num_database_loc)
