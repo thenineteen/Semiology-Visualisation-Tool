@@ -183,7 +183,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         # load the Beta SemioBrain Database:
         repo_dir, resources_dir, SemioBrainBeta_data_path, SemioDict_path = \
             file_paths(dummy_data=False, Beta=True)
-        SemioBrainBeta_df, _, _ = MEGA_ANALYSIS(
+        SemioBrainBeta_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
             excel_data=SemioBrainBeta_data_path,
             n_rows=2500,
             usecols="A:DH",
