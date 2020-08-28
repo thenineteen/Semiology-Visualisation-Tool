@@ -181,7 +181,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         # print('Please note you must determine at least one of side_of_symptoms_signs or')
         # print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
-        return
+        return None, None, None, None, None, None, None
 
     # check there is lateralising value
     try:
@@ -191,7 +191,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     except KeyError:
         # logging.debug(
         #     f'No Lateralising values found for this query of the database.')
-        return
+        num_QL_lat = None
+        return None, None, None, None, None, None, None
 
     lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
 

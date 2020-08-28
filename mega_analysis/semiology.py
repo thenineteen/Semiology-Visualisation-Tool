@@ -177,14 +177,15 @@ class Semiology:
                 message = f'No query_semiology results for term "{self.term}"'
                 raise ValueError(message)
             else:
-                all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = QUERY_LATERALISATION(
-                    query_semiology_result,
-                    self.data_frame,
-                    map_df_dict,
-                    gif_lat_file,
-                    side_of_symptoms_signs=self.symptoms_side.value,
-                    pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
-                )
+                all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
+                    QUERY_LATERALISATION(
+                        query_semiology_result,
+                        self.data_frame,
+                        map_df_dict,
+                        gif_lat_file,
+                        side_of_symptoms_signs=self.symptoms_side.value,
+                        pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                    )
                 if all_combined_gifs is None:
                     # Either no lateralising pt data, or empty lat column
                     # Run manual pipeline:
