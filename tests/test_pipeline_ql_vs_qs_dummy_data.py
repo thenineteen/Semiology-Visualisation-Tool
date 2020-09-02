@@ -214,7 +214,7 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # AND this time the values should also be the same:
         GIF_values = QL_50_50_lateralising_result[
-            'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
+            'pt #s'].values.all() == QS_nonlat_ManualPipelineResult['pt #s'].values.all()
         assert GIF_values
 
     def test_compare_pipelines3(self):
