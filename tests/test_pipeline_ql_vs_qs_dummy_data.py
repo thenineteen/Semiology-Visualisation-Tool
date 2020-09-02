@@ -26,7 +26,7 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel for the dummy database
-test_df, _, _ = MEGA_ANALYSIS(
+test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
     excel_data=dummy_data_path,
     n_rows=100,
     usecols="A:DH",
@@ -214,7 +214,7 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # AND this time the values should also be the same:
         GIF_values = QL_50_50_lateralising_result[
-            'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
+            'pt #s'].values.all() == QS_nonlat_ManualPipelineResult['pt #s'].values.all()
         assert GIF_values
 
     def test_compare_pipelines3(self):

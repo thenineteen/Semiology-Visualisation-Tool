@@ -26,7 +26,7 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel file only three times at initialisation
-test_df, _, _ = MEGA_ANALYSIS(
+test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
     excel_data=dummy_data_path,
     n_rows=100,
     usecols="A:DH",
@@ -183,7 +183,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         # load the Beta SemioBrain Database:
         repo_dir, resources_dir, SemioBrainBeta_data_path, SemioDict_path = \
             file_paths(dummy_data=False, Beta=True)
-        SemioBrainBeta_df, _, _ = MEGA_ANALYSIS(
+        SemioBrainBeta_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
             excel_data=SemioBrainBeta_data_path,
             n_rows=2500,
             usecols="A:DH",

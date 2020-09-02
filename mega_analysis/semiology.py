@@ -30,6 +30,7 @@ from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
+from .crosstab.INVERSE_LOCALISING_VALUES import INVERSE_LOCALISING_VALUES
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -41,7 +42,8 @@ excel_path = resources_dir / 'Semio2Brain Database.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 # Read Excel file only three times at initialisation
-mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
+mega_analysis_df, _, _, num_database_articles, num_database_patients, num_database_lat, num_database_loc = MEGA_ANALYSIS(
+    excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
@@ -103,6 +105,7 @@ class Semiology:
             include_only_paediatric_cases: bool = False,
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
+            inverse_localising_values: bool = False,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -120,6 +123,7 @@ class Semiology:
             possible_lateralities = get_possible_lateralities(self.term)
         self.possible_lateralities = possible_lateralities
         self.granular = granular
+        self.inverse_localising_values = inverse_localising_values
 
     def remove_exclusions(self, df: pd.DataFrame) -> pd.DataFrame:
         if not self.include_concordance:
@@ -148,7 +152,7 @@ class Semiology:
         else:
             path = None
         self.data_frame = self.remove_exclusions(self.data_frame)
-        inspect_result = QUERY_SEMIOLOGY(
+        inspect_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             self.data_frame,
             semiology_term=self.term,
             semiology_dict_path=path,
@@ -157,6 +161,9 @@ class Semiology:
             hierarchy_df = Hierarchy(inspect_result)
             hierarchy_df.all_hierarchy_reversal()
             inspect_result = hierarchy_df.new_df
+
+            if self.inverse_localising_values:
+                inspect_result = INVERSE_LOCALISING_VALUES(inspect_result)
         return inspect_result
 
     def query_lateralisation(self, map_df_dict=map_df_dict) -> Optional[pd.DataFrame]:
@@ -176,14 +183,15 @@ class Semiology:
                 message = f'No query_semiology results for term "{self.term}"'
                 raise ValueError(message)
             else:
-                all_combined_gifs = QUERY_LATERALISATION(
-                    query_semiology_result,
-                    self.data_frame,
-                    map_df_dict,
-                    gif_lat_file,
-                    side_of_symptoms_signs=self.symptoms_side.value,
-                    pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
-                )
+                all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
+                    QUERY_LATERALISATION(
+                        query_semiology_result,
+                        self.data_frame,
+                        map_df_dict,
+                        gif_lat_file,
+                        side_of_symptoms_signs=self.symptoms_side.value,
+                        pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                    )
                 if all_combined_gifs is None:
                     # Either no lateralising pt data, or empty lat column
                     # Run manual pipeline:

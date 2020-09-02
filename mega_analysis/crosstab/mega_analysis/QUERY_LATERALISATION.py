@@ -156,8 +156,18 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     >> gifs_not_lat is the same as localising_only
     >> lat_only_Right/Left lateralising only data
 
-    returns all_combined_gifs which is similar in structure to output of pivot_result_to_one_map (final step),
-        but in this case, the output column is pt #s rather than pixel intensity.
+    returns:
+        all_combined_gifs: similar in structure to output of pivot_result_to_one_map (final step),
+                        but in this case, the output column is pt #s rather than pixel intensity.
+        num_QL_lat: Lateralising Datapoints relevant to query {semiology_term}.
+                    Should be exactly the same as num_query_lat returned by QUERY_SEMIOLOGY.
+        num_QL_CL: Datapoints that lateralise contralateral to the semiology query {semiology_term}
+        num_QL_IL: Datapoints that lateralise ipsilaterally to the semiology query {semiology_term}
+        num_QL_BL: Study reports the datapoint as being Bilateral. Non-informative and not utilised in our analysis/visualisation.
+        num_QL_DomH: Semiology query datapoints lateralise to the Dominant Hemisphere
+        num_QL_NonDomH: Semiology query datapoints lateralise to the Non-Dominant Hemisphere
+
+
     Should then run this again through a similar process as
         pivot_result_to_pixel_intensity to curve fit (MinMaxScaler, QuantileTransformer or Chi2)
     ---
@@ -171,15 +181,18 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         # print('Please note you must determine at least one of side_of_symptoms_signs or')
         # print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
-        return
+        return None, None, None, None, None, None, None
 
     # check there is lateralising value
     try:
-        Lat = inspect_result['Lateralising']
-        logging.debug(f'\n\nLateralisation based on: {Lat.sum()} datapoints')
+        num_QL_lat = inspect_result['Lateralising'].sum()
+        logging.debug(
+            f'\n\nLateralisation based on: {num_QL_lat.sum()} datapoints')
     except KeyError:
-        # print('No Lateralising values found for this query of the database.')
-        return
+        # logging.debug(
+        #     f'No Lateralising values found for this query of the database.')
+        num_QL_lat = None
+        return None, None, None, None, None, None, None
 
     lat_vars = [i for i in lateralisation_vars() if i not in ['Lateralising']]
 
@@ -218,12 +231,18 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     NonDomH = inspect_result['NonDomH']
     BL = inspect_result['BL (Non-lateralising)']
 
-    logging.debug(f'\n\nOverall Contralateral: {CL.sum()} datapoints')
-    logging.debug(f'Ipsilateral: {IL.sum()} datapoints')
+    num_QL_CL = CL.sum()
+    num_QL_IL = IL.sum()
+    num_QL_BL = BL.sum()
+    num_QL_DomH = DomH.sum()
+    num_QL_NonDomH = NonDomH.sum()
+
+    logging.debug(f'\n\nOverall Contralateral: {num_QL_CL} datapoints')
+    logging.debug(f'Ipsilateral: {num_QL_IL} datapoints')
     logging.debug(
-        f'Bilateral/Non-lateralising: {BL.sum()} datapoints. This is not utilised in our analysis/visualisation.')
-    logging.debug(f'Dominant Hemisphere: {DomH.sum()} datapoints')
-    logging.debug(f'Non-Dominant Hemisphere: {NonDomH.sum()} datapoints')
+        f'Bilateral/Non-lateralising: {num_QL_BL} datapoints. This is not utilised in our analysis/visualisation.')
+    logging.debug(f'Dominant Hemisphere: {num_QL_DomH} datapoints')
+    logging.debug(f'Non-Dominant Hemisphere: {num_QL_NonDomH} datapoints')
 
     # Global initialisation:
     lat_only_Right = 0
@@ -462,4 +481,5 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     all_combined_gifs = fixed2
     all_combined_gifs
 
-    return all_combined_gifs.round()
+    return (all_combined_gifs.round(),
+            num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH)
