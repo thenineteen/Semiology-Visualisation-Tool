@@ -186,8 +186,12 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     # check there is lateralising value
     try:
         num_QL_lat = inspect_result['Lateralising'].sum()
-        logging.debug(
-            f'\n\nLateralisation based on: {num_QL_lat.sum()} datapoints')
+        if num_QL_lat > 0:
+            logging.debug(
+                f'\n\nLateralisation based on: {num_QL_lat.sum()} datapoints')
+        else:
+            num_QL_lat = None
+            return None, None, None, None, None, None, None
     except KeyError:
         # logging.debug(
         #     f'No Lateralising values found for this query of the database.')
@@ -481,5 +485,5 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     all_combined_gifs = fixed2
     all_combined_gifs
 
-    return (all_combined_gifs.round(),
+    return (all_combined_gifs,
             num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH)
