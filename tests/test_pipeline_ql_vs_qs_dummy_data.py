@@ -26,7 +26,7 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel for the dummy database
-test_df, _, _ = MEGA_ANALYSIS(
+test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
     excel_data=dummy_data_path,
     n_rows=100,
     usecols="A:DH",
