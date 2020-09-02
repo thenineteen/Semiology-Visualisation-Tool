@@ -60,9 +60,27 @@ class InverseLocalisingValues(unittest.TestCase):
         self.df = test_df.copy()
         print('setup')
 
-    def test_dummy_data_ILV(self):
+    def test_dummy_data_ILV_1(self):
         """
         Test the method of inverse-localising-value as per issues #169 on GitHub.
+        This uses "IVL_1" as semiology term, which is the same as Example 1 on GitHub:
+        https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
+
+        """
+        patient = Semiology('ILV_1',
+                            Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        inspect_result = patient.query_semiology()
+
+        self.assertIs(type(inspect_result), pd.DataFrame)
+        assert not inspect_result.empty
+        assert(inspect_result['Localising'].sum() == 1)
+        assert(inspect_result['Lateralising'].sum() == 0)
+
+    def test_dummy_data_ILV_control(self):
+        """
+        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        This uses "ILV_4" as semiology term, which is Example 2 on GitHub:
         https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
 
         """
@@ -75,6 +93,34 @@ class InverseLocalisingValues(unittest.TestCase):
         assert not inspect_result.empty
         assert(inspect_result['Localising'].sum() == 4)
         assert(inspect_result['Lateralising'].sum() == 0)
+
+    def factor_ql(self, term):
+        patient = Semiology(term,
+                            Laterality.LEFT, Laterality.LEFT)
+        patient.data_frame = self.df
+        all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        return all_combined_gifs
+
+    def test_NotILV_default(self):
+        """
+        SVT default behaviour (v 1.3.1) is that Example 1 (singlept) and 2 (fourpts) return the same result.
+        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
+
+        """
+        all_combined_gifs_singlept = self.factor_ql('ILV_1')
+        all_combined_gifs_fourpts = self.factor_ql('ILV_4')
+
+        self.assertIs(type(all_combined_gifs_singlept), pd.DataFrame)
+        assert not all_combined_gifs_singlept.empty
+        self.assertIs(type(all_combined_gifs_fourpts), pd.DataFrame)
+        assert not all_combined_gifs_fourpts.empty
+
+        assert all_combined_gifs_singlept.shape == all_combined_gifs_fourpts.shape
+        assert all_combined_gifs_singlept.all().all(
+        ) == all_combined_gifs_fourpts.all().all()
 
 
     # for debugging with __init__():
