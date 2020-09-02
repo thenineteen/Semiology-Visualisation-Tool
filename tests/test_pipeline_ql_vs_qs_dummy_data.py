@@ -189,23 +189,8 @@ class PipelineSequenceTesting(unittest.TestCase):
             QL_lateralising_PipelineResult['pt #s'].values == QS_nonlat_ManualPipelineResult['pt #s'].values)
         assert GIF_values.all() == False
 
-        # more detailed analysis of the values: check the CL ones are the same and IL different
-        # CL same because Q_L reduces the lower values and keeps the higher the same
-        # note lateralities are all LEFT
-        gifs_right, gifs_left = gifs_lat_factor()
-        GIFS_rightCL = \
-            QL_lateralising_PipelineResult.loc[QL_lateralising_PipelineResult['Gif Parcellations'].isin(gifs_right), 'pt #s'].values \
-            == (
-                QS_nonlat_ManualPipelineResult.loc[QS_nonlat_ManualPipelineResult['Gif Parcellations'].isin(gifs_right), 'pt #s'].values)
-
-        assert GIFS_rightCL.all()
-
-        GIFS_leftIL = \
-            QL_lateralising_PipelineResult.loc[QL_lateralising_PipelineResult['Gif Parcellations'].isin(gifs_left), 'pt #s'].values \
-            == (
-                QS_nonlat_ManualPipelineResult.loc[QS_nonlat_ManualPipelineResult['Gif Parcellations'].isin(gifs_left), 'pt #s'].values)
-
-        assert not GIFS_leftIL.all()
+        # more detailed analysis of the values in pipelines3 below
+        return QL_lateralising_PipelineResult, QS_nonlat_ManualPipelineResult
 
     def test_compare_pipelines2(self):
         """
@@ -231,6 +216,29 @@ class PipelineSequenceTesting(unittest.TestCase):
         GIF_values = QL_50_50_lateralising_result[
             'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
         assert GIF_values
+
+    def test_compare_pipelines3(self):
+        """
+        Follow up from test_compare_pipelines1:
+            more detailed analysis of the values: check the CL ones are the same and IL different
+                CL same because Q_L reduces the lower values and keeps the higher the same.
+        Note lateralities are all LEFT.
+        """
+        QL, QS = self.test_compare_pipelines1()
+        gifs_right, gifs_left = gifs_lat_factor()
+        GIFS_rightCL = \
+            QL.loc[QL['Gif Parcellations'].isin(gifs_right), 'pt #s'].values \
+            == (
+                QS.loc[QS['Gif Parcellations'].isin(gifs_right), 'pt #s'].values)
+
+        assert GIFS_rightCL.all()
+
+        GIFS_leftIL = \
+            QL.loc[QL['Gif Parcellations'].isin(gifs_left), 'pt #s'].values \
+            == (
+                QS.loc[QS['Gif Parcellations'].isin(gifs_left), 'pt #s'].values)
+
+        assert not GIFS_leftIL.all()
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()
