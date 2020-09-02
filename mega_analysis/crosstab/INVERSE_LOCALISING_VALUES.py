@@ -12,12 +12,25 @@ def INVERSE_LOCALISING_VALUES(inspect_result):
 
     Alim-Marvasti Sept 2020.
     # """
+
+    new_inspect_result = inspect_result.copy()
+
+    # get all loc columns
     all_locs = all_localisations()
-    locs = [i for i in inspect_result.columns if i in all_locs]
+    locs = [i for i in new_inspect_result.columns if i in all_locs]
+
+    # set index
 
     # sum each semiologies localising regions (e.g. FL and TL) and then divide by the said row's Localising
     # only change if ratio <1
-    ratio = inspect_result['Localising'] / inspect_result[locs].sum(axis=1)
-    inspect_result.loc[ratio < 1, locs] = ratio
+    # new_inspect_result.loc[:, 'ratio'] = np.nan
+    new_inspect_result.loc[:, 'ratio'] = new_inspect_result['Localising'] / \
+        new_inspect_result[locs].sum(axis=1)
+    gif_indices = (new_inspect_result['ratio'] < 1)
 
-    return inspect_result
+    new_inspect_result.loc[gif_indices, locs] = \
+        new_inspect_result.loc[gif_indices, 'ratio'] * \
+        new_inspect_result.loc[gif_indices, locs]
+
+    new_inspect_result.drop(columns='ratio', inplace=True)
+    return new_inspect_result
