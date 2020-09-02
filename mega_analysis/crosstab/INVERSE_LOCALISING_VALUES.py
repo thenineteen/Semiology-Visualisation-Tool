@@ -28,9 +28,10 @@ def INVERSE_LOCALISING_VALUES(inspect_result):
         new_inspect_result[locs].sum(axis=1)
     gif_indices = (new_inspect_result['ratio'] < 1)
 
-    new_inspect_result.loc[gif_indices, locs] = \
-        new_inspect_result.loc[gif_indices, 'ratio'] * \
-        new_inspect_result.loc[gif_indices, locs]
+    if gif_indices.any():
+        inspect_result.loc[gif_indices, locs] = \
+            float(new_inspect_result.loc[gif_indices, 'ratio']) * \
+            new_inspect_result.loc[gif_indices, locs]
 
-    new_inspect_result.drop(columns='ratio', inplace=True)
-    return new_inspect_result
+    # new_inspect_result.drop(columns='ratio', inplace=True)
+    return inspect_result
