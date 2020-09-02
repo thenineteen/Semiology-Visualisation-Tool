@@ -138,17 +138,33 @@ class PipelineSequenceTesting(unittest.TestCase):
         return all_combined_gifs
 
     def test_compare_pipelines1(self):
+        """
+        Compares query_lateralisation() with and without lateralising data.
+        The GIF numbers should be the same (as the lateralising one is 90% CL and 10% IL so no GIFs are removed).
+        The IL GIFs will have lower values.
+        """
         QL_lateralising_PipelineResult = self.test_prelim3_ql_lateralises()
         QS_nonlat_ManualPipelineResult = self.test_prelim4_ql_doesnot_lateralise()
 
+        # shapes are the same
         assert (QL_lateralising_PipelineResult.shape) == (
             QS_nonlat_ManualPipelineResult.shape)
 
+        # GIFs should be the same
+        QL_lateralising_PipelineResult = QL_lateralising_PipelineResult.astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        GIF_parcellations = QL_lateralising_PipelineResult[
+            'Gif Parcellations'].all() == QS_nonlat_ManualPipelineResult['Gif Parcellations'].all()
+        assert GIF_parcellations
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()
     # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
     # for debugging with setUp(self):
+
+
 if __name__ == '__main__':
     sys.argv.insert(1, '--verbose')
     unittest.main(argv=sys.argv)
