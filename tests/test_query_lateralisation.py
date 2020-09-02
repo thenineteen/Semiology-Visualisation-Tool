@@ -11,20 +11,21 @@ from mega_analysis.semiology import (
     QUERY_LATERALISATION,
     melt_then_pivot_query,
     pivot_result_to_one_map,
+    Semiology,
 )
 
 
 class TestQueryLateralisation(unittest.TestCase):
     def query(self, term, symptoms_side, dominant_hemisphere):
         path = semiology_dict_path if term in all_semiology_terms else None
-        query_semiology_result = QUERY_SEMIOLOGY(
+        query_semiology_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             mega_analysis_df,
             semiology_term=term,
             semiology_dict_path=path,
         )
         if query_semiology_result is None:
             return None
-        all_combined_gifs = QUERY_LATERALISATION(
+        all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = QUERY_LATERALISATION(
             query_semiology_result,
             mega_analysis_df,
             map_df_dict,

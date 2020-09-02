@@ -26,7 +26,7 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel file only three times at initialisation
-test_df, _, _ = MEGA_ANALYSIS(
+test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
     excel_data=dummy_data_path,
     n_rows=100,
     usecols="A:DH",
@@ -79,7 +79,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         default QUERY_SEMIOLOGY doesn't exclude paed cases
         """
-        query = QUERY_SEMIOLOGY(
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             self.df,
             semiology_term=['aphasia'],
             ignore_case=True,
@@ -98,7 +98,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         So the result of this should be the same as query_semiology()
         """
         df_excl = exclusions(self.df)
-        query = QUERY_SEMIOLOGY(
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             df_excl,
             semiology_term=['aphasia'],
             ignore_case=True,
@@ -115,7 +115,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         when ignore case is false, it won't pick up case mismatches.
         so sum is slightly less.
         """
-        query = QUERY_SEMIOLOGY(
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             self.df,
             semiology_term=['aphasia'],
             ignore_case=False,
@@ -128,7 +128,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         # print('\n3\n')
 
     def test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary(self):
-        query = QUERY_SEMIOLOGY(
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             self.df,
             # see dummy_SemioDict: equivalent to "Aphasia"
             semiology_term='dummy_test_link_aphasia',

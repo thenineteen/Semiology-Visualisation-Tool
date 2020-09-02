@@ -161,7 +161,10 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         (instead of using user defined semiology_term lists, uses pre-defined yaml dictionary)
         keyword-based user queries are mapped to ontology entities
 
-    returns a DataFrame subset of df input containing all the results from the df - no melting or pivoting.
+    returns:
+        inspect_result: a DataFrame subset of df input containing all the results from the df - no melting or pivoting, index sorted.
+        num_query_lat: Lateralising Datapoints relevant to query {semiology_term}
+        num_query_loc: Localising Datapoints relevant to query {semiology_term}
     """
     # initialise return object
     inspect_result = pd.DataFrame()
@@ -191,13 +194,13 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         if isinstance(values_dict_or_list, list):
             values = values_dict_or_list
         elif isinstance(values_dict_or_list, dict):
-            logging.debug(
+            logging.error(
                 "this shouldn't occur: use_semiology_dictionary_ has returned a dict. Attempted to correct... ")
             # when the semiology_term used in the dictionary refers to a top level key which is itself a dictionary
             _, values = dictionary_key_recursion_(values_dict_or_list)
             values = make_simple_list(values)
         else:
-            logging.warning(
+            logging.error(
                 'Error Please report this bug. What just happened? Neither dict nor list.')
             return
         # turn these values to regexes too:
@@ -229,17 +232,16 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         return
 
     try:
-        logging.debug(
-            f'\n\nLocalising Datapoints relevant to query {semiology_term}: {inspect_result["Localising"].sum()}')
+        num_query_loc = inspect_result["Localising"].sum()
     except KeyError:
         # user tried a semiology which doesn't have a key in semiology_dictionary
         # run again and set semiology_dict to None
         logging.debug('Issue # 7 alive and well.')
 
     try:
-        num_datapoints = inspect_result["Lateralising"].sum()
+        num_query_lat = inspect_result["Lateralising"].sum()
     except:
-        num_datapoints = 0
-    logging.debug(
-        f'\n\nLateralising Datapoints relevant to query: {num_datapoints}')
-    return inspect_result.sort_index()
+        num_query_lat = 0
+
+    return (inspect_result.sort_index(),
+            num_query_lat, num_query_loc)

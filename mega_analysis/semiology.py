@@ -41,7 +41,8 @@ excel_path = resources_dir / 'Semio2Brain Database.xlsx'
 semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
 
 # Read Excel file only three times at initialisation
-mega_analysis_df, _, _ = MEGA_ANALYSIS(excel_data=excel_path)
+mega_analysis_df, _, _, num_database_articles, num_database_patients, num_database_lat, num_database_loc = MEGA_ANALYSIS(
+    excel_data=excel_path)
 map_df_dict = pd.read_excel(
     excel_path,
     header=1,
@@ -148,7 +149,7 @@ class Semiology:
         else:
             path = None
         self.data_frame = self.remove_exclusions(self.data_frame)
-        inspect_result = QUERY_SEMIOLOGY(
+        inspect_result, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             self.data_frame,
             semiology_term=self.term,
             semiology_dict_path=path,
@@ -176,14 +177,15 @@ class Semiology:
                 message = f'No query_semiology results for term "{self.term}"'
                 raise ValueError(message)
             else:
-                all_combined_gifs = QUERY_LATERALISATION(
-                    query_semiology_result,
-                    self.data_frame,
-                    map_df_dict,
-                    gif_lat_file,
-                    side_of_symptoms_signs=self.symptoms_side.value,
-                    pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
-                )
+                all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
+                    QUERY_LATERALISATION(
+                        query_semiology_result,
+                        self.data_frame,
+                        map_df_dict,
+                        gif_lat_file,
+                        side_of_symptoms_signs=self.symptoms_side.value,
+                        pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                    )
                 if all_combined_gifs is None:
                     # Either no lateralising pt data, or empty lat column
                     # Run manual pipeline:
