@@ -126,8 +126,28 @@ class InverseLocalisingValues(unittest.TestCase):
         assert not all_combined_gifs_fourpts.empty
 
         assert all_combined_gifs_singlept.shape == all_combined_gifs_fourpts.shape
-        assert all_combined_gifs_singlept.all().all(
-        ) == all_combined_gifs_fourpts.all().all()
+
+        all_combined_gifs_singlept.drop(columns='Semiology Term', inplace=True)
+        all_combined_gifs_fourpts.drop(columns='Semiology Term', inplace=True)
+        assert (all_combined_gifs_singlept ==
+                all_combined_gifs_fourpts).all().all()
+
+    def test_ILV_function_doesnt_change_ratio1(self):
+        """
+        In Example 2 (4pts), the use of inverse_localising_values should make no difference.
+        """
+        fourptsILV_gifs = self.factor_ql(
+            'ILV_4', inverse_localising_values=True)
+
+        fourpts_gifs = self.factor_ql(
+            'ILV_4', inverse_localising_values=False)
+
+        assert fourptsILV_gifs.shape == fourpts_gifs.shape
+
+        # Semiology Term contains NaNs which complicates assertions
+        fourptsILV_gifs.drop(columns='Semiology Term', inplace=True)
+        fourpts_gifs.drop(columns='Semiology Term', inplace=True)
+        assert (fourptsILV_gifs == fourpts_gifs).all().all()
 
     def test_InverseLocalisingValue_function(self):
         """
@@ -152,16 +172,19 @@ class InverseLocalisingValues(unittest.TestCase):
         assert all_combined_gifs_singlept.shape == all_combined_gifs_fourpts.shape
 
         # DataFrames (values) are no longer the same
-        assert all_combined_gifs_singlept.all().all(
-        ) != all_combined_gifs_fourpts.all().all()
+        all_combined_gifs_singlept.drop(columns='Semiology Term', inplace=True)
+        all_combined_gifs_fourpts.drop(columns='Semiology Term', inplace=True)
+        thesame = (all_combined_gifs_singlept ==
+                   all_combined_gifs_fourpts).all().all()
+        assert not thesame
 
         # Specifically, Gif parecellations are the same...:
-        assert all_combined_gifs_singlept['Gif Parcellations'].values.all(
-        ) == all_combined_gifs_fourpts['Gif Parcellations'].values.all()
+        assert (all_combined_gifs_singlept['Gif Parcellations'] ==
+                all_combined_gifs_fourpts['Gif Parcellations']).all()
 
         # ... but values of pt #s are NO longer the same:
-        assert all_combined_gifs_singlept['pt #s'].values.all(
-        ) != all_combined_gifs_fourpts['pt #s'].values.all()
+        assert not (all_combined_gifs_singlept['pt #s'] ==
+                    all_combined_gifs_fourpts['pt #s']).all()
 
 
     # for debugging with __init__():
