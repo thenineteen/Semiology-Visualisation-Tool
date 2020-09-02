@@ -45,6 +45,10 @@ dummy_map_df_dict = pd.read_excel(
 
 class PipelineSequenceTesting(unittest.TestCase):
     """
+    If no lateralising data, then QL returns None and manual pipeline is run within ql.
+    If lateraliing data, ql returns what QL returns (all_combined_gifs).
+
+
     any tests/fixtures with gifs, rely on the mapping strategy used.
     Therefore these can be commented out or updated when mapping is updated.
 
@@ -110,7 +114,8 @@ class PipelineSequenceTesting(unittest.TestCase):
         Relies on mapping strategy as uses gifs.
         """
         patient = Semiology('pipeline_laateralises_semioA',
-                            Laterality.NEUTRAL, Laterality.NEUTRAL)
+                            symptoms_side=Laterality.LEFT,
+                            dominant_hemisphere=Laterality.LEFT)
         patient.data_frame = self.df
 
         # returns the results from Q_L pipeline
@@ -125,7 +130,8 @@ class PipelineSequenceTesting(unittest.TestCase):
         """
         """
         patient = Semiology('pipeline_notlaat_semioB',
-                            Laterality.NEUTRAL, Laterality.NEUTRAL)
+                            symptoms_side=Laterality.LEFT,
+                            dominant_hemisphere=Laterality.LEFT)
         patient.data_frame = self.df
 
         # as no lateralising data, the below will run a manual pipeline
@@ -137,9 +143,28 @@ class PipelineSequenceTesting(unittest.TestCase):
         assert not all_combined_gifs.empty
         return all_combined_gifs
 
+    def test_prelim5_ql_50_50(self):
+        """
+        Pipeline sequence test of ql: lateralises 50% CL and 50%IL.
+        """
+        patient = Semiology('pipeline_50_50_laateralises_semioC',
+                            symptoms_side=Laterality.LEFT,
+                            dominant_hemisphere=Laterality.LEFT)
+        patient.data_frame = self.df
+
+        # returns the results from Q_L pipeline
+        all_combined_gifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+
+        self.assertIs(type(all_combined_gifs), pd.DataFrame)
+        assert not all_combined_gifs.empty
+        return all_combined_gifs
+
     def test_compare_pipelines1(self):
         """
-        Compares query_lateralisation() with and without lateralising data.
+        Compares query_lateralisation() with and without lateralising data: localisations are the same.
+            (Without lateralising data runs manual pipeline.)
+
         The GIF numbers should be the same (as the lateralising one is 90% CL and 10% IL so no GIFs are removed).
         The IL GIFs will have lower values.
         """
@@ -160,16 +185,44 @@ class PipelineSequenceTesting(unittest.TestCase):
         assert GIF_parcellations
 
         # but the values should be different
-        GIF_values = QL_lateralising_PipelineResult[
-            'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
-        assert not GIF_values
+        GIF_values = (
+            QL_lateralising_PipelineResult['pt #s'].values == QS_nonlat_ManualPipelineResult['pt #s'].values)
+        assert GIF_values.all() == False
+
+    # def test_compare_pipelines2(self):
+    #     """
+    #     Compare 50% lateralising data from ql to no lateralising data from ql (manual pipeline).
+    #     """
+    #     QL_50_50_lateralising_result = self.test_prelim5_ql_50_50()
+    #     QS_nonlat_ManualPipelineResult = self.test_prelim4_ql_doesnot_lateralise()
+
+    #     # shapes are the same
+    #     assert (QL_50_50_lateralising_result.shape) == (
+    #         QS_nonlat_ManualPipelineResult.shape)
+
+    #     # GIFs should be the same
+    #     QL_50_50_lateralising_result = QL_50_50_lateralising_result.astype(
+    #         {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+    #     QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
+    #         {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+    #     GIF_parcellations = QL_50_50_lateralising_result[
+    #         'Gif Parcellations'].all() == QS_nonlat_ManualPipelineResult['Gif Parcellations'].all()
+    #     assert GIF_parcellations
+
+    #     # AND this time the values should also be the same:
+    #     GIF_values = QL_50_50_lateralising_result[
+    #         'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
+    #     assert GIF_values
+
+    # def test_compare_pipelines3(self):
+    #     """
+    #     """
+
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()
     # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
     # for debugging with setUp(self):
-
-
 if __name__ == '__main__':
     sys.argv.insert(1, '--verbose')
     unittest.main(argv=sys.argv)
