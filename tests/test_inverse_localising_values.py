@@ -149,7 +149,7 @@ class InverseLocalisingValues(unittest.TestCase):
         fourpts_gifs.drop(columns='Semiology Term', inplace=True)
         assert (fourptsILV_gifs == fourpts_gifs).all().all()
 
-    def test_InverseLocalisingValue_function(self):
+    def test_InverseLocalisingValues_function(self):
         """
         Test the method of inverse-localising-value as per issues #169 on GitHub.
         Example 1 should return 0.25 for each localisation GIF, whereas Example 2 should remain the same.
@@ -185,6 +185,12 @@ class InverseLocalisingValues(unittest.TestCase):
         # ... but values of pt #s are NO longer the same:
         assert not (all_combined_gifs_singlept['pt #s'] ==
                     all_combined_gifs_fourpts['pt #s']).all()
+
+        # and finally ensure the values are either 1/4 = 0.25 or 0:
+        # can't use sum()==1 as mappings can make sum more than 1 here for singlept
+        # assert all_combined_gifs_singlept['pt #s'].sum() > 0
+        assert (all_combined_gifs_singlept['pt #s'].unique() ==
+                [0, 0.25]).all()
 
 
     # for debugging with __init__():
