@@ -30,6 +30,7 @@ from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
+from .crosstab.INVERSE_LOCALISING_VALUES import INVERSE_LOCALISING_VALUES
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -104,6 +105,7 @@ class Semiology:
             include_only_paediatric_cases: bool = False,
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
+            inverse_localising_values: bool = False,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -121,6 +123,7 @@ class Semiology:
             possible_lateralities = get_possible_lateralities(self.term)
         self.possible_lateralities = possible_lateralities
         self.granular = granular
+        self.inverse_localising_values = inverse_localising_values
 
     def remove_exclusions(self, df: pd.DataFrame) -> pd.DataFrame:
         if not self.include_concordance:
@@ -158,6 +161,9 @@ class Semiology:
             hierarchy_df = Hierarchy(inspect_result)
             hierarchy_df.all_hierarchy_reversal()
             inspect_result = hierarchy_df.new_df
+
+            if self.inverse_localising_values:
+                inspect_result = INVERSE_LOCALISING_VALUES(inspect_result)
         return inspect_result
 
     def query_lateralisation(self, map_df_dict=map_df_dict) -> Optional[pd.DataFrame]:
