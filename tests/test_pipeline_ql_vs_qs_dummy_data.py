@@ -159,6 +159,11 @@ class PipelineSequenceTesting(unittest.TestCase):
             'Gif Parcellations'].all() == QS_nonlat_ManualPipelineResult['Gif Parcellations'].all()
         assert GIF_parcellations
 
+        # but the values should be different
+        GIF_values = QL_lateralising_PipelineResult[
+            'pt #s'].all() == QS_nonlat_ManualPipelineResult['pt #s'].all()
+        assert not GIF_values
+
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()
     # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
