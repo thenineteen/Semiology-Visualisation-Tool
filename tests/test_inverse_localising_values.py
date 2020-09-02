@@ -60,9 +60,9 @@ class InverseLocalisingValues(unittest.TestCase):
         self.df = test_df.copy()
         print('setup')
 
-    def test_dummy_data_ILV_1(self):
+    def test_prelim1_dummy_ILV_1(self):
         """
-        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        Preliminary test as per issues #169 on GitHub.
         This uses "IVL_1" as semiology term, which is the same as Example 1 on GitHub:
         https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
 
@@ -77,9 +77,9 @@ class InverseLocalisingValues(unittest.TestCase):
         assert(inspect_result['Localising'].sum() == 1)
         assert(inspect_result['Lateralising'].sum() == 0)
 
-    def test_dummy_data_ILV_control(self):
+    def test_prelim2_dummy_ILV_control(self):
         """
-        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        Preliminary test as per issues #169 on GitHub.
         This uses "ILV_4" as semiology term, which is Example 2 on GitHub:
         https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
 
@@ -94,10 +94,17 @@ class InverseLocalisingValues(unittest.TestCase):
         assert(inspect_result['Localising'].sum() == 4)
         assert(inspect_result['Lateralising'].sum() == 0)
 
-    def factor_ql(self, term):
+    def factor_ql(self, term, inverse_localising_values=False):
+        """
+        factor function.
+        NB inverse_localising_values default is False in semiology.py
+        """
         patient = Semiology(term,
                             Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
+
+        patient.inverse_localising_values = inverse_localising_values
+
         all_combined_gifs = patient.query_lateralisation(
             map_df_dict=dummy_map_df_dict)
 
@@ -106,7 +113,7 @@ class InverseLocalisingValues(unittest.TestCase):
     def test_NotILV_default(self):
         """
         SVT default behaviour (v 1.3.1) is that Example 1 (singlept) and 2 (fourpts) return the same result.
-        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        As per issues #169 on GitHub.
         https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
 
         """
@@ -121,6 +128,40 @@ class InverseLocalisingValues(unittest.TestCase):
         assert all_combined_gifs_singlept.shape == all_combined_gifs_fourpts.shape
         assert all_combined_gifs_singlept.all().all(
         ) == all_combined_gifs_fourpts.all().all()
+
+    def test_InverseLocalisingValue_function(self):
+        """
+        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        Example 1 should return 0.25 for each localisation GIF, whereas Example 2 should remain the same.
+        https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
+
+        """
+        # set inverse_localising_values=True
+        all_combined_gifs_singlept = self.factor_ql(
+            'ILV_1', inverse_localising_values=True)
+        all_combined_gifs_fourpts = self.factor_ql(
+            'ILV_4', inverse_localising_values=True)
+
+        # basic baseline control assertions
+        self.assertIs(type(all_combined_gifs_singlept), pd.DataFrame)
+        assert not all_combined_gifs_singlept.empty
+        self.assertIs(type(all_combined_gifs_fourpts), pd.DataFrame)
+        assert not all_combined_gifs_fourpts.empty
+
+        # shapes remain the same as GIFs are the same
+        assert all_combined_gifs_singlept.shape == all_combined_gifs_fourpts.shape
+
+        # DataFrames (values) are no longer the same
+        assert all_combined_gifs_singlept.all().all(
+        ) != all_combined_gifs_fourpts.all().all()
+
+        # Specifically, Gif parecellations are the same...:
+        assert all_combined_gifs_singlept['Gif Parcellations'].values.all(
+        ) == all_combined_gifs_fourpts['Gif Parcellations'].values.all()
+
+        # ... but values of pt #s are NO longer the same:
+        assert all_combined_gifs_singlept['pt #s'].values.all(
+        ) != all_combined_gifs_fourpts['pt #s'].values.all()
 
 
     # for debugging with __init__():
