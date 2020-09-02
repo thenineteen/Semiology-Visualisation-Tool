@@ -112,12 +112,14 @@ class PipelineSequenceTesting(unittest.TestCase):
         patient = Semiology('pipeline_laateralises_semioA',
                             Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
+
+        # returns the results from Q_L pipeline
         all_combined_gifs = patient.query_lateralisation(
             map_df_dict=dummy_map_df_dict)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
-        # return all_combing_gifs
+        return all_combined_gifs
 
     def test_prelim4_ql_doesnot_lateralise(self):
         """
@@ -133,14 +135,20 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
+        return all_combined_gifs
 
-    # def test_comparison(self):
+    def test_compare_pipelines1(self):
+        QL_lateralising_PipelineResult = self.test_prelim3_ql_lateralises()
+        QS_nonlat_ManualPipelineResult = self.test_prelim4_ql_doesnot_lateralise()
+
+        assert (QL_lateralising_PipelineResult.shape) == (
+            QS_nonlat_ManualPipelineResult.shape)
 
 
-# for debugging with __init__():
-# query = TestDummyDataDummyDictionary()
-# query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
-# for debugging with setUp(self):
+    # for debugging with __init__():
+    # query = TestDummyDataDummyDictionary()
+    # query.test_parenthesis_and_caps_QUERY_SEMIOLOGY_with_dictionary()
+    # for debugging with setUp(self):
 if __name__ == '__main__':
     sys.argv.insert(1, '--verbose')
     unittest.main(argv=sys.argv)
