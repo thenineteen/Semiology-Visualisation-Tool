@@ -4,7 +4,7 @@ from pathlib import Path
 
 def all_localisations(excel_columns="R:DP"):
     """
-    Import the excel spreadsheet of 312 included journal paper reviews (4649 patients) and
+    Import the excel spreadsheet of 310 included journal paper reviews (>4000 patients) and
     return a list of the anatomical brain region terms.
     Used as default when importing the spreadsheet in semiology_lateralisation_localisation.
 

@@ -34,7 +34,7 @@ frontal_postcodes = {
     'FL': [
         'frontal pole',
         'Pre-frontal (BA 8, 9, 10, 11, 12, 13, 14, 24, 25, 32, 44, 45, 46, 47)',
-        'Medial Frontal\n(should include medial premotor and its constituents as its subsets)',
+        'Medial Frontal (include medial premotor and its constituents as its subsets)',
         'Primary Motor Cortex (Pre-central gyrus, BA 4, Rolandic)',
         'SFG (F1)',
         'MFG (F2)',

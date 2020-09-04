@@ -1,5 +1,5 @@
 import pandas as pd
-from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
+from .group_columns import full_id_vars, lateralisation_vars, all_localisations
 
 
 def melt_then_pivot_query(df, inspect_result, semiology_term):
@@ -12,7 +12,7 @@ def melt_then_pivot_query(df, inspect_result, semiology_term):
     """
 
     # find all localisation columns present:
-    localisation_labels = anatomical_regions(df)
+    localisation_labels = all_localisations()
     relevant_localisations = [
         cols for cols in inspect_result.columns if cols in localisation_labels]
 

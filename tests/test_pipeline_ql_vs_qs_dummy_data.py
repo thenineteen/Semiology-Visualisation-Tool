@@ -2,6 +2,7 @@ import sys
 import unittest
 
 import pandas as pd
+import numpy as np
 
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
@@ -163,7 +164,7 @@ class PipelineSequenceTesting(unittest.TestCase):
     def test_compare_pipelines1(self):
         """
         Compares query_lateralisation() with and without lateralising data: localisations are the same.
-            (Without lateralising data runs manual pipeline.)
+            (Without lateralising data: QS_nonlat, runs manual pipeline.)
 
         The GIF numbers should be the same (as the lateralising one is 90% CL and 10% IL so no GIFs are removed).
         The IL GIFs will have lower values.
@@ -177,17 +178,19 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # GIFs should be the same
         QL_lateralising_PipelineResult = QL_lateralising_PipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+            {'Gif Parcellations': 'int32'})
         QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
-        GIF_parcellations = QL_lateralising_PipelineResult[
-            'Gif Parcellations'].all() == QS_nonlat_ManualPipelineResult['Gif Parcellations'].all()
+            {'Gif Parcellations': 'int32'})
+        GIF_parcellations = (
+            QL_lateralising_PipelineResult['Gif Parcellations'] ==
+            QS_nonlat_ManualPipelineResult['Gif Parcellations']).all()
         assert GIF_parcellations
 
         # but the values should be different
         GIF_values = (
-            QL_lateralising_PipelineResult['pt #s'].values == QS_nonlat_ManualPipelineResult['pt #s'].values)
-        assert GIF_values.all() == False
+            QL_lateralising_PipelineResult['pt #s'] ==
+            QS_nonlat_ManualPipelineResult['pt #s']).all()
+        assert not GIF_values
 
         # more detailed analysis of the values in pipelines3 below
         return QL_lateralising_PipelineResult, QS_nonlat_ManualPipelineResult
@@ -196,49 +199,57 @@ class PipelineSequenceTesting(unittest.TestCase):
         """
         Compare 50% lateralising data from ql to no lateralising data from ql (manual pipeline).
         """
-        QL_50_50_lateralising_result = self.test_prelim5_ql_50_50()
-        QS_nonlat_ManualPipelineResult = self.test_prelim4_ql_doesnot_lateralise()
+        QL_50_50 = self.test_prelim5_ql_50_50()
+        QS_nonlat = self.test_prelim4_ql_doesnot_lateralise()
 
         # shapes are the same
-        assert (QL_50_50_lateralising_result.shape) == (
-            QS_nonlat_ManualPipelineResult.shape)
+        assert (QL_50_50.shape) == (
+            QS_nonlat.shape)
 
         # GIFs should be the same
-        QL_50_50_lateralising_result = QL_50_50_lateralising_result.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
-        QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
-        GIF_parcellations = QL_50_50_lateralising_result[
-            'Gif Parcellations'].all() == QS_nonlat_ManualPipelineResult['Gif Parcellations'].all()
+        QL_50_50 = QL_50_50.astype(
+            {'Gif Parcellations': 'int32'})
+        QS_nonlat = QS_nonlat.astype(
+            {'Gif Parcellations': 'int32'})
+        GIF_parcellations = (
+            QL_50_50['Gif Parcellations'] ==
+            QS_nonlat['Gif Parcellations']).all()
         assert GIF_parcellations
 
         # AND this time the values should also be the same:
-        GIF_values = QL_50_50_lateralising_result[
-            'pt #s'].values.all() == QS_nonlat_ManualPipelineResult['pt #s'].values.all()
+        GIF_values = (
+            QL_50_50['pt #s'] ==
+            QS_nonlat['pt #s']).all()
         assert GIF_values
 
     def test_compare_pipelines3(self):
         """
         Follow up from test_compare_pipelines1:
-            more detailed analysis of the values: check the CL ones are the same and IL different
+            more detailed analysis of the values: check the CL ones are the same and IL different.
                 CL same because Q_L reduces the lower values and keeps the higher the same.
         Note lateralities are all LEFT.
         """
         QL, QS = self.test_compare_pipelines1()
-        gifs_right, gifs_left = gifs_lat_factor()
-        GIFS_rightCL = \
-            QL.loc[QL['Gif Parcellations'].isin(gifs_right), 'pt #s'].values \
-            == (
-                QS.loc[QS['Gif Parcellations'].isin(gifs_right), 'pt #s'].values)
 
+        gifs_right, gifs_left = gifs_lat_factor()
+        gifs_right, gifs_left = (gifs_right.astype('int32'),
+                                 gifs_left.astype('int32'))
+        mask1 = QL['Gif Parcellations'].isin(gifs_right)
+        mask2 = QS['Gif Parcellations'].isin(gifs_right)
+
+        QL_right = QL.loc[mask1, :]
+        QS_right = QS.loc[mask2, :]
+        GIFS_rightCL = np.isclose(
+            QL_right['pt #s'], QS_right['pt #s']
+        )
         assert GIFS_rightCL.all()
 
-        GIFS_leftIL = \
-            QL.loc[QL['Gif Parcellations'].isin(gifs_left), 'pt #s'].values \
-            == (
-                QS.loc[QS['Gif Parcellations'].isin(gifs_left), 'pt #s'].values)
+        GIFS_leftIL = (
+            QL.loc[QL['Gif Parcellations'].isin(gifs_left), 'pt #s'] ==
+            QS.loc[QS['Gif Parcellations'].isin(gifs_left), 'pt #s']).all()
 
-        assert not GIFS_leftIL.all()
+        assert not GIFS_leftIL
+
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()
