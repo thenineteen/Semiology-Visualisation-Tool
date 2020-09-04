@@ -33,8 +33,8 @@ def anatomical_regions(df):
     Improved version from:
     "localisation_labels = df.columns[17:88]  # May 2020 17:72  to 17:88"
     """
-    all_localisations_list = all_localisations()
+    all_locs = all_localisations()
     localisation_labels = [
-        i for i in df.columns if i in all_localisations_list]
+        i for i in df.columns if i in all_locs]
 
     return localisation_labels
