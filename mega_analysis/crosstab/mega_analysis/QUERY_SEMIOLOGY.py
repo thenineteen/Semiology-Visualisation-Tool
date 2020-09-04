@@ -236,7 +236,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
     except KeyError:
         # user tried a semiology which doesn't have a key in semiology_dictionary
         # run again and set semiology_dict to None
-        logging.debug('Issue # 7 alive and well.')
+        raise Exception('Issue # 7 alive and well. Please report this issue on the repository:'
+                        ' https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/new')
 
     try:
         num_query_lat = inspect_result["Lateralising"].sum()
