@@ -177,9 +177,9 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # GIFs should be the same
         QL_lateralising_PipelineResult = QL_lateralising_PipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+            {'Gif Parcellations': 'int32'})
         QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+            {'Gif Parcellations': 'int32'})
         GIF_parcellations = (
             QL_lateralising_PipelineResult['Gif Parcellations'] ==
             QS_nonlat_ManualPipelineResult['Gif Parcellations']).all()
@@ -207,9 +207,9 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # GIFs should be the same
         QL_50_50_lateralising_result = QL_50_50_lateralising_result.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+            {'Gif Parcellations': 'int32'})
         QS_nonlat_ManualPipelineResult = QS_nonlat_ManualPipelineResult.astype(
-            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+            {'Gif Parcellations': 'int32'})
         GIF_parcellations = (
             QL_50_50_lateralising_result['Gif Parcellations'] ==
             QS_nonlat_ManualPipelineResult['Gif Parcellations']).all()
