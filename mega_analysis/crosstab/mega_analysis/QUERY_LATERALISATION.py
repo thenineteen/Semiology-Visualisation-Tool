@@ -343,7 +343,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 all_combined_gifs = row_to_one_map
             elif all_combined_gifs is not None:
                 all_combined_gifs = pd.concat(
-                    [all_combined_gifs, row_to_one_map], join='outer', sort=False)
+                    [all_combined_gifs, row_to_one_map], join='outer', sort=False, ignore_index=True)
             continue
 
         # now should be able to use above to lateralise the localising gif parcellations:
@@ -414,7 +414,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
             continue
         elif i != 0:
             all_combined_gifs = pd.concat(
-                [all_combined_gifs, row_to_one_map], join='outer', sort=False)
+                [all_combined_gifs, row_to_one_map], join='outer', sort=False, ignore_index=True)
         # logging.debug(f'end of i {i}')
 
     # Need to recombine the inspect_result_lat (also had loc) used in for loop to give all_combined_gifs
@@ -448,7 +448,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                 continue
             elif j != 0:
                 gifs_not_lat = pd.concat(
-                    [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False)
+                    [gifs_not_lat, row_nonlat_to_one_map], join='outer', sort=False, ignore_index=True)
     # now combine the lateralised+loc and non-lateralised(=only localised):
     # all_combined_gifs may still be None if after running above with some lateralised...
         # ...semiology or dominance, there is no lateralising data.
@@ -456,7 +456,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
         all_combined_gifs = gifs_not_lat
     elif all_combined_gifs is not None:
         all_combined_gifs = pd.concat(
-            [all_combined_gifs, gifs_not_lat], join='outer', sort=False)
+            [all_combined_gifs, gifs_not_lat], join='outer', sort=False, ignore_index=True)
 
     # here add the lateralising_but_not_localising data to the all_combined_gifs (or fixed, or fixed2):
     # if all_combined_gifs is None then use the unilteral_gifs
@@ -473,7 +473,7 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
                                                               lat_only_Right, lat_only_Left,
                                                               gifs_right, gifs_left)
             all_combined_gifs = pd.concat([all_combined_gifs, lat_only_df],
-                                          join='outer', sort=False)
+                                          join='outer', sort=False, ignore_index=True)
             # all_combined_gifs.append(lat_only_df) # equivalent to above concat.
 
     # if EpiNav doesn't sum the pixel intensities: (infact even if it does)
