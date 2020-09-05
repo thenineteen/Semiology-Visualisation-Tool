@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.3.1
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.5.1
 ## Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
 For research purposes only. Not for clinical use.
 
