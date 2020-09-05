@@ -38,7 +38,8 @@ test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
 dummy_map_df_dict = pd.read_excel(
     dummy_data_path,
     header=1,
-    sheet_name=gif_sheet_names
+    sheet_name=gif_sheet_names,
+    engine="openpyxl",
 )
 
 
@@ -188,6 +189,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             usecols='A:B',
             sheet_name='fixture_aphasia',
             index_col=0,
+            engine="openpyxl",
         )
         # fixture.sort_index(inplace=True)
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))

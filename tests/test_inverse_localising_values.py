@@ -39,7 +39,8 @@ test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
 dummy_map_df_dict = pd.read_excel(
     dummy_data_path,
     header=1,
-    sheet_name=gif_sheet_names
+    sheet_name=gif_sheet_names,
+    engine="openpyxl",
 )
 
 

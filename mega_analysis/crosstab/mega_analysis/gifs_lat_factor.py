@@ -16,7 +16,7 @@ def gifs_lat_factor(*gif_lat_file):
         gif_lat_file = pd.read_excel(
             excel_path,
             header=0,
-            sheet_name='Full GIF Map for Review '
+            sheet_name='Full GIF Map for Review ', engine="openpyxl",
         )
     gifs_right = gif_lat_file.loc[gif_lat_file['R'].notnull(), 'R'].copy()
     gifs_left = gif_lat_file.loc[gif_lat_file['L'].notnull(), 'L'].copy()

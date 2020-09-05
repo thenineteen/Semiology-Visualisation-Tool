@@ -35,7 +35,8 @@ def semiology_lateralisation_localisation(
 
 # load the spreadsheet with semiology and paper as multiindex:
     df_multiindex = pd.read_excel(
-        excel_path, nrows=n_rows, usecols="A:DP", header=1, index_col=[3, 0])
+        excel_path, nrows=n_rows, usecols="A:DP", header=1, index_col=[3, 0],
+        engine="openpyxl")
     df_clean = df_multiindex.dropna(axis=0, how='all')
 
 # rename the indices to ensure we are consistent no matter what they were called in excel

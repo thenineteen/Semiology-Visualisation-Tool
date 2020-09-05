@@ -57,6 +57,7 @@ def MEGA_ANALYSIS(
         nrows=n_rows,
         usecols=usecols,
         header=header,
+        engine="openpyxl",
     )
 
     # 0. CLEANUPS: remove empty rows and columns

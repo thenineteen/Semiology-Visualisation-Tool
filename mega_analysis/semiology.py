@@ -48,11 +48,12 @@ map_df_dict = pd.read_excel(
     excel_path,
     header=1,
     sheet_name=GIF_SHEET_NAMES,
+    engine="openpyxl",
 )
 gif_lat_file = pd.read_excel(
     excel_path,
     header=0,
-    sheet_name='Full GIF Map for Review '
+    sheet_name='Full GIF Map for Review ', engine="openpyxl",
 )
 
 # Read lateralities for GUI

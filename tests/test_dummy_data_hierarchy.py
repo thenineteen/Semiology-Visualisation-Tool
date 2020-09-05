@@ -38,12 +38,14 @@ test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
 map_df_dict = pd.read_excel(
     dummy_data_path,
     header=1,
-    sheet_name=gif_sheet_names
+    sheet_name=,
+    engine="openpyxl",
 )
 gif_lat_file = pd.read_excel(
     dummy_data_path,
     header=0,
-    sheet_name='Full GIF Map for Review '
+    sheet_name='Full GIF Map for Review ',
+    engine="openpyxl",
 )
 
 

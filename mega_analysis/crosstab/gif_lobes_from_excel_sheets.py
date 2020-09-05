@@ -18,7 +18,7 @@ def gif_lobes_from_excel_sheets():
         gif_parcellations = pd.read_excel(
             excel_path,
             header=None, usecols="A:B",
-            sheet_name=gif_lobe
+            sheet_name=gif_lobe, engine="openpyxl",
         )
         gif_parcellations.dropna(axis=0, how='any', inplace=True)
         gif_parcellations.dropna(axis=1, how='all', inplace=True)
