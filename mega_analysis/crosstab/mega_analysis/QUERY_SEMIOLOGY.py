@@ -146,7 +146,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
                     ignore_case=True,
                     semiology_dict_path=None,
                     col1='Reported Semiology',
-                    col2='Semiology Category',):
+                    col2='Semiology Category',
+                    **kwargs):
     """
     Search for key terms in both "reported semiology" and "semiology category" and return df if found in either.
     Removes all columns which are entirely null.
@@ -206,8 +207,25 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
         # turn these values to regexes too:
         values = regex_ignore_case(values)
 
-    for term in tqdm(values, desc='QUERY_SEMIOLOGY',
-                     bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.GREEN, Fore.RESET)):
+    if kwargs:
+        if len(kwargs) > 1:
+            raise Exception('too many tqdm kwargs')
+        for k, v in kwargs.items():
+            extra_desc = k + ': '
+            colour = Fore.LIGHTGREEN_EX
+        # option to not show tqdm e.g. for double Q_S for PET Hypermetabolism
+        if 'tqdm' in kwargs:
+            notqdm = True
+        if 'tqdm' not in kwargs:
+            notqdm = False
+    else:
+        extra_desc = ''
+        notqdm = False
+        colour = Fore.GREEN
+    description = extra_desc+'QUERY_SEMIOLOGY'
+    for term in (values if notqdm else tqdm(values, desc=description,
+                                            bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
+                 ):
         # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', 'This pattern has match groups')

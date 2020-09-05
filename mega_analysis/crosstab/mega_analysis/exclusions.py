@@ -17,7 +17,8 @@ def exclude_postictals(df):
     df2 = df.copy()
     post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
     post_ictal_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df2, semiology_term=post_ictals,
-                                                                          ignore_case=True, semiology_dict_path=None)
+                                                                          ignore_case=True, semiology_dict_path=None,
+                                                                          exlude_postictals=True)
     df2.drop(labels=post_ictal_inspection.index,
              axis='index', inplace=True, errors='ignore')
     logging.debug('Excluded post-ictal semiology in specific query')
@@ -47,12 +48,14 @@ def exclusions(df,
 
         pet_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df, semiology_term=pet,
                                                                        ignore_case=True, semiology_dict_path=None,
-                                                                       col1=col1, col2=col1)
+                                                                       col1=col1, col2=col1,
+                                                                       tqdm=False)
 
         hyper = ['Hyper']
         hyper_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df, semiology_term=hyper,
                                                                          ignore_case=True, semiology_dict_path=None,
-                                                                         col1=col1, col2=col1)
+                                                                         col1=col1, col2=col1,
+                                                                         exclude_PET_Hypermetabolism=True)
 
         # ans is df of the intersection of the above two, keep the index otherwise it is reset
         ans = hyper_inspection.reset_index().merge(
@@ -82,7 +85,8 @@ def exclusions(df,
                      'PET+ictal SPECT', 'Surgical finding, PET hypometabolism', 'fMRI+DTI', 'PET (interictal hypometabolism)']
         spect_pet_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df, semiology_term=spect_pet,
                                                                              ignore_case=True, semiology_dict_path=None,
-                                                                             col1=col1, col2=col2)
+                                                                             col1=col1, col2=col2,
+                                                                             exclude_SPECT_PET=True)
 
         # SPECT or PET and no other ground truth criteria:
         ans = spect_pet_inspection.reset_index().merge(
