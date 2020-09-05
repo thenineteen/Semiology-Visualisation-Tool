@@ -2,6 +2,7 @@ import mega_analysis
 from mega_analysis import Semiology, Laterality
 from pathlib import Path
 from tqdm import tqdm
+from colorama import Fore
 
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
@@ -13,7 +14,7 @@ list_of_terms = list(open(file, 'r'))
 #                  'No Semiology - Only Stimulation Studies',
 #                  'Non-Specific Aura', 'Olfactory-Gustatory', 'Palilalia', 'Psychic', 'Spitting', 'Vestibular', 'Vocalisation', 'Whistling']
 
-for term in tqdm(list_of_terms, desc='Neutral Only Semiologies'):
+for term in tqdm(list_of_terms, desc='Neutral Only Semiologies', bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.RED, Fore.RESET)):
     patient = Semiology(
         term.strip(),
         symptoms_side=Laterality.LEFT,
@@ -41,3 +42,5 @@ for term in tqdm(list_of_terms, desc='Neutral Only Semiologies'):
     heatmap = patient.get_num_datapoints_dict()
     print("\nSemiology: ", term)
     print('\nResult:', heatmap, '\n')
+
+
