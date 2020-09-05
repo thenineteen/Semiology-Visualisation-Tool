@@ -17,7 +17,7 @@ def all_localisations(excel_columns="R:DP"):
 
 # import the columns containing the localisation terms
     df_all_localisations = pd.read_excel(
-        excel_path, nrows=0, usecols=excel_columns, header=1)
+        excel_path, nrows=0, usecols=excel_columns, header=1, engine="openpyxl")
 
 # turn into a list
     all_localisations_list = list(df_all_localisations)
