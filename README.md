@@ -65,3 +65,6 @@ Data can be filtered based on the above ground truths, Bayesian priors and other
 6. Click on `OK` and restart Slicer when prompted
 7. To open the module, click on the magnifier and search for `Semiology`
 8. You might need to restart Slicer again, if prompted
+
+### Funding
+Wellcome/EPSRC Centre for Interventional and Surgical Sciences (WEISS) (203145Z/16/Z).
