@@ -6,14 +6,10 @@ import pandas as pd
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclude_cortical_stimulation, exclude_ET, exclude_paediatric_cases,
-    exclude_postictals, exclude_sEEG, exclude_seizure_free,
-    exclude_spontaneous_semiology, exclusions)
+    exclude_paediatric_cases, exclusions)
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
-    QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology,
-    all_semiology_terms, gif_lat_file, map_df_dict, mega_analysis_df,
-    melt_then_pivot_query, pivot_result_to_one_map)
+    QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology, map_df_dict)
 from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
 
 

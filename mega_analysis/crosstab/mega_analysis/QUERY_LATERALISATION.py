@@ -5,7 +5,7 @@ from tqdm import tqdm
 from colorama import Fore
 
 from .mapping import big_map, pivot_result_to_one_map
-from .group_columns import full_id_vars, lateralisation_vars, anatomical_regions
+from .group_columns import full_id_vars, lateralisation_vars
 
 
 # main function is QUERY_LATERALISATION

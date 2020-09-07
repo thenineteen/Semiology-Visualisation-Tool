@@ -1,16 +1,7 @@
 import unittest
 import pandas as pd
 from mega_analysis.semiology import mega_analysis_df
-from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclusions,
-    exclude_ET,
-    exclude_sEEG,
-    exclude_cortical_stimulation,
-    exclude_seizure_free,
-    exclude_paediatric_cases,
-    exclude_postictals,
-    exclude_spontaneous_semiology
-)
+
 
 CS = 'Cortical Stimulation (CS)'
 SS = 'Spontaneous Semiology (SS)'

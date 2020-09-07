@@ -18,7 +18,7 @@ from mega_analysis.crosstab.mega_analysis.lateralised_intensities import lateral
 
 # mapping to gif
 from mega_analysis.crosstab.mega_analysis.mapping import (
-    mapping, big_map, pivot_result_to_one_map
+    mapping, big_map
 )
 
 

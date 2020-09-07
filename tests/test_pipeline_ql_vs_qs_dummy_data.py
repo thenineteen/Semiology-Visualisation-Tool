@@ -6,10 +6,6 @@ import numpy as np
 
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
-from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclude_cortical_stimulation, exclude_ET, exclude_paediatric_cases,
-    exclude_postictals, exclude_sEEG, exclude_seizure_free,
-    exclude_spontaneous_semiology, exclusions)
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology,
