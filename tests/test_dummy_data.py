@@ -1,5 +1,6 @@
 import sys
 import unittest
+from pathlib import Path
 
 import pandas as pd
 
@@ -15,7 +16,7 @@ from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
 
 # define paths: note dummy data has a tab called test_counts
 # a hand crafted test fixture count
-repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
+repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path, mappings_folder = \
     file_paths(dummy_data=True)
 
 # Define the gif sheet names
@@ -27,7 +28,9 @@ test_df = df_read.loc[:, [col for col in df_read if 'Unnamed' not in col]]
 
 dummy_map_df_dict = {}
 for gif_sheet in gif_sheet_names:
-    dummy_map_df_dict[str(gif_sheet)] = pd.read_csv(dummy_data_path)
+    gif_map_csv = str(gif_sheet) + r'.csv'
+    dummy_map_df_dict[str(gif_sheet)] = pd.read_csv(
+        mappings_folder / gif_map_csv)
     # drop unnamed columns:
     dummy_map_df_dict[str(gif_sheet)] = dummy_map_df_dict[str(gif_sheet)].loc[:, [
         col for col in dummy_map_df_dict[str(gif_sheet)] if 'Unnamed' not in col]]
@@ -175,15 +178,9 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
         # new_all_combined_gifindexed.to_csv(r'D:\aphasia_fixture.csv')
         # load fixture:
-        fixture = pd.read_excel(
-            dummy_data_path,
-            header=0,
-            usecols='A:B',
-            sheet_name='fixture_aphasia',
-            index_col=0,
-            engine="openpyxl",
-        )
-        # fixture.sort_index(inplace=True)
+        fixture = pd.read_csv(repo_dir / 'tests' / 'fixture_aphasia.csv')
+        fixture = fixture.loc[:, [i for i in fixture if 'Unnamed' not in i]]
+
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))
 #         print('new_all_combined_gifindexed.shape is: ',
 #               new_all_combined_gifindexed.shape)
