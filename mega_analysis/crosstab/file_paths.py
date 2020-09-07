@@ -8,7 +8,7 @@ def file_paths(dummy_data=False, **kwargs):
     resources_dir = repo_dir / 'resources'
     test_dir = repo_dir / 'tests'
     if dummy_data:
-        excel_path = test_dir / '_dummy_data.xlsx'
+        excel_path = test_dir / '_dummy_data.csv'
         semiology_dict_path = test_dir / '_dummy_semiology_dictionary.yaml'
     elif "Beta" in kwargs:
         excel_path = resources_dir / 'syst_review_single_table.xlsx'
