@@ -22,21 +22,17 @@ repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path = \
 gif_sheet_names = gif_sheet_names()
 
 # Read Excel file only three times at initialisation
-test_df, _, _, _, _, _, _ = MEGA_ANALYSIS(
-    excel_data=dummy_data_path,
-    n_rows=100,
-    usecols="A:DH",
-    header=1,
-    exclude_data=False,
-    plot=True,
-)
+df_read = pd.read_csv(dummy_data_path)
+test_df = df_read.loc[:, [col for col in df_read if 'Unnamed' not in col]]
 
-dummy_map_df_dict = pd.read_excel(
-    dummy_data_path,
-    header=1,
-    sheet_name=gif_sheet_names,
-    engine="openpyxl",
-)
+dummy_map_df_dict = {}
+for gif_sheet in gif_sheet_names:
+    dummy_map_df_dict[str(gif_sheet)] = pd.read_csv(dummy_data_path)
+    # drop unnamed columns:
+    dummy_map_df_dict[str(gif_sheet)] = dummy_map_df_dict[str(gif_sheet)].loc[:, [
+        col for col in dummy_map_df_dict[str(gif_sheet)] if 'Unnamed' not in col]]
+    # NB dummy_map_df_dict['GIF TL'].dropna(how='all', axis=1).drop(columns=['Unnamed: 0', 'Unnamed: 1']).equals(bobo['GIF TL'])
+    # True
 
 
 class TestDummyDataDummyDictionary(unittest.TestCase):
