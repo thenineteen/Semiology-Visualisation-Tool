@@ -29,8 +29,8 @@ test_df = df_read.loc[:, [col for col in df_read if 'Unnamed' not in col]]
 dummy_map_df_dict = {}
 for gif_sheet in gif_sheet_names:
     gif_map_csv = str(gif_sheet) + r'.csv'
-    dummy_map_df_dict[str(gif_sheet)] = pd.read_csv(
-        mappings_folder / gif_map_csv)
+    dummy_map_df_dict[str(gif_sheet)] = \
+        pd.read_csv(mappings_folder / gif_map_csv, header=0, index_col=2)
     # drop unnamed columns:
     dummy_map_df_dict[str(gif_sheet)] = dummy_map_df_dict[str(gif_sheet)].loc[:, [
         col for col in dummy_map_df_dict[str(gif_sheet)] if 'Unnamed' not in col]]
@@ -180,15 +180,16 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         # load fixture:
         fixture = pd.read_csv(repo_dir / 'tests' / 'fixture_aphasia.csv')
         fixture = fixture.loc[:, [i for i in fixture if 'Unnamed' not in i]]
+        fixture.set_index('fixture Gif Parcellation', inplace=True)
 
         assert((new_all_combined_gifindexed.shape) == (fixture.shape))
 #         print('new_all_combined_gifindexed.shape is: ',
 #               new_all_combined_gifindexed.shape)
 #         print('fixture.shape.shape is: ', fixture.shape)
 
-        assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
-        assert(
-            new_all_combined_gifindexed.values.all() == fixture.values.all())
+        assert(new_all_combined_gifindexed.index == fixture.index).all()
+        assert(new_all_combined_gifindexed.values ==
+               fixture.values).all().all()
 #         print('\n6 query lat\n')
 
     def test_paed_default_query_semio(self):
