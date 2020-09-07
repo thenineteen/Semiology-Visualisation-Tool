@@ -51,6 +51,7 @@ def MEGA_ANALYSIS(
 
 
     Ali Alim-Marvasti July Aug 2019
+    CSV format Sept 2020
     """
     df = pd.read_excel(
         excel_data,
@@ -59,6 +60,9 @@ def MEGA_ANALYSIS(
         header=header,
         engine="openpyxl",
     )
+
+    # df_read = pd.read_csv(excel_data)
+    # df = df_read.loc[:, [col for col in df_read if 'Unnamed' not in col]]
 
     # 0. CLEANUPS: remove empty rows and columns
     logging.debug('\n\n0. DataFrame pre-processing and cleaning:')
