@@ -193,9 +193,8 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 #               new_all_combined_gifindexed.shape)
 #         print('fixture.shape.shape is: ', fixture.shape)
 
-        assert(new_all_combined_gifindexed.index.all() == fixture.index.all())
-        assert(
-            new_all_combined_gifindexed.values.all() == fixture.values.all())
+        assert(new_all_combined_gifindexed.index == fixture.index).all()
+        assert(new_all_combined_gifindexed.values == fixture.values).all()
 #         print('\n6 query lat\n')
 
     def test_paed_default_query_semio(self):
