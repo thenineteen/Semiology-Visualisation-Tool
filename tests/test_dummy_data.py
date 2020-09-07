@@ -16,7 +16,7 @@ from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
 
 # define paths: note dummy data has a tab called test_counts
 # a hand crafted test fixture count
-repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path, mappings_folder = \
+repo_dir, resources_dir, dummy_data_path, dummy_semiology_dict_path, test_mappings_folder = \
     file_paths(dummy_data=True)
 
 # Define the gif sheet names
@@ -30,7 +30,7 @@ dummy_map_df_dict = {}
 for gif_sheet in gif_sheet_names:
     gif_map_csv = str(gif_sheet) + r'.csv'
     dummy_map_df_dict[str(gif_sheet)] = \
-        pd.read_csv(mappings_folder / gif_map_csv, header=0, index_col=2)
+        pd.read_csv(test_mappings_folder / gif_map_csv, header=0, index_col=2)
     # drop unnamed columns:
     dummy_map_df_dict[str(gif_sheet)] = dummy_map_df_dict[str(gif_sheet)].loc[:, [
         col for col in dummy_map_df_dict[str(gif_sheet)] if 'Unnamed' not in col]]

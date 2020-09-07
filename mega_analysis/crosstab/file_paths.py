@@ -11,7 +11,7 @@ def file_paths(dummy_data=False, **kwargs):
     if dummy_data:
         Database_path = test_dir / '_dummy_data.csv'
         SemioDict_path = test_dir / '_dummy_semiology_dictionary.yaml'
-        mappings_folder = test_dir / 'mappings'
+        mappings_folder = test_dir / 'test_mappings'
     elif "Beta" in kwargs:
         Database_path = resources_dir / 'syst_review_single_table.xlsx'
         SemioDict_path = resources_dir / 'semiology_dictionary.yaml'
