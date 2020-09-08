@@ -28,7 +28,7 @@ class TestQuerySemiology(unittest.TestCase):
         path, inspect_result = self.query('Aphemia')
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
-        assert path is not None
+        assert path is None
 
     def test_blink(self):
         path, inspect_result = self.query('Blink')
