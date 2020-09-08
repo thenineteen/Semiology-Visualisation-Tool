@@ -175,7 +175,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             '(e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a '
             'highly probable epileptogenic zone'
             '\n\n'
-            'When unticked, concordant data are excxluded only if they are the only ground truth.'
+            'When unticked, concordant data are excluded only if they are the only ground truth.'
         )
 
         self.postSurgicalSzFreedomCheckBox.setChecked(True)
