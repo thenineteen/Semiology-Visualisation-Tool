@@ -251,6 +251,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
 
     try:
         num_query_loc = inspect_result["Localising"].sum()
+        logging.debug(
+            f'\n\nLocalisation based on: {num_query_loc.sum()} datapoints')
     except KeyError:
         # user tried a semiology which doesn't have a key in semiology_dictionary
         # run again and set semiology_dict to None
