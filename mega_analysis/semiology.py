@@ -62,6 +62,12 @@ neutral_also_path = resources_dir / 'semiologies_neutral_also.txt'
 semiologies_neutral_only = neutral_only_path.read_text().splitlines()
 semiologies_neutral_also = neutral_also_path.read_text().splitlines()
 
+# Read postictal lateralities for GUI
+postictal_neutral_only_path = resources_dir / 'semiologies_postictalsonly_neutral_only.txt'
+postictal_neutral_also_path = resources_dir / 'semiologies_postictalsonly_neutral_also.txt'
+postictal_semiologies_neutral_only = postictal_neutral_only_path.read_text().splitlines()
+postictal_semiologies_neutral_also = postictal_neutral_also_path.read_text().splitlines()
+
 
 def recursive_items(dictionary):
     """https://stackoverflow.com/a/39234154/3956024"""
@@ -225,9 +231,9 @@ class Semiology:
 
 def get_possible_lateralities(term) -> List[Laterality]:
     lateralities = [Laterality.LEFT, Laterality.RIGHT]
-    if term in semiologies_neutral_only:  # global variable
+    if term in semiologies_neutral_only or term in postictal_semiologies_neutral_only:  # global variable
         lateralities = [Laterality.NEUTRAL]
-    elif term in semiologies_neutral_also:  # global variable
+    if term in semiologies_neutral_also or term in postictal_semiologies_neutral_also:  # global variable
         lateralities.append(Laterality.NEUTRAL)
     return lateralities
 
