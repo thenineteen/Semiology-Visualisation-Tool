@@ -421,6 +421,10 @@
           "sucking",
           "((?<!postictal )(?<!no ))oro-? ?facial",
           "((?<!f)(?<!c))lick",
+          "Drinking",
+          "ictal drink",
+          " sip(ping)? ",
+          "ictal swallow",
         ]
       "Automatism - Automotor Manual":
         [
@@ -518,7 +522,6 @@
           "(?<!postictal )face rub",
         ]
       "Spitting": ["spit", "spitting"]
-      "Drinking": ["Drinking", "ictal drink", " sip(ping)? ", "ictal swallow"]
       "Gelastic":
         ["laughter", "(?<!no )laughing", "laugh", "(?<!no )gelastic", "giggl"]
       "Dacrystic":
@@ -559,12 +562,17 @@
       ]
     "Aphasia":
       [
-        "((?<!postictal )(?<!no ))aphasia",
+        "((?<!postictal )(?<!no )(?<!par))aphasia",
         "((?<!postictal )(?<!no ))mute",
         "no speech ?((?!disorder)(?!disturbance)(?!deficit)(?!problem))",
         "((?<!postictal )(?<!no ))unable to speak",
         "((?<!postictal )(?<!no ))unable to talk",
         "((?<!postictal )(?<!no ))speech arrest",
+        "(?<!no )aphemia",
+        "inarticulate",
+        "articulation",
+        "articulatory",
+        "(?<!no )anarthria",
       ]
     "Dysphasia":
       [
@@ -591,15 +599,6 @@
         "swear",
         "expletive",
       ]
-    "Aphemia":
-      [
-        "(?<!no )aphemia",
-        "inarticulate",
-        "articulation",
-        "articulatory",
-        "(?<!no )anarthria",
-      ]
-
   consciousness:
     "Dialeptic/LOA":
       [
