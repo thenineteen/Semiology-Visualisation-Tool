@@ -63,8 +63,14 @@ Data can be filtered based on the above ground truths, Bayesian priors and other
 4. Go to the menu `Edit` > `Application Settings` > `Modules` > `Additional module paths` > `Add` (you may have to click on the double arrows to the right of Additional Module Paths)
 5. Click on the directory to which you cloned this repository > click on the `slicer` folder and click `Select Folder`
 6. Click on `OK` and restart Slicer when prompted
-7. To open the module, click on the magnifier and search for `Semiology`
+7. To open the module, click on the magnifier and search for `Semiology`, then click on the module.
+It may take a few minutes to load for the first time.
 8. You might need to restart Slicer again, if prompted
+9. You can now click on the "Load data" button and the module will soon be ready for you to query the database.
+
+![Top image: step 7. Bottom image: location of "Load data" button for step 9.](https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/instructions2.jpg)
+
+
 
 ### Funding
 Wellcome/EPSRC Centre for Interventional and Surgical Sciences (WEISS) (203145Z/16/Z).
