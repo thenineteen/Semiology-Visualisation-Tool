@@ -21,17 +21,23 @@ def INVERSE_LOCALISING_VALUES(inspect_result):
 
     # set index
 
-    # sum each semiologies localising regions (e.g. FL and TL) and then divide by the said row's Localising
+    # Find semiology row's Localising sum and then divide by the sum of localising regions (e.g. FL and TL)
     # only change if ratio <1
     # new_inspect_result.loc[:, 'ratio'] = np.nan
     new_inspect_result.loc[:, 'ratio'] = new_inspect_result['Localising'] / \
         new_inspect_result[locs].sum(axis=1)
+    new_inspect_result = new_inspect_result.astype({'ratio': 'float'})
     gif_indices = (new_inspect_result['ratio'] < 1)
 
     if gif_indices.any():
+        # df.multiply (not series.multiply). ratio is series. axis=0 otherwise deafult is columns.
         inspect_result.loc[gif_indices, locs] = \
-            float(new_inspect_result.loc[gif_indices, 'ratio']) * \
-            new_inspect_result.loc[gif_indices, locs]
+            (new_inspect_result.loc[gif_indices, locs]).multiply(
+                new_inspect_result.loc[gif_indices, 'ratio'],
+                axis=0,
+        )
+        # (new_inspect_result.loc[gif_indices, 'ratio']) * \
+        # new_inspect_result.loc[gif_indices, locs]
 
     # new_inspect_result.drop(columns='ratio', inplace=True)
     return inspect_result

@@ -24,9 +24,10 @@ patient = Semiology(
     # symptoms_side=Laterality.LEFT,
     # dominant_hemisphere=Laterality.LEFT,
 
-    'Eye Nystagmus and Ocular Flutter',
+    'Tonic',
     symptoms_side=Laterality.LEFT,
     dominant_hemisphere=Laterality.LEFT,
+    inverse_localising_values=False,  # default is False
 )
 
 ###
