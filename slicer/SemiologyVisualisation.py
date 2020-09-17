@@ -1560,6 +1560,7 @@ class Query:
                 term=semiology.term,
                 symptoms_side=semiology.symptoms_side.value,
                 dominant_hemisphere=semiology.dominant_hemisphere,
+                granular=semiology.granular,
                 include_concordance=semiology.include_concordance,
                 include_seeg=semiology.include_seeg,
                 include_cortical_stimulation=semiology.include_cortical_stimulation,
@@ -1567,6 +1568,7 @@ class Query:
                 include_spontaneous_semiology=semiology.include_spontaneous_semiology,
                 include_only_paediatric_cases=semiology.include_only_paediatric_cases,
                 include_postictals=semiology.include_postictals,
+                inverse_localising_values=semiology.inverse_localising_values,
             )
             content.append(semiology_dict)
         return content
