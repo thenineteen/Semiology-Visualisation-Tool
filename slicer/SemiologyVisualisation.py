@@ -163,19 +163,19 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.postSurgicalSzFreedomCheckBox.setToolTip(
             'Engel Ia,b - ILAE 1,2 confirmed at a minimum follow-up of 12 months.'
             '\n\n'
-            'When unticked, seizure-free cases are excluded if they are the only ground truth.'
+            'When unticked, seizure-free cases are excluded if they are the only ground truth'
         )
         self.invasiveEegCheckBox.setToolTip(
             'Invasive EEG recording and/or electrical stimulation, mapping seizure semiology.'
             '\n\n'
-            'When unticked, stereotactic EEG cases are excluded only if they are the only ground truth.'
+            'When unticked, stereotactic EEG cases are excluded only if they are the only ground truth'
         )
         self.concordanceCheckBox.setToolTip(
             'Multimodal concordance between brain imaging and neurophysiology '
             '(e.g. PET, SPECT, MEG, EEG, fMRI, etc.) pointing towards a '
             'highly probable epileptogenic zone'
             '\n\n'
-            'When unticked, concordant data are excluded only if they are the only ground truth.'
+            'When unticked, concordant data are excluded only if they are the only ground truth'
         )
 
         self.postSurgicalSzFreedomCheckBox.setChecked(True)
@@ -198,19 +198,19 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             'When the paper pre-selects samples of patients based on their established epileptogenic zone '
             '(site of surgical resection) or seizure onset zone (neurophysiological/anatomical), and '
             'describes the related seizure semiology - e.g. articles looking at TLE, FLE, OLE. \n\n'
-            'When unticked, ALL epilepsy topology data are excluded, EVEN if there are other approaches.'
+            'When unticked, ALL epilepsy topology data are excluded, EVEN if there are other approaches'
         )
         self.seizureSemiologyCheckBox.setToolTip(
             'When the paper pre-selects a sample of patients based on their seizure semiology '
             '(e.g. nose-wiping, gelastic, ictal kissing), or '
             'reports on a cohort of unselected patients with epilepsy, or '
             'pre-selects based on other non-topological factors (specific techniques or conditions e.g. FCD). \n\n'
-            'When unticked, ALL spontaneous semiology cases are excluded, even if there are other approaches.'
+            'When unticked, ALL spontaneous semiology cases are excluded, even if there are other approaches'
         )
         self.brainStimulationCheckBox.setToolTip(
             'When the paper describes the semiology elicited by electrical brain stimulation, '
             'in the context of pre- and/or intra-operative functional mapping. \n\n'
-            'When unticked, electrical stimulation cases are only excluded if they are the ONLY ground truth.'
+            'When unticked, electrical stimulation cases are only excluded if they are the ONLY ground truth'
         )
 
         self.epilepsyTopologyCheckBox.setChecked(True)
@@ -248,7 +248,22 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.granularCheckBox = qt.QCheckBox(
             'Granular as reported (non postcode)')
         self.granularCheckBox.setChecked(True)
+        self.granularCheckBox.toggled.connect(self.onGranularCheckBox)
         dataBaseTabLayout.addWidget(self.granularCheckBox)
+
+        self.inverseLocalisingCheckBox = qt.QCheckBox(
+            'Use inverse localising spread values')
+        self.inverseLocalisingCheckBox.setToolTip(
+            'Reduce the localising-values in the Semio2Brain database in a way'
+            ' inversely proportional to the number of brain regions to which the'
+            ' semiology of interest localised.'
+            ' This option provides an inverse variance weighting relative to'
+            ' the spread of localisation, favouring semiologies which are more'
+            ' (uni)-focal.'
+            ' This option is only available when using the "granular postcode'
+            ' hierarchy reversal" option.'
+        )
+        dataBaseTabLayout.addWidget(self.inverseLocalisingCheckBox)
 
         return dataBaseTabWidget
 
@@ -534,6 +549,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
                 include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
                 include_only_paediatric_cases=self.paediatricCheckBox.isChecked(),
+                inverse_localising_values=self.inverseLocalisingCheckBox.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
@@ -780,6 +796,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         name = self.gifComboBoxItemsToLabels[self.segmentsComboBox.currentText]
         self.parcellation.jumpToStructure(name)
 
+    def onGranularCheckBox(self):
+        if self.granularCheckBox.isChecked():
+            self.inverseLocalisingCheckBox.setEnabled(True)
+        else:
+            self.inverseLocalisingCheckBox.setChecked(False)
+            self.inverseLocalisingCheckBox.setEnabled(False)
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
