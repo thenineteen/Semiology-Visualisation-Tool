@@ -120,15 +120,21 @@ def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
                                                                     lat_only_Left)
     # now adjust for the already calculated "proportion_lateralising = 1" locs:
     loc_adjust = full_row['Localising'].sum()
-    R_to_L_ratio = lat_only_Right / lat_only_Left
+    if lat_only_Left == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_left
+        L_to_R_ratio = 0
+    elif lat_only_Right == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_right
+        R_to_L_ratio = 0
+    else:  # DEFAULT: neither are zero as lateralising exceeded loc for this function to be called in first place
+        R_to_L_ratio = lat_only_Right / lat_only_Left
+        L_to_R_ratio = lat_only_Left / lat_only_Right
 
     if isin_left:  # left gifs are smaller than right and were reduced.
         lat_only_Right = lat_only_Right - loc_adjust
-        # left gifs were smaller and so less used from the lateralising, more left for lat_excess:
-        lat_only_Left = lat_only_Left - (loc_adjust * (1/R_to_L_ratio))
+        # left gifs were smaller and so less used from the lateralising, more remain for lat_excess:
+        lat_only_Left = lat_only_Left - (loc_adjust * L_to_R_ratio)
         # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
 
-    else:  # invert above
+    elif isin_right:  # invert above
         lat_only_Left = lat_only_Left - loc_adjust
         lat_only_Right = lat_only_Right - (loc_adjust * (R_to_L_ratio))
 
