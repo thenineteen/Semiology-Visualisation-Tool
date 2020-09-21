@@ -145,10 +145,11 @@ def exclude_cortical_stimulation(df):
     will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
     if they don't, then needs a manual check. See tests.
     """
-    df.loc[df[SEEG_ES].str.contains(
-        'ES', case=False, na=False), SEEG_ES] = np.nan
+    df_excl = df.copy()
+    mask_string = df_excl[SEEG_ES].str.contains('ES', case=False, na=False)
+    df_excl.loc[mask_string, SEEG_ES] = np.nan
     subset = [POST_OP, CONCORDANT, SEEG_ES]
-    df_exclusions_CES = df.dropna(
+    df_exclusions_CES = df_excl.dropna(
         subset=subset, thresh=1, axis=0, inplace=False)
     return df_exclusions_CES
     # # second part for test later
