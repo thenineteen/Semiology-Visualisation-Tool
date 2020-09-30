@@ -18,7 +18,7 @@ def exclude_postictals(df):
     post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
     post_ictal_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df2, semiology_term=post_ictals,
                                                                           ignore_case=True, semiology_dict_path=None,
-                                                                          exlude_postictals=True)
+                                                                          exclude_postictals=True)
     df2.drop(labels=post_ictal_inspection.index,
              axis='index', inplace=True, errors='ignore')
     logging.debug('Excluded post-ictal semiology in specific query')
