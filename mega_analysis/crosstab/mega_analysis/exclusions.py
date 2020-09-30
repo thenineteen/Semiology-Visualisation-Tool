@@ -21,7 +21,7 @@ def exclude_postictals(df):
                                                                           exclude_postictals=True)
     df2.drop(labels=post_ictal_inspection.index,
              axis='index', inplace=True, errors='ignore')
-    logging.debug('Excluded post-ictal semiology in specific query')
+    # logging.debug('Excluded post-ictal semiology in specific query')
     return df2
 
 
@@ -204,3 +204,18 @@ def only_paediatric_cases(df):
     PAED = 'paediatric subgroup <7 years (0-6 yrs) y/n'
     df_only_paeds = df.loc[(df[PAED] == 'y'), :]
     return df_only_paeds
+
+
+def only_postictal_cases(df):
+    """
+    Only include postictal semiology.
+    This is an individual semiology option to use with any semiology beginning with "postictal" e.g. in the SemioDict YAML file.
+    """
+    df2 = df.copy()
+    post_ictals = ['post-ictal', 'postictal', 'post ictal', 'post_ictal']
+    post_ictal_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df2, semiology_term=post_ictals,
+                                                                          ignore_case=True, semiology_dict_path=None,
+                                                                          only_postictals=True)
+    only_postictal_cases = df2.loc[post_ictal_inspection.index, :]
+    # logging.debug('Included only postictal semiology in query')
+    return only_postictal_cases
