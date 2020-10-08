@@ -22,6 +22,7 @@ from .crosstab.mega_analysis.exclusions import (
     exclude_postictals,
     exclusions,
     only_paediatric_cases,
+    only_postictal_cases,
 )
 from .crosstab.mega_analysis.mapping import pivot_result_to_one_map
 from .crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
@@ -131,8 +132,26 @@ class Semiology:
         self.possible_lateralities = possible_lateralities
         self.granular = granular
         self.inverse_localising_values = inverse_localising_values
+        if self.is_postictals_only():
+            self.include_postictals = True
+            self.include_only_postictals = True
+
+    def is_postictals_only(self) -> bool:
+        postictals = (
+            postictal_semiologies_neutral_only
+            + postictal_semiologies_neutral_also
+        )
+        return self.term in postictals
 
     def remove_exclusions(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not self.include_postictals:
+            df = exclude_postictals(df)
+        if self.include_only_postictals:
+            df = only_postictal_cases(df)
+        if self.include_only_paediatric_cases:
+            df = only_paediatric_cases(df)
+        else:
+            df = exclude_paediatric_cases(df)
         if not self.include_concordance:
             df = exclusions(df, CONCORDANCE=True)
         if not self.include_seizure_freedom:
@@ -145,12 +164,6 @@ class Semiology:
             df = exclude_cortical_stimulation(df)
         if not self.include_spontaneous_semiology:
             df = exclude_spontaneous_semiology(df)
-        if not self.include_postictals:
-            df = exclude_postictals(df)
-        if self.include_only_paediatric_cases:
-            df = only_paediatric_cases(df)
-        else:
-            df = exclude_paediatric_cases(df)
         return df
 
     def query_semiology(self) -> pd.DataFrame:
@@ -230,9 +243,9 @@ class Semiology:
 
 def get_possible_lateralities(term) -> List[Laterality]:
     lateralities = [Laterality.LEFT, Laterality.RIGHT]
-    if term in semiologies_neutral_only or term in postictal_semiologies_neutral_only:  # global variable
+    if term in (semiologies_neutral_only + postictal_semiologies_neutral_only):
         lateralities = [Laterality.NEUTRAL]
-    if term in semiologies_neutral_also or term in postictal_semiologies_neutral_also:  # global variable
+    if term in (semiologies_neutral_also + postictal_semiologies_neutral_also):
         lateralities.append(Laterality.NEUTRAL)
     return lateralities
 
