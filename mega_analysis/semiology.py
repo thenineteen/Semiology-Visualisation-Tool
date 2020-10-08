@@ -132,9 +132,9 @@ class Semiology:
         self.possible_lateralities = possible_lateralities
         self.granular = granular
         self.inverse_localising_values = inverse_localising_values
-        if self.is_postictals_only():
+        self.include_only_postictals = self.is_postictals_only()
+        if self.include_only_postictals:
             self.include_postictals = True
-            self.include_only_postictals = True
 
     def is_postictals_only(self) -> bool:
         postictals = (
