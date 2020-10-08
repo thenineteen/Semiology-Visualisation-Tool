@@ -405,9 +405,10 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
     def test_only_postictal_cases(self):
         """
-        Include only the single postictal aphasia.
+        Include only the single postictal aphasia. Note Dominant in dummy data.
         cf test_postictal_exclusions
         """
+        # Low level test
         df_postictal = only_postictal_cases(self.df)
         query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
             df_postictal,
@@ -419,6 +420,31 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         )
         assert(query['Localising'].sum() == 1)
         assert(query['Lateralising'].sum() == 1)
+
+        # High level test
+        patient = Semiology('aphasia', Laterality.NEUTRAL,
+                            dominant_hemisphere=Laterality.LEFT)
+        patient.data_frame = self.df
+        patient.include_postictals = True
+        patient.include_only_postictals = True
+        patient.granular = True
+
+        lat_allgifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+        lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_allgifs.set_index(
+            'Gif Parcellations', inplace=True)
+
+        # note that dominant_hemisphere == Laterality.LEFT as set above. Just to clarify results change if dominace changes. Also 1's become 2's if not granular.
+        assert (lat_allgifs.loc[164, 'pt #s'] == 1)
+        assert (lat_allgifs.loc[166, 'pt #s'] == 1)
+        assert (lat_allgifs.loc[163, 'pt #s'] == 0)
+        assert (lat_allgifs.loc[165, 'pt #s'] == 0)
+
+        lat_allgifs = lat_allgifs.loc[lat_allgifs['pt #s'] != 0, :]
+        SVT_output = patient.get_num_datapoints_dict()
+        assert SVT_output == dict((lat_allgifs)['pt #s'])
 
 
 # for debugging with __init__():
