@@ -6,7 +6,7 @@ import pandas as pd
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclude_paediatric_cases, exclusions)
+    exclude_paediatric_cases, exclusions, only_postictal_cases)
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology, map_df_dict)
@@ -402,6 +402,49 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
         #   lat_and_loc adds none [/]
         assert (lat_allgifs.loc[155, 'pt #s'] == 301)
+
+    def test_only_postictal_cases(self):
+        """
+        Include only the single postictal aphasia. Note Dominant in dummy data.
+        cf test_postictal_exclusions
+        """
+        # Low level test
+        df_postictal = only_postictal_cases(self.df)
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
+            df_postictal,
+            semiology_term=['aphasia'],
+            ignore_case=True,
+            semiology_dict_path=None,
+            col1='Reported Semiology',
+            col2='Semiology Category',
+        )
+        assert(query['Localising'].sum() == 1)
+        assert(query['Lateralising'].sum() == 1)
+
+        # High level test
+        patient = Semiology('aphasia', Laterality.NEUTRAL,
+                            dominant_hemisphere=Laterality.LEFT)
+        patient.data_frame = self.df
+        patient.include_postictals = True
+        patient.include_only_postictals = True
+        patient.granular = True
+
+        lat_allgifs = patient.query_lateralisation(
+            map_df_dict=dummy_map_df_dict)
+        lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
+            {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
+        lat_allgifs.set_index(
+            'Gif Parcellations', inplace=True)
+
+        # note that dominant_hemisphere == Laterality.LEFT as set above. Just to clarify results change if dominace changes. Also 1's become 2's if not granular.
+        assert (lat_allgifs.loc[164, 'pt #s'] == 1)
+        assert (lat_allgifs.loc[166, 'pt #s'] == 1)
+        assert (lat_allgifs.loc[163, 'pt #s'] == 0)
+        assert (lat_allgifs.loc[165, 'pt #s'] == 0)
+
+        lat_allgifs = lat_allgifs.loc[lat_allgifs['pt #s'] != 0, :]
+        SVT_output = patient.get_num_datapoints_dict()
+        assert SVT_output == dict((lat_allgifs)['pt #s'])
 
 
 # for debugging with __init__():
