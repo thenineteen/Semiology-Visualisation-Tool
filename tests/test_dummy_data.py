@@ -6,7 +6,7 @@ import pandas as pd
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
 from mega_analysis.crosstab.mega_analysis.exclusions import (
-    exclude_paediatric_cases, exclusions)
+    exclude_paediatric_cases, exclusions, only_postictal_cases)
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology, map_df_dict)
@@ -402,6 +402,23 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         #   lat_not_loc gives 1 (CL) (See test_lat_not_loc_1)[/], and
         #   lat_and_loc adds none [/]
         assert (lat_allgifs.loc[155, 'pt #s'] == 301)
+
+    def test_only_postictal_cases(self):
+        """
+        Include only the single postictal aphasia.
+        cf test_postictal_exclusions
+        """
+        df_postictal = only_postictal_cases(self.df)
+        query, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(
+            df_postictal,
+            semiology_term=['aphasia'],
+            ignore_case=True,
+            semiology_dict_path=None,
+            col1='Reported Semiology',
+            col2='Semiology Category',
+        )
+        assert(query['Localising'].sum() == 1)
+        assert(query['Lateralising'].sum() == 1)
 
 
 # for debugging with __init__():
