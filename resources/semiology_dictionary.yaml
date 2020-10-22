@@ -338,8 +338,6 @@
           "pedalling",
           "pedaling",
         ]
-      "Behavioural Arrest or Akinesis":
-        ["Behaviou?r(?:al)? Arrest", "psychomotor arrest", "akinetic"]
       "Complex Behavioural": # cf e.g. 'fearful expression' and 'fearful behaviour'
         [
           "Other Complex Motor",
@@ -627,6 +625,8 @@
         "day-? ?dreaming",
         "trance",
         "(?<!no )loss of contact",
+        "Behaviou?r(?:al)? Arrest",
+        "psychomotor arrest",
       ]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC":
