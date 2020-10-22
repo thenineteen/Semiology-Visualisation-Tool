@@ -212,6 +212,7 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
             raise Exception('too many tqdm kwargs')
         for k, v in kwargs.items():
             extra_desc = k + ': '
+            extra_desc2 = ''
             colour = Fore.LIGHTGREEN_EX
         # option to not show tqdm e.g. for double Q_S for PET Hypermetabolism
         if 'tqdm' in kwargs:
@@ -220,9 +221,11 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
             notqdm = False
     else:
         extra_desc = ''
+        extra_desc2 = ' (' + str(semiology_term) + ')'
         notqdm = False
         colour = Fore.GREEN
-    description = extra_desc+'QUERY_SEMIOLOGY'
+    description = extra_desc+'QUERY_SEMIOLOGY'+extra_desc2
+
     for term in (values if notqdm else tqdm(values, desc=description,
                                             bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
                  ):
