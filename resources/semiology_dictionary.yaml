@@ -124,14 +124,19 @@
         "constriction",
         "pilomotor",
       ]
-    "Olfactory-Gustatory":
+    "Olfactory":
       [
-        "Olfactory-? ?Gustatory",
+        "Olfactory",
         "olfactory",
+        "(?<!no )((odd)|(unusual)) smell",
+        "burn(ing)? (aura)|(sens[a-z]*)",
+        "(?<!no ) smell",
+      ]
+    "Gustatory":
+      [
+        "Gustatory",
         "gustatory",
         "Aura \\(Gustatory\\)",
-        "(?<!no )odd smell",
-        "burn(ing)? (aura)|(sens[a-z]*)",
         "(metallic)?.?taste",
         "(?<!no )strange taste",
         "((?<!no )(?<!denies )(?<!deny ))odd taste",
@@ -141,7 +146,6 @@
         "(?<!no )unpleasant taste",
         "(?<!no )funny taste",
         "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) ?taste",
-        "(?<!no )unusual smell",
       ]
     "Auditory":
       [
