@@ -347,7 +347,7 @@
           "Complex Behaviour",
           "complicated motor",
           "psychomotor \\(?agitation\\)?",
-          "aggressive",
+          "aggressi",
           "biting",
           "Motor \\(Complex\\)",
           "looking around",
@@ -460,8 +460,7 @@
           "foot autom",
           "pedal((?!ing)(?!ling)) automatism",
         ]
-      "Automatisms Combination - Manual LowerLimb Oral":
-        [
+      "Automatisms Combination - Manual LowerLimb Oral": [
           "(?<!postictal )upper limb autom",
           "(?<!postictal )Automatisms? \\(Upper Limb\\)",
           "(?<!postictal )Automatisms? \\(UL\\)",
@@ -494,6 +493,7 @@
           "sucking",
           "((?<!postictal )(?<!no ))oro-? ?facial",
           "((?<!f)(?<!c))lick",
+          "automatism", # this collects 130 extra combined cases from Fogarasi et al Age-dependent seizure semiology in temporal lobe epilepsy. Epilepsia 2007.
         ]
       "Blink":
         [
