@@ -14,12 +14,13 @@ Dysphasia
 Epigastric
 Fear-Anxiety
 Gelastic
+Gustatory
 Ictal Pout
 Ictal Speech
 LOC
 No Semiology - Only Stimulation Studies
 Non-Specific Aura
-Olfactory-Gustatory
+Olfactory
 Palilalia
 Psychic
 Spitting

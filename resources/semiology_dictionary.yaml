@@ -128,6 +128,7 @@
       [
         "Olfactory",
         "olfactory",
+        "Aura \\(Olfactory\\)",
         "(?<!no )((odd)|(unusual)) smell",
         "burn(ing)? (aura)|(sens[a-z]*)",
         "(?<!no ) smell",
