@@ -4,8 +4,9 @@ Automatism - Automotor Manual
 Automatism - Lower Limb - Non Hypermotor
 Behavioural Arrest or Akinesis
 Blink
+Complex Ocular Flutter
 Dystonic
-Eye Nystagmus and Ocular Flutter
+Eye Nystagmus
 Head or Body Turn
 Hypermotor
 Hypomotor

@@ -276,8 +276,8 @@
           "(?<!no )gaze deviate",
           "eye turn",
         ]
-      "Eye Nystagmus and Ocular Flutter":
-        ["Nystagmus", "ocular flutter", "Complex Ocular"]
+      "Eye Nystagmus": ["Nystagmus"]
+      "Complex Ocular Flutter": ["ocular flutter", "complex ocular"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
