@@ -2,5 +2,4 @@ Somatosensory
 Eye Version
 Asymmetric Tonic
 Head Version
-Clonic
 Nose-Wiping

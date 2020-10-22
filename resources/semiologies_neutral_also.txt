@@ -3,6 +3,7 @@ Auditory
 Automatism - Automotor Manual
 Automatism - Lower Limb - Non Hypermotor
 Blink
+Clonic
 Complex Ocular Flutter
 Dystonic
 Eye Nystagmus
