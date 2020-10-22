@@ -74,6 +74,7 @@
         "erotic",
         "de-?personali[sz]ation",
         "de-?reali[sz]ation",
+        "autoscopic",
         "experiential",
         "affective",
         "Deja vecu",
@@ -573,11 +574,6 @@
         "((?<!postictal )(?<!no ))unable to speak",
         "((?<!postictal )(?<!no ))unable to talk",
         "((?<!postictal )(?<!no ))speech arrest",
-        "(?<!no )aphemia",
-        "inarticulate",
-        "articulation",
-        "articulatory",
-        "(?<!no )anarthria",
       ]
     "Dysphasia":
       [
@@ -592,6 +588,12 @@
         "((?<!postictal )(?<!no ))speech production problem",
         "((?<!postictal )(?<!no ))incomprehensible speech",
         "((?<!postictal )(?<!no ))incoherent speech",
+        "(?<!no )aphemia",
+        "(?<!no )anarthria",
+        "inarticulate",
+        "articulation",
+        "articulatory",
+        "paraphasia",
       ]
     "Ictal Speech":
       [
