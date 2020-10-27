@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.5.1
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.6.1
 ## Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 310 included original journal papers
 For research purposes only. Not for clinical use.
 
@@ -19,7 +19,7 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: Semio2Brain Database  v 1.1.1 (19th Aug 2020, 310 studies)
+### 1. Resources: Semio2Brain Database  v 1.2.1 (19th Aug 2020, 310 studies)
 v 1.0.0 (early Aug 2020)
 100% of the Data: 4,649 patients' data from 312 included original journal papers
 #### Until the 5th Aug 2020 the Beta version was used, named syst_review_single_table - 47% (146/312 included studies integrated)
@@ -39,7 +39,7 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 * If new data is to be added, must include paediatric under 7 label, and if postictal, must be typed "postictal" and not in any other format.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.0.1
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.1.1
 [See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 
 * Aug 2020:v 1.0.1 56+1 semiology categories
