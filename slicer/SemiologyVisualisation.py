@@ -972,6 +972,9 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
             if colorNode.GetName() not in COLORMAPS:
                 slicer.mrmlScene.RemoveNode(colorNode)
 
+    def getPythonConsoleWidget(self):
+        return slicer.util.mainWindow().pythonConsole().parent()
+
     def installRepository(self):
         repoDir = Path(__file__).parent.parent
         import sys
@@ -983,9 +986,13 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
                     import mega_analysis
             except ImportError:
                 requirementsPath = repoDir / 'requirements.txt'
+                console = self.getPythonConsoleWidget()
+                pythonVisible = console.visible
+                console.setVisible(True)
                 slicer.util.pip_install(
                     f'-r {requirementsPath}'
                 )
+                console.setVisible(pythonVisible)
             import matplotlib
             matplotlib.use('agg')
 

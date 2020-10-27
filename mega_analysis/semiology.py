@@ -7,7 +7,6 @@ from typing import Dict, List, Optional
 import yaml
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 
 from .crosstab.file_paths import file_paths
 from .crosstab.hierarchy_class import Hierarchy
@@ -252,12 +251,13 @@ def get_possible_lateralities(term) -> List[Laterality]:
 
 def combine_semiologies(
         semiologies: List[Semiology],
-        normalise: bool = True,
+        normalise_method: Optional[str] = 'minmax',
+        normalise_zero_axis: bool = True,
         ) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
-    if normalise:
-        df = normalise_semiologies_df(df)
-    combined_df = combine_semiologies_df(df, normalise=normalise)
+    if normalise_method is not None:
+        df = normalise_semiologies_df(df, method=normalise_method)
+    combined_df = combine_semiologies_df(df, normalise=normalise_zero_axis)
     return combined_df
 
 
@@ -290,12 +290,20 @@ def get_df_from_dicts(
     return df
 
 
-def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
+def normalise_semiologies_df(
+        semiologies_df: pd.DataFrame,
+        method='minmax',
+        ) -> pd.DataFrame:
     table = np.array(semiologies_df)
     data = table.T
-    scaler = MinMaxScaler((0, 100))
-    scaler.fit(data)
-    normalised = scaler.transform(data).T
+    if method == 'minmax':
+        from sklearn.preprocessing import MinMaxScaler
+        scaler = MinMaxScaler((0, 100))
+        scaler.fit(data)
+        normalised = scaler.transform(data).T
+    elif method == 'softmax':
+        from scipy.special import softmax
+        normalised = softmax(semiologies_df, axis=1)
     normalised_df = pd.DataFrame(
         normalised,
         columns=semiologies_df.columns,
