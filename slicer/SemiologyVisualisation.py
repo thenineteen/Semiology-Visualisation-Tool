@@ -387,11 +387,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
-        self.minmaxRadioButton.setChecked(True)
         normalisationLayout.addWidget(self.minmaxRadioButton)
 
-        self.softmaxRadioButton = qt.QRadioButton('Soft argmax')
+        self.softmaxRadioButton = qt.QRadioButton('Softmax')
         normalisationLayout.addWidget(self.softmaxRadioButton)
+
+        self.proportionsRadioButton = qt.QRadioButton('Proportions')
+        self.proportionsRadioButton.setChecked(True)
+        normalisationLayout.addWidget(self.proportionsRadioButton)
 
         return advancedTabWidget
 
@@ -589,7 +592,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
-                    dataFrame = get_df_from_semiologies(semiologies)
+                    if self.minmaxRadioButton.isChecked():
+                        method = 'minmax'
+                    elif self.softmaxRadioButton.isChecked():
+                        method = 'softmax'
+                    elif self.proportionsRadioButton.isChecked():
+                        method = 'proportions'
+                    dataFrame = get_df_from_semiologies(semiologies, method=method)
                     scores = Scores(dataFrame)
                     cache[hashedQuery] = scores.toDict()
                     self.logic.writeCache(cache)
@@ -711,15 +720,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 method = 'minmax'
             elif self.softmaxRadioButton.isChecked():
                 method = 'softmax'
+            elif self.proportionsRadioButton.isChecked():
+                method = 'proportions'
             normalisedDataFrame = normalise_semiologies_df(
                 semiologiesDataFrame,
                 method=method,
             )
             combinedDataFrame = combine_semiologies_df(
-                normalisedDataFrame, normalise=True)
+                normalisedDataFrame, method=method, normalise=True)
         else:
             combinedDataFrame = combine_semiologies_df(
-                semiologiesDataFrame, normalise=False)
+                semiologiesDataFrame, method=method, normalise=False)
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
@@ -825,6 +836,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             self.inverseLocalisingCheckBox.setChecked(False)
             self.inverseLocalisingCheckBox.setEnabled(False)
+
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
