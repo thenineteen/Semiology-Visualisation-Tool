@@ -368,13 +368,30 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         advancedTabWidget = qt.QWidget()
         advancedTabLayout = qt.QVBoxLayout(advancedTabWidget)
 
+        # Cache
+        cacheGroupBox = qt.QGroupBox('Cache')
+        advancedTabLayout.addWidget(cacheGroupBox)
+        cacheLayout = qt.QVBoxLayout(cacheGroupBox)
+
         self.useCacheCheckBox = qt.QCheckBox('Use cached queries if available')
         self.useCacheCheckBox.setChecked(False)
-        advancedTabLayout.addWidget(self.useCacheCheckBox)
+        cacheLayout.addWidget(self.useCacheCheckBox)
 
         self.clearCacheButton = qt.QPushButton('Clear cache')
         self.clearCacheButton.clicked.connect(self.logic.clearCache)
-        advancedTabLayout.addWidget(self.clearCacheButton)
+        cacheLayout.addWidget(self.clearCacheButton)
+
+        # Normalisation
+        normalisationGroupBox = qt.QGroupBox('Normalisation function')
+        advancedTabLayout.addWidget(normalisationGroupBox)
+        normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
+
+        self.minmaxRadioButton = qt.QRadioButton('Rescaling')
+        self.minmaxRadioButton.setChecked(True)
+        normalisationLayout.addWidget(self.minmaxRadioButton)
+
+        self.softmaxRadioButton = qt.QRadioButton('Soft argmax')
+        normalisationLayout.addWidget(self.softmaxRadioButton)
 
         return advancedTabWidget
 
@@ -690,8 +707,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
         normalise = len(semiologiesDataFrame) > 1
         if normalise:
+            if self.minmaxRadioButton.isChecked():
+                method = 'minmax'
+            elif self.softmaxRadioButton.isChecked():
+                method = 'softmax'
             normalisedDataFrame = normalise_semiologies_df(
-                semiologiesDataFrame)
+                semiologiesDataFrame,
+                method=method,
+            )
             combinedDataFrame = combine_semiologies_df(
                 normalisedDataFrame, normalise=True)
         else:
