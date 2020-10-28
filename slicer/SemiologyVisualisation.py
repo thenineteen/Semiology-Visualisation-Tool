@@ -678,7 +678,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def updateColors(self):
         from mega_analysis.semiology import (
-            normalise_semiologies_df,
             combine_semiologies_df,
         )
 
@@ -688,15 +687,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
 
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
-        normalise = len(semiologiesDataFrame) > 1
-        if normalise:
-            # normalisedDataFrame = normalise_semiologies_df(
-            #     semiologiesDataFrame)
-            combinedDataFrame = combine_semiologies_df(
-                semiologiesDataFrame, normalise=True)
-        else:
-            combinedDataFrame = combine_semiologies_df(
-                semiologiesDataFrame, normalise=False)
+        combinedDataFrame = combine_semiologies_df(
+            semiologiesDataFrame, normalise=True)
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
