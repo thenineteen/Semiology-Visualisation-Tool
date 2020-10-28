@@ -64,8 +64,10 @@ semiologies_neutral_only = neutral_only_path.read_text().splitlines()
 semiologies_neutral_also = neutral_also_path.read_text().splitlines()
 
 # Read postictal lateralities for GUI
-postictal_neutral_only_path = resources_dir / 'semiologies_postictalsonly_neutral_only.txt'
-postictal_neutral_also_path = resources_dir / 'semiologies_postictalsonly_neutral_also.txt'
+postictal_neutral_only_path = resources_dir / \
+    'semiologies_postictalsonly_neutral_only.txt'
+postictal_neutral_also_path = resources_dir / \
+    'semiologies_postictalsonly_neutral_also.txt'
 postictal_semiologies_neutral_only = postictal_neutral_only_path.read_text().splitlines()
 postictal_semiologies_neutral_also = postictal_neutral_also_path.read_text().splitlines()
 
@@ -114,7 +116,7 @@ class Semiology:
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             inverse_localising_values: bool = False,
-            ):
+    ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -238,7 +240,11 @@ class Semiology:
             in zip(labels, patients)
             if num_datapoints > 0
         }
-        return num_datapoints_dict
+
+        total = sum(list(num_datapoints_dict.values()))
+        new_datatpoints = {
+            k: v*100/total for (k, v) in num_datapoints_dict.items()}
+        return new_datatpoints
 
 
 def get_possible_lateralities(term) -> List[Laterality]:
@@ -253,7 +259,7 @@ def get_possible_lateralities(term) -> List[Laterality]:
 def combine_semiologies(
         semiologies: List[Semiology],
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
     if normalise:
         df = normalise_semiologies_df(df)
@@ -280,7 +286,7 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
 
 def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
-        ) -> pd.DataFrame:
+) -> pd.DataFrame:
     records = []
     semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
@@ -307,7 +313,7 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 def combine_semiologies_df(
         df: pd.DataFrame,
         normalise: bool = True,
-        ) -> Dict[int, float]:
+) -> Dict[int, float]:
     combined_df = df.sum()
     if normalise:
         combined_df = combined_df / combined_df.max() * 100
