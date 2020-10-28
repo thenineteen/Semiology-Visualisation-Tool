@@ -262,7 +262,8 @@ def combine_semiologies(
 ) -> Dict[int, float]:
     df = get_df_from_semiologies(semiologies)
     if normalise:
-        df = normalise_semiologies_df(df)
+        # df = normalise_semiologies_df(df)
+        pass
     combined_df = combine_semiologies_df(df, normalise=normalise)
     return combined_df
 
@@ -312,11 +313,15 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 
 def combine_semiologies_df(
         df: pd.DataFrame,
-        normalise: bool = True,
+        normalise: bool = True,  # unused
 ) -> Dict[int, float]:
-    combined_df = df.sum()
-    if normalise:
-        combined_df = combined_df / combined_df.max() * 100
+
+    # if normalise:
+    combined_df = df.mean(axis=0)
+    # else:  # old method
+    # combined_df = df.sum()
+    # combined_df = combined_df / combined_df.max() * 100
+
     combined_df = pd.DataFrame(combined_df).T
     combined_df.index = ['Score']
     return combined_df

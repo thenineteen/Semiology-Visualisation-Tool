@@ -690,10 +690,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
         normalise = len(semiologiesDataFrame) > 1
         if normalise:
-            normalisedDataFrame = normalise_semiologies_df(
-                semiologiesDataFrame)
+            # normalisedDataFrame = normalise_semiologies_df(
+            #     semiologiesDataFrame)
             combinedDataFrame = combine_semiologies_df(
-                normalisedDataFrame, normalise=True)
+                semiologiesDataFrame, normalise=True)
         else:
             combinedDataFrame = combine_semiologies_df(
                 semiologiesDataFrame, normalise=False)
@@ -802,6 +802,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             self.inverseLocalisingCheckBox.setChecked(False)
             self.inverseLocalisingCheckBox.setEnabled(False)
+
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
