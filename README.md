@@ -11,6 +11,8 @@ Figure:
 849 Patients with automatisms have an epileptogenic zone localising mostly to the mesial temporal lobe.
 124 of these lateralise, mainly ipsilaterally.
 
+![Sankey Marvasti Modarres Diagram](images/5%20layer%20sankey%20neat.png)
+
 ## slicer module
 We integrated our **Semio2Brain database**, **taxonomy**, brain region **mappings** to gif MNI space parcellations, **ground truths** and **Bayesian filters** (for exclusion of patients from studies that preselected patients based on prior knowledge of the region of seizure onset, to mitigate the publication bias that favours temporal lobe epilepsy) in a Python module for the 3D Slicer program, to create a novel user-friendly and open-source **Semiology Visualisation Tool (SVT)** in the form of a GUI. This allows 3D-brain visualisations of semiologies and their simultaneous combinations. Instead of idenitifying symptomatogenic zones, we therefore visualise the most likely original sources of the seizures from initial or most prominent semiology.
 
