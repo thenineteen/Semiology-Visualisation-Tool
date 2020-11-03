@@ -714,7 +714,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
 
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
-        normalise = len(semiologiesDataFrame) > 1
+        normalise = True  # len(semiologiesDataFrame) > 1
         if normalise:
             if self.minmaxRadioButton.isChecked():
                 method = 'minmax'
