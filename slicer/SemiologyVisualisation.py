@@ -252,14 +252,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         dataBaseTabLayout.addWidget(self.granularCheckBox)
 
         self.inverseLocalisingCheckBox = qt.QCheckBox(
-            'Use inverse localising spread values')
+            'Normalise to localising values')
         self.inverseLocalisingCheckBox.setToolTip(
             'Reduce the localising-values in the Semio2Brain database in a way'
             ' inversely proportional to the number of brain regions to which the'
             ' semiology of interest localised.'
-            ' This option provides an inverse variance weighting relative to'
-            ' the spread of localisation, favouring semiologies which are more'
-            ' (uni)-focal.'
+            ' This option intends to favour semiologies which are more'
+            ' (uni)-focal, by penalising those with multiple localisations.'
             ' This option is only available when using the "granular postcode'
             ' hierarchy reversal" option.'
         )
@@ -549,7 +548,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
                 include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
                 include_only_paediatric_cases=self.paediatricCheckBox.isChecked(),
-                inverse_localising_values=self.inverseLocalisingCheckBox.isChecked(),
+                normalise_to_localising_values=self.inverseLocalisingCheckBox.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
@@ -1568,7 +1567,7 @@ class Query:
                 include_spontaneous_semiology=semiology.include_spontaneous_semiology,
                 include_only_paediatric_cases=semiology.include_only_paediatric_cases,
                 include_postictals=semiology.include_postictals,
-                inverse_localising_values=semiology.inverse_localising_values,
+                normalise_to_localising_values=semiology.normalise_to_localising_values,
             )
             content.append(semiology_dict)
         return content

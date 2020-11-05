@@ -38,7 +38,7 @@ dummy_map_df_dict = pd.read_excel(
 )
 
 
-class InverseLocalisingValues(unittest.TestCase):
+class NormaliseLocalisingValues(unittest.TestCase):
     """
 
 
@@ -89,16 +89,16 @@ class InverseLocalisingValues(unittest.TestCase):
         assert(inspect_result['Localising'].sum() == 4)
         assert(inspect_result['Lateralising'].sum() == 0)
 
-    def factor_ql(self, term, inverse_localising_values=False):
+    def factor_ql(self, term, normalise_to_localising_values=False):
         """
         factor function.
-        NB inverse_localising_values default is False in semiology.py
+        NB normalise_to_localising_values default is False in semiology.py
         """
         patient = Semiology(term,
                             Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
 
-        patient.inverse_localising_values = inverse_localising_values
+        patient.normalise_to_localising_values = normalise_to_localising_values
 
         all_combined_gifs = patient.query_lateralisation(
             map_df_dict=dummy_map_df_dict)
@@ -129,13 +129,13 @@ class InverseLocalisingValues(unittest.TestCase):
 
     def test_ILV_function_doesnt_change_ratio1(self):
         """
-        In Example 2 (4pts), the use of inverse_localising_values should make no difference.
+        In Example 2 (4pts), the use of normalise_to_localising_values should make no difference.
         """
         fourptsILV_gifs = self.factor_ql(
-            'ILV_4', inverse_localising_values=True)
+            'ILV_4', normalise_to_localising_values=True)
 
         fourpts_gifs = self.factor_ql(
-            'ILV_4', inverse_localising_values=False)
+            'ILV_4', normalise_to_localising_values=False)
 
         assert fourptsILV_gifs.shape == fourpts_gifs.shape
 
@@ -144,18 +144,18 @@ class InverseLocalisingValues(unittest.TestCase):
         fourpts_gifs.drop(columns='Semiology Term', inplace=True)
         assert (fourptsILV_gifs == fourpts_gifs).all().all()
 
-    def test_InverseLocalisingValues_function(self):
+    def test_normalise_toLocalisingValues_function(self):
         """
-        Test the method of inverse-localising-value as per issues #169 on GitHub.
+        Test the method of normalising-to-localising-value as per issues #169 on GitHub.
         Example 1 should return 0.25 for each localisation GIF, whereas Example 2 should remain the same.
         https://github.com/thenineteen/Semiology-Visualisation-Tool/issues/169
 
         """
-        # set inverse_localising_values=True
+        # set normalise_to_localising_values=True
         all_combined_gifs_singlept = self.factor_ql(
-            'ILV_1', inverse_localising_values=True)
+            'ILV_1', normalise_to_localising_values=True)
         all_combined_gifs_fourpts = self.factor_ql(
-            'ILV_4', inverse_localising_values=True)
+            'ILV_4', normalise_to_localising_values=True)
 
         # basic baseline control assertions
         self.assertIs(type(all_combined_gifs_singlept), pd.DataFrame)
