@@ -368,13 +368,33 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         advancedTabWidget = qt.QWidget()
         advancedTabLayout = qt.QVBoxLayout(advancedTabWidget)
 
+        # Cache
+        cacheGroupBox = qt.QGroupBox('Cache')
+        advancedTabLayout.addWidget(cacheGroupBox)
+        cacheLayout = qt.QVBoxLayout(cacheGroupBox)
+
         self.useCacheCheckBox = qt.QCheckBox('Use cached queries if available')
         self.useCacheCheckBox.setChecked(False)
-        advancedTabLayout.addWidget(self.useCacheCheckBox)
+        cacheLayout.addWidget(self.useCacheCheckBox)
 
         self.clearCacheButton = qt.QPushButton('Clear cache')
         self.clearCacheButton.clicked.connect(self.logic.clearCache)
-        advancedTabLayout.addWidget(self.clearCacheButton)
+        cacheLayout.addWidget(self.clearCacheButton)
+
+        # Normalisation
+        normalisationGroupBox = qt.QGroupBox('Normalisation function')
+        advancedTabLayout.addWidget(normalisationGroupBox)
+        normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
+
+        self.minmaxRadioButton = qt.QRadioButton('Rescaling')
+        normalisationLayout.addWidget(self.minmaxRadioButton)
+
+        self.softmaxRadioButton = qt.QRadioButton('Softmax')
+        normalisationLayout.addWidget(self.softmaxRadioButton)
+
+        self.proportionsRadioButton = qt.QRadioButton('Proportions')
+        self.proportionsRadioButton.setChecked(True)
+        normalisationLayout.addWidget(self.proportionsRadioButton)
 
         return advancedTabWidget
 
@@ -572,7 +592,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
-                    dataFrame = get_df_from_semiologies(semiologies)
+                    if self.minmaxRadioButton.isChecked():
+                        method = 'minmax'
+                    elif self.softmaxRadioButton.isChecked():
+                        method = 'softmax'
+                    elif self.proportionsRadioButton.isChecked():
+                        method = 'proportions'
+                    dataFrame = get_df_from_semiologies(semiologies, method=method)
                     scores = Scores(dataFrame)
                     cache[hashedQuery] = scores.toDict()
                     self.logic.writeCache(cache)
@@ -688,15 +714,23 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
 
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
-        normalise = len(semiologiesDataFrame) > 1
+        normalise = True  # len(semiologiesDataFrame) > 1
         if normalise:
+            if self.minmaxRadioButton.isChecked():
+                method = 'minmax'
+            elif self.softmaxRadioButton.isChecked():
+                method = 'softmax'
+            elif self.proportionsRadioButton.isChecked():
+                method = 'proportions'
             normalisedDataFrame = normalise_semiologies_df(
-                semiologiesDataFrame)
+                semiologiesDataFrame,
+                method=method,
+            )
             combinedDataFrame = combine_semiologies_df(
-                normalisedDataFrame, normalise=True)
+                normalisedDataFrame, method=method, normalise=True)
         else:
             combinedDataFrame = combine_semiologies_df(
-                semiologiesDataFrame, normalise=False)
+                semiologiesDataFrame, method=method, normalise=False)
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
@@ -802,6 +836,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             self.inverseLocalisingCheckBox.setChecked(False)
             self.inverseLocalisingCheckBox.setEnabled(False)
+
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
@@ -972,6 +1007,9 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
             if colorNode.GetName() not in COLORMAPS:
                 slicer.mrmlScene.RemoveNode(colorNode)
 
+    def getPythonConsoleWidget(self):
+        return slicer.util.mainWindow().pythonConsole().parent()
+
     def installRepository(self):
         repoDir = Path(__file__).parent.parent
         import sys
@@ -983,9 +1021,13 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
                     import mega_analysis
             except ImportError:
                 requirementsPath = repoDir / 'requirements.txt'
+                console = self.getPythonConsoleWidget()
+                pythonVisible = console.visible
+                console.setVisible(True)
                 slicer.util.pip_install(
                     f'-r {requirementsPath}'
                 )
+                console.setVisible(pythonVisible)
             import matplotlib
             matplotlib.use('agg')
 

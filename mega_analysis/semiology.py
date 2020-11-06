@@ -7,7 +7,6 @@ from typing import Dict, List, Optional
 import yaml
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 
 from .crosstab.file_paths import file_paths
 from .crosstab.hierarchy_class import Hierarchy
@@ -114,7 +113,7 @@ class Semiology:
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             inverse_localising_values: bool = False,
-            ):
+    ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -225,7 +224,7 @@ class Semiology:
                     )
         return all_combined_gifs
 
-    def get_num_datapoints_dict(self) -> Optional[dict]:
+    def get_num_datapoints_dict(self, method: str = 'proportions') -> Optional[dict]:
         query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
             message = f'No results generated for semiology term "{self.term}"'
@@ -238,7 +237,15 @@ class Semiology:
             in zip(labels, patients)
             if num_datapoints > 0
         }
-        return num_datapoints_dict
+
+        if method != 'proportions':
+            return num_datapoints_dict
+
+        elif method == 'proportions':
+            total = sum(list(num_datapoints_dict.values()))
+            new_datatpoints = {
+                k: v*100/total for (k, v) in num_datapoints_dict.items()}
+            return new_datatpoints
 
 
 def get_possible_lateralities(term) -> List[Laterality]:
@@ -252,19 +259,21 @@ def get_possible_lateralities(term) -> List[Laterality]:
 
 def combine_semiologies(
         semiologies: List[Semiology],
-        normalise: bool = True,
-        ) -> Dict[int, float]:
-    df = get_df_from_semiologies(semiologies)
-    if normalise:
-        df = normalise_semiologies_df(df)
-    combined_df = combine_semiologies_df(df, normalise=normalise)
+        normalise_method: Optional[str] = 'proportions',
+        normalise_zero_axis: bool = True,
+) -> Dict[int, float]:
+    df = get_df_from_semiologies(semiologies, normalise_method)
+    if normalise_method is not None:
+        df = normalise_semiologies_df(df, method=normalise_method)
+    combined_df = combine_semiologies_df(
+        df, method=normalise_method, normalise=normalise_zero_axis)
     return combined_df
 
 
-def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
+def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proportions') -> pd.DataFrame:
     num_datapoints_dicts = {}
     for semiology in semiologies:
-        num_datapoints_dict = semiology.get_num_datapoints_dict()
+        num_datapoints_dict = semiology.get_num_datapoints_dict(method=method)
         if num_datapoints_dict is None:
             message = (
                 f'Information for semiology term "{semiology.term}"'
@@ -280,7 +289,7 @@ def get_df_from_semiologies(semiologies: List[Semiology]) -> pd.DataFrame:
 
 def get_df_from_dicts(
         semiologies_dicts: Dict[str, Dict[int, float]],
-        ) -> pd.DataFrame:
+) -> pd.DataFrame:
     records = []
     semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
@@ -290,12 +299,23 @@ def get_df_from_dicts(
     return df
 
 
-def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
+def normalise_semiologies_df(
+        semiologies_df: pd.DataFrame,
+        method='proportions',
+) -> pd.DataFrame:
+    if method == 'proportions':
+        return semiologies_df
+
     table = np.array(semiologies_df)
     data = table.T
-    scaler = MinMaxScaler((0, 100))
-    scaler.fit(data)
-    normalised = scaler.transform(data).T
+    if method == 'minmax':
+        from sklearn.preprocessing import MinMaxScaler
+        scaler = MinMaxScaler((0, 100))
+        scaler.fit(data)
+        normalised = scaler.transform(data).T
+    elif method == 'softmax':
+        from scipy.special import softmax
+        normalised = softmax(semiologies_df, axis=1)
     normalised_df = pd.DataFrame(
         normalised,
         columns=semiologies_df.columns,
@@ -306,11 +326,15 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame) -> pd.DataFrame:
 
 def combine_semiologies_df(
         df: pd.DataFrame,
+        method: str = 'proportions',
         normalise: bool = True,
-        ) -> Dict[int, float]:
-    combined_df = df.sum()
-    if normalise:
-        combined_df = combined_df / combined_df.max() * 100
+) -> Dict[int, float]:
+    if method == 'proportions':
+        combined_df = df.mean(axis=0)
+    else:
+        combined_df = df.sum()
+        if normalise:
+            combined_df = combined_df / combined_df.max() * 100
     combined_df = pd.DataFrame(combined_df).T
     combined_df.index = ['Score']
     return combined_df
