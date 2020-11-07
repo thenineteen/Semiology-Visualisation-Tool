@@ -1,4 +1,4 @@
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.6.1
+# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.7.1
 ## Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 309 included original journal papers
 ### 11230 localising and 2391 lateralising datapoints
 
@@ -23,7 +23,8 @@ Further details on the above can be found in the description of the (backend) me
 
 ## mega_analysis (backend) module
 
-### 1. Resources: Semio2Brain Database  v 1.2.1 (19th Aug 2020, 310 studies)
+### 1. Resources: Semio2Brain Database  v 1.2.2 309 studies
+(19th Aug 2020, 310 studies)
 v 1.0.0 (early Aug 2020)
 100% of the Data: 4,649 patients' data from 312 included original journal papers
 #### Until the 5th Aug 2020 the Beta version was used, named syst_review_single_table - 47% (146/312 included studies integrated)
