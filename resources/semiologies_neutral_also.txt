@@ -6,7 +6,7 @@ Blink
 Clonic
 Complex Ocular Flutter
 Dystonic
-Eye Nystagmus
+Eye Movements
 Head or Body Turn
 Hypermotor
 Hypomotor
