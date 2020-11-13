@@ -50,6 +50,7 @@
         "(butterfly (feel|sens|in stomach))",
         "butterfly-? ?like",
         "butterfl",
+        "Visceral",
       ]
     "Fear-Anxiety":
       [
@@ -150,8 +151,7 @@
         "(?<!no )funny taste",
         "(?<!no )((soapy)|(tinny)|(brakish)|(bitter)|(foul)|(rotten)|(horrible)|(abnormal)) ?taste",
       ]
-    "Auditory":
-      [
+    "Auditory": [
         "((?<!no )(?<!denies )(?<!deny ))auditory ?(hallucination)?(illusion)?",
         "Aura \\(Auditory\\)",
         "altered hearing",
@@ -169,6 +169,8 @@
         "hears? noises?",
         "whistle",
         "whistling",
+        "Aura \\(Acustic\\)", # typo sic
+        "acoustic",
       ]
     "Visual - Elementary":
       [
@@ -196,6 +198,7 @@
         "kinetic visual",
         "sharpened visual",
         "3D movie",
+        "Complex Dysmorphopsia",
       ]
     "Somatosensory":
       [
@@ -278,8 +281,8 @@
           "(?<!no )gaze deviate",
           "eye turn",
         ]
-      "Eye Nystagmus": ["Nystagmus"]
-      "Complex Ocular Flutter": ["ocular flutter", "complex ocular"]
+      "Eye Movements - non-versive":
+        ["Nystagmus", "ocular flutter", "complex ocular", "saccade"]
       "Tonic":
         [
           "((?<!asymmetric )(?<!dys))tonic limb posturing",
@@ -298,6 +301,7 @@
           "fig of 4",
           "figure 4",
           "Tonic \\(Ass?ymm?etric\\)",
+          "Asymmetric",
         ]
       "Dystonic": ["(?<!no )dystonic", "dystonia"]
       "Clonic":
@@ -305,6 +309,7 @@
           "((?<!tonic-)(?<!tonic )(?<!tonic/)(?<!myo))clonic",
           "(?<!myo)clonus",
           "((?<!no )(?<!myoclonic )(?<!ankle )(?<!single ))jerk",
+          "Twitching \\(Limbs\\)",
         ]
       "Tonic-Clonic": ["tonic-? ?clonic", "tonic and clonic"]
       "Myoclonic": ["myo-? ?clonic", "myo-?clonus", "single jerk"]
@@ -338,6 +343,9 @@
           "ballistic",
           "pedalling",
           "pedaling",
+          "Motor \\(head\\)",
+          "Motor \\(pelvic\\)",
+          "Motor \\(Axial\\)",
         ]
       "Complex Behavioural": # cf e.g. 'fearful expression' and 'fearful behaviour'
         [
@@ -346,6 +354,7 @@
           "Complex Behaviour",
           "complicated motor",
           "psychomotor \\(?agitation\\)?",
+          "Motor \\(Crawling\\)",
           "aggressi",
           "biting",
           "Motor \\(Complex\\)",
@@ -361,7 +370,16 @@
         ]
 
     special seizures:
-      "Atonic": ["atonic", "flaccid", "(?<=loss of )tone", "jelly", "head drop"]
+      "Atonic":
+        [
+          "atonic",
+          "flaccid",
+          "(?<=loss of )tone",
+          "jelly",
+          "head drop",
+          "atonia",
+          "Deviation \\(Lip\\)",
+        ]
       "Ictal Limb Paresis": # cf global behavioural arrest
         [
           "(?<!post)ictal Limb Paresis",
@@ -550,6 +568,7 @@
           "Automatisms? \\(Mimetic\\)",
           "fearful expression",
           "raising of eyebrow",
+          "smile",
         ]
 
   speech:
@@ -610,6 +629,7 @@
     "Dialeptic/LOA":
       [
         "dialeptic",
+        "Impaired consciousness",
         "(?<!no )blank",
         "stare",
         "staring",
@@ -629,6 +649,7 @@
         "(?<!no )loss of contact",
         "Behaviou?r(?:al)? Arrest",
         "psychomotor arrest",
+        "Dyaleptic",
       ]
     # "LOA": ["loss of awareness", "unaware", " LOA ", "unable to follow commands", "altered awareness", "not with it"] # usually associated with other semiological features and not in isolation.
     "LOC":
