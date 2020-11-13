@@ -22,7 +22,8 @@ def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
 
 def normalise_top_level_localisation_cols(df):
     """ If the sum of datapoints in lobes is greater than localising col, normalise to localising semiology.
-    Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.  """
+    Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.
+    Should not run normalisation methods together """
 
     Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
              'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
@@ -33,41 +34,98 @@ def normalise_top_level_localisation_cols(df):
 
     df_temp.loc[:, 'ratio'] = df['Localising'] / (df[Lobes].sum(axis=1))
     df_temp = df_temp.astype({'ratio': 'float'})
-    # # line below would make it safer in case somehhow the localising column is more than the sum of the lobes
-    # # which would suggest data entry error; but leave out for now
-    # # in case this causes flow problems when pt numbers aren't equal if there are data entry problems.
-    # gif_indices = (df_temp['ratio'] < 1)
-    # if gif_indices.any():
-    # df.multiply (not series.multiply). ratio is series. axis=0 otherwise deafult is columns.
+
     df.loc[:, Lobes] = (df_temp.loc[:, Lobes]).multiply(
         df_temp.loc[:, 'ratio'], axis=0)
 
     return df, Lobes
 
 
-def normalise_top_level_localisation_cols_OTHER(df):
+def normalise_top_level_localisation_cols_OTHER(df, *args):
     """
-    Compress the localisations to OTHER. Need to have made the OTHER lobe column.
+    Compress the localisations to OTHER. Need to have made the OTHER lobe column. Should not run normalisation methods together.
     """
     OTHER = ['Sub-Callosal Cortex', 'TPO Junction', 'TP', 'FTP', 'TO', 'FP', 'Perisylvian',
              'PO', 'FT', 'Cerebellum']
-    df.loc[:, 'OTHER'] = df[OTHER].sum(axis=1)
 
-    LobesOTHER = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
-                  'Hypothalamus', 'OTHER']
+    if 'LobesOTHER_splitTL' not in args:
+        LobesOTHER = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
+                      'Hypothalamus', 'OTHER']
+    else:
+        OTHER = ['Sub-Callosal Cortex', 'TPO Junction', 'TP', 'FTP', 'TO', 'FP', 'Perisylvian',
+                 'PO', 'FT', 'Cerebellum']
+        LobesOTHER = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
+                      'Hypothalamus', 'OTHER']
+        LobesOTHER_splitTL = [i for i in LobesOTHER if i not in ['TL']]
+        TL_split = ['Anterior (temporal pole)', 'Lateral Temporal',
+                    'Mesial Temporal', 'Posterior Temporal']
+        LobesOTHER_splitTL.extend(TL_split)
+        LobesOTHER = LobesOTHER_splitTL
+
     df_temp = df.copy()
-    df_temp = df_temp[LobesOTHER]
+    df_temp.loc[:, 'OTHER'] = df_temp[OTHER].sum(axis=1)
 
-    df_temp.loc[:, 'ratio'] = df['Localising'] / (df[LobesOTHER].sum(axis=1))
+    df_temp.loc[:, 'ratio'] = df_temp['Localising'] / \
+        (df_temp[LobesOTHER].sum(axis=1))
     df_temp = df_temp.astype({'ratio': 'float'})
-    # gif_indices = (df_temp['ratio'] < 1)  # this line would make it safer in case somehhow the localising column is more than the sum of the lobes which would suggest data entry error; but leave out for now in case this causes flow problems when pt numbers aren't equal if there are data entry problems.
 
-    # if gif_indices.any():
-    # df.multiply (not series.multiply). ratio is series. axis=0 otherwise deafult is columns.
-    df.loc[:, LobesOTHER] = (df_temp.loc[:, LobesOTHER]).multiply(
+    df_temp.loc[:, LobesOTHER] = (df_temp.loc[:, LobesOTHER]).multiply(
         df_temp.loc[:, 'ratio'], axis=0)
 
-    return df, LobesOTHER
+    return df_temp, LobesOTHER
+
+
+def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
+    """
+    Compress the localisations to OTHER but also keep TL split into 4 subregions. Need to have made the OTHER lobe column. Should not run normalisation methods together.
+    Note that the hierarchy/postcode data entry (as long as previous normalisation not ran) could result in some TL cases that are not included in the subregions.Distribute these equally.
+
+    THIS WON'T WORK WITHOUT NORMLAISATION TO ALL OTHER LAYERS
+
+    """
+    OTHER = ['Sub-Callosal Cortex', 'TPO Junction', 'TP', 'FTP', 'TO', 'FP', 'Perisylvian',
+             'PO', 'FT', 'Cerebellum']
+    LobesOTHER = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
+                  'Hypothalamus', 'OTHER']
+    LobesOTHER_splitTL = [i for i in LobesOTHER if i not in ['TL']]
+    TL_split = ['Anterior (temporal pole)', 'Lateral Temporal',
+                'Mesial Temporal', 'Posterior Temporal']
+    LobesOTHER_splitTL.extend(TL_split)
+
+    df_temp = df.copy()
+    df_temp.loc[:, 'OTHER'] = df_temp[OTHER].sum(axis=1)
+
+    if 'normalise_top_level_first' in kwargs:
+        # use other function
+        df_temp, LobesOTHER = normalise_top_level_localisation_cols_OTHER(
+            df_temp)
+        # now normalise TL subregions to TL:
+        df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
+            (df_temp[TL_split].sum(axis=1))
+        df_temp = df_temp.astype({'TL subregion ratio': 'float'})
+        df_temp.loc[:, TL_split] = (df_temp.loc[:, TL_split]).multiply(
+            df_temp.loc[:, 'TL subregion ratio'], axis=0)
+
+    else:
+        # distribute excess TL to the 4 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
+        # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
+        mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
+        df_temp['TL subregion ratio'] = 1
+        df_temp.loc[mask, 'TL subregion ratio'] = df_temp['TL'] / \
+            (df_temp[TL_split].sum(axis=1))
+        df_temp = df_temp.astype(
+            {'TL subregion ratio': 'float'}, errors='ignore')
+        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
+            df_temp.loc[:, 'TL subregion ratio'], axis=0)
+
+        # now go back to do top level normalisation
+        df_temp.loc[:, 'ratio'] = df_temp['Localising'] / \
+            (df_temp[LobesOTHER_splitTL].sum(axis=1))
+        df_temp = df_temp.astype({'ratio': 'float'})
+        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
+            df_temp.loc[:, 'ratio'], axis=0)
+
+    return df_temp, LobesOTHER_splitTL
 
 
 def extract_year_of_publication(df):
@@ -203,6 +261,11 @@ def Sankey_new_layer2(df,
             df, value_vars=layer1, id_vars=layer2).dropna()
     elif already_melted == 'both':
         df_melted_layer1_layer2 = df[[layer1, layer2, 'Localising']].copy()
+    elif already_melted == 'neither':
+        df_melted_layer1_layer2 = pd.melt(
+            df, value_vars=layer1, id_vars='Localising').dropna()
+        df_melted_layer1_layer2 = pd.melt(
+            df, value_vars=layer2, id_vars='Localising').dropna()
 
     df_melted_layer1_layer2.columns = ['layer2', 'layer1', 'Localising']
     df_layer1_layer2 = df_melted_layer1_layer2.groupby(by=['layer1', 'layer2'])[
