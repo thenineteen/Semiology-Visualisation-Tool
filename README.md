@@ -7,11 +7,13 @@ For research purposes only. Not for clinical use.
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)  [![Coverage Status](https://coveralls.io/repos/github/thenineteen/Semiology-Visualisation-Tool/badge.svg?branch=master)](https://coveralls.io/github/thenineteen/Semiology-Visualisation-Tool?branch=master)
 
 ![3D Slicer module screenshot](images/all_automatisms.png)
-Figure:
+Figure from beta-version:
 849 Patients with automatisms have an epileptogenic zone localising mostly to the mesial temporal lobe.
 124 of these lateralise, mainly ipsilaterally.
 
+ 
 ![Sankey Marvasti Modarres Diagram](images/Sankey/Beautified%206%20layer%20colour%20coded%20lumped%20semiology%20and%20TL%20subregions.png)
+Sankey Diagram overview of Semio2Brain Database, Filters, SemioDict, and broad localisation mapppings. SVT uses finer GIF localisation parcellations. 
 
 ## slicer module
 We integrated our **Semio2Brain database**, **taxonomy**, brain region **mappings** to gif MNI space parcellations, **ground truths** and **Bayesian filters** (for exclusion of patients from studies that preselected patients based on prior knowledge of the region of seizure onset, to mitigate the publication bias that favours temporal lobe epilepsy) in a Python module for the 3D Slicer program, to create a novel user-friendly and open-source **Semiology Visualisation Tool (SVT)** in the form of a GUI. This allows 3D-brain visualisations of semiologies and their simultaneous combinations. Instead of idenitifying symptomatogenic zones, we therefore visualise the most likely original sources of the seizures from initial or most prominent semiology.
