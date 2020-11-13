@@ -12,9 +12,9 @@ Figure from beta-version:
 124 of these lateralise, mainly ipsilaterally.
 
 
-
-![Sankey Marvasti Modarres Diagram](images/Sankey/Beautified%206%20layer%20colour%20coded%20lumped%20semiology%20and%20TL%20subregions.png)
 Sankey Diagram overview of Semio2Brain Database, Filters, SemioDict, and broad localisation mapppings. SVT uses finer GIF localisation parcellations. 
+![Sankey Marvasti Modarres Diagram](images/Sankey/Beautified%206%20layer%20colour%20coded%20lumped%20semiology%20and%20TL%20subregions.png)
+
 
 
 
