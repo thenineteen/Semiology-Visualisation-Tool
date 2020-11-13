@@ -5,7 +5,7 @@ Automatism - Lower Limb - Non Hypermotor
 Blink
 Clonic
 Dystonic
-Eye Movements
+Eye Movements - non-versive
 Head or Body Turn
 Hypermotor
 Hypomotor
