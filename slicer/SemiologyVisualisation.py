@@ -386,13 +386,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
+        self.minmaxRadioButton.setChecked(True)
         normalisationLayout.addWidget(self.minmaxRadioButton)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
         normalisationLayout.addWidget(self.softmaxRadioButton)
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
-        self.proportionsRadioButton.setChecked(True)
         normalisationLayout.addWidget(self.proportionsRadioButton)
 
         return advancedTabWidget
@@ -713,7 +713,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
 
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
-        normalise = True  # len(semiologiesDataFrame) > 1
+        normalise = len(semiologiesDataFrame) > 1
         if normalise:
             if self.minmaxRadioButton.isChecked():
                 method = 'minmax'
