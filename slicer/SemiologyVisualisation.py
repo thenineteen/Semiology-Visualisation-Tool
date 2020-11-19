@@ -386,7 +386,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
-        self.minmaxRadioButton.setChecked(True)
         normalisationLayout.addWidget(self.minmaxRadioButton)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
@@ -394,6 +393,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
         normalisationLayout.addWidget(self.proportionsRadioButton)
+
+        self.minmaxRadioButton.setChecked(True)
 
         return advancedTabWidget
 
@@ -713,23 +714,24 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
 
         semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
+        if self.minmaxRadioButton.isChecked():
+            method = 'minmax'
+        elif self.softmaxRadioButton.isChecked():
+            method = 'softmax'
+        elif self.proportionsRadioButton.isChecked():
+            method = 'proportions'
+
         normalise = len(semiologiesDataFrame) > 1
         if normalise:
-            if self.minmaxRadioButton.isChecked():
-                method = 'minmax'
-            elif self.softmaxRadioButton.isChecked():
-                method = 'softmax'
-            elif self.proportionsRadioButton.isChecked():
-                method = 'proportions'
             normalisedDataFrame = normalise_semiologies_df(
                 semiologiesDataFrame,
                 method=method,
             )
-            combinedDataFrame = combine_semiologies_df(
-                normalisedDataFrame, method=method, normalise=True)
+            dataFrameToCombine = normalisedDataFrame
         else:
-            combinedDataFrame = combine_semiologies_df(
-                semiologiesDataFrame, method=method, normalise=False)
+            dataFrameToCombine = semiologiesDataFrame
+        combinedDataFrame = combine_semiologies_df(
+            dataFrameToCombine, method=method, normalise=normalise)
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
