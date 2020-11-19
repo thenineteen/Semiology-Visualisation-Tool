@@ -922,9 +922,11 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
     def getGifSegmentationNode(self):
         return slicer.util.loadSegmentation(str(self.getGifSegmentationPath()))
 
+    def getModuleDir(self):
+        return Path(slicer.util.modulePath(self.moduleName)).parent.absolute()
+
     def getResourcesDir(self):
-        moduleDir = Path(slicer.util.modulePath(self.moduleName)).parent
-        resourcesDir = moduleDir / 'Resources'
+        resourcesDir = self.getModuleDir() / 'Resources'
         return resourcesDir
 
     def getImagesDir(self):
