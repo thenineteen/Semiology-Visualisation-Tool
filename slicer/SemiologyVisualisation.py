@@ -623,6 +623,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         if self.unknownDominantRadioButton.isChecked():
             return Laterality.NEUTRAL
 
+    def setLiteMode(self):
+        self.showProgressCheckBox.setChecked(False)
+        window = slicer.util.mainWindow()
+        dataProbe = window.findChild("QWidget", "DataProbeCollapsibleWidget")
+        dataProbe.setChecked(False)
+
     # Currently unused
     def addGifStructuresToComboBox(self):
         structures = self.parcellation.getSegmentIDs()
