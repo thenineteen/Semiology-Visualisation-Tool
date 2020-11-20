@@ -624,10 +624,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return Laterality.NEUTRAL
 
     def setLiteMode(self):
-        self.showProgressCheckBox.setChecked(False)
-        window = slicer.util.mainWindow()
-        dataProbe = window.findChild("QWidget", "DataProbeCollapsibleWidget")
-        dataProbe.setChecked(False)
+        self.logic.setDataProbeButtonChecked(False)
 
     # Currently unused
     def addGifStructuresToComboBox(self):
@@ -852,7 +849,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         lateralitiesDict,
         radioButtonSlot,
         checkBoxSlot,
-    ):
+        ):
         from mega_analysis import Laterality
         semiologiesDict = {}
         for semiology_term, lateralities in lateralitiesDict.items():
@@ -886,6 +883,12 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
                 buttonGroup=buttonGroup,
             )
         return semiologiesDict
+
+    @staticmethod
+    def setDataProbeButtonChecked(checked):
+        window = slicer.util.mainWindow()
+        dataProbe = window.findChild("QWidget", "DataProbeCollapsibleWidget")
+        dataProbe.setChecked(checked)
 
     def loadVolume(self, imagePath):
         stem = Path(imagePath).name.split('.')[0]
@@ -953,7 +956,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         parcellationLabelMapNode,
         outputNode,
         showProgress=True,
-    ):
+        ):
         """Create a scalar volume node so that the colorbar is correct."""
 
         with messageContextManager('Creating scores volume node...'):
@@ -1173,7 +1176,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         semiologiesDataFrame,
         combinedDataFrame,
         removeScoresIfSingle=True,
-    ):
+        ):
         combinedDataFrame = combinedDataFrame.sort_values(
             by='Score', axis=1, ascending=False)
         combinedDataFrame = combinedDataFrame.apply(
@@ -1356,7 +1359,7 @@ class Parcellation(ABC):
         showRight=True,
         showProgress=True,
         min2dOpacity=1,
-    ):
+        ):
         """[summary]
 
         Args:
