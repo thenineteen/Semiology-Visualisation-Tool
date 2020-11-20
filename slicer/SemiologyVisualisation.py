@@ -347,7 +347,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologiesFormLayout.addWidget(semiologiesScrollArea)
 
         self.removeLineEditButton = qt.QPushButton('Remove custom semiology')
-        self.removeLineEditButton.setDisabled(True)
+        self.removeLineEditButton.hide()
         self.removeLineEditButton.clicked.connect(self.removeCustomSemiology)
         addLineEditButton = qt.QPushButton('Add custom semiology')
         addLineEditButton.clicked.connect(self.addCustomSemiology)
@@ -813,7 +813,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         for i, radioButton in enumerate(customSemiology.radioButtons.values(), start=1):
             gridLayout.addWidget(radioButton, numRows, i, *ALIGN_ARGS)
         self.customSemiologies.append(customSemiology)
-        self.removeLineEditButton.setEnabled(True)
+        self.removeLineEditButton.show(True)
 
     def removeCustomSemiology(self):
         customSemiology = self.customSemiologies.pop()
