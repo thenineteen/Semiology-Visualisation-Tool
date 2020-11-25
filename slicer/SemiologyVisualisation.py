@@ -1380,7 +1380,6 @@ class Parcellation(ABC):
             showProgress (bool, optional): [description]. Defaults to True.
             min2dOpacity (int, optional): [description]. Defaults to 1.
         """
-        tic = time.time()
         if not showProgress:
             box = qt.QMessageBox()
             box.setStandardButtons(0)
@@ -1435,9 +1434,6 @@ class Parcellation(ABC):
             progressDialog.close()
         else:
             box.accept()
-        toc = time.time()
-        slicer.util.delayDisplay(
-            f'Updating colours took {int(toc - tic)} seconds')
         slicer.app.processEvents()
 
     def getColorFromScore(self, normalisedScore, colorNode):
