@@ -1,3 +1,4 @@
+import cProfile
 import base64
 import hashlib
 import time
@@ -459,7 +460,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.updateButton.setStyleSheet('font: bold')
         self.updateButton.hide()
         self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
-        self.updateButton.clicked.connect(self.updateColors)
+        self.updateButton.clicked.connect(self.updateColorsWithProfile)
         self.layout.addWidget(self.updateButton)
 
     def getSemiologiesScrollArea(self):
@@ -598,7 +599,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                         method = 'softmax'
                     elif self.proportionsRadioButton.isChecked():
                         method = 'proportions'
-                    dataFrame = get_df_from_semiologies(semiologies, method=method)
+                    dataFrame = get_df_from_semiologies(
+                        semiologies, method=method)
                     scores = Scores(dataFrame)
                     cache[hashedQuery] = scores.toDict()
                     self.logic.writeCache(cache)
@@ -704,6 +706,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def onAutoUpdateCheckBox(self):
         self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
+
+    def updateColorsWithProfile(self):
+        p = cProfile.Profile()
+        p.runcall(self.updateColors)
+        p.dump_stats(
+            'C:\\Users\\ali_m\\AnacondaProjects\\PhD\\Semiology-Visualisation-Tool\\svt.profile')
+        logging.debug('Wrote profile file')
 
     def updateColors(self):
         from mega_analysis.semiology import (
@@ -849,7 +858,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         lateralitiesDict,
         radioButtonSlot,
         checkBoxSlot,
-        ):
+    ):
         from mega_analysis import Laterality
         semiologiesDict = {}
         for semiology_term, lateralities in lateralitiesDict.items():
@@ -956,7 +965,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         parcellationLabelMapNode,
         outputNode,
         showProgress=True,
-        ):
+    ):
         """Create a scalar volume node so that the colorbar is correct."""
 
         with messageContextManager('Creating scores volume node...'):
@@ -1176,7 +1185,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         semiologiesDataFrame,
         combinedDataFrame,
         removeScoresIfSingle=True,
-        ):
+    ):
         combinedDataFrame = combinedDataFrame.sort_values(
             by='Score', axis=1, ascending=False)
         combinedDataFrame = combinedDataFrame.apply(
@@ -1359,7 +1368,7 @@ class Parcellation(ABC):
         showRight=True,
         showProgress=True,
         min2dOpacity=1,
-        ):
+    ):
         """[summary]
 
         Args:
