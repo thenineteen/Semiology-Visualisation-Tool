@@ -216,18 +216,18 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
             colour = Fore.LIGHTGREEN_EX
         # option to not show tqdm e.g. for double Q_S for PET Hypermetabolism
         if 'tqdm' in kwargs:
-            notqdm = True
+            disable_tqdm = False
         if 'tqdm' not in kwargs:
-            notqdm = False
+            disable_tqdm = True
     else:
         extra_desc = ''
         extra_desc2 = ' (' + str(semiology_term) + ')'
-        notqdm = False
+        disable_tqdm = True
         colour = Fore.GREEN
     description = extra_desc+'QUERY_SEMIOLOGY'+extra_desc2
 
-    for term in (values if notqdm else tqdm(values, desc=description,
-                                            bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
+    for term in (values if disable_tqdm else tqdm(values, desc=description,
+                                                  bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
                  ):
         # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
         with warnings.catch_warnings():
