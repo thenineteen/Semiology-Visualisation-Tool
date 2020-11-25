@@ -1,4 +1,3 @@
-import cProfile
 import base64
 import hashlib
 import time
@@ -460,7 +459,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.updateButton.setStyleSheet('font: bold')
         self.updateButton.hide()
         self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
-        self.updateButton.clicked.connect(self.updateColorsWithProfile)
+        self.updateButton.clicked.connect(self.updateColors)
         self.layout.addWidget(self.updateButton)
 
     def getSemiologiesScrollArea(self):
@@ -709,13 +708,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def onAutoUpdateCheckBox(self):
         self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
-
-    def updateColorsWithProfile(self):
-        p = cProfile.Profile()
-        p.runcall(self.updateColors)
-        p.dump_stats(
-            'C:\\Users\\ali_m\\AnacondaProjects\\PhD\\Semiology-Visualisation-Tool\\svt.profile')
-        logging.debug('Wrote profile file')
 
     def updateColors(self):
         from mega_analysis.semiology import (
