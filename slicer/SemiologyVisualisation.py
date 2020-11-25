@@ -583,14 +583,16 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def getScoresFromCache(self, semiologies):
         from mega_analysis.semiology import get_df_from_semiologies
-        cache = self.logic.readCache()
         query = Query(semiologies)
         hashedQuery = query.hash()
-        if hashedQuery in cache and self.useCacheCheckBox.isChecked():
-            logging.info(f'Query found in cache: {hashedQuery}')
-            scores = Scores(cache[hashedQuery])
-            dataFrame = scores.df
-        else:
+        dataFrame = None
+        if self.useCacheCheckBox.isChecked():
+            cache = self.logic.readCache()
+            if hashedQuery in cache:
+                logging.info(f'Query found in cache: {hashedQuery}')
+                scores = Scores(cache[hashedQuery])
+                dataFrame = scores.df
+        if dataFrame is None:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
                     if self.minmaxRadioButton.isChecked():
@@ -602,8 +604,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                     dataFrame = get_df_from_semiologies(
                         semiologies, method=method)
                     scores = Scores(dataFrame)
-                    cache[hashedQuery] = scores.toDict()
-                    self.logic.writeCache(cache)
+                    if self.useCacheCheckBox.isChecked():
+                        cache[hashedQuery] = scores.toDict()
+                        self.logic.writeCache(cache)
                 except Exception as e:
                     message = (
                         'Error retrieving semiology information from mega_analysis module.'
