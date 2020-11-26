@@ -5,7 +5,8 @@ from mega_analysis.crosstab.all_localisations import all_localisations
 
 def NORMALISE_TO_LOCALISING_VALUES(inspect_result, type='all'):
     """
-    Alter the DataFrame to normalise values to localising column value: i.e. based on spread of localisations.
+    Alter the DataFrame to normalise values to localising column value: i.e. conservation of localising semiology datapoints.
+    based on spread of localisations.
     The more regions a semiology EZ/SOZ localises to, the lower its brain localising-value.
     Makes localisiing semiology the unit of analysis and when using type='all', also imputes possible missing data based
         on localisations (brain regions) present.
@@ -20,7 +21,7 @@ def NORMALISE_TO_LOCALISING_VALUES(inspect_result, type='all'):
         This can create artefactually lower numbers for wide intralobar spreads (amygdala and hippo), but useful for conservation of localising value.
 
     Alim-Marvasti Sept 2020.
-    # """
+    """
 
     new_inspect_result = inspect_result.copy()
 

@@ -44,7 +44,7 @@ def dictionary_key_recursion_(dictionary, all_keys=[], all_values=[]):
     return all_keys, all_values
 
 
-def dictionary_key_recursion_2(dictionary, semiology_key):
+def dictionary_key_recursion_2(dictionary, semiology_key, disable_tqdm=True):
     """
     return the value(s) of a particular key, no matter how nested the key is within the dictionary.
     Ali Alim-Marvasti Aug 2019
@@ -55,7 +55,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
         logging.debug(
             'No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
-    for k, v in tqdm(dictionary.items(), desc='Searching for Nested SemioDict Key...'):
+    for k, v in (dictionary.items() if disable_tqdm else tqdm(dictionary.items(), desc='Searching for Nested SemioDict Key...')):
         search = semiology_key == k.lower()
         if search:
             logging.debug('dictionary_key_recursion_2 found values of key')
@@ -216,18 +216,18 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
             colour = Fore.LIGHTGREEN_EX
         # option to not show tqdm e.g. for double Q_S for PET Hypermetabolism
         if 'tqdm' in kwargs:
-            notqdm = True
+            disable_tqdm = False
         if 'tqdm' not in kwargs:
-            notqdm = False
+            disable_tqdm = True
     else:
         extra_desc = ''
         extra_desc2 = ' (' + str(semiology_term) + ')'
-        notqdm = False
+        disable_tqdm = True
         colour = Fore.GREEN
     description = extra_desc+'QUERY_SEMIOLOGY'+extra_desc2
 
-    for term in (values if notqdm else tqdm(values, desc=description,
-                                            bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
+    for term in (values if disable_tqdm else tqdm(values, desc=description,
+                                                  bar_format="{l_bar}%s{bar}%s{r_bar}" % (colour, Fore.RESET))
                  ):
         # https://stackoverflow.com/questions/39901550/python-userwarning-this-pattern-has-match-groups-to-actually-get-the-groups
         with warnings.catch_warnings():

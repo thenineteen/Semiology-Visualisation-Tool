@@ -13,6 +13,11 @@ from mega_analysis.semiology import (
     pivot_result_to_one_map,
     Semiology,
 )
+from mega_analysis.crosstab.file_paths import file_paths
+from mega_analysis.crosstab.gif_sheet_names import gif_sheet_names
+from mega_analysis.crosstab.mega_analysis.mapping import big_map
+
+one_map = big_map(map_df_dict)
 
 
 class TestQueryLateralisation(unittest.TestCase):
@@ -28,7 +33,7 @@ class TestQueryLateralisation(unittest.TestCase):
         all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = QUERY_LATERALISATION(
             query_semiology_result,
             mega_analysis_df,
-            map_df_dict,
+            one_map,
             gif_lat_file,
             side_of_symptoms_signs=symptoms_side.value,
             pts_dominant_hemisphere_R_or_L=dominant_hemisphere.value,
@@ -40,9 +45,7 @@ class TestQueryLateralisation(unittest.TestCase):
                 term,
             )
             all_combined_gifs = pivot_result_to_one_map(
-                pivot_result,
-                map_df_dict=map_df_dict,
-            )
+                pivot_result, one_map)
         return all_combined_gifs
 
     def test_aphasia(self):

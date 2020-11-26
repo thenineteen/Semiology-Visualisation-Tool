@@ -12,6 +12,7 @@ from mega_analysis.semiology import (  # semiology_dict_path,
     all_semiology_terms, gif_lat_file, map_df_dict, mega_analysis_df,
     melt_then_pivot_query, pivot_result_to_one_map)
 from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
+from mega_analysis.crosstab.mega_analysis.mapping import big_map
 
 
 # define paths: note dummy data has a tab called test_counts
@@ -41,6 +42,8 @@ dummy_map_df_dict = pd.read_excel(
 
 )
 
+one_map_dummy = big_map(dummy_map_df_dict)
+
 
 class PipelineSequenceTesting(unittest.TestCase):
     """
@@ -53,7 +56,7 @@ class PipelineSequenceTesting(unittest.TestCase):
 
     Note this uses the dummy data mapping not the live SemioBrain Database.
         to use dummy data mappings for top level query_lat, need to pass the argument
-        map_df_dict=dummy_map_df_dict
+        map_df_dict=dummy_map_df_dict (changed to one_map_dummy after Profiling)
     Note also that the SemioDict is the live one unless specifically specified
         e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path)
 
@@ -119,7 +122,7 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # returns the results from Q_L pipeline
         all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
@@ -136,7 +139,7 @@ class PipelineSequenceTesting(unittest.TestCase):
         # as no lateralising data, the below will run a manual pipeline
         # involving melt_then_pivot_query and pivot_result_to_one_map:
         all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
@@ -153,7 +156,7 @@ class PipelineSequenceTesting(unittest.TestCase):
 
         # returns the results from Q_L pipeline
         all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
@@ -247,7 +250,6 @@ class PipelineSequenceTesting(unittest.TestCase):
             QS.loc[QS['Gif Parcellations'].isin(gifs_left), 'pt #s']).all()
 
         assert not GIFS_leftIL
-
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()

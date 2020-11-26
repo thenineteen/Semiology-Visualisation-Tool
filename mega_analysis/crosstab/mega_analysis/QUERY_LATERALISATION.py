@@ -141,10 +141,11 @@ def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
     return lat_only_Right, lat_only_Left
 
 
-def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
+def QUERY_LATERALISATION(inspect_result, df, one_map, gif_lat_file,
                          side_of_symptoms_signs=None,
                          pts_dominant_hemisphere_R_or_L=None,
-                         normalise_lat_to_loc=False):
+                         normalise_lat_to_loc=False,
+                         disable_tqdm=True):
     """
     After obtaining inspect_result and clinician's filter, can optionally use this function to determine
     lateralisation e.g. for EpiNav(R) visualisation.
@@ -260,7 +261,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
     ), :].copy()  # only those with lat (with or without localising)
     no_rows = inspect_result_lat.shape[0]
-    one_map = big_map(map_df_dict)
     all_combined_gifs = None
     gifs_right, gifs_left = gifs_lat(gif_lat_file)
 
@@ -268,8 +268,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     id_cols = [i for i in full_id_vars() if i not in ['Localising']
                ]  # note 'Localising' is in id_cols
 
-    for i in tqdm(range(no_rows), desc='QUERY LATERALISTION: main',
-                  bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.BLUE, Fore.RESET)):
+    for i in (range(no_rows) if disable_tqdm else tqdm(range(no_rows), desc='QUERY LATERALISTION: main',
+                                                       bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.BLUE, Fore.RESET))):
         # logging.debug(str(i))
         Right = 0
         Left = 0
@@ -437,8 +437,8 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     if (nonlat_no_rows == 0) | inspect_result_nulllateralising.empty:
         gifs_not_lat = None
     elif nonlat_no_rows != 0:
-        for j in tqdm(range(nonlat_no_rows), desc='QUERY LATERALISATION: non-lateralising data',
-                      bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.CYAN, Fore.RESET)):
+        for j in (range(nonlat_no_rows) if disable_tqdm else tqdm(range(nonlat_no_rows), desc='QUERY LATERALISATION: non-lateralising data',
+                                                                  bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.CYAN, Fore.RESET))):
             full_row = inspect_result_nulllateralising.iloc[[j], :]
             row = full_row.drop(labels=id_cols, axis='columns',
                                 inplace=False, errors='ignore')
