@@ -49,7 +49,7 @@ def exclusions(df,
         pet_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df, semiology_term=pet,
                                                                        ignore_case=True, semiology_dict_path=None,
                                                                        col1=col1, col2=col1,
-                                                                       tqdm=False)
+                                                                       )
 
         hyper = ['Hyper']
         hyper_inspection, num_query_lat, num_query_loc = QUERY_SEMIOLOGY(df, semiology_term=hyper,

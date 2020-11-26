@@ -44,7 +44,7 @@ def dictionary_key_recursion_(dictionary, all_keys=[], all_values=[]):
     return all_keys, all_values
 
 
-def dictionary_key_recursion_2(dictionary, semiology_key):
+def dictionary_key_recursion_2(dictionary, semiology_key, disable_tqdm=True):
     """
     return the value(s) of a particular key, no matter how nested the key is within the dictionary.
     Ali Alim-Marvasti Aug 2019
@@ -55,7 +55,7 @@ def dictionary_key_recursion_2(dictionary, semiology_key):
         logging.debug(
             'No such key in semiology dictionary found. Lookup the dictionary keys. Did you miss a plural "s" or a hyphen?')
         yield
-    for k, v in tqdm(dictionary.items(), desc='Searching for Nested SemioDict Key...'):
+    for k, v in (dictionary.items() if disable_tqdm else tqdm(dictionary.items(), desc='Searching for Nested SemioDict Key...')):
         search = semiology_key == k.lower()
         if search:
             logging.debug('dictionary_key_recursion_2 found values of key')
