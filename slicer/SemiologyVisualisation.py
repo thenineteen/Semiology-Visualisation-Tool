@@ -284,8 +284,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' i.e. inversely proportional to the number of brain regions to which the'
             ' semiology of interest localised.'
             ' This option is only available when using either the "High Resolution Granular" or'
-            ' "Low Resolution Lobar" options.'
-        )
+            ' "Low Resolution Lobar" options.')
+        self.NormaliseToLocalisingCheckBox.setChecked(True)
         dataBaseTabLayout.addWidget(self.NormaliseToLocalisingCheckBox)
 
         return dataBaseTabWidget
@@ -828,7 +828,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
             # self.logic.showTableInViewLayout(self.tableNode)
 
-        self.settingsCollapsibleButton.setChecked(False)
+        # self.settingsCollapsibleButton.setChecked(False)
         self.tableCollapsibleButton.setChecked(True)
 
     def onColorBlindCheckBox(self):
