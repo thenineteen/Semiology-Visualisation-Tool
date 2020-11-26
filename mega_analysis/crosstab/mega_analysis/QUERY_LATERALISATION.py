@@ -141,7 +141,7 @@ def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
     return lat_only_Right, lat_only_Left
 
 
-def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
+def QUERY_LATERALISATION(inspect_result, df, one_map, gif_lat_file,
                          side_of_symptoms_signs=None,
                          pts_dominant_hemisphere_R_or_L=None,
                          normalise_lat_to_loc=False,
@@ -261,7 +261,6 @@ def QUERY_LATERALISATION(inspect_result, df, map_df_dict, gif_lat_file,
     inspect_result_lat = inspect_result.loc[inspect_result['Lateralising'].notnull(
     ), :].copy()  # only those with lat (with or without localising)
     no_rows = inspect_result_lat.shape[0]
-    one_map = big_map(map_df_dict)
     all_combined_gifs = None
     gifs_right, gifs_left = gifs_lat(gif_lat_file)
 

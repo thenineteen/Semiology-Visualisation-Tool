@@ -23,7 +23,7 @@ from .crosstab.mega_analysis.exclusions import (
     only_paediatric_cases,
     only_postictal_cases,
 )
-from .crosstab.mega_analysis.mapping import pivot_result_to_one_map
+from .crosstab.mega_analysis.mapping import pivot_result_to_one_map, big_map
 from .crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
@@ -55,6 +55,7 @@ gif_lat_file = pd.read_excel(
     header=0,
     sheet_name='Full GIF Map for Review ', engine="openpyxl",
 )
+one_map = big_map(map_df_dict)
 
 # Read lateralities for GUI
 neutral_only_path = resources_dir / 'semiologies_neutral_only.txt'
@@ -63,8 +64,10 @@ semiologies_neutral_only = neutral_only_path.read_text().splitlines()
 semiologies_neutral_also = neutral_also_path.read_text().splitlines()
 
 # Read postictal lateralities for GUI
-postictal_neutral_only_path = resources_dir / 'semiologies_postictalsonly_neutral_only.txt'
-postictal_neutral_also_path = resources_dir / 'semiologies_postictalsonly_neutral_also.txt'
+postictal_neutral_only_path = resources_dir / \
+    'semiologies_postictalsonly_neutral_only.txt'
+postictal_neutral_also_path = resources_dir / \
+    'semiologies_postictalsonly_neutral_also.txt'
 postictal_semiologies_neutral_only = postictal_neutral_only_path.read_text().splitlines()
 postictal_semiologies_neutral_also = postictal_neutral_also_path.read_text().splitlines()
 
@@ -113,7 +116,7 @@ class Semiology:
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             normalise_to_localising_values: bool = False,
-            ):
+    ):
         self.term = term
         self.symptoms_side = symptoms_side
         self.dominant_hemisphere = dominant_hemisphere
@@ -184,7 +187,7 @@ class Semiology:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
         return inspect_result
 
-    def query_lateralisation(self, map_df_dict=map_df_dict) -> Optional[pd.DataFrame]:
+    def query_lateralisation(self, one_map=one_map) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
         if query_semiology_result is None:
             print('No such semiology found')
@@ -205,7 +208,7 @@ class Semiology:
                     QUERY_LATERALISATION(
                         query_semiology_result,
                         self.data_frame,
-                        map_df_dict,
+                        one_map,
                         gif_lat_file,
                         side_of_symptoms_signs=self.symptoms_side.value,
                         pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
@@ -219,8 +222,8 @@ class Semiology:
                         self.term,
                     )
                     all_combined_gifs = pivot_result_to_one_map(
-                        pivot_result,
-                        map_df_dict=map_df_dict,
+                        pivot_result, one_map,
+                        # map_df_dict=map_df_dict,
                     )
         return all_combined_gifs
 

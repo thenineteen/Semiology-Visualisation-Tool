@@ -11,6 +11,7 @@ from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology, map_df_dict)
 from mega_analysis.crosstab.mega_analysis.gifs_lat_factor import gifs_lat_factor
+from mega_analysis.crosstab.mega_analysis.mapping import big_map
 
 
 # define paths: note dummy data has a tab called test_counts
@@ -38,6 +39,9 @@ dummy_map_df_dict = pd.read_excel(
     engine="openpyxl",
 )
 
+# dummy data one_map
+one_map_dummy = big_map(map_df_dict=dummy_map_df_dict)
+
 
 class TestDummyDataDummyDictionary(unittest.TestCase):
     """
@@ -46,7 +50,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
 
     Note this uses the dummy data mapping not the live SemioBrain Database.
         to use dummy data mappings for top level query_lat, need to pass the argument
-        map_df_dict=dummy_map_df_dict
+        map_df_dict=dummy_map_df_dict (previously) or after Profiling branch: just the already computed one_map=big_map(dummy_map_df_dict)
     Note also that the SemioDict is the live one unless specifically specified
         e.g. as an argument to QUERY_SEMIOLOGY(semiology_dict_path=dummy_semiology_dict_path)
 
@@ -161,10 +165,11 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         The call to the semiology_dictionary is the dummy_semio_dict as passed as an argument to q_l
         Relies on mapping strategy as uses gifs
         """
+
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
         all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         self.assertIs(type(all_combined_gifs), pd.DataFrame)
         assert not all_combined_gifs.empty
@@ -266,7 +271,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient = Semiology('lat_not_loc', Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
         lat_not_loc_all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         # inspect result
         lat_not_loc_result = patient.query_semiology()
@@ -315,7 +320,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient = Semiology('lat_', Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
         lat_not_loc_all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         # inspect result
         lat_not_loc_result = patient.query_semiology()
@@ -380,7 +385,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient.data_frame = self.df
 
         lat_allgifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         # drop the zero entries - should be only the IL left ones which aren't MTG of TL:
         lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
@@ -430,7 +435,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient.granular = True
 
         lat_allgifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
         lat_allgifs = lat_allgifs[['Gif Parcellations', 'pt #s']].astype(
             {'Gif Parcellations': 'int32', 'pt #s': 'int32'})
         lat_allgifs.set_index(
