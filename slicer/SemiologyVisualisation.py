@@ -268,7 +268,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' This option intends to favour semiologies which are more'
             ' (uni)-focal, by penalising those with multiple localisations.'
             ' This option is only available when using the "granular postcode'
-            ' hierarchy reversal" option.
+            ' hierarchy reversal" option.'
             ' Normalises datapoints such that it sets the unit of analysis to a single semiology'
             ' in a single patient.'
         )
