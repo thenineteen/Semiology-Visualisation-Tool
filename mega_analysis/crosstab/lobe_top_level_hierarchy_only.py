@@ -25,5 +25,5 @@ minor_locs = [
 
 
 def drop_minor_localisations(df):
-    df_temp = df.drop(columns=minor_locs, inplace=False)
+    df_temp = df.drop(columns=minor_locs, inplace=False, errors='ignore')
     return df_temp
