@@ -64,8 +64,8 @@ class SemiologyVisualisation(ScriptedLoadableModule):
         self.parent.categories = ["Epilepsy Semiology"]
         self.parent.dependencies = []
         self.parent.contributors = [
-            "Fernando Perez-Garcia",
             "Ali Alim-Marvasti",
+            "Fernando Perez-Garcia",
             "Gloria Romagnoli",
             "John S. Duncan",
         ]
@@ -149,7 +149,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         return patientQueryTabWidget
 
     def getInclusionsWidget(self):
-        inclusionsGroupBox = qt.QGroupBox('Inclusions')
+        inclusionsGroupBox = qt.QGroupBox('Ground Truths')
         inclusionsLayout = qt.QVBoxLayout(inclusionsGroupBox)
 
         ezgtGroupBox = qt.QGroupBox('Epileptogenic zone ground truth')
@@ -247,23 +247,46 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         dataBaseTabLayout.addWidget(inclusionsGroupBox)
 
         self.granularCheckBox = qt.QCheckBox(
-            'Granular as reported (non postcode)')
+            'High Resolution Granular: non-hierarchical as reported (non-postcode)')
+        self.granularCheckBox.setToolTip(
+            'Granular option reverses the hierarchy of lobes and subregions.'
+            'During data collection for the \'Semio2Brain Database\','
+            ' datapoints were replicated up the hierarchy of brain regions;'
+            ' for example, a localising datapoint to the hippocampus would result'
+            ' in data entries for \'hippocampus\', \'mesial temporal\' and \'Temporal Lobe\'.'
+            ' Granular option reverses this hierchical data entry as best as possible.')
         self.granularCheckBox.setChecked(True)
-        self.granularCheckBox.toggled.connect(self.onGranularCheckBox)
+        self.granularCheckBox.toggled.connect(
+            lambda: self.onGranularAndTopLevelCheckBox(self.granularCheckBox))
         dataBaseTabLayout.addWidget(self.granularCheckBox)
 
-        self.inverseLocalisingCheckBox = qt.QCheckBox(
+        self.TopLevelLobesCheckBox = qt.QCheckBox(
+            'Low Resoluton Lobar: top level lobes only')
+        self.TopLevelLobesCheckBox.setToolTip(
+            'As the data was collected in a hierarchical way,'
+            ' this option uses the top level lobes and discards the details.'
+            ' This \'low resolution\' view might be useful to assess biases introduced'
+            ' as a result of mapping reported brain regions to lobes, '
+            ' as well as a more broad indicator of localising value.')
+        self.TopLevelLobesCheckBox.toggled.connect(
+            lambda: self.onGranularAndTopLevelCheckBox(self.TopLevelLobesCheckBox))
+        dataBaseTabLayout.addWidget(self.TopLevelLobesCheckBox)
+
+        self.NormaliseToLocalisingCheckBox = qt.QCheckBox(
             'Normalise to localising values')
-        self.inverseLocalisingCheckBox.setToolTip(
-            'Reduce the localising-values in the Semio2Brain database in a way'
-            ' inversely proportional to the number of brain regions to which the'
-            ' semiology of interest localised.'
+        self.NormaliseToLocalisingCheckBox.setToolTip(
+            ' Normalises datapoints such that it sets the unit of analysis to a single semiology'
+            ' i.e. one semiology can have a sum total of 1 datapoint values in different brain regions.'
             ' This option intends to favour semiologies which are more'
             ' (uni)-focal, by penalising those with multiple localisations.'
-            ' This option is only available when using the "granular postcode'
-            ' hierarchy reversal" option.'
+            ' This is achieved by normalisinge values to localising column value: i.e. based on spread of localisations.'
+            ' The more regions a semiology EZ/SOZ localises to, the lower its brain localising-value.'
+            ' i.e. inversely proportional to the number of brain regions to which the'
+            ' semiology of interest localised.'
+            ' This option is only available when using either the "High Resolution Granular" or'
+            ' "Low Resolution Lobar" options.'
         )
-        dataBaseTabLayout.addWidget(self.inverseLocalisingCheckBox)
+        dataBaseTabLayout.addWidget(self.NormaliseToLocalisingCheckBox)
 
         return dataBaseTabWidget
 
@@ -571,7 +594,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
                 include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
                 include_only_paediatric_cases=self.paediatricCheckBox.isChecked(),
-                normalise_to_localising_values=self.inverseLocalisingCheckBox.isChecked(),
+                normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
+                top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
@@ -847,12 +871,18 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         name = self.gifComboBoxItemsToLabels[self.segmentsComboBox.currentText]
         self.parcellation.jumpToStructure(name)
 
-    def onGranularCheckBox(self):
-        if self.granularCheckBox.isChecked():
-            self.inverseLocalisingCheckBox.setEnabled(True)
+    def onGranularAndTopLevelCheckBox(self, source):
+        if (source == self.granularCheckBox) and self.granularCheckBox.isChecked():
+            self.NormaliseToLocalisingCheckBox.setEnabled(True)
+            self.TopLevelLobesCheckBox.setChecked(False)
+        elif (source == self.TopLevelLobesCheckBox) and self.TopLevelLobesCheckBox.isChecked():
+            self.NormaliseToLocalisingCheckBox.setEnabled(True)
+            self.granularCheckBox.setChecked(False)
+        if self.granularCheckBox.isChecked() or self.TopLevelLobesCheckBox.isChecked():
+            self.NormaliseToLocalisingCheckBox.setEnabled(True)
         else:
-            self.inverseLocalisingCheckBox.setChecked(False)
-            self.inverseLocalisingCheckBox.setEnabled(False)
+            self.NormaliseToLocalisingCheckBox.setChecked(False)
+            self.NormaliseToLocalisingCheckBox.setEnabled(False)
 
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
@@ -1632,6 +1662,7 @@ class Query:
                 include_only_paediatric_cases=semiology.include_only_paediatric_cases,
                 include_postictals=semiology.include_postictals,
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
+                top_level_lobes=semiology.top_level_lobes,
             )
             content.append(semiology_dict)
         return content

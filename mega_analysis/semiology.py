@@ -31,6 +31,7 @@ from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
+from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -116,6 +117,7 @@ class Semiology:
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             normalise_to_localising_values: bool = False,
+            top_level_lobes: bool = False,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -134,6 +136,7 @@ class Semiology:
         self.possible_lateralities = possible_lateralities
         self.granular = granular
         self.normalise_to_localising_values = normalise_to_localising_values
+        self.top_level_lobes = top_level_lobes
         self.include_only_postictals = self.is_postictals_only()
         if self.include_only_postictals:
             self.include_postictals = True
@@ -183,6 +186,10 @@ class Semiology:
             hierarchy_df = Hierarchy(inspect_result)
             hierarchy_df.all_hierarchy_reversal()
             inspect_result = hierarchy_df.new_df
+            if self.normalise_to_localising_values:
+                inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
+        elif self.top_level_lobes:
+            inspect_result = drop_minor_localisations(inspect_result)
             if self.normalise_to_localising_values:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
         return inspect_result
