@@ -27,7 +27,7 @@ patient = Semiology(
     'Tonic',
     symptoms_side=Laterality.LEFT,
     dominant_hemisphere=Laterality.LEFT,
-    inverse_localising_values=False,  # default is False
+    normalise_to_localising_values=False,  # default is False
 )
 
 ###
@@ -47,6 +47,12 @@ patient = Semiology(
 #
 ##
 ###
+
+###
+##
+# # if we want to set top_level_lobes to True:
+patient.granular = False
+patient.top_level_lobes = True
 
 heatmap = patient.get_num_datapoints_dict()
 print("\nSemiology: ", patient.term)
