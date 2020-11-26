@@ -1,13 +1,23 @@
 import numpy as np
 import pandas as pd
 from mega_analysis.crosstab.all_localisations import all_localisations
-from mega_analysis.Sankey_Functions import top_level_lobes
 
 # list of all excel localisations
 all_localisations = all_localisations()
 
 # list of top level localisations we want to keep
+
+
+def top_level_lobes():
+    Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
+             'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
+             'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
+             'PO', 'FP']
+    return Lobes
+
+
 major_localisations = top_level_lobes()
+
 
 # list of localisations to drop
 minor_locs = [
