@@ -20,15 +20,20 @@ def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
             yield from flatten_SemioDict(v)
 
 
+def top_level_lobes():
+    Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
+             'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
+             'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
+             'PO', 'FP']
+    return Lobes
+
+
 def normalise_top_level_localisation_cols(df):
     """ If the sum of datapoints in lobes is greater than localising col, normalise to localising semiology.
     Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.
     Should not run normalisation methods together """
 
-    Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
-             'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
-             'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
-             'PO', 'FP']
+    Lobes = top_level_lobes()
     df_temp = df.copy()
     df_temp = df_temp[Lobes]
 
