@@ -9,6 +9,7 @@ from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import (  # semiology_dict_path,
     QUERY_LATERALISATION, QUERY_SEMIOLOGY, Laterality, Semiology,
     map_df_dict)
+from mega_analysis.crosstab.mega_analysis.mapping import pivot_result_to_one_map, big_map
 
 
 # define paths: note dummy data has a tab called test_counts
@@ -36,6 +37,8 @@ dummy_map_df_dict = pd.read_excel(
     sheet_name=gif_sheet_names,
     engine="openpyxl",
 )
+
+one_map_dummy = big_map(dummy_map_df_dict)
 
 
 class NormaliseLocalisingValues(unittest.TestCase):
@@ -101,7 +104,7 @@ class NormaliseLocalisingValues(unittest.TestCase):
         patient.normalise_to_localising_values = normalise_to_localising_values
 
         all_combined_gifs = patient.query_lateralisation(
-            map_df_dict=dummy_map_df_dict)
+            one_map_dummy)
 
         return all_combined_gifs
 
@@ -186,7 +189,6 @@ class NormaliseLocalisingValues(unittest.TestCase):
         # assert all_combined_gifs_singlept['pt #s'].sum() > 0
         assert (all_combined_gifs_singlept['pt #s'].unique() ==
                 [0, 0.25]).all()
-
 
     # for debugging with __init__():
     # query = TestDummyDataDummyDictionary()

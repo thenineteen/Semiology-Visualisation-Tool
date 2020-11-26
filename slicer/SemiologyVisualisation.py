@@ -1,3 +1,4 @@
+# import cProfile
 import base64
 import hashlib
 import time
@@ -460,6 +461,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.updateButton.hide()
         self.updateButton.enabled = not self.autoUpdateCheckBox.isChecked()
         self.updateButton.clicked.connect(self.updateColors)
+        # self.updateButton.clicked.connect(self.updateColorsWithProfile)
         self.layout.addWidget(self.updateButton)
 
     def getSemiologiesScrollArea(self):
@@ -582,14 +584,16 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def getScoresFromCache(self, semiologies):
         from mega_analysis.semiology import get_df_from_semiologies
-        cache = self.logic.readCache()
         query = Query(semiologies)
         hashedQuery = query.hash()
-        if hashedQuery in cache and self.useCacheCheckBox.isChecked():
-            logging.info(f'Query found in cache: {hashedQuery}')
-            scores = Scores(cache[hashedQuery])
-            dataFrame = scores.df
-        else:
+        dataFrame = None
+        if self.useCacheCheckBox.isChecked():
+            cache = self.logic.readCache()
+            if hashedQuery in cache:
+                logging.info(f'Query found in cache: {hashedQuery}')
+                scores = Scores(cache[hashedQuery])
+                dataFrame = scores.df
+        if dataFrame is None:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
                     if self.minmaxRadioButton.isChecked():
@@ -598,10 +602,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                         method = 'softmax'
                     elif self.proportionsRadioButton.isChecked():
                         method = 'proportions'
-                    dataFrame = get_df_from_semiologies(semiologies, method=method)
+                    dataFrame = get_df_from_semiologies(
+                        semiologies, method=method)
                     scores = Scores(dataFrame)
-                    cache[hashedQuery] = scores.toDict()
-                    self.logic.writeCache(cache)
+                    if self.useCacheCheckBox.isChecked():
+                        cache[hashedQuery] = scores.toDict()
+                        self.logic.writeCache(cache)
                 except Exception as e:
                     message = (
                         'Error retrieving semiology information from mega_analysis module.'
@@ -704,6 +710,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
     def onAutoUpdateCheckBox(self):
         self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
+
+    # def updateColorsWithProfile(self):
+    #     p = cProfile.Profile()
+    #     p.runcall(self.updateColors)
+    #     p.dump_stats(
+    #         'C:\\Users\\ali_m\\AnacondaProjects\\PhD\\Semiology-Visualisation-Tool\\svt.profile')
+    #     logging.debug('Wrote profile file')
 
     def updateColors(self):
         from mega_analysis.semiology import (
@@ -849,7 +862,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         lateralitiesDict,
         radioButtonSlot,
         checkBoxSlot,
-        ):
+    ):
         from mega_analysis import Laterality
         semiologiesDict = {}
         for semiology_term, lateralities in lateralitiesDict.items():
@@ -956,7 +969,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         parcellationLabelMapNode,
         outputNode,
         showProgress=True,
-        ):
+    ):
         """Create a scalar volume node so that the colorbar is correct."""
 
         with messageContextManager('Creating scores volume node...'):
@@ -1176,7 +1189,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         semiologiesDataFrame,
         combinedDataFrame,
         removeScoresIfSingle=True,
-        ):
+    ):
         combinedDataFrame = combinedDataFrame.sort_values(
             by='Score', axis=1, ascending=False)
         combinedDataFrame = combinedDataFrame.apply(
@@ -1359,7 +1372,7 @@ class Parcellation(ABC):
         showRight=True,
         showProgress=True,
         min2dOpacity=1,
-        ):
+    ):
         """[summary]
 
         Args:
@@ -1371,7 +1384,6 @@ class Parcellation(ABC):
             showProgress (bool, optional): [description]. Defaults to True.
             min2dOpacity (int, optional): [description]. Defaults to 1.
         """
-        tic = time.time()
         if not showProgress:
             box = qt.QMessageBox()
             box.setStandardButtons(0)
@@ -1426,9 +1438,6 @@ class Parcellation(ABC):
             progressDialog.close()
         else:
             box.accept()
-        toc = time.time()
-        slicer.util.delayDisplay(
-            f'Updating colours took {int(toc - tic)} seconds')
         slicer.app.processEvents()
 
     def getColorFromScore(self, normalisedScore, colorNode):
