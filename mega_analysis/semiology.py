@@ -187,6 +187,8 @@ class Semiology:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
         elif self.top_level_lobes:
             inspect_result = drop_minor_localisations(inspect_result)
+            if self.normalise_to_localising_values:
+                inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
         return inspect_result
 
     def query_lateralisation(self, map_df_dict=map_df_dict) -> Optional[pd.DataFrame]:
