@@ -265,9 +265,15 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.TopLevelLobesCheckBox.setToolTip(
             'As the data was collected in a hierarchical way,'
             ' this option uses the top level lobes and discards the details.'
-            ' This \'low resolution\' view might be useful to assess biases introduced'
+            ' This "low resolution" view might be useful to assess biases introduced'
             ' as a result of mapping reported brain regions to lobes, '
-            ' as well as a more broad indicator of localising value.')
+            ' as well as a more broad indicator of localising value. '
+            ' For example, query "Spasms - epileptic/infantile" in paediatric patients under 7 yrs:'
+            ' a very specific opercular part of the frontal lobe lights up. By using Low Resolution option,'
+            ' we can investigate the nature of literature reporting of its localisation.'
+            ' Similarly for "Visual - Elementary" query with Bayesian filter: low resolution TLE, high resolution OL.'
+            ' This is due to localisation to many disparate TL regions which inidividually are less likely than the OL,'
+            ' but together have more data.')
         self.TopLevelLobesCheckBox.toggled.connect(
             lambda: self.onGranularAndTopLevelCheckBox(self.TopLevelLobesCheckBox))
         dataBaseTabLayout.addWidget(self.TopLevelLobesCheckBox)
