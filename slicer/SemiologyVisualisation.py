@@ -262,15 +262,16 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.NormaliseToLocalisingCheckBox = qt.QCheckBox(
             'Normalise to localising values')
         self.NormaliseToLocalisingCheckBox.setToolTip(
-            'Reduce the localising-values in the Semio2Brain database in a way'
-            ' inversely proportional to the number of brain regions to which the'
-            ' semiology of interest localised.'
+            ' Normalises datapoints such that it sets the unit of analysis to a single semiology'
+            ' i.e. one semiology can have a sum total of 1 datapoint values in different brain regions.'
             ' This option intends to favour semiologies which are more'
             ' (uni)-focal, by penalising those with multiple localisations.'
+            ' This is achieved by normalisinge values to localising column value: i.e. based on spread of localisations.'
+            ' The more regions a semiology EZ/SOZ localises to, the lower its brain localising-value.'
+            ' i.e. inversely proportional to the number of brain regions to which the'
+            ' semiology of interest localised.'
             ' This option is only available when using the "granular postcode'
             ' hierarchy reversal" option.'
-            ' Normalises datapoints such that it sets the unit of analysis to a single semiology'
-            ' in a single patient.'
         )
         dataBaseTabLayout.addWidget(self.NormaliseToLocalisingCheckBox)
 
@@ -859,9 +860,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     def onGranularCheckBox(self):
         if self.granularCheckBox.isChecked():
             self.NormaliseToLocalisingCheckBox.setEnabled(True)
+            # top level lobe option
             self.TopLevelLobesCheckBox.setEnabled(False)
             self.TopLevelLobesCheckBox.setChecked(False)
-            # ali top level lobe option
         else:
             self.NormaliseToLocalisingCheckBox.setChecked(False)
             self.NormaliseToLocalisingCheckBox.setEnabled(False)
