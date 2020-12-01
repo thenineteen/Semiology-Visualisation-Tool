@@ -564,7 +564,7 @@
         ]
 
   speech:
-    "Vocalisation": # non-sensical sounds
+    "Vocalisation: Unintelligible Noises": # non-sensical sounds
       [
         "Vocalisation",
         "Vocalization",
@@ -606,7 +606,7 @@
         "articulatory",
         "paraphasia",
       ]
-    "Ictal Speech":
+    "Ictal Speech: Formed Words":
       [
         "ictal speech((?! arrest)(?! impairment))",
         "speech \\(ictal\\)",

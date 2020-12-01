@@ -16,7 +16,7 @@ Fear-Anxiety
 Gelastic
 Gustatory
 Ictal Pout
-Ictal Speech
+Ictal Speech: Formed Words
 LOC
 No Semiology - Only Stimulation Studies
 Non-Specific Aura
@@ -25,5 +25,5 @@ Palilalia
 Psychic
 Spitting
 Vestibular
-Vocalisation
+Vocalisation: Unintelligible Noises
 Whistling
