@@ -94,7 +94,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
                   'Hypothalamus', 'OTHER']
     LobesOTHER_splitTL = [i for i in LobesOTHER if i not in ['TL']]
     TL_split = ['Anterior (temporal pole)', 'Lateral Temporal',
-                'Mesial Temporal', 'Posterior Temporal']
+                'Mesial Temporal', 'Posterior Temporal', 'Basal (including Fusiform OTMG)']
     LobesOTHER_splitTL.extend(TL_split)
 
     df_temp = df.copy()
@@ -102,7 +102,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
 
     if 'normalise_top_level_first' in kwargs:
         # use other function
-        df_temp, LobesOTHER = normalise_top_level_localisation_cols_OTHER(
+        df_temp, LobeslOTHER = normaise_top_level_localisation_cols_OTHER(
             df_temp)
         # now normalise TL subregions to TL:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
@@ -112,7 +112,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
             df_temp.loc[:, 'TL subregion ratio'], axis=0)
 
     else:
-        # distribute excess TL to the 4 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
+        # distribute excess TL to the 5 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
         # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
         mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
         df_temp['TL subregion ratio'] = 1
