@@ -114,6 +114,7 @@ class Semiology:
             include_et_topology_ez: bool = True,
             include_spontaneous_semiology: bool = True,
             include_only_paediatric_cases: bool = False,
+            include_paeds_and_adults: bool = False,
             include_postictals: bool = False,
             possible_lateralities: Optional[List[Laterality]] = None,
             normalise_to_localising_values: bool = False,
@@ -129,6 +130,7 @@ class Semiology:
         self.include_et_topology_ez = include_et_topology_ez
         self.include_spontaneous_semiology = include_spontaneous_semiology
         self.include_only_paediatric_cases = include_only_paediatric_cases
+        self.include_paeds_and_adults = include_paeds_and_adults
         self.include_postictals = include_postictals
         self.data_frame = mega_analysis_df
         if possible_lateralities is None:
@@ -155,6 +157,8 @@ class Semiology:
             df = only_postictal_cases(df)
         if self.include_only_paediatric_cases:
             df = only_paediatric_cases(df)
+        elif self.include_paeds_and_adults:
+            pass
         else:
             df = exclude_paediatric_cases(df)
         if not self.include_concordance:
