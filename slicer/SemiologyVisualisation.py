@@ -149,10 +149,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         return patientQueryTabWidget
 
     def getInclusionsWidget(self):
-        inclusionsGroupBox = qt.QGroupBox('Ground Truths')
+        inclusionsGroupBox = qt.QGroupBox('Database Filters')
         inclusionsLayout = qt.QVBoxLayout(inclusionsGroupBox)
 
-        ezgtGroupBox = qt.QGroupBox('Epileptogenic zone ground truth')
+        ezgtGroupBox = qt.QGroupBox(
+            'Epileptogenic zone, seizure-onset zone, or lesional and irritative zone ground truths')
         inclusionsLayout.addWidget(ezgtGroupBox)
         ezgtLayout = qt.QVBoxLayout(ezgtGroupBox)
 
@@ -187,7 +188,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ezgtLayout.addWidget(self.invasiveEegCheckBox)
         ezgtLayout.addWidget(self.concordanceCheckBox)
 
-        publicationGroupBox = qt.QGroupBox('Publication approaches')
+        publicationGroupBox = qt.QGroupBox('Publication Approaches (Bayesian)')
         inclusionsLayout.addWidget(publicationGroupBox)
         publicationLayout = qt.QVBoxLayout(publicationGroupBox)
 
@@ -225,17 +226,24 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ageGroupBox = qt.QGroupBox('Age')
         inclusionsLayout.addWidget(ageGroupBox)
         ageLayout = qt.QVBoxLayout(ageGroupBox)
-        self.paediatricCheckBox = qt.QCheckBox(
-            'Only paediatric under seven years')
+
+        self.paediatricCheckBox = qt.QCheckBox('Only paediatric under seven years')
         self.paediatricCheckBox.setToolTip(
             'Include only cases for which we are certain that the semiology was'
-            ' reported in a patient under 7-years old. If unchecked, this cases will'
-            ' be excluded.'
+            ' reported in a patient under 7-years old. If unchecked, paediatric cases will'
+            ' be excluded i.e. adult cases are queried by default.'
         )
+        self.paediatricCheckBox.toggled.connect(
+            lambda: self.onAgeCheckBox(self.paediatricCheckBox))
         ageLayout.addWidget(self.paediatricCheckBox)
 
-        self.postSurgicalSzFreedomCheckBox = qt.QCheckBox(
-            'Postoperative seizure freedom')
+        self.PaedsAndAdultsCheckBox = qt.QCheckBox('Include both paediatric and adult data')
+        self.PaedsAndAdultsCheckBox.setToolTip(
+            'Incldue all data labelled and unlabelled by age.'
+        )
+        self.PaedsAndAdultsCheckBox.toggled.connect(
+            lambda: self.onAgeCheckBox(self.PaedsAndAdultsCheckBox))
+        ageLayout.addWidget(self.PaedsAndAdultsCheckBox)
 
         return inclusionsGroupBox
 
@@ -260,8 +268,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             lambda: self.onGranularAndTopLevelCheckBox(self.granularCheckBox))
         dataBaseTabLayout.addWidget(self.granularCheckBox)
 
-        self.TopLevelLobesCheckBox = qt.QCheckBox(
-            'Low Resoluton Lobar: top level lobes only')
+        self.TopLevelLobesCheckBox = qt.QCheckBox('Low Resoluton Lobar: top level lobes only')
         self.TopLevelLobesCheckBox.setToolTip(
             'As the data was collected in a hierarchical way,'
             ' this option uses the top level lobes and discards the details.'
@@ -278,8 +285,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             lambda: self.onGranularAndTopLevelCheckBox(self.TopLevelLobesCheckBox))
         dataBaseTabLayout.addWidget(self.TopLevelLobesCheckBox)
 
-        self.NormaliseToLocalisingCheckBox = qt.QCheckBox(
-            'Normalise to localising values')
+        self.NormaliseToLocalisingCheckBox = qt.QCheckBox('Normalise to localising values')
         self.NormaliseToLocalisingCheckBox.setToolTip(
             ' Normalises datapoints such that it sets the unit of analysis to a single semiology'
             ' i.e. one semiology can have a sum total of 1 datapoint values in different brain regions.'
@@ -600,6 +606,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_et_topology_ez=self.epilepsyTopologyCheckBox.isChecked(),
                 include_spontaneous_semiology=self.seizureSemiologyCheckBox.isChecked(),
                 include_only_paediatric_cases=self.paediatricCheckBox.isChecked(),
+                include_paeds_and_adults=self.PaedsAndAdultsCheckBox.isChecked(),
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
             )
@@ -890,6 +897,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.NormaliseToLocalisingCheckBox.setChecked(False)
             self.NormaliseToLocalisingCheckBox.setEnabled(False)
 
+    def onAgeCheckBox(self, source):
+        if (source == self.paediatricCheckBox) and self.paediatricCheckBox.isChecked():
+            self.PaedsAndAdultsCheckBox.setChecked(False)
+        elif (source == self.PaedsAndAdultsCheckBox) and self.PaedsAndAdultsCheckBox.isChecked():
+            self.paediatricCheckBox.setChecked(False)
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
@@ -1666,6 +1678,7 @@ class Query:
                 include_et_topology_ez=semiology.include_et_topology_ez,
                 include_spontaneous_semiology=semiology.include_spontaneous_semiology,
                 include_only_paediatric_cases=semiology.include_only_paediatric_cases,
+                include_paeds_and_adults=semiology.include_paeds_and_adults,
                 include_postictals=semiology.include_postictals,
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,

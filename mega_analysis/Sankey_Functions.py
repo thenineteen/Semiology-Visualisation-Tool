@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 import chart_studio.plotly as py
+import plotly.io as pio
 from plotly import __version__
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
 import cufflinks as cf
@@ -94,7 +95,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
                   'Hypothalamus', 'OTHER']
     LobesOTHER_splitTL = [i for i in LobesOTHER if i not in ['TL']]
     TL_split = ['Anterior (temporal pole)', 'Lateral Temporal',
-                'Mesial Temporal', 'Posterior Temporal']
+                'Mesial Temporal', 'Posterior Temporal', 'Basal (including Fusiform OTMG)']
     LobesOTHER_splitTL.extend(TL_split)
 
     df_temp = df.copy()
@@ -102,7 +103,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
 
     if 'normalise_top_level_first' in kwargs:
         # use other function
-        df_temp, LobesOTHER = normalise_top_level_localisation_cols_OTHER(
+        df_temp, LobeslOTHER = normaise_top_level_localisation_cols_OTHER(
             df_temp)
         # now normalise TL subregions to TL:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
@@ -112,7 +113,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
             df_temp.loc[:, 'TL subregion ratio'], axis=0)
 
     else:
-        # distribute excess TL to the 4 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
+        # distribute excess TL to the 5 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
         # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
         mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
         df_temp['TL subregion ratio'] = 1
@@ -323,13 +324,59 @@ def Sankey_new_layer2(df,
     return second_merge_sorted, df_layer1_layer2, df_Nodes_Labels
 
 
+def rename_labels(df_Nodes_Labels_Lobes_age):
+    # rename TL splits:
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Mesial Temporal', 'Nodes, Labels'] = 'Mesial TL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Posterior Temporal', 'Nodes, Labels'] = 'Posterior TL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Lateral Temporal', 'Nodes, Labels'] = 'Lateral TL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Anterior (temporal pole)', 'Nodes, Labels'] = 'Anterior TL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Paediatric (<7yrs)', 'Nodes, Labels'] = '<7yrs'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Adult (>7yrs)', 'Nodes, Labels'] = '>7yrs'
+
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Basal (including Fusiform OTMG)', 'Nodes, Labels'] = 'Basal TL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Complex Behavioural', 'Nodes, Labels'] = 'Complex Behaviour'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Spontaneous Semiology (SS)', 'Nodes, Labels'] = 'SS'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Epilepsy Topology (ET)', 'Nodes, Labels'] = 'ET'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Cortical Stimulation (CS)', 'Nodes, Labels'] = 'CS'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Seizure-Freedom Only', 'Nodes, Labels'] = 'SF only'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'SF and Concordance', 'Nodes, Labels'] = 'SF & Concordance'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Concordance and sEEG', 'Nodes, Labels'] = 'sEEG & Concordance'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Spasms - epileptic/infantile', 'Nodes, Labels'] = 'Spasms'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
+
+    return df_Nodes_Labels_Lobes_age
+
+
 def sankey_plot(
     label,
     color,
     source,
     target,
     value,
+    link_colour=None,
     title="Semio2Brain Database Sankey Diagram:\nLocalising Datapoints Flow",
+    height=772,
+    width=950,
+    pad=10,
+    thickness=30,
+    fontsize=10,
+    updatemenus=False,
 ):
     """
     e.g.
@@ -348,8 +395,8 @@ def sankey_plot(
         orientation="h",
         valueformat=".0f",
         node=dict(
-            pad=10,
-            thickness=30,
+            pad=pad,
+            thickness=thickness,
             line=dict(
                 color="black",
                 width=0.5
@@ -361,17 +408,131 @@ def sankey_plot(
             source=source,
             target=target,
             value=value,
+            color=link_colour,
         )
     )
+    if not updatemenus:
+        layout = dict(
+            title=title,
+            height=height,
+            width=width,
+            font=dict(
+                size=fontsize
+            ),
+        )
+    if updatemenus:
+        layout = dict(
+            title=title,
+            height=height,
+            width=width,
+            font=dict(
+                size=fontsize
+            ),
+            updatemenus=[
+                dict(
+                    y=0.8,
+                    buttons=[
+                        dict(
+                            label='Light',
+                            method='relayout',
+                            args=['paper_bgcolor', 'white']
+                        ),
+                        dict(
+                            label='Dark',
+                            method='relayout',
+                            args=['paper_bgcolor', 'black']
+                        ),
+                        dict(
+                            label='Teal',
+                            method='relayout',
+                            args=['paper_bgcolor', 'teal']
+                        ),
+                        dict(
+                            label='Lightblue',
+                            method='relayout',
+                            args=['paper_bgcolor', 'lightblue']
+                        )
+                    ]
 
-    layout = dict(
-        title=title,
-        height=772,
-        width=950,
-        font=dict(
-            size=10
-        ),
-    )
+                ),
+                dict(
+                    y=0.7,
+                    buttons=[
+                        dict(
+                            label='Thick',
+                            method='restyle',
+                            args=['node.thickness', 15]
+                        ),
+                        dict(
+                            label='Thin',
+                            method='restyle',
+                            args=['node.thickness', 8]
+                        )
+                    ]
+                ),
+                dict(
+                    y=0.6,
+                    buttons=[
+                        dict(
+                            label='Small gap',
+                            method='restyle',
+                            args=['node.pad', 15]
+                        ),
+                        dict(
+                            label='Large gap',
+                            method='restyle',
+                            args=['node.pad', 20]
+                        )
+                    ]
+                ),
+                dict(
+                    y=0.5,
+                    buttons=[
+                        dict(
+                            label='Snap',
+                            method='restyle',
+                            args=['arrangement', 'snap']
+                        ),
+                        dict(
+                            label='Perpendicular',
+                            method='restyle',
+                            args=['arrangement', 'perpendicular']
+                        ),
+                        dict(
+                            label='Freeform',
+                            method='restyle',
+                            args=['arrangement', 'freeform']
+                        ),
+                        dict(
+                            label='Fixed',
+                            method='restyle',
+                            args=['arrangement', 'fixed']
+                        )
+                    ]
+                ),
+                dict(
+                    y=0.4,
+                    buttons=[
+                        dict(
+                            label='Horizontal',
+                            method='restyle',
+                            args=['orientation', 'h']
+                        ),
+                        dict(
+                            label='Vertical',
+                            method='restyle',
+                            args=['orientation', 'v']
+                        )
+                    ]
+
+                )
+            ],
+        )
 
     fig = dict(data=[data_trace], layout=layout)
     iplot(fig, validate=False)
+
+    # https://community.plotly.com/t/sankey-graphs-blank-when-saved-as-svg/20312
+    # fig = go.Figure(data=[data], layout=layout)
+    # pio.write_image(fig, "./output/graphs/")
+    return fig
