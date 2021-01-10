@@ -147,6 +147,7 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
                     semiology_dict_path=None,
                     col1='Reported Semiology',
                     col2='Semiology Category',
+                    all_columns_wanted = False,
                     **kwargs):
     """
     Search for key terms in both "reported semiology" and "semiology category" and return df if found in either.
@@ -239,7 +240,8 @@ def QUERY_SEMIOLOGY(df, semiology_term='love',
 
     # to fix issue #7 by commenting out below and inserting 3 lines instead:
     # may remove lateralising or localising if all nan
-    inspect_result = inspect_result.dropna(axis='columns', how='all')
+    if not all_columns_wanted:
+        inspect_result = inspect_result.dropna(axis='columns', how='all')
     if 'Localising' not in inspect_result.columns:
         inspect_result['Localising'] = 0
     if 'Lateralising' not in inspect_result.columns:
