@@ -115,3 +115,6 @@ test_scripts/
 
 resources/Semio2Brain Database_Mappings_Calibration.xlsx
 resources/~$Semio2Brain Database_Mappings_Calibration.xlsx
+Pipfile
+Pipfile.lock
+resources/~$Semio2Brain Database.xlsx
