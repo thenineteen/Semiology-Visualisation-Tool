@@ -359,6 +359,22 @@ def rename_labels(df_Nodes_Labels_Lobes_age):
                                   == 'Spasms - epileptic/infantile', 'Nodes, Labels'] = 'Spasms'
     df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
                                   == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Autonomous-Vegetative', 'Nodes, Labels'] = 'Autonomic'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'CING', 'Nodes, Labels'] = 'Cingulate'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'INSULA', 'Nodes, Labels'] = 'Insula'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'OTHER', 'Nodes, Labels'] = 'Other'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Mesial TL', 'Nodes, Labels'] = 'mTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Posterior TL', 'Nodes, Labels'] = 'pTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Anterior TL', 'Nodes, Labels'] = 'aTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
 
     return df_Nodes_Labels_Lobes_age
 
@@ -377,6 +393,7 @@ def sankey_plot(
     thickness=30,
     fontsize=10,
     updatemenus=False,
+    alpha=0.4,
 ):
     """
     e.g.
