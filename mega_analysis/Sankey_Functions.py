@@ -376,6 +376,11 @@ def rename_labels(df_Nodes_Labels_Lobes_age):
     df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
                                   == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
 
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Ictal Speech', 'Nodes, Labels'] = 'Ictal Speech: Formed Words'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels'] ==
+                                  'Vocalisation', 'Nodes, Labels'] = 'Vocalisation: Unintelligible Noises'
+
     return df_Nodes_Labels_Lobes_age
 
 
@@ -470,7 +475,6 @@ def sankey_plot(
                             args=['paper_bgcolor', 'lightblue']
                         )
                     ]
-
                 ),
                 dict(
                     y=0.7,
@@ -491,12 +495,32 @@ def sankey_plot(
                     y=0.6,
                     buttons=[
                         dict(
-                            label='Small gap',
+                            label='Tiny gap 6',
+                            method='restyle',
+                            args=['node.pad', 6]
+                        ),
+                        dict(
+                            label='Small gap 8',
+                            method='restyle',
+                            args=['node.pad', 8]
+                        ),
+                        dict(
+                            label='Medium gap 10',
+                            method='restyle',
+                            args=['node.pad', 10]
+                        ),
+                        dict(
+                            label='Med-Large gap 12',
+                            method='restyle',
+                            args=['node.pad', 12]
+                        ),
+                        dict(
+                            label='Large gap 15',
                             method='restyle',
                             args=['node.pad', 15]
                         ),
                         dict(
-                            label='Large gap',
+                            label='Very Large gap 20',
                             method='restyle',
                             args=['node.pad', 20]
                         )
