@@ -4,7 +4,6 @@ import copy
 import statsmodels.stats.proportion as ssp
 import multinomial_ci
 
-
 def get_counts_df(query_results, region_names, merge_temporal = False, other_included = True):
     columns_of_interest = []
     counts_matrix = []
@@ -19,7 +18,7 @@ def get_counts_df(query_results, region_names, merge_temporal = False, other_inc
         semiology_counts = query_inspection[columns_of_interest].sum().values
         counts_matrix.append(semiology_counts)
     counts_df = pd.DataFrame(counts_matrix, index=query_results.keys(), columns=columns_of_interest)
-    return counts_df 
+    return counts_df
 
 
 def merge_all_other_semiologies(counts_df, semiologies_of_interest):
@@ -39,7 +38,7 @@ def merge_all_other_zones(counts_df, roi):
     return dropped_df
 
 def calculate_proportions(counts_df, axis):
-    if axis == 'semiology':
+if axis == 'semiology':
         totals_by_semiology = counts_df.sum(1)
         proportions_df = counts_df.div(totals_by_semiology, axis='index')
     elif axis == 'zone':
