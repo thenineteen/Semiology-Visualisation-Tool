@@ -38,7 +38,7 @@ def merge_all_other_zones(counts_df, roi):
     return dropped_df
 
 def calculate_proportions(counts_df, axis):
-if axis == 'semiology':
+    if axis == 'semiology':
         totals_by_semiology = counts_df.sum(1)
         proportions_df = counts_df.div(totals_by_semiology, axis='index')
     elif axis == 'zone':
@@ -77,3 +77,21 @@ def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=
     upper_ci_df = pd.DataFrame(ci_matrix[:,:,1], index=counts_df.index, columns=counts_df.columns)
     
     return lower_ci_df, upper_ci_df
+
+
+def analyse_query(query_result, axis, region_names, confint_method = 'binomial', merge_temporal = False, other_included = True, semiologies_of_interest = None, regions_of_interest = None, drop_other_semiology = True):
+    counts_df = get_counts_df(query_result, region_names, merge_temporal, other_included)
+    if semiologies_of_interest:
+        counts_df = merge_all_other_semiologies(counts_df, semiologies_of_interest)
+        if drop_other_semiology:
+            counts_df = counts_df.drop('All other')
+    if regions_of_interest:
+        counts_df = merge_all_other_zones(counts_df, regions_of_interest)
+    proportion_df = calculate_proportions(counts_df, axis)
+    confint_dfs = calculate_confint(counts_df, axis = axis, method = confint_method, alpha=0.05)
+    processed_dfs = {
+        'counts': counts_df,
+        'proportion': proportion_df,
+        'confints': confint_dfs
+    }
+    return processed_dfs
