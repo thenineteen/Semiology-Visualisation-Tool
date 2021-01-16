@@ -1,7 +1,7 @@
 from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.crosstab.hierarchy_dictionaries import temporal_postcodes
 
-def get():
+def get_region_names():
     top_level = top_level_lobes()
     top_level_of_interest = [
                             'TL',
@@ -22,19 +22,6 @@ def get():
                                     'Posterior Temporal',
                                     'Basal (including Fusiform OTMG)']
 
-    roi_clean_labels = ['Anterior Temporal',
-    'Lateral Temporal',
-    'Mesial Temporal',
-    'Posterior Temporal',
-    'Basal Temporal',
-    'Cingulate Gyrus',
-    'Frontal Lobe',
-    'Parietal Lobe',
-    'Hypothalamus',
-    'Insula',
-    'Occipital Lobe',
-    'Interlobar Junctions+']
-
     all_regions = get_all_regions()
 
     region_names = {'all': all_regions,
@@ -44,10 +31,62 @@ def get():
                     'top_level_all_other': top_level_all_other,
                     'top_level_temporal': ['TL'],
                     'low_level_temporal_all': low_level_temporal_all,
-                    'low_level_temporal_of_interest': low_level_temporal_of_interest,
-                    'roi_clean_labels': roi_clean_labels}
+                    'low_level_temporal_of_interest': low_level_temporal_of_interest}
 
     return region_names
+
+def clean_localisations(labels):
+    pre_localisation = ['Anterior (temporal pole)',
+             'Lateral Temporal',
+             'Mesial Temporal',
+             'Posterior Temporal',
+             'Basal (including Fusiform OTMG)',
+             'Hypothalamus',
+             'PL',
+             'CING',
+             'OL',
+             'FL',
+             'INSULA',
+             'All other']
+
+    post_localisation = ['Anterior Temporal',
+     'Lateral Temporal',
+     'Mesial Temporal',
+     'Posterior Temporal',
+     'Basal Temporal',
+     'Hypothalamus',
+     'Parietal Lobe',
+     'Cingulate Gyrus',
+     'Occipital Lobe',
+     'Frontal Lobe',
+     'Insula',
+     'Interlobar Junctions+']
+
+    look_up_dict = dict(zip(pre_localisation, post_localisation))
+
+    return [look_up_dict[label] for label in labels]
+
+
+def clean_semiologies(labels):
+    pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomous-Vegetative',
+       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
+       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
+       'Automatisms Combination - Manual LowerLimb Oral',
+       'Vocalisation: Unintelligible Noises', 'Aphasia',
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other']
+    
+    post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
+       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
+       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
+       'Automatisms','Unintelligible Noises', 'Aphasia',
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other']
+
+    look_up_dict = dict(zip(pre_semiology, post_semiology))
+
+    return [look_up_dict[label] for label in labels]
+
 
 def get_all_regions():
     all_regions = """TL
