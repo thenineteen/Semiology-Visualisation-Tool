@@ -15,7 +15,8 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    y_labels = None,
                                    overlapping = False,
                                    ax_titles = None,
-                                   plotter_settings = None
+                                   xlim = [-0.05,1],
+                                   plotter_settings = None,
                                   ):
 
     """
@@ -80,7 +81,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
         except TypeError:
             ax.title.set_text(row_name + n_label_text + ')')
             
-        ax.set_xlim([-0.05,1])
+        ax.set_xlim(xlim)
         plt.xticks(np.arange(0, 1.1, 0.2))
         ax.axvline(x=1/len(x),ymin=0,ymax=1,c='darkgray', linewidth=1, zorder=0, clip_on=False)
     
