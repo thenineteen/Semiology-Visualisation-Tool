@@ -47,7 +47,8 @@ def clean_localisations(labels):
              'OL',
              'FL',
              'INSULA',
-             'All other']
+             'All other',
+             ]
 
     post_localisation = ['Anterior Temporal',
      'Lateral Temporal',
@@ -63,6 +64,22 @@ def clean_localisations(labels):
      'Interlobar Junctions+']
 
     look_up_dict = dict(zip(pre_localisation, post_localisation))
+
+    pre_cing = ['Ant Cing (frontal, genu)', 'Post Cing', 'Cingulate - (anterior + posterior)']
+    post_cing = ['Anterior Cingulate', 'Posterior Cingulate', 'Cingulate, not Anterior or Posterior']
+
+    pre_sma = ['FL-SMA']
+    post_sma = ['FL not SMA']
+
+    pre_pl = ['Primary Sensory Cortex (post-central gyrus)',
+       'medial anterior parietal', 'Sup. pariet. lobule',
+       'Inferior Parietal Lobule']
+
+    post_pl = ['Primary Sensory Cortex',
+       'Medial Anterior Parietal', 'Superior Parietal',
+       'Inferior Parietal']
+    
+    look_up_dict.update(zip(pre_cing+pre_sma+pre_pl, post_cing+post_sma+post_pl))
 
     return [look_up_dict[label] for label in labels]
 
