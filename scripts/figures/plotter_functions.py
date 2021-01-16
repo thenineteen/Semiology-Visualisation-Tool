@@ -81,3 +81,50 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
 
     axs[subplot_width-1, 1].set_xlabel('P (Localisation | Semiology)', ha='center')
     plt.tight_layout()
+
+
+def clean_labels(labels):
+    pre_localisation = ['Anterior (temporal pole)',
+             'Lateral Temporal',
+             'Mesial Temporal',
+             'Posterior Temporal',
+             'Basal (including Fusiform OTMG)',
+             'Hypothalamus',
+             'PL',
+             'CING',
+             'OL',
+             'FL',
+             'INSULA',
+             'All other']
+
+    post_localisation = ['Anterior Temporal',
+     'Lateral Temporal',
+     'Mesial Temporal',
+     'Posterior Temporal',
+     'Basal Temporal',
+     'Hypothalamus',
+     'Parietal Lobe',
+     'Cingulate Gyrus',
+     'Occipital Lobe',
+     'Frontal Lobe',
+     'Insula',
+     'Interlobar Junctions+']
+    
+    pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomous-Vegetative',
+       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
+       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
+       'Automatisms Combination - Manual LowerLimb Oral',
+       'Vocalisation: Unintelligible Noises', 'Aphasia',
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA']
+    
+    post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
+       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
+       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
+       'Automatisms','Unintelligible Noises', 'Aphasia',
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA']
+
+    look_up_dict = dict(zip(pre_localisation+pre_semiology, post_localisation+post_semiology))
+
+    return [look_up_dict[label] for label in labels]
