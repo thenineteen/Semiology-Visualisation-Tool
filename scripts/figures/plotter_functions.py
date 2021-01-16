@@ -8,7 +8,6 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    confint_df_1,
                                    counts_df_1,
                                    colors,
-                                   plotter_settings,
                                    legend_labels,
                                    proportion_df_2,
                                    confint_df_2,
@@ -16,7 +15,15 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    y_labels = None,
                                    overlapping = False,
                                    ax_titles = None,
+                                   plotter_settings = None
                                   ):
+
+    """
+    Plot a forest plot of proportions and confidence intervals. Can be two sets of data points
+    (different colours) on each axis.
+
+    If only one set of points, set proportion_df_2, confint_df_2, counts_df_2 = None
+    """
     n_rows, n_columns =  proportion_df_1.shape
     subplot_width = int(n_rows / 3) + (n_rows % 3 > 0) # axes are in 3 rows, subplot_width columns
     
@@ -81,50 +88,3 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
 
     axs[subplot_width-1, 1].set_xlabel('P (Localisation | Semiology)', ha='center')
     plt.tight_layout()
-
-
-def clean_labels(labels):
-    pre_localisation = ['Anterior (temporal pole)',
-             'Lateral Temporal',
-             'Mesial Temporal',
-             'Posterior Temporal',
-             'Basal (including Fusiform OTMG)',
-             'Hypothalamus',
-             'PL',
-             'CING',
-             'OL',
-             'FL',
-             'INSULA',
-             'All other']
-
-    post_localisation = ['Anterior Temporal',
-     'Lateral Temporal',
-     'Mesial Temporal',
-     'Posterior Temporal',
-     'Basal Temporal',
-     'Hypothalamus',
-     'Parietal Lobe',
-     'Cingulate Gyrus',
-     'Occipital Lobe',
-     'Frontal Lobe',
-     'Insula',
-     'Interlobar Junctions+']
-    
-    pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomous-Vegetative',
-       'Olfactory', 'Visual - Elementary', 'Somatosensory',
-       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
-       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
-       'Automatisms Combination - Manual LowerLimb Oral',
-       'Vocalisation: Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA']
-    
-    post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
-       'Olfactory', 'Visual - Elementary', 'Somatosensory',
-       'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
-       'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
-       'Automatisms','Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA']
-
-    look_up_dict = dict(zip(pre_localisation+pre_semiology, post_localisation+post_semiology))
-
-    return [look_up_dict[label] for label in labels]
