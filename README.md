@@ -49,9 +49,10 @@ The data are also tagged to allow Bayesian filtering of patient semiologies from
 * Cortical Electrical Stimulation (CES/ES): when the paper describes the semiology elicited by electrical brain stimulation, in the context of pre-/ intra-surgical functional mapping.
 * If new data is to be added, must include paediatric under 7 label, and if postictal, must be typed "postictal" and not in any other format.
 
-### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.1.1
+### 2. Resources: Semiology_Dictionary Taxonomy Replacement (SemioDict) - v 1.2.1
 [See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 
+* 21st Jan 2021 v1.1.1 --> v1.2.1: 36 semiologies, 7 postictals, 1 no semiology on stimulation to mirror Sankey diagram
 * Aug 2020:v 1.0.1 56+1 semiology categories
 * v 1.0.0, 55+1 semiologies
 * Up to May 2020: v 0.9.1 (47 semiologies)
