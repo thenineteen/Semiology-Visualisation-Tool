@@ -1,20 +1,19 @@
-Automatisms Combination - Manual LowerLimb Oral
+Asymmetric Tonic
+Automatisms - Oral & Manual
+Automatisms - Other
 Auditory
-Automatism - Automotor Manual
-Automatism - Lower Limb - Non Hypermotor
-Blink
 Clonic
 Dystonic
-Eye Movements - non-versive
+Eye Movements
 Head or Body Turn
+Head Version
 Hypermotor
 Hypomotor
 Ictal Limb Paresis
 Mimetic Automatisms
 Myoclonic
 Somatosensory
-Spasms - epileptic/infantile
+Spasms
 Tonic
 Tonic-Clonic
-Visual - Complex
-Visual - Elementary
+Visual
