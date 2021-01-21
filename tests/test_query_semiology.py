@@ -30,11 +30,11 @@ class TestQuerySemiology(unittest.TestCase):
         assert not inspect_result.empty
         assert path is None
 
-    def test_blink(self):
-        path, inspect_result = self.query('Blink')
-        self.assertIs(type(inspect_result), pd.DataFrame)
-        assert not inspect_result.empty
-        assert path is not None
+    # def test_blink(self):
+    #     path, inspect_result = self.query('Blink')
+    #     self.assertIs(type(inspect_result), pd.DataFrame)
+    #     assert not inspect_result.empty
+    #     assert path is not None
 
     def test_non_existing_semio(self):
         path, inspect_result = self.query('enja hichi nist')
