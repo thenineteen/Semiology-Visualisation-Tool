@@ -103,7 +103,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
 
     if 'normalise_top_level_first' in kwargs:
         # use other function
-        df_temp, LobeslOTHER = normaise_top_level_localisation_cols_OTHER(
+        df_temp, LobeslOTHER = normalise_top_level_localisation_cols_OTHER(
             df_temp)
         # now normalise TL subregions to TL:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
@@ -115,9 +115,9 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
     else:
         # distribute excess TL to the 5 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
         # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
-        mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
-        df_temp['TL subregion ratio'] = 1
-        df_temp.loc[mask, 'TL subregion ratio'] = df_temp['TL'] / \
+        # mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)  # this was redistributing excess TL only
+        # df_temp['TL subregion ratio'] = 1
+        df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
             (df_temp[TL_split].sum(axis=1))
         df_temp = df_temp.astype(
             {'TL subregion ratio': 'float'}, errors='ignore')
