@@ -19,6 +19,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    xticks = np.arange(0, 1.1, 0.2),
                                    vline = 'proportion',
                                    xlabel = 'P (Localisation | Semiology)',
+                                   figsize = (7, 8),
                                    plotter_settings = None,
                                   ):
 
@@ -31,7 +32,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
     n_rows, n_columns =  proportion_df_1.shape
     subplot_width = int(n_rows / 3) + (n_rows % 3 > 0) # axes are in 3 rows, subplot_width columns
     
-    fig, axs = plt.subplots(subplot_width, 3, sharex=True, sharey=True, figsize=(7, 8))
+    fig, axs = plt.subplots(subplot_width, 3, sharex=True, sharey=True, figsize=figsize)
     
     if not y_labels:
         y_labels = proportion_df_1.columns
@@ -95,6 +96,8 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
 
     axs[subplot_width-1, 1].set_xlabel(xlabel, ha='center')
     plt.tight_layout()
+
+    return fig, axs
 
 
 def plot_stacked_hbar(proportions_df, ax, ax_title=None, axis='semiology', y_labels=None, color_palette = sns.color_palette("Paired", 12, as_cmap=True)):
