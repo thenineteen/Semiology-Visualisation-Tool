@@ -48,6 +48,7 @@ def clean_localisations(labels):
              'FL',
              'INSULA',
              'All other',
+             'TL'
              ]
 
     post_localisation = ['Anterior Temporal',
@@ -61,7 +62,8 @@ def clean_localisations(labels):
      'Occipital Lobe',
      'Frontal Lobe',
      'Insula',
-     'Interlobar Junctions+']
+     'Interlobar Junctions+',
+     'Temporal Lobe']
 
     look_up_dict = dict(zip(pre_localisation, post_localisation))
 
@@ -85,20 +87,30 @@ def clean_localisations(labels):
 
 
 def clean_semiologies(labels):
+    if type(labels) == str:
+        labels = [labels,]
     pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomous-Vegetative',
        'Olfactory', 'Visual - Elementary', 'Somatosensory',
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
        'Automatisms Combination - Manual LowerLimb Oral',
        'Vocalisation: Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other']
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other',
+       
+       'Autonomic', 'Automatisms - Oral & Manual', 'Automatisms - Other',
+       'Dialeptic/LOA/LOC', 'Mimetic Automatisms', 'Vocalisation - Unintelligible Noises',
+       'Ictal Speech - Formed Words']
     
     post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
        'Olfactory', 'Visual - Elementary', 'Somatosensory',
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
        'Automatisms','Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other']
+       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other',
+       
+       'Autonomic', 'Automatisms - O&M', 'Other Automatisms',
+       'Dialeptic', 'Mimetic Automatisms', 'Unintelligible Noises',
+       'Ictal Speech']
 
     look_up_dict = dict(zip(pre_semiology, post_semiology))
 
