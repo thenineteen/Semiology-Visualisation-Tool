@@ -28,7 +28,7 @@ def get_counts_df(query_results, region_names, merge_temporal = False, other_inc
     for semiology, value in query_results.items():
         query_inspection = value['query_inspection']
         if merge_temporal == False:
-            columns_of_interest = (region_names['low_level_temporal_of_interest'] + region_names['of_interest_minus_tl'])
+            columns_of_interest = (region_names['low_level_temporal_of_interest'] + region_names['of_interest_minus_tl'] + ["Localising"])
         else:
             columns_of_interest = copy.deepcopy(region_names['of_interest'])
         if other_included:
@@ -38,8 +38,34 @@ def get_counts_df(query_results, region_names, merge_temporal = False, other_inc
     counts_df = pd.DataFrame(counts_matrix, index=query_results.keys(), columns=columns_of_interest)
     return counts_df
 
+def get_counts(query_results, columns_of_interest):
+    """
+        Converts query results to matrix of counts by semiology and localisation
+        
+        Inputs
+        - query_results: a dictionary where keys are semiologies and values are
+        'query_inspection' for that semiology, as returned by QUERY_SEMIOLOGY
+        - Requires region_names, a dictionary of defined groups of localisations
+        - *merge_temporal: False if want to break down top level label TL into anterior,
+        posterior etc.
+        - *other_included: True if want to keep all top level localisation columns. False
+        will drop interlobar junctions etc.
 
-def merge_all_other_semiologies(counts_df, semiologies_of_interest):
+        Returns
+        - counts_df: a matrix where columns are localisations and index are
+        semiologies, where the values are the number of datapoints corresponding to that
+        localisation and semiology
+    """
+    counts_matrix = []
+    for semiology, value in query_results.items():
+        query_inspection = value['query_inspection']
+        semiology_counts = query_inspection[columns_of_interest].sum().values
+        counts_matrix.append(semiology_counts)
+    counts_df = pd.DataFrame(counts_matrix, index=query_results.keys(), columns=columns_of_interest)
+    return counts_df
+
+
+def merge_all_other_semiologies(counts_df, semiologies_of_interest):    
     """
         Merges semiologies other than the specified semiologies of interest into an "All other" row
     """
@@ -118,11 +144,23 @@ def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=
     
     return lower_ci_df, upper_ci_df
 
+def normalise_counts(all_regions, localising, temporal_only=None):
+    top_level_ratio = (localising.values.T/all_regions.sum(1).values)[0]
+    top_level_normalised = all_regions.multiply(top_level_ratio, axis='rows')
+    if temporal_only is not None:
+        temporal_ratio = top_level_normalised['TL'] / temporal_only.sum(1)
+        temporal_normalised = temporal_only.multiply(temporal_ratio, axis='rows')
+        top_level_normalised = top_level_normalised.drop('TL', axis=1)
+        return pd.concat([top_level_normalised, temporal_normalised], 1)
+    else:
+        return top_level_normalised
 
-def summarise_query(query_results, axis, region_names, confint_method = 'binomial', bootstrapping_samples=1000,
-                    merge_temporal = False, other_regions_included = True,
-                    semiologies_of_interest = None, regions_of_interest = None,
-                    drop_other_semiology = True, ):
+
+def summarise_query(query_results, axis, region_names, normalise=True, merge_temporal = False,
+                    semiologies_of_interest = None, drop_other_semiology = True,
+                    regions_of_interest = None, drop_other_regions = False,
+                    confint_method = 'binomial', bootstrapping_samples=1000,
+                    ):
 
     """
         Wrapper function combining get_counts_df, merge_all_other_semiologies, merge_all_other_zones, 
@@ -133,13 +171,25 @@ def summarise_query(query_results, axis, region_names, confint_method = 'binomia
             proportion
             confints - list, first df is lower confidence interval and second is upper
     """
-    counts_df = get_counts_df(query_results, region_names, merge_temporal, other_regions_included)
+
+    all_regions = get_counts(query_results, region_names['top_level'])
+    localising = get_counts(query_results, ['Localising'])
+    if normalise:
+        if merge_temporal:
+            counts_df = normalise_counts(all_regions, localising)
+        else:
+            temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
+            counts_df = normalise_counts(all_regions, localising, temporal_only)
+    else:
+        counts_df = all_regions
     if semiologies_of_interest:
         counts_df = merge_all_other_semiologies(counts_df, semiologies_of_interest)
         if drop_other_semiology:
             counts_df = counts_df.drop('All other')
     if regions_of_interest:
         counts_df = merge_all_other_zones(counts_df, regions_of_interest)
+        if drop_other_regions:
+            counts_df = counts_df.drop('All other', 1)
     proportion_df = calculate_proportions(counts_df, axis)
     confint_dfs = calculate_confint(counts_df, axis = axis, method = confint_method, alpha=0.05)
     processed_dfs = {
