@@ -16,6 +16,9 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    overlapping = False,
                                    ax_titles = None,
                                    xlim = [-0.05,1],
+                                   xticks = np.arange(0, 1.1, 0.2),
+                                   vline = 'proportion',
+                                   xlabel = 'P (Localisation | Semiology)',
                                    plotter_settings = None,
                                   ):
 
@@ -82,10 +85,33 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
             ax.title.set_text(row_name + n_label_text + ')')
             
         ax.set_xlim(xlim)
-        plt.xticks(np.arange(0, 1.1, 0.2))
-        ax.axvline(x=1/len(x),ymin=0,ymax=1,c='darkgray', linewidth=1, zorder=0, clip_on=False)
+        plt.xticks(xticks)
+        if vline == 'proportion':
+            ax.axvline(x=1/len(x),ymin=0,ymax=1,c='darkgray', linewidth=1, zorder=0, clip_on=False)
+        else:
+            ax.axvline(x=vline,ymin=0,ymax=1,c='darkgray', linewidth=1, zorder=0, clip_on=False)
     
     ax.invert_yaxis()
 
-    axs[subplot_width-1, 1].set_xlabel('P (Localisation | Semiology)', ha='center')
+    axs[subplot_width-1, 1].set_xlabel(xlabel, ha='center')
     plt.tight_layout()
+
+
+def plot_stacked_hbar(proportions_df, ax, ax_title=None, axis='semiology', y_labels=None, color_palette = sns.color_palette("Paired", 12, as_cmap=True)):
+    if y_labels is not None:
+        proportions_df.columns = y_labels
+        
+    if axis=='semiology':
+        proportions_df=proportions_df
+        xlabel = 'P(Localisation | Semiology)'
+    elif axis=='zone':
+        proportions_df=proportions_df.T
+        xlabel = 'P(Semiology | Localisation)'
+    else:
+        raise ValueError('axis kwarg must be from {semiology, zone}')
+    
+    proportions_df[::-1].plot(kind='barh', colormap=color_palette, stacked=True,figsize=(10, 4), ax=ax)
+    plt.gca().set_xlim((0,1))
+
+    ax.title.set_text(ax_title)
+    ax.set_xlabel(xlabel)
