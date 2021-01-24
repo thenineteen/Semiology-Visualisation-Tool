@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 
-import chart_studio.plotly as py
-import plotly.io as pio
-from plotly import __version__
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
-import cufflinks as cf
-cf.go_offline()
-init_notebook_mode()
+# import chart_studio.plotly as py
+# import plotly.io as pio
+# from plotly import __version__
+# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
+# import cufflinks as cf
+# cf.go_offline()
+# init_notebook_mode()
 
 
 def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
@@ -103,7 +103,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
 
     if 'normalise_top_level_first' in kwargs:
         # use other function
-        df_temp, LobeslOTHER = normaise_top_level_localisation_cols_OTHER(
+        df_temp, LobeslOTHER = normalise_top_level_localisation_cols_OTHER(
             df_temp)
         # now normalise TL subregions to TL:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
@@ -115,10 +115,15 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
     else:
         # distribute excess TL to the 5 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
         # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
-        mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
-        df_temp['TL subregion ratio'] = 1
-        df_temp.loc[mask, 'TL subregion ratio'] = df_temp['TL'] / \
+        # mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
+        # df_temp['TL subregion ratio'] = 1
+        # df_temp.loc[mask, 'TL subregion ratio'] = df_temp['TL'] / \
+        #     (df_temp[TL_split].sum(axis=1))
+
+        # REMOVED 118, 119, changed 120 to no longer use mask in .loc was:
+        df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
             (df_temp[TL_split].sum(axis=1))
+        
         df_temp = df_temp.astype(
             {'TL subregion ratio': 'float'}, errors='ignore')
         df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
