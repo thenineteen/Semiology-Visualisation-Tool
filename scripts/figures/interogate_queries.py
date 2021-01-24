@@ -3,6 +3,7 @@ import pandas as pd
 import copy
 import statsmodels.stats.proportion as ssp
 import multinomial_ci
+from scripts.figures import bootstrapping
 
 def get_counts_df(query_results, region_names, merge_temporal = False, other_included = True):
     """
@@ -74,7 +75,7 @@ def calculate_proportions(counts_df, axis):
         raise ValueError('axis must be given from {semiology, zone}')
     return proportions_df\
 
-def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=0.05):
+def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=0.05, n_samples=1000):
     """
         Calculate confidence intervals of proportions from counts_df
 
@@ -89,34 +90,39 @@ def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=
         counts_df = counts_df.T
     else:
         raise ValueError('axis must be given from {semiology, zone}')
+    
+    if method == 'bootstrap':
+        lower_ci_df, upper_ci_df = bootstrapping.bootstrap_frequency_matrix(counts_df, n_samples, alpha)
+        return lower_ci_df, upper_ci_df
 
-    ci_matrix = []
-    n_rows, n_columns = counts_df.shape
-    for nth_row in range(n_rows):
-        vector = counts_df.iloc[nth_row, :]
-        if method == 'binomial':
-            ci_row = ssp.proportion_confint(vector, sum(vector), alpha=alpha, method='wilson')
-            ci_matrix.append(np.array(ci_row).T)
-        elif method == 'sison-glaz':
-            ci_row = multinomial_ci.sison(vector, alpha=alpha)
-            ci_matrix.append(ci_row)
-        elif method == 'goodman':
-            ci_row = ssp.multinomial_proportions_confint(vector, method='goodman', alpha=alpha)
-            ci_matrix.append(ci_row)
-        else:
-            raise ValueError('axis must be given from {binomial, sison-glaz, goodman}')
-            
-    ci_matrix = np.array(ci_matrix)
-    lower_ci_df = pd.DataFrame(ci_matrix[:,:,0], index=counts_df.index, columns=counts_df.columns)
-    upper_ci_df = pd.DataFrame(ci_matrix[:,:,1], index=counts_df.index, columns=counts_df.columns)
+    else:
+        ci_matrix = []
+        n_rows, n_columns = counts_df.shape
+        for nth_row in range(n_rows):
+            vector = counts_df.iloc[nth_row, :]
+            if method == 'binomial':
+                ci_row = ssp.proportion_confint(vector, sum(vector), alpha=alpha, method='wilson')
+                ci_matrix.append(np.array(ci_row).T)
+            elif method == 'sison-glaz':
+                ci_row = multinomial_ci.sison(vector, alpha=alpha)
+                ci_matrix.append(ci_row)
+            elif method == 'goodman':
+                ci_row = ssp.multinomial_proportions_confint(vector, method='goodman', alpha=alpha)
+                ci_matrix.append(ci_row)
+            else:
+                raise ValueError('axis must be given from {binomial, sison-glaz, goodman}')
+                
+        ci_matrix = np.array(ci_matrix)
+        lower_ci_df = pd.DataFrame(ci_matrix[:,:,0], index=counts_df.index, columns=counts_df.columns)
+        upper_ci_df = pd.DataFrame(ci_matrix[:,:,1], index=counts_df.index, columns=counts_df.columns)
     
     return lower_ci_df, upper_ci_df
 
 
-def summarise_query(query_results, axis, region_names, confint_method = 'binomial',
+def summarise_query(query_results, axis, region_names, confint_method = 'binomial', bootstrapping_samples=1000,
                     merge_temporal = False, other_regions_included = True,
                     semiologies_of_interest = None, regions_of_interest = None,
-                    drop_other_semiology = True):
+                    drop_other_semiology = True, ):
 
     """
         Wrapper function combining get_counts_df, merge_all_other_semiologies, merge_all_other_zones, 
