@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 
-# import chart_studio.plotly as py
-# import plotly.io as pio
-# from plotly import __version__
-# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
-# import cufflinks as cf
-# cf.go_offline()
-# init_notebook_mode()
+import chart_studio.plotly as py
+import plotly.io as pio
+from plotly import __version__
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
+import cufflinks as cf
+cf.go_offline()
+init_notebook_mode()
 
 
 def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
@@ -115,25 +115,20 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
     else:
         # distribute excess TL to the 5 subregions equally; i.e. normalise TL_split to TL as we did previously for Localising, taking into account whether TL is greater or less than
         # # only if we want to distribute excess. There will also be some cases where 1 TL localised to both anterior and mesial temporal so we (should!) exclude this mask.
-        # mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)
+        # mask = (df_temp['TL']) > (df_temp[TL_split]).sum(axis=1)  # this was redistributing excess TL only
         # df_temp['TL subregion ratio'] = 1
-        # df_temp.loc[mask, 'TL subregion ratio'] = df_temp['TL'] / \
-        #     (df_temp[TL_split].sum(axis=1))
-
-        # REMOVED 118, 119, changed 120 to no longer use mask in .loc was:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
             (df_temp[TL_split].sum(axis=1))
-        
         df_temp = df_temp.astype(
             {'TL subregion ratio': 'float'}, errors='ignore')
-        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
+        df_temp.loc[:, TL_split] = (df_temp.loc[:, TL_split]).multiply(
             df_temp.loc[:, 'TL subregion ratio'], axis=0)
 
         # now go back to do top level normalisation
         df_temp.loc[:, 'ratio'] = df_temp['Localising'] / \
-            (df_temp[LobesOTHER_splitTL].sum(axis=1))
+            (df_temp[LobesOTHER].sum(axis=1))
         df_temp = df_temp.astype({'ratio': 'float'})
-        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
+        df_temp.loc[:, LobesOTHER] = (df_temp.loc[:, LobesOTHER]).multiply(
             df_temp.loc[:, 'ratio'], axis=0)
 
     return df_temp, LobesOTHER_splitTL
@@ -364,6 +359,27 @@ def rename_labels(df_Nodes_Labels_Lobes_age):
                                   == 'Spasms - epileptic/infantile', 'Nodes, Labels'] = 'Spasms'
     df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
                                   == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Autonomous-Vegetative', 'Nodes, Labels'] = 'Autonomic'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'CING', 'Nodes, Labels'] = 'Cingulate'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'INSULA', 'Nodes, Labels'] = 'Insula'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'OTHER', 'Nodes, Labels'] = 'Other'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Mesial TL', 'Nodes, Labels'] = 'mTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Posterior TL', 'Nodes, Labels'] = 'pTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Anterior TL', 'Nodes, Labels'] = 'aTL'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Postictal Descriptions', 'Nodes, Labels'] = 'Postictals'
+
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels']
+                                  == 'Ictal Speech', 'Nodes, Labels'] = 'Ictal Speech: Formed Words'
+    df_Nodes_Labels_Lobes_age.loc[df_Nodes_Labels_Lobes_age['Nodes, Labels'] ==
+                                  'Vocalisation', 'Nodes, Labels'] = 'Vocalisation: Unintelligible Noises'
 
     return df_Nodes_Labels_Lobes_age
 
@@ -382,6 +398,7 @@ def sankey_plot(
     thickness=30,
     fontsize=10,
     updatemenus=False,
+    alpha=0.4,
 ):
     """
     e.g.
@@ -458,7 +475,6 @@ def sankey_plot(
                             args=['paper_bgcolor', 'lightblue']
                         )
                     ]
-
                 ),
                 dict(
                     y=0.7,
@@ -479,12 +495,32 @@ def sankey_plot(
                     y=0.6,
                     buttons=[
                         dict(
-                            label='Small gap',
+                            label='Tiny gap 6',
+                            method='restyle',
+                            args=['node.pad', 6]
+                        ),
+                        dict(
+                            label='Small gap 8',
+                            method='restyle',
+                            args=['node.pad', 8]
+                        ),
+                        dict(
+                            label='Medium gap 10',
+                            method='restyle',
+                            args=['node.pad', 10]
+                        ),
+                        dict(
+                            label='Med-Large gap 12',
+                            method='restyle',
+                            args=['node.pad', 12]
+                        ),
+                        dict(
+                            label='Large gap 15',
                             method='restyle',
                             args=['node.pad', 15]
                         ),
                         dict(
-                            label='Large gap',
+                            label='Very Large gap 20',
                             method='restyle',
                             args=['node.pad', 20]
                         )
