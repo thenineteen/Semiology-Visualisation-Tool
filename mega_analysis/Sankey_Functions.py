@@ -128,7 +128,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
         df_temp.loc[:, 'ratio'] = df_temp['Localising'] / \
             (df_temp[LobesOTHER].sum(axis=1))
         df_temp = df_temp.astype({'ratio': 'float'})
-        df_temp.loc[:, LobesOTHER] = (df_temp.loc[:, LobesOTHER]).multiply(
+        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
             df_temp.loc[:, 'ratio'], axis=0)
 
     return df_temp, LobesOTHER_splitTL
