@@ -136,7 +136,7 @@ def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=
                 ci_row = ssp.multinomial_proportions_confint(vector, method='goodman', alpha=alpha)
                 ci_matrix.append(ci_row)
             else:
-                raise ValueError('method must be given from {binomial, sison-glaz, goodman, binomial}')
+                raise ValueError('method must be given from {binomial, sison-glaz, goodman, bootstrap}')
                 
         ci_matrix = np.array(ci_matrix)
         lower_ci_df = pd.DataFrame(ci_matrix[:,:,0], index=counts_df.index, columns=counts_df.columns)
@@ -158,7 +158,7 @@ def normalise_counts(all_regions, localising, temporal_only=None):
 
 def summarise_query(query_results, axis, region_names, normalise=True, merge_temporal = False,
                     semiologies_of_interest = None, drop_other_semiology = True,
-                    regions_of_interest = None, drop_other_regions = False,
+                    merge_other_regions = True, drop_other_regions = False,
                     confint_method = 'binomial', bootstrapping_samples=1000,
                     ):
 
@@ -173,23 +173,34 @@ def summarise_query(query_results, axis, region_names, normalise=True, merge_tem
     """
 
     all_regions = get_counts(query_results, region_names['top_level'])
-    localising = get_counts(query_results, ['Localising'])
+    temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
     if normalise:
+        localising = get_counts(query_results, ['Localising'])
         if merge_temporal:
             counts_df = normalise_counts(all_regions, localising)
         else:
-            temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
             counts_df = normalise_counts(all_regions, localising, temporal_only)
     else:
-        counts_df = all_regions
+        if merge_temporal:
+            counts_df = all_regions
+        else:
+            counts_df = pd.concat([temporal_only, all_regions], 1)
+            counts_df = counts_df.drop('TL', 1)
+
+    if merge_other_regions:
+        if merge_temporal:
+            regions_of_interest = region_names['of_interest']
+        else:
+            regions_of_interest = region_names['of_interest_minus_tl']+region_names['low_level_temporal_of_interest']
+        counts_df = merge_all_other_zones(counts_df, regions_of_interest)
+        if drop_other_regions:
+            counts_df = counts_df.drop('All other', 1)
+
     if semiologies_of_interest:
         counts_df = merge_all_other_semiologies(counts_df, semiologies_of_interest)
         if drop_other_semiology:
             counts_df = counts_df.drop('All other')
-    if regions_of_interest:
-        counts_df = merge_all_other_zones(counts_df, regions_of_interest)
-        if drop_other_regions:
-            counts_df = counts_df.drop('All other', 1)
+
     proportion_df = calculate_proportions(counts_df, axis)
     confint_dfs = calculate_confint(counts_df, axis = axis, method = confint_method, alpha=0.05)
     processed_dfs = {
