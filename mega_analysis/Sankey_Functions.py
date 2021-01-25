@@ -64,7 +64,7 @@ def normalise_top_level_localisation_cols_OTHER(df, *args):
                       'Hypothalamus', 'OTHER']
         LobesOTHER_splitTL = [i for i in LobesOTHER if i not in ['TL']]
         TL_split = ['Anterior (temporal pole)', 'Lateral Temporal',
-                    'Mesial Temporal', 'Posterior Temporal']
+                    'Mesial Temporal', 'Posterior Temporal', 'Basal (including Fusiform OTMG)']
         LobesOTHER_splitTL.extend(TL_split)
         LobesOTHER = LobesOTHER_splitTL
 
