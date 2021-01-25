@@ -136,7 +136,7 @@ def calculate_confint(counts_df, axis = 'semiology', method = 'binomial', alpha=
                 ci_row = ssp.multinomial_proportions_confint(vector, method='goodman', alpha=alpha)
                 ci_matrix.append(ci_row)
             else:
-                raise ValueError('axis must be given from {binomial, sison-glaz, goodman}')
+                raise ValueError('method must be given from {binomial, sison-glaz, goodman, binomial}')
                 
         ci_matrix = np.array(ci_matrix)
         lower_ci_df = pd.DataFrame(ci_matrix[:,:,0], index=counts_df.index, columns=counts_df.columns)
@@ -151,7 +151,7 @@ def normalise_counts(all_regions, localising, temporal_only=None):
         temporal_ratio = top_level_normalised['TL'] / temporal_only.sum(1)
         temporal_normalised = temporal_only.multiply(temporal_ratio, axis='rows')
         top_level_normalised = top_level_normalised.drop('TL', axis=1)
-        return pd.concat([top_level_normalised, temporal_normalised], 1)
+        return pd.concat([temporal_normalised, top_level_normalised], 1)
     else:
         return top_level_normalised
 
