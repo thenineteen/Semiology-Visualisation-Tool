@@ -103,7 +103,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
 
     if 'normalise_top_level_first' in kwargs:
         # use other function
-        df_temp, LobeslOTHER = normalise_top_level_localisation_cols_OTHER(
+        df_temp, LobesOTHER = normalise_top_level_localisation_cols_OTHER(
             df_temp)
         # now normalise TL subregions to TL:
         df_temp.loc[:, 'TL subregion ratio'] = df_temp['TL'] / \
@@ -121,7 +121,7 @@ def normalise_localisation_cols_OTHER_SplitTL(df, **kwargs):
             (df_temp[TL_split].sum(axis=1))
         df_temp = df_temp.astype(
             {'TL subregion ratio': 'float'}, errors='ignore')
-        df_temp.loc[:, LobesOTHER_splitTL] = (df_temp.loc[:, LobesOTHER_splitTL]).multiply(
+        df_temp.loc[:, TL_split] = (df_temp.loc[:, TL_split]).multiply(
             df_temp.loc[:, 'TL subregion ratio'], axis=0)
 
         # now go back to do top level normalisation
