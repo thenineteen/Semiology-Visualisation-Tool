@@ -24,10 +24,13 @@ patient = Semiology(
     # symptoms_side=Laterality.LEFT,
     # dominant_hemisphere=Laterality.LEFT,
 
-    'Tonic',
-    symptoms_side=Laterality.LEFT,
-    dominant_hemisphere=Laterality.LEFT,
-    normalise_to_localising_values=False,  # default is False
+    'Automatisms - Other',
+    symptoms_side=Laterality.NEUTRAL,
+    dominant_hemisphere=Laterality.NEUTRAL,
+    normalise_to_localising_values=False,
+    include_paeds_and_adults=True,
+    include_et_topology_ez=False,
+    include_cortical_stimulation=False,
 )
 
 ###
