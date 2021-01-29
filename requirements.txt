@@ -8,3 +8,4 @@ xlrd
 tqdm
 colorama
 openpyxl
+numpy==1.19.5
