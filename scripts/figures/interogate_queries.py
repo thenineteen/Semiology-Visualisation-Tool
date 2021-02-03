@@ -109,7 +109,6 @@ def calculate_proportions(counts_df, axis):
     return proportions_df\
 
 
-
 def calculate_confint(counts_df, axis='semiology', method='binomial', alpha=0.05, n_samples=1000):
     """
         Calculate confidence intervals of proportions from counts_df
@@ -173,14 +172,16 @@ def normalise_counts(all_regions, localising, temporal_only=None):
         return top_level_normalised
 
 
-def summarise_query(query_results, axis, region_names, normalise=True, merge_temporal=False,
+def summarise_query(query_results, axis, region_names, normalise=True, temporal_status='split',
                     semiologies_of_interest=None, drop_other_semiology=True,
                     merge_other_regions=True, drop_other_regions=False,
                     confint_method='binomial', bootstrapping_samples=1000,
                     ):
     """
-        Wrapper function combining get_counts_df, merge_all_other_semiologies, merge_all_other_zones,
+        Wrapper function combining get_counts, merge_all_other_semiologies, merge_all_other_zones,
         calculate_confint.
+
+        Temporal status from {split, merge, both}
 
         Returns a dictionary containing:
             counts
@@ -188,29 +189,48 @@ def summarise_query(query_results, axis, region_names, normalise=True, merge_tem
             confints - list, first df is lower confidence interval and second is upper
     """
 
-    all_regions = get_counts(query_results, region_names['top_level'])
-    temporal_only = get_counts(
-        query_results, region_names['low_level_temporal_of_interest'])
-    if normalise:
-        localising = get_counts(query_results, ['Localising'])
-        if merge_temporal:
-            counts_df = normalise_counts(all_regions, localising)
-        else:
-            counts_df = normalise_counts(
-                all_regions, localising, temporal_only)
+    top_level = get_counts(query_results, region_names['top_level'])
+    temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
+    split_temporal = get_counts(query_results,
+                                    region_names['low_level_temporal_of_interest']+region_names['of_interest_minus_tl'])
+    both = get_counts(query_results, region_names['top_level'] + region_names['low_level_temporal_of_interest'])
+
+    if temporal_status == 'merge':
+        raw_counts_df = top_level
+    elif temporal_status == 'split':
+        raw_counts_df = split_temporal
+    elif temporal_status == 'both':
+        raw_counts_df = both
     else:
-        if merge_temporal:
-            counts_df = all_regions
-        else:
-            counts_df = pd.concat([temporal_only, all_regions], 1)
-            counts_df = counts_df.drop('TL', 1)
+        raise ValueError('temporal_status must be given from {split, merge, both}')
+        
+    if normalise:
+        # normalise top level according to localising values
+        localising = get_counts(query_results, ['Localising'])
+        top_level_normalised = normalise_counts(top_level, localising)
+        # normalise temporal lobe based on normalised TL total
+        temporal_only_normalised = normalise_counts(temporal_only, top_level_normalised['TL'])
+
+        if temporal_status == 'merge':
+            counts_df = top_level_normalised
+        elif temporal_status == 'split':
+            counts_df = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1)
+        elif temporal_status == 'both':
+            counts_df = pd.concat([temporal_only_normalised, top_level_normalised], 1)
+        counts_df = counts_df.fillna(0)
+    else:
+        counts_df = raw_counts_df
 
     if merge_other_regions:
-        if merge_temporal:
+        if temporal_status == 'merge':
             regions_of_interest = region_names['of_interest']
-        else:
+        elif temporal_status == 'split':
             regions_of_interest = region_names['of_interest_minus_tl'] + \
                 region_names['low_level_temporal_of_interest']
+        elif temporal_status == 'both':
+            regions_of_interest = region_names['of_interest'] + \
+                region_names['low_level_temporal_of_interest']
+
         counts_df = merge_all_other_zones(counts_df, regions_of_interest)
         if drop_other_regions:
             counts_df = counts_df.drop('All other', 1)
@@ -222,11 +242,76 @@ def summarise_query(query_results, axis, region_names, normalise=True, merge_tem
             counts_df = counts_df.drop('All other')
 
     proportion_df = calculate_proportions(counts_df, axis)
+    # confint_dfs = 1
     confint_dfs = calculate_confint(
         counts_df, axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples)
     processed_dfs = {
         'counts': counts_df,
         'proportion': proportion_df,
-        'confints': confint_dfs
+        'confints': confint_dfs,
+        'raw_counts': raw_counts_df
     }
     return processed_dfs
+
+
+def calculate_confint(counts_df, axis='semiology', method='binomial', alpha=0.05, n_samples=1000):
+    """
+        Calculate confidence intervals of proportions from counts_df
+
+        Inputs:
+        - method: from {binomial, sison-glaz, goodman}
+        - axis: calculate proportion CI by semiology or by zone
+        - alpha
+    """
+    if axis == 'semiology':
+        pass
+    elif axis == 'zone':
+        counts_df = counts_df.T
+    else:
+        raise ValueError('axis must be given from {semiology, zone}')
+
+    if method == 'bootstrap':
+        lower_ci_df, upper_ci_df = bootstrapping.bootstrap_frequency_matrix(
+            counts_df, n_samples, alpha)
+        return lower_ci_df, upper_ci_df
+
+    else:
+        ci_matrix = []
+        n_rows, n_columns = counts_df.shape
+        for nth_row in range(n_rows):
+            vector = counts_df.iloc[nth_row, :]
+            if method == 'binomial':
+                ci_row = ssp.proportion_confint(
+                    vector, sum(vector), alpha=alpha, method='wilson')
+                ci_matrix.append(np.array(ci_row).T)
+            elif method == 'sison-glaz':
+                ci_row = multinomial_ci.sison(vector, alpha=alpha)
+                ci_matrix.append(ci_row)
+            elif method == 'goodman':
+                ci_row = ssp.multinomial_proportions_confint(
+                    vector, method='goodman', alpha=alpha)
+                ci_matrix.append(ci_row)
+            else:
+                raise ValueError(
+                    'method must be given from {binomial, sison-glaz, goodman, bootstrap}')
+
+        ci_matrix = np.array(ci_matrix)
+        lower_ci_df = pd.DataFrame(
+            ci_matrix[:, :, 0], index=counts_df.index, columns=counts_df.columns)
+        upper_ci_df = pd.DataFrame(
+            ci_matrix[:, :, 1], index=counts_df.index, columns=counts_df.columns)
+
+    return lower_ci_df, upper_ci_df
+
+
+def normalise_counts(all_regions, localising, temporal_only=None):
+    top_level_ratio = (localising.values.T/all_regions.sum(1).values)[0]
+    top_level_normalised = all_regions.multiply(top_level_ratio, axis='rows')
+    if temporal_only is not None:
+        temporal_ratio = top_level_normalised['TL'] / temporal_only.sum(1)
+        temporal_normalised = temporal_only.multiply(
+            temporal_ratio, axis='rows')
+        top_level_normalised = top_level_normalised.drop('TL', axis=1)
+        return pd.concat([temporal_normalised, top_level_normalised], 1)
+    else:
+        return top_level_normalised
