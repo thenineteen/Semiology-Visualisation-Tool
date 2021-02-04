@@ -22,11 +22,15 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    xlabel='P (Localisation | Semiology)',
                                    figsize=(7, 8),
                                    plotter_settings=None,
-                                   localising_n=None, fontsize=8,
+                                   localising_n=None,
+                                   fontsize=8,
+                                   special_y_titles=None
                                    ):
     """
     Plot a forest plot of proportions and confidence intervals. Can be two sets of data points
     (different colours) on each axis.
+
+    confint_dfs is a tuple of 2 dfs - lower and upper confidence intervals
 
     If only one set of points, set proportion_df_2, confint_df_2, counts_df_2 = None
 
@@ -78,7 +82,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
             ax.errorbar(x,
                         y_labels,
                         xerr=xerr,
-                        #                     color = colors[1], #comment out for default blue
+                        #color = colors[1], #comment out for default blue
                         label=legend_labels[1],
                         transform=transforms[1],
                         **plotter_settings)
@@ -111,6 +115,17 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
             ax.axvline(x=vline, ymin=0, ymax=1, c='darkgray',
                        linewidth=1, zorder=0, clip_on=False)
 
+        ax.axhline(y=7.5, xmin=0, xmax=1, c='white',
+                       linewidth=1, zorder=0, clip_on=False)
+
+    if special_y_titles is not None:
+        for ax_n in range(subplot_width):
+            inverse_special_titles = [f for f in range(proportion_df_1.shape[1]) if f not in special_y_titles]
+            for y in special_y_titles:
+                axs[ax_n, 0].get_yticklabels()[y].set_weight("bold")
+            for y in inverse_special_titles:
+                # axs[ax_n, 0].get_yticklabels()[y].set_color("dimgrey")
+                pass
     ax.invert_yaxis()
 
     axs[subplot_width-1, 1].set_xlabel(xlabel, ha='center')
@@ -119,7 +134,9 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
     return fig, axs
 
 
-def plot_stacked_hbar(proportions_df, ax, ax_title=None, axis='semiology', y_labels=None, color_palette=sns.color_palette("Paired", 12)):
+def plot_stacked_hbar(proportions_df, ax, ax_title=None, axis='semiology',
+                    y_labels=None, color_palette=sns.color_palette("Paired", 12),
+                    special_y_titles=None):
     if y_labels is not None:
         proportions_df.columns = y_labels
 
@@ -135,6 +152,15 @@ def plot_stacked_hbar(proportions_df, ax, ax_title=None, axis='semiology', y_lab
     proportions_df[::-1].plot(kind='barh', colormap=color_palette,
                               stacked=True, figsize=(10, 4), ax=ax)
     plt.gca().set_xlim((0, 1))
+    
+    if special_y_titles is not None:
+        inverse_special_titles = [f for f in range(proportions_df.shape[0]) if f not in special_y_titles]
+        for y in special_y_titles:
+            ax.get_yticklabels()[12-y].set_weight("bold")
+        for y in inverse_special_titles:
+            # axs[ax_n, 0].get_yticklabels()[y].set_color("dimgrey")
+            pass
+
 
     ax.title.set_text(ax_title)
     ax.set_xlabel(xlabel)
