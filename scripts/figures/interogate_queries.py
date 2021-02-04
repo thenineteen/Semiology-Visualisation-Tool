@@ -160,7 +160,7 @@ def calculate_confint(counts_df, axis='semiology', method='binomial', alpha=0.05
 
 
 def normalise_counts(all_regions, localising, temporal_only=None):
-    top_level_ratio = (localising.values.T/all_regions.sum(1).values)[0]
+    top_level_ratio = (localising.T/all_regions.sum(1).values)[0]
     top_level_normalised = all_regions.multiply(top_level_ratio, axis='rows')
     if temporal_only is not None:
         temporal_ratio = top_level_normalised['TL'] / temporal_only.sum(1)
@@ -176,12 +176,13 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
                     semiologies_of_interest=None, drop_other_semiology=True,
                     merge_other_regions=True, drop_other_regions=False,
                     confint_method='binomial', bootstrapping_samples=1000,
+                    order_of_regions=None
                     ):
     """
         Wrapper function combining get_counts, merge_all_other_semiologies, merge_all_other_zones,
         calculate_confint.
 
-        Temporal status from {split, merge, both}
+        Temporal status from {top_level, split, temporal_only, both}
 
         Returns a dictionary containing:
             counts
@@ -189,69 +190,174 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
             confints - list, first df is lower confidence interval and second is upper
     """
 
-    top_level = get_counts(query_results, region_names['top_level'])
-    temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
-    split_temporal = get_counts(query_results,
-                                    region_names['low_level_temporal_of_interest']+region_names['of_interest_minus_tl'])
-    both = get_counts(query_results, region_names['top_level'] + region_names['low_level_temporal_of_interest'])
-
-    if temporal_status == 'merge':
-        raw_counts_df = top_level
-    elif temporal_status == 'split':
-        raw_counts_df = split_temporal
-    elif temporal_status == 'both':
-        raw_counts_df = both
-    else:
-        raise ValueError('temporal_status must be given from {split, merge, both}')
-        
-    if normalise:
-        # normalise top level according to localising values
-        localising = get_counts(query_results, ['Localising'])
-        top_level_normalised = normalise_counts(top_level, localising)
-        # normalise temporal lobe based on normalised TL total
-        temporal_only_normalised = normalise_counts(temporal_only, top_level_normalised['TL'])
-
-        if temporal_status == 'merge':
-            counts_df = top_level_normalised
-        elif temporal_status == 'split':
-            counts_df = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1)
-        elif temporal_status == 'both':
-            counts_df = pd.concat([temporal_only_normalised, top_level_normalised], 1)
-        counts_df = counts_df.fillna(0)
-    else:
-        counts_df = raw_counts_df
-
-    if merge_other_regions:
-        if temporal_status == 'merge':
-            regions_of_interest = region_names['of_interest']
-        elif temporal_status == 'split':
-            regions_of_interest = region_names['of_interest_minus_tl'] + \
-                region_names['low_level_temporal_of_interest']
-        elif temporal_status == 'both':
-            regions_of_interest = region_names['of_interest'] + \
-                region_names['low_level_temporal_of_interest']
-
-        counts_df = merge_all_other_zones(counts_df, regions_of_interest)
-        if drop_other_regions:
-            counts_df = counts_df.drop('All other', 1)
-
-    if semiologies_of_interest:
-        counts_df = merge_all_other_semiologies(
-            counts_df, semiologies_of_interest)
-        if drop_other_semiology:
-            counts_df = counts_df.drop('All other')
-
-    proportion_df = calculate_proportions(counts_df, axis)
-    # confint_dfs = 1
-    confint_dfs = calculate_confint(
-        counts_df, axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples)
-    processed_dfs = {
-        'counts': counts_df,
-        'proportion': proportion_df,
-        'confints': confint_dfs,
-        'raw_counts': raw_counts_df
+    raw_counts = {
+        'top_level': get_counts(query_results, region_names['top_level']),
+        'split': get_counts(query_results, region_names['low_level_temporal_of_interest']+region_names['of_interest_minus_tl']+region_names['top_level_all_other']),
+        'both': get_counts(query_results, region_names['top_level'] + region_names['low_level_temporal_of_interest']),
     }
+
+    temporal_only = get_counts(query_results, region_names['low_level_temporal_of_interest'])
+
+    # normalise top level according to localising values
+    localising = get_counts(query_results, ['Localising']).fillna(0)
+    top_level_normalised = normalise_counts(raw_counts['top_level'], localising).fillna(0)
+    # normalise temporal lobe based on normalised TL total
+    ratio = np.divide(top_level_normalised['TL'].values, temporal_only.sum(1).values, out=np.zeros_like(top_level_normalised['TL'].values), where=temporal_only.sum(1).values!=0)
+    temporal_only_normalised = temporal_only.multiply(ratio, axis = 'rows')
+    split_normalised = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1).fillna(0)
+    both_normalised = pd.concat([temporal_only_normalised, top_level_normalised], 1).fillna(0)
+    # return temporal_only,temporal_only_normalised, top_level_normalised
+    # return temporal_only_normalised, top_level_normalised
+    normalised_counts = {
+        'top_level': top_level_normalised,
+        'split': split_normalised,
+        'both': both_normalised,
+    }
+    
+    for counts in raw_counts, normalised_counts:
+        if merge_other_regions:
+            counts['top_level'] = merge_all_other_zones(counts['top_level'],
+                                                            region_names['of_interest'])
+            counts['split'] = merge_all_other_zones(counts['split'],
+                                                        region_names['of_interest_minus_tl'] + region_names['low_level_temporal_of_interest'])
+            counts['both'] = merge_all_other_zones(counts['both'],
+                                                        region_names['of_interest'] + region_names['low_level_temporal_of_interest'])
+            if drop_other_regions:
+                counts['top_level'] = counts['top_level'].drop('All other', 1)
+                counts['split'] = counts['split'].drop('All other', 1)
+                counts['both'] = counts['both'].drop('All other', 1)
+        
+        if semiologies_of_interest:
+            for key in counts.keys():
+                counts[key] = merge_all_other_semiologies(
+                    counts[key], semiologies_of_interest)
+                if drop_other_semiology:
+                    counts[key] = counts[key].drop('All other')
+    
+    # return raw_counts, normalised_counts
+    if normalise:
+        counts_of_use = normalised_counts
+    else:
+        counts_of_use = raw_counts
+    
+    proportions = {
+        'top_level': calculate_proportions(counts_of_use['top_level'], axis),
+        'split': calculate_proportions(counts_of_use['split'], axis)
+    }
+
+    confints = {
+        'top_level': calculate_confint(counts_of_use['top_level'], axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples),
+        'split': calculate_confint(counts_of_use['split'], axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples)
+    }
+
+    
+    if temporal_status == 'both':
+        proportion_both = pd.concat([proportions['top_level']['TL'], proportions['split']], 1)
+        confint_both = [None, None]
+        for i in range(2):
+            confint_both[i] = pd.concat([confints['top_level'][i]['TL'], confints['split'][i]], 1)
+
+        processed_dfs = {
+        'counts': normalised_counts['both'],
+        'raw_counts': raw_counts['both'],
+        'proportion': proportion_both,
+        'confints': confint_both
+        }
+    
+    elif temporal_status == 'split' or temporal_status == 'top_level':
+        
+        processed_dfs = {
+        'counts': normalised_counts[temporal_status],
+        'raw_counts': raw_counts[temporal_status],
+        'proportion': confints[temporal_status],
+        'confints': confints[temporal_status]
+        }
+    if order_of_regions is not None:
+        processed_dfs = order_regions(processed_dfs, order_of_regions)
+    
     return processed_dfs
+        
+
+    #     'proportion': proportion_df,
+    #     'confints': confint_dfs,
+    #     'raw_counts': raw_counts_df
+    # }
+    # processed_dfs[]
+
+    # aw_counts = {
+    #     'merge': ,
+    #     'split': ,
+    #     'temporal_only': ,
+    #     'both': ,
+    # }
+    
+    
+    # if normalise:
+    #     # normalise top level according to localising values
+    #     localising = get_counts(query_results, ['Localising'])
+    #     top_level_normalised = normalise_counts(top_level, localising)
+    #     # normalise temporal lobe based on normalised TL total
+    #     temporal_only_normalised = normalise_counts(temporal_only, top_level_normalised['TL'])
+    #     split_normalised = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1)
+
+    #     if temporal_status == 'merge':
+    #         counts_df = top_level_normalised
+    #     elif temporal_status == 'split' or temporal_status == 'both':
+    #         counts_df = split_normalised
+    #     elif temporal_status == 'temporal_only':
+    #         counts_df = temporal_only_normalised
+    #     counts_df = counts_df.fillna(0)
+    # else:
+    #     counts_df = raw_counts_df
+
+    # if merge_other_regions:
+    #     if temporal_status == 'merge':
+    #         regions_of_interest = region_names['of_interest']
+    #     elif temporal_status == 'split':
+    #         regions_of_interest = region_names['of_interest_minus_tl'] + \
+    #             region_names['low_level_temporal_of_interest']
+    #     elif temporal_status == 'temporal_only':
+    #         regions_of_interest = region_names['low_level_temporal_of_interest']
+        
+    #     counts_df = merge_all_other_zones(counts_df, regions_of_interest)
+    #     if temporal_status == 'both':
+    #         regions_of_interest += ['TL']
+    #         raw_counts_df = merge_all_other_zones(raw_counts_df, regions_of_interest)
+
+    #     if drop_other_regions:
+    #         raw_counts_df = raw_counts_df.drop('All other', 1)
+    #         counts_df = counts_df.drop('All other', 1)
+
+    # if semiologies_of_interest:
+    #     counts_df = merge_all_other_semiologies(
+    #         counts_df, semiologies_of_interest)
+    #     raw_counts_df = merge_all_other_semiologies(
+    #         raw_counts_df, semiologies_of_interest)
+    #     if drop_other_semiology:
+    #         counts_df = counts_df.drop('All other')
+    #         raw_counts_df = raw_counts_df.drop('All other')
+
+    # proportion_df = calculate_proportions(counts_df, axis)
+
+    # else:
+    #     top_level_proportions = calculate_proportions(top_level_normalised, axis)
+    #     split_proportions = calculate_proportions(split_normalised, axis)
+    #     return top_level_proportions, split_proportions
+
+    # # confint_dfs = 1
+    # confint_dfs = calculate_confint(
+    #     counts_df, axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples)
+    # processed_dfs = {
+    #     'counts': counts_df,
+    #     'proportion': proportion_df,
+    #     'confints': confint_dfs,
+    #     'raw_counts': raw_counts_df
+    # }
+
+    # if order_of_regions is not None:
+    #     processed_dfs = order_regions(processed_dfs, order_of_regions)
+
+    # return processed_dfs
 
 
 def calculate_confint(counts_df, axis='semiology', method='binomial', alpha=0.05, n_samples=1000):
@@ -315,3 +421,21 @@ def normalise_counts(all_regions, localising, temporal_only=None):
         return pd.concat([temporal_normalised, top_level_normalised], 1)
     else:
         return top_level_normalised
+
+def order_regions(df_dict, order):
+    ordered_dfs = {}
+    for key, df in df_dict.items():
+        if key != 'confints':
+            try:
+                ordered_dfs[key] = df[order]
+            except KeyError:
+                ordered_dfs.loc[key] = df.loc[order]
+        else:
+            confints = []
+            for continf_df in df:
+                try:
+                    confints.append(continf_df[order])
+                except KeyError:
+                    confints.append(continf_df.loc[order])
+            ordered_dfs['confints'] = confints
+    return ordered_dfs
