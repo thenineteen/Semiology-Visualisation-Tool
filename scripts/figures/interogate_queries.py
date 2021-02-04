@@ -206,8 +206,7 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
     temporal_only_normalised = temporal_only.multiply(ratio, axis = 'rows')
     split_normalised = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1).fillna(0)
     both_normalised = pd.concat([temporal_only_normalised, top_level_normalised], 1).fillna(0)
-    # return temporal_only,temporal_only_normalised, top_level_normalised
-    # return temporal_only_normalised, top_level_normalised
+    
     normalised_counts = {
         'top_level': top_level_normalised,
         'split': split_normalised,
@@ -234,7 +233,7 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
                 if drop_other_semiology:
                     counts[key] = counts[key].drop('All other')
     
-    # return raw_counts, normalised_counts
+    
     if normalise:
         counts_of_use = normalised_counts
     else:
@@ -255,8 +254,10 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
         proportion_both = pd.concat([proportions['top_level']['TL'], proportions['split']], 1)
         confint_both = [None, None]
         for i in range(2):
-            confint_both[i] = pd.concat([confints['top_level'][i]['TL'], confints['split'][i]], 1)
-
+            try:
+                confint_both[i] = pd.concat([confints['top_level'][i]['TL'], confints['split'][i]], 1)
+            except KeyError: #If using axis 'zone', TL will be a row not column
+                confint_both[i] = pd.concat([confints['split'][i], confints['top_level'][i].loc['TL'].to_frame().T])
         processed_dfs = {
         'counts': normalised_counts['both'],
         'raw_counts': raw_counts['both'],
