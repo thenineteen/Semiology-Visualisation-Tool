@@ -99,7 +99,32 @@ def clean_semiologies(labels):
        
        'Autonomic', 'Automatisms - Oral & Manual', 'Automatisms - Other',
        'Dialeptic/LOA/LOC', 'Mimetic Automatisms', 'Vocalisation - Unintelligible Noises',
-       'Ictal Speech - Formed Words']
+       'Ictal Speech - Formed Words',
+       
+       'Gustatory',
+        'Auditory',
+        'Visual',
+        'Vestibular',
+        'Eye Movements',
+        'Asymmetric Tonic',
+        'Tonic-Clonic',
+        'Myoclonic',
+        'Atonic',
+        'Ictal Limb Paresis',
+        'Astatic',
+        'Hypomotor',
+        'Spasms',
+        'Postictal Hemiparesis or Hemiplegia',
+        'Postictal Nose-wiping',
+        'Postictal Oral or Manual Automatisms',
+        'Postictal Dysphasia',
+        'Postictal Aphasia',
+        'Postictal Cough',
+        'Postictal Aggressive',
+        'Ictal Pout',
+        'Dysphasia',
+        'No Semiology - Only Stimulation Studies'
+       ]
     
     post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
        'Olfactory', 'Visual - Elementary', 'Somatosensory',
@@ -110,7 +135,32 @@ def clean_semiologies(labels):
        
        'Autonomic', 'Automatisms - O&M', 'Other Automatisms',
        'Dialeptic', 'Mimetic Automatisms', 'Unintelligible Noises',
-       'Ictal Speech']
+       'Ictal Speech',
+       
+       
+       'Gustatory',
+ 'Auditory',
+ 'Visual',
+ 'Vestibular',
+ 'Eye Movements',
+ 'Asymmetric Tonic',
+ 'Tonic-Clonic',
+ 'Myoclonic',
+ 'Atonic',
+ 'Ictal Limb Paresis',
+ 'Astatic',
+ 'Hypomotor',
+ 'Spasms',
+ 'Postictal Hemiparesis or Hemiplegia',
+ 'Postictal Nose-wiping',
+ 'Postictal Oral or Manual Automatisms',
+ 'Postictal Dysphasia',
+ 'Postictal Aphasia',
+ 'Postictal Cough',
+ 'Postictal Aggressive',
+ 'Ictal Pout',
+ 'Dysphasia',
+ 'No Semiology - Only Stimulation Studies']
 
     look_up_dict = dict(zip(pre_semiology, post_semiology))
 
