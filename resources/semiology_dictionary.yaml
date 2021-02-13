@@ -1,5 +1,6 @@
 # SemioDict v 1.2.1
 # 36 ictal semiologies, 7 postictal semiologies, 1 no-semiology on stimulation
+# 13/02/21 KD comment out postictals and no semiology 
 
 "semiology":
   # "temporal": auras["epigastric"]
@@ -412,40 +413,40 @@
           "epileptic spasm",
           "((?<!hemifacial )(?<!facial )(?<!hemi-facial ))spasm",
         ]
-      "Postictal Hemiparesis or Hemiplegia":
-        [
-          "Post-? ?ictal Hemiparesis",
-          "Post-? ?ictal Hemiplegia",
-          "Post-? ?ictal Todd",
-          "\\(Post-? ?ictal\\) Hemip",
-          "Hemiparesis \\(Post-? ?ictal\\)",
-          "Todd",
-          "Hemiplegia \\(Post-? ?ictal\\)",
-        ]
-      "Postictal Nose-wiping":
-        ["Nose-? ?Wiping \\(Post-? ?Ictal\\)", "Post-? ?Ictal Nose"]
-      "Postictal Oral or Manual Automatisms": # includes postictal drinking
-        [
-          "Post-? ?ictal manual",
-          "Automatisms \\(Post-? ?ictal\\)",
-          "post-? ?ictal automatism",
-          "post-? ?ictal Drink",
-        ]
-      "Postictal Dysphasia":
-        [
-          "Dysphasia \\(Post-? ?Ictal\\)",
-          "Post-? ?Ictal Dysphasia",
-          "paraphasia",
-        ]
-      "Postictal Aphasia":
-        ["Aphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Aphasia"]
-      "Postictal Cough":
-        [
-          "post-? ?ictal cough",
-          "cough \\(post-? ?ictal\\)",
-          "post-? ?ictal \\(cough\\)",
-        ]
-      "Postictal Aggressive": ["post-? ?ictal aggressive"]
+      # "Postictal Hemiparesis or Hemiplegia":
+      #   [
+      #     "Post-? ?ictal Hemiparesis",
+      #     "Post-? ?ictal Hemiplegia",
+      #     "Post-? ?ictal Todd",
+      #     "\\(Post-? ?ictal\\) Hemip",
+      #     "Hemiparesis \\(Post-? ?ictal\\)",
+      #     "Todd",
+      #     "Hemiplegia \\(Post-? ?ictal\\)",
+      #   ]
+      # "Postictal Nose-wiping":
+      #   ["Nose-? ?Wiping \\(Post-? ?Ictal\\)", "Post-? ?Ictal Nose"]
+      # "Postictal Oral or Manual Automatisms": # includes postictal drinking
+      #   [
+      #     "Post-? ?ictal manual",
+      #     "Automatisms \\(Post-? ?ictal\\)",
+      #     "post-? ?ictal automatism",
+      #     "post-? ?ictal Drink",
+      #   ]
+      # "Postictal Dysphasia":
+      #   [
+      #     "Dysphasia \\(Post-? ?Ictal\\)",
+      #     "Post-? ?Ictal Dysphasia",
+      #     "paraphasia",
+      #   ]
+      # "Postictal Aphasia":
+      #   ["Aphasia \\(Post-? ?Ictal\\)", "Post-? ?Ictal Aphasia"]
+      # "Postictal Cough":
+      #   [
+      #     "post-? ?ictal cough",
+      #     "cough \\(post-? ?ictal\\)",
+      #     "post-? ?ictal \\(cough\\)",
+      #   ]
+      # "Postictal Aggressive": ["post-? ?ictal aggressive"]
 
     automatisms:
       # "Automatisms - Oral":
@@ -687,9 +688,9 @@
         "swear",
         "expletive",
       ]
-  silent SOZ:
-    "No Semiology - Only Stimulation Studies":
-      ["no semiology", "non-? ?manifest", "silent seizure", "Silent SOZ on ES"]
+  # silent SOZ:
+  #   "No Semiology - Only Stimulation Studies":
+  #     ["no semiology", "non-? ?manifest", "silent seizure", "Silent SOZ on ES"]
   consciousness:
     "Dialeptic/LOA/LOC": [
         "dialeptic",
