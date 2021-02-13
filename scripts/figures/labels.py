@@ -36,6 +36,9 @@ def get_region_names():
     return region_names
 
 def clean_localisations(labels):
+    if type(labels) == str:
+        labels = [labels,]
+        
     pre_localisation = ['Anterior (temporal pole)',
              'Lateral Temporal',
              'Mesial Temporal',
