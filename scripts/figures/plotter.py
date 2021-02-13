@@ -60,8 +60,8 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
 
         # Plot first data points (potentially one of two)
         x = proportion_df_1.loc[row_name]
-        xerr = np.array([confint_df_1[0].loc[row_name].values,
-                         confint_df_1[1].loc[row_name].values])
+        xerr = np.array([x - confint_df_1[0].loc[row_name].values,
+                         confint_df_1[1].loc[row_name].values - x])
         ax.errorbar(x,
                     y_labels,
                     xerr=xerr,
@@ -77,8 +77,8 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
         # Plot second set of datapoints (usually second colour, might be SS only)
         if proportion_df_2 is not None:
             x = proportion_df_2.loc[row_name]
-            xerr = np.array([confint_df_2[0].loc[row_name].values,
-                             confint_df_2[1].loc[row_name].values])
+            xerr = np.array([x - confint_df_2[0].loc[row_name].values,
+                             confint_df_2[1].loc[row_name].values - x])
             ax.errorbar(x,
                         y_labels,
                         xerr=xerr,
