@@ -118,3 +118,8 @@ resources/~$Semio2Brain Database_Mappings_Calibration.xlsx
 Pipfile
 Pipfile.lock
 resources/~$Semio2Brain Database.xlsx
+full_proportions_zonal.csv
+full_proportions.csv
+scripts/figures/all_dfs_pickle.pkl
+scripts/figures/query_results_pickle.pkl
+scripts/figures/working_figures_3/fig-2/topology/topology_labels_key_n.psd
