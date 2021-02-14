@@ -110,13 +110,13 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
         plt.xticks(xticks)
         if vline == 'proportion':
             ax.axvline(x=1/len(x), ymin=0, ymax=1, c='darkgray',
-                       linewidth=1, zorder=0, clip_on=False)
+                       linewidth=1, zorder=3, clip_on=False,)
         else:
             ax.axvline(x=vline, ymin=0, ymax=1, c='darkgray',
-                       linewidth=1, zorder=0, clip_on=False)
+                       linewidth=1, zorder=3, clip_on=False,)
 
         ax.axhline(y=7.5, xmin=0, xmax=1, c='white',
-                       linewidth=1, zorder=0, clip_on=False)
+                       linewidth=1, zorder=3, clip_on=False)
 
     if special_y_titles is not None:
         for ax_n in range(subplot_width):
