@@ -123,3 +123,5 @@ full_proportions.csv
 scripts/figures/all_dfs_pickle.pkl
 scripts/figures/query_results_pickle.pkl
 scripts/figures/*.psd
+scripts/figures/query_results_pickle_re.pkl
+scripts/figures/working_figures_3/fig-2/topology/topology_labels_key_n.psd
