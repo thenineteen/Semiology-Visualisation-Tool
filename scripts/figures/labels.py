@@ -51,8 +51,9 @@ def clean_localisations(labels):
              'FL',
              'INSULA',
              'All other',
-             'TL'
-             ]
+             'TL',
+            'legend'
+            ]
 
     post_localisation = ['Anterior Temporal',
      'Lateral Temporal',
@@ -66,7 +67,9 @@ def clean_localisations(labels):
      'Frontal Lobe',
      'Insula',
      'Interlobar Junctions+',
-     'Temporal Lobe']
+     'Temporal Lobe',
+     'legend'
+     ]
 
     look_up_dict = dict(zip(pre_localisation, post_localisation))
 
@@ -126,7 +129,9 @@ def clean_semiologies(labels):
         'Postictal Aggressive',
         'Ictal Pout',
         'Dysphasia',
-        'No Semiology - Only Stimulation Studies'
+        'No Semiology - Only Stimulation Studies',
+            'legend'
+
        ]
     
     post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
@@ -163,7 +168,8 @@ def clean_semiologies(labels):
  'Postictal Aggressive',
  'Ictal Pout',
  'Dysphasia',
- 'No Semiology - Only Stimulation Studies']
+ 'No Semiology - Only Stimulation Studies',
+ 'legend']
 
     look_up_dict = dict(zip(pre_semiology, post_semiology))
 
