@@ -11,7 +11,7 @@ def file_paths(dummy_data=False, **kwargs):
         excel_path = test_dir / '_dummy_data.xlsx'
         semiology_dict_path = test_dir / '_dummy_semiology_dictionary.yaml'
     elif "Beta" in kwargs:
-        excel_path = resources_dir / 'syst_review_single_table.xlsx'
+        excel_path = resources_dir / '_syst_review_single_table.xlsx'
         semiology_dict_path = resources_dir / 'semiology_dictionary.yaml'
     else:
         excel_path = resources_dir / 'Semio2Brain Database.xlsx'
