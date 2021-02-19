@@ -28,7 +28,8 @@ from .crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
-from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION, QUERY_LATERALISATION_GLOBAL
+from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
+from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
 from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
