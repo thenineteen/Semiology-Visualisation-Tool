@@ -458,7 +458,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' by the odds proportion. If symmetric, the full localising values are'
             ' equally mapped to both sides.'
             )
-        # self.MicroLatCheckBox.setChecked(False)
+        self.MicroLatCheckBox.setChecked(True)
         self.MicroLatCheckBox.toggled.connect(
             lambda: self.on_Global_micro_CheckBoxes(self.MicroLatCheckBox))
         advancedTabLayout.addWidget(self.MicroLatCheckBox)
@@ -641,6 +641,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_paeds_and_adults=self.PaedsAndAdultsCheckBox.isChecked(),
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
+                Global_Lateralisation=self.GlobalLatCheckBox,
             )
             semiologies.append(semiology)
         return semiologies
@@ -938,8 +939,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     def on_Global_micro_CheckBoxes(self, source):
         if (source == self.GlobalLatCheckBox) and self.GlobalLatCheckBox.isChecked():
             self.MicroLatCheckBox.setChecked(False)
+        elif (source == self.GlobalLatCheckBox) and not self.GlobalLatCheckBox.isChecked():
+            self.MicroLatCheckBox.setChecked(True)
         elif (source == self.MicroLatCheckBox) and self.MicroLatCheckBox.isChecked():
             self.GlobalLatCheckBox.setChecked(False)
+        elif (source == self.MicroLatCheckBox) and not self.MicroLatCheckBox.isChecked():
+            self.GlobalLatCheckBox.setChecked(True)
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
@@ -1710,6 +1715,7 @@ class Query:
                 symptoms_side=semiology.symptoms_side.value,
                 dominant_hemisphere=semiology.dominant_hemisphere,
                 granular=semiology.granular,
+                include_seizure_freedom=semiology.include_seizure_freedom,
                 include_concordance=semiology.include_concordance,
                 include_seeg=semiology.include_seeg,
                 include_cortical_stimulation=semiology.include_cortical_stimulation,
@@ -1720,6 +1726,7 @@ class Query:
                 include_postictals=semiology.include_postictals,
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,
+                Global_Lateralisation=semiology.Global_Lateralisation,
             )
             content.append(semiology_dict)
         return content
