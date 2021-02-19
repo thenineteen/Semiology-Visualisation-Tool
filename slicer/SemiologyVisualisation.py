@@ -432,6 +432,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.minmaxRadioButton.setChecked(True)
 
+        advancedTabLayout.addStretch()
         return advancedTabWidget
 
     def makeTableButton(self):
