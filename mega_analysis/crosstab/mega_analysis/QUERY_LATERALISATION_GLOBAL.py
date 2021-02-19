@@ -1,11 +1,9 @@
 import logging
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
-from colorama import Fore
 
 from .mapping import big_map, pivot_result_to_one_map
-from .group_columns import full_id_vars,
+from .group_columns import full_id_vars, lateralisation_vars
 from . import melt_then_pivot_query
 
 
@@ -30,11 +28,11 @@ def summarise_overall_lat_values(df_or_row,
     """
     Factor function for Q_L. Calculated IL, CL, DomH and NonDomH lateralisations.
     """
-    IL_row = row['IL'].sum()
-    CL_row = row['CL'].sum()
-    DomH_row = row['DomH'].sum()
-    NonDomH_row = row['NonDomH'].sum()
-    # BL_row = row['BL (Non-lateralising)'].sum()
+    IL_row =df_or_row['IL'].sum()
+    CL_row =df_or_row['CL'].sum()
+    DomH_row =df_or_row['DomH'].sum()
+    NonDomH_row =df_or_row['NonDomH'].sum()
+    # BL_row =df_or_row['BL (Non-lateralising)'].sum()
 
     # pt input
     if side_of_symptoms_signs == 'R':
