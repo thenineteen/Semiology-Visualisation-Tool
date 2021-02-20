@@ -4,7 +4,7 @@ import numpy as np
 
 from .mapping import big_map, pivot_result_to_one_map
 from .group_columns import full_id_vars, lateralisation_vars
-from . import melt_then_pivot_query
+from .melt_then_pivot_query import melt_then_pivot_query
 
 
 # main function is QUERY_LATERALISATION
@@ -53,91 +53,91 @@ def summarise_overall_lat_values(df_or_row,
     return Right, Left
 
 
-def lateralising_but_not_localising(full_row,
-                                    side_of_symptoms_signs,
-                                    pts_dominant_hemisphere_R_or_L,
-                                    lat_only_Right,
-                                    lat_only_Left):
-    """
-    Part 1 of 2
-    Keep the lateralising values: map to unilateral gif parcellations.
-        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there was no localising value.
+# def lateralising_but_not_localising(full_row,
+#                                     side_of_symptoms_signs,
+#                                     pts_dominant_hemisphere_R_or_L,
+#                                     lat_only_Right,
+#                                     lat_only_Left):
+#     """
+#     Part 1 of 2
+#     Keep the lateralising values: map to unilateral gif parcellations.
+#         instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there was no localising value.
 
-    """
-    lat_only_Right, lat_only_Left = summarise_overall_lat_values(full_row,
-                                                                 side_of_symptoms_signs,
-                                                                 pts_dominant_hemisphere_R_or_L,
-                                                                 lat_only_Right,
-                                                                 lat_only_Left)
+#     """
+#     lat_only_Right, lat_only_Left = summarise_overall_lat_values(full_row,
+#                                                                  side_of_symptoms_signs,
+#                                                                  pts_dominant_hemisphere_R_or_L,
+#                                                                  lat_only_Right,
+#                                                                  lat_only_Left)
 
-    return lat_only_Right, lat_only_Left
-
-
-def lateralising_but_not_localising_GIF(
-        all_combined_gifs,
-        lat_only_Right, lat_only_Left,
-        gifs_right, gifs_left):
-    """
-    Part 2 of 2
-    Keep the lateralising values: map to unilateral gif parcellations.
-        instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
-
-    """
-    lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
-
-    gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
-    lat_only_df['Gif Parcellations'] = gifs_right_and_left
-    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
-        gifs_right), 'pt #s'] = lat_only_Right  # broadcast
-    lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
-        gifs_left), 'pt #s'] = lat_only_Left  # broadcast
-    return lat_only_df
+#     return lat_only_Right, lat_only_Left
 
 
-def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
-        full_row, lat_vars,
-        side_of_symptoms_signs,
-        pts_dominant_hemisphere_R_or_L,
-        lat_only_Right,
-        lat_only_Left,
-        isin_left, isin_right):
-    """ Factor function.
-    Calculates the excess of lat over loc values.
-    Then maps these to GIFs as per lat_but_not_loc.
-    Then adjusts for the values already used in Q_L for the localisation GIFs
-        i.e. keeps proportion of right/left the same and
-        the values not more than lateralisation - localisation
-    """
-    full_row_lat_excess = full_row.copy()
-    # remove loc data and keep only lat data:
-    full_row_lat_excess = full_row_lat_excess[lat_vars]
-    # now deal with lat_exceed_loc excess as we did with lat_but_not_loc (these aren't lat_only or lat_excess yet)
-    lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row_lat_excess,
-                                                                    side_of_symptoms_signs,
-                                                                    pts_dominant_hemisphere_R_or_L,
-                                                                    lat_only_Right,
-                                                                    lat_only_Left)
-    # now adjust for the already calculated "proportion_lateralising = 1" locs:
-    loc_adjust = full_row['Localising'].sum()
-    if lat_only_Left == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_left
-        L_to_R_ratio = 0
-    elif lat_only_Right == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_right
-        R_to_L_ratio = 0
-    else:  # DEFAULT: neither are zero as lateralising exceeded loc for this function to be called in first place
-        R_to_L_ratio = lat_only_Right / lat_only_Left
-        L_to_R_ratio = lat_only_Left / lat_only_Right
+# def lateralising_but_not_localising_GIF(
+#         all_combined_gifs,
+#         lat_only_Right, lat_only_Left,
+#         gifs_right, gifs_left):
+#     """
+#     Part 2 of 2
+#     Keep the lateralising values: map to unilateral gif parcellations.
+#         instead of SVT v 1.2.0 (Aug 2020) which ignored this data if there is no localising value.
 
-    if isin_left:  # left gifs are smaller than right and were reduced.
-        lat_only_Right = lat_only_Right - loc_adjust
-        # left gifs were smaller and so less used from the lateralising, more remain for lat_excess:
-        lat_only_Left = lat_only_Left - (loc_adjust * L_to_R_ratio)
-        # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
+#     """
+#     lat_only_df = pd.DataFrame(columns=['Gif Parcellations', 'pt #s'])
 
-    elif isin_right:  # invert above
-        lat_only_Left = lat_only_Left - loc_adjust
-        lat_only_Right = lat_only_Right - (loc_adjust * (R_to_L_ratio))
+#     gifs_right_and_left = gifs_right.append(gifs_left, ignore_index=True)
+#     lat_only_df['Gif Parcellations'] = gifs_right_and_left
+#     lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+#         gifs_right), 'pt #s'] = lat_only_Right  # broadcast
+#     lat_only_df.loc[lat_only_df['Gif Parcellations'].isin(
+#         gifs_left), 'pt #s'] = lat_only_Left  # broadcast
+#     return lat_only_df
 
-    return lat_only_Right, lat_only_Left
+
+# def lat_exceeding_loc_mapped_to_hemisphericGIFs_adjusted_for_locs(
+#         full_row, lat_vars,
+#         side_of_symptoms_signs,
+#         pts_dominant_hemisphere_R_or_L,
+#         lat_only_Right,
+#         lat_only_Left,
+#         isin_left, isin_right):
+#     """ Factor function.
+#     Calculates the excess of lat over loc values.
+#     Then maps these to GIFs as per lat_but_not_loc.
+#     Then adjusts for the values already used in Q_L for the localisation GIFs
+#         i.e. keeps proportion of right/left the same and
+#         the values not more than lateralisation - localisation
+#     """
+#     full_row_lat_excess = full_row.copy()
+#     # remove loc data and keep only lat data:
+#     full_row_lat_excess = full_row_lat_excess[lat_vars]
+#     # now deal with lat_exceed_loc excess as we did with lat_but_not_loc (these aren't lat_only or lat_excess yet)
+#     lat_only_Right, lat_only_Left = lateralising_but_not_localising(full_row_lat_excess,
+#                                                                     side_of_symptoms_signs,
+#                                                                     pts_dominant_hemisphere_R_or_L,
+#                                                                     lat_only_Right,
+#                                                                     lat_only_Left)
+#     # now adjust for the already calculated "proportion_lateralising = 1" locs:
+#     loc_adjust = full_row['Localising'].sum()
+#     if lat_only_Left == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_left
+#         L_to_R_ratio = 0
+#     elif lat_only_Right == 0:  # exception, also as this is zero, it must be the smaller of the two i.e. isin_right
+#         R_to_L_ratio = 0
+#     else:  # DEFAULT: neither are zero as lateralising exceeded loc for this function to be called in first place
+#         R_to_L_ratio = lat_only_Right / lat_only_Left
+#         L_to_R_ratio = lat_only_Left / lat_only_Right
+
+#     if isin_left:  # left gifs are smaller than right and were reduced.
+#         lat_only_Right = lat_only_Right - loc_adjust
+#         # left gifs were smaller and so less used from the lateralising, more remain for lat_excess:
+#         lat_only_Left = lat_only_Left - (loc_adjust * L_to_R_ratio)
+#         # the above are now lat_excess_Right and Left, remain named lat_only_Right and left for consistency
+
+#     elif isin_right:  # invert above
+#         lat_only_Left = lat_only_Left - loc_adjust
+#         lat_only_Right = lat_only_Right - (loc_adjust * (R_to_L_ratio))
+
+#     return lat_only_Right, lat_only_Left
 
 
 def QUERY_LATERALISATION_GLOBAL(semiology_term, inspect_result, df, one_map, gif_lat_file,
@@ -186,7 +186,7 @@ def QUERY_LATERALISATION_GLOBAL(semiology_term, inspect_result, df, one_map, gif
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         # print('Please note you must determine at least one of side_of_symptoms_signs or')
         # print('pts_dominant_hemisphere_R_or_L keyword arguments for lateralised data extraction.')
-        return None, None, None, None, None, None, None
+        no_lateralising_data = True
 
     # check there is lateralising value
     try:
@@ -272,8 +272,21 @@ def QUERY_LATERALISATION_GLOBAL(semiology_term, inspect_result, df, one_map, gif
         Right_equal_Left = True
     elif Right != Left:
         Right_equal_Left = False
-    # find lowest value of R or L
-    if not no_lateralising_data and not Right_equal_Left:
+
+
+    # remove NaNs to allow div by 2 and multiplication by RR_norm:
+    all_combined_gifs.fillna(value=0, inplace=True)
+
+    # -------------Scenario 1: No lateralising data or equal R and L---------------
+    # the localising values should be split equally in half between the right and left GIFs
+    # this is different to the default behaviour of the original QUERY_LATERALISTION, but more intuitive
+    if no_lateralising_data or Right_equal_Left:
+        all_combined_gifs['pt #s'] = all_combined_gifs['pt #s']/2
+    # -------------END---------------------------------------------------------
+
+
+    # If lateralising data, find lowest value of R or L, proprotions and RR and RR_norm:
+    elif not no_lateralising_data and not Right_equal_Left:
         lower_postn = np.argmin([Right, Left])
         if lower_postn == 0:
             isin_lower = gifs_right  # reduce right sided intensities/pt #s
@@ -288,50 +301,40 @@ def QUERY_LATERALISATION_GLOBAL(semiology_term, inspect_result, df, one_map, gif
         RR = lower_value / Total
         OR = lower_value / higher_value
 
-    # now should be able to use above to lateralise the localising gif parcellations:
-    # if there are 100 localisations in one row, and only 1 IL And 3 CL, it would be too much
-    # to say the IL side gets one third of the CL side as number of lat is too low
-    # hence normalise by dividing by proportion_lateralising (which is between (0,1])
+        # now should be able to use above to lateralise the localising gif parcellations:
+        # if there are 100 localisations in one row, and only 1 IL And 3 CL, it would be too much
+        # to say the IL side gets one third of the CL side as number of lat is too low
+        # hence normalise by dividing by proportion_lateralising (which is between (0,1])
 
-    # set the scale of influence of lateralisation on the gif parcellations
-    # in case there are missing laterlisations vs CL/IL/Dom/NonDom numbers, use total_QL_lat:
-    proportion_lateralising = total_QL_lat / inspect_result['Localising'].sum()
+        # set the scale of influence of lateralisation on the gif parcellations
+        # in case there are missing laterlisations vs CL/IL/Dom/NonDom numbers, use total_QL_lat:
+        proportion_lateralising = total_QL_lat / inspect_result['Localising'].sum()
 
-    if normalise_lat_to_loc == True:
-        # see comments on section above about why we should normalise
-        RR_norm = RR * proportion_lateralising
-        if RR_norm > 1:
-            RR_norm = 1
-            logging.debug('normalised RR capped at 1: lateralising > localising data')
-    elif normalise_lat_to_loc == False:
-        # default counter argument: clinically we treat lat and loc entirely separately
-        RR_norm = RR
+        if normalise_lat_to_loc == True:
+            # see comments on section above about why we should normalise
+            RR_norm = RR * proportion_lateralising
+            if RR_norm > 1:
+                RR_norm = 1
+                logging.debug('normalised RR capped at 1: lateralising > localising data')
+        elif normalise_lat_to_loc == False:
+            # default counter argument: clinically we treat lat and loc entirely separately
+            RR_norm = RR
 
+        # -------------Scenario 2: Unequal lateralising data: RR_norm and 1-RR_norm---------------
+        df_lower_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_lower))].copy()
+        # now make these values lower by a proportion = RR_norm (in this case RR_norm = RR as denom is 1)
+        reduce_these = df_lower_lat_to_be_reduced.loc[:, 'pt #s'].copy()
+        df_lower_lat_to_be_reduced.loc[:, 'pt #s'] = RR_norm * reduce_these
+        # re attribute these corrected reduced lateralised values to the entire row's data:
+        all_combined_gifs.loc[df_lower_lat_to_be_reduced.index, :] = df_lower_lat_to_be_reduced
 
-    # -------------Case 1: No lateralising data or equal R and L---------------
-    # the localising values should be split equally in half between the right and left GIFs
-    # this is different to the default behaviour of the original QUERY_LATERALISTION, but more intuitive
-    if no_lateralising_data or Right_equal_Left:
-        all_combined_gifs = all_combined_gifs/2
-    # -------------END---------------------------------------------------------
+        # now repeat the above steps for the higher values i.e. contralateral side
+        df_higher_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_higher))].copy()
+        reduce_these = df_higher_lat_to_be_reduced.loc[:, 'pt #s'].copy()
+        df_higher_lat_to_be_reduced.loc[:, 'pt #s'] = (1-RR_norm) * reduce_these
+        all_combined_gifs.loc[df_higher_lat_to_be_reduced.index, :] = df_higher_lat_to_be_reduced
 
-
-
-    # -------------Case 2: Unequal lateralising data: RR_norm and 1-RR_norm---------------
-    df_lower_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_lower))].copy()
-    # now make these values lower by a proportion = RR_norm (in this case RR_norm = RR as denom is 1)
-    reduce_these = df_lower_lat_to_be_reduced.loc[:, 'pt #s'].copy()
-    df_lower_lat_to_be_reduced.loc[:, 'pt #s'] = RR_norm * reduce_these
-    # re attribute these corrected reduced lateralised values to the entire row's data:
-    all_combined_gifs.loc[df_lower_lat_to_be_reduced.index, :] = df_lower_lat_to_be_reduced
-
-    # now repeat the above steps for the higher values i.e. contralateral side
-    df_higher_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_higher))].copy()
-    reduce_these = df_higher_lat_to_be_reduced.loc[:, 'pt #s'].copy()
-    df_higher_lat_to_be_reduced.loc[:, 'pt #s'] = (1-RR_norm) * reduce_these
-    all_combined_gifs.loc[df_higher_lat_to_be_reduced.index, :] = df_higher_lat_to_be_reduced
-
-    # -------------END----------------------------------------------
+        # -------------END----------------------------------------------
 
 
     # pivot_table the values
