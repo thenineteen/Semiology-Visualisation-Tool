@@ -238,9 +238,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ageLayout.addWidget(self.paediatricCheckBox)
 
         self.PaedsAndAdultsCheckBox = qt.QCheckBox('Include both paediatric and adult data')
-        self.PaedsAndAdultsCheckBox.setToolTip(
-            'Incldue all data labelled and unlabelled by age.'
-        )
+        self.PaedsAndAdultsCheckBox.setToolTip('Incldue all data labelled and unlabelled by age.')
+        self.PaedsAndAdultsCheckBox.setChecked(True)
         self.PaedsAndAdultsCheckBox.toggled.connect(
             lambda: self.onAgeCheckBox(self.PaedsAndAdultsCheckBox))
         ageLayout.addWidget(self.PaedsAndAdultsCheckBox)
@@ -254,8 +253,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         inclusionsGroupBox = self.getInclusionsWidget()
         dataBaseTabLayout.addWidget(inclusionsGroupBox)
 
-        self.granularCheckBox = qt.QCheckBox(
-            'High Resolution Granular: non-hierarchical as reported (non-postcode)')
+        self.granularCheckBox = qt.QCheckBox('High Resolution Granular: non-hierarchical as reported (non-postcode)')
         self.granularCheckBox.setToolTip(
             'Granular option reverses the hierarchy of lobes and subregions.'
             'During data collection for the \'Semio2Brain Database\','
@@ -310,13 +308,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         visualisationSettingsLayout.addRow(
             'Show hemispheres: ', self.getHemispheresVisibleLayout())
         self.segmentsComboBox = self.getGoToStructureWidget()
-        self.segmentsComboBox.currentIndexChanged.connect(
-            self.onSegmentsComboBox)
-        visualisationSettingsLayout.addRow(
-            'Jump to structure: ', self.segmentsComboBox)
+        self.segmentsComboBox.currentIndexChanged.connect(self.onSegmentsComboBox)
+        visualisationSettingsLayout.addRow('Jump to structure: ', self.segmentsComboBox)
 
-        self.showProgressCheckBox = qt.QCheckBox(
-            'Show progress when updating colours')
+        self.showProgressCheckBox = qt.QCheckBox('Show progress when updating colours')
         self.showProgressCheckBox.setChecked(True)
         visualisationSettingsLayout.addWidget(self.showProgressCheckBox)
 
