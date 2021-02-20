@@ -120,7 +120,7 @@ class Semiology:
             possible_lateralities: Optional[List[Laterality]] = None,
             normalise_to_localising_values: bool = False,
             top_level_lobes: bool = False,
-            Global_Lateralisation: bool = False,
+            global_lateralisation: bool = False,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -144,7 +144,7 @@ class Semiology:
         self.include_only_postictals = self.is_postictals_only()
         if self.include_only_postictals:
             self.include_postictals = True
-        self.global_lateralisation = Global_Lateralisation
+        self.global_lateralisation = global_lateralisation
 
     def is_postictals_only(self) -> bool:
         postictals = (
