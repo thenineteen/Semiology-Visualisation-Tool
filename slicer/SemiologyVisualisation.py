@@ -438,9 +438,27 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         LatLayout = qt.QHBoxLayout(LateralisationGroupBox)
 
         self.GlobalLatRadioButton = qt.QRadioButton('Global Lateralisation')
+        self.GlobalLatRadioButton.setToolTip(
+            'Global lateralising option analyses localising and lateralising data'
+            ' separately, akin to clinical assessments.'
+            ' The overall proportion of right vs left is obtained from hemispheric'
+            ' language dominance and the side of semiology. This is used to '
+            ' determine simple proportions of the localising GIF values.'
+            ' If left and right are symmetric, the full localising values are split'
+            ' equally between both sides (cf micro-lateralisation)'
+            )
         LatLayout.addWidget(self.GlobalLatRadioButton)
 
         self.MicroLatRadioButton = qt.QRadioButton('Micro-Lateralisations')
+        self.MicroLatRadioButton.setToolTip(
+            'Micro lateralising option integrate the analyses of'
+            ' localising and lateralising data, faithful to the data collection.'
+            ' The overall proportion of right vs left is obtained from hemispheric'
+            ' language dominance and the side of semiology per data entry row.'
+            ' This is used to reduce the lower of right or left side GIF values,'
+            ' by the odds proportion. If symmetric, the full localising values are'
+            ' equally mapped to both sides.'
+            )
         LatLayout.addWidget(self.MicroLatRadioButton)
 
         self.MicroLatRadioButton.setChecked(True)
