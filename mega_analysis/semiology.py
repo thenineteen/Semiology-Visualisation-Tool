@@ -29,6 +29,7 @@ from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
+from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
 from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
@@ -119,6 +120,7 @@ class Semiology:
             possible_lateralities: Optional[List[Laterality]] = None,
             normalise_to_localising_values: bool = False,
             top_level_lobes: bool = False,
+            global_lateralisation: bool = False,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -142,6 +144,7 @@ class Semiology:
         self.include_only_postictals = self.is_postictals_only()
         if self.include_only_postictals:
             self.include_postictals = True
+        self.global_lateralisation = global_lateralisation
 
     def is_postictals_only(self) -> bool:
         postictals = (
@@ -214,7 +217,18 @@ class Semiology:
             if ll_empty:
                 message = f'No query_semiology results for term "{self.term}"'
                 raise ValueError(message)
-            else:
+            elif self.global_lateralisation:
+                all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
+                    QUERY_LATERALISATION_GLOBAL(
+                        self.term,
+                        query_semiology_result,
+                        self.data_frame,
+                        one_map,
+                        gif_lat_file,
+                        side_of_symptoms_signs=self.symptoms_side.value,
+                        pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                    )
+            elif not self.global_lateralisation:
                 all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
                     QUERY_LATERALISATION(
                         query_semiology_result,

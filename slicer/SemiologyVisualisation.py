@@ -432,6 +432,37 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.minmaxRadioButton.setChecked(True)
 
+        # Lateralising options
+        LateralisationGroupBox = qt.QGroupBox('Lateralising options')
+        advancedTabLayout.addWidget(LateralisationGroupBox)
+        LatLayout = qt.QHBoxLayout(LateralisationGroupBox)
+
+        self.GlobalLatRadioButton = qt.QRadioButton('Global Lateralisation')
+        self.GlobalLatRadioButton.setToolTip(
+            'Global lateralising option analyses localising and lateralising data'
+            ' separately, akin to clinical assessments.'
+            ' The overall proportion of right vs left is obtained from hemispheric'
+            ' language dominance and the side of semiology. This is used to '
+            ' determine simple proportions of the localising GIF values.'
+            ' If left and right are symmetric, the full localising values are split'
+            ' equally between both sides (cf micro-lateralisation)'
+            )
+        LatLayout.addWidget(self.GlobalLatRadioButton)
+
+        self.MicroLatRadioButton = qt.QRadioButton('Micro-Lateralisations')
+        self.MicroLatRadioButton.setToolTip(
+            'Micro lateralising option integrate the analyses of'
+            ' localising and lateralising data, faithful to the data collection.'
+            ' The overall proportion of right vs left is obtained from hemispheric'
+            ' language dominance and the side of semiology per data entry row.'
+            ' This is used to reduce the lower of right or left side GIF values,'
+            ' by the odds proportion. If symmetric, the full localising values are'
+            ' equally mapped to both sides.'
+            )
+        LatLayout.addWidget(self.MicroLatRadioButton)
+
+        self.MicroLatRadioButton.setChecked(True)
+
         advancedTabLayout.addStretch()
         return advancedTabWidget
 
@@ -610,6 +641,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_paeds_and_adults=self.PaedsAndAdultsCheckBox.isChecked(),
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
+                global_lateralisation=self.GlobalLatRadioButton.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
@@ -903,6 +935,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.PaedsAndAdultsCheckBox.setChecked(False)
         elif (source == self.PaedsAndAdultsCheckBox) and self.PaedsAndAdultsCheckBox.isChecked():
             self.paediatricCheckBox.setChecked(False)
+
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
@@ -1673,6 +1706,7 @@ class Query:
                 symptoms_side=semiology.symptoms_side.value,
                 dominant_hemisphere=semiology.dominant_hemisphere,
                 granular=semiology.granular,
+                include_seizure_freedom=semiology.include_seizure_freedom,
                 include_concordance=semiology.include_concordance,
                 include_seeg=semiology.include_seeg,
                 include_cortical_stimulation=semiology.include_cortical_stimulation,
@@ -1683,6 +1717,7 @@ class Query:
                 include_postictals=semiology.include_postictals,
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,
+                global_lateralisation=semiology.global_lateralisation,
             )
             content.append(semiology_dict)
         return content
