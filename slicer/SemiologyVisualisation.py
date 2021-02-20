@@ -433,35 +433,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.minmaxRadioButton.setChecked(True)
 
         # Lateralising options
-        self.GlobalLatCheckBox = qt.QCheckBox('Global Lateralisation')
-        self.GlobalLatCheckBox.setToolTip(
-            'Global lateralising option analyses localising and lateralising data'
-            ' separately, akin to clinical assessments.'
-            ' The overall proportion of right vs left is obtained from hemispheric'
-            ' language dominance and the side of semiology. This is used to '
-            ' determine simple proportions of the localising GIF values.'
-            ' If left and right are symmetric, the full localising values are split'
-            ' equally between both sides (cf micro-lateralisation)'
-            )
-        self.GlobalLatCheckBox.setChecked(False)
-        self.GlobalLatCheckBox.toggled.connect(
-            lambda: self.on_Global_micro_CheckBoxes(self.GlobalLatCheckBox))
-        advancedTabLayout.addWidget(self.GlobalLatCheckBox)
+        LateralisationGroupBox = qt.QGroupBox('Lateralising options')
+        advancedTabLayout.addWidget(LateralisationGroupBox)
+        LatLayout = qt.QHBoxLayout(LateralisationGroupBox)
 
-        self.MicroLatCheckBox = qt.QCheckBox('Micro Lateralisation')
-        self.MicroLatCheckBox.setToolTip(
-            'Micro lateralising option integrate the analyses of'
-            ' localising and lateralising data, faithful to the data collection.'
-            ' The overall proportion of right vs left is obtained from hemispheric'
-            ' language dominance and the side of semiology per data entry row.'
-            ' This is used to reduce the lower of right or left side GIF values,'
-            ' by the odds proportion. If symmetric, the full localising values are'
-            ' equally mapped to both sides.'
-            )
-        self.MicroLatCheckBox.setChecked(True)
-        self.MicroLatCheckBox.toggled.connect(
-            lambda: self.on_Global_micro_CheckBoxes(self.MicroLatCheckBox))
-        advancedTabLayout.addWidget(self.MicroLatCheckBox)
+        self.GlobalLatRadioButton = qt.QRadioButton('Global Lateralisation')
+        LatLayout.addWidget(self.GlobalLatRadioButton)
+
+        self.MicroLatRadioButton = qt.QRadioButton('Micro-Lateralisations')
+        LatLayout.addWidget(self.MicroLatRadioButton)
+
+        self.MicroLatRadioButton.setChecked(True)
 
         advancedTabLayout.addStretch()
         return advancedTabWidget
@@ -641,7 +623,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_paeds_and_adults=self.PaedsAndAdultsCheckBox.isChecked(),
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
-                Global_Lateralisation=self.GlobalLatCheckBox.isChecked(),
+                global_lateralisation=self.GlobalLatRadioButton.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
@@ -936,15 +918,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         elif (source == self.PaedsAndAdultsCheckBox) and self.PaedsAndAdultsCheckBox.isChecked():
             self.paediatricCheckBox.setChecked(False)
 
-    def on_Global_micro_CheckBoxes(self, source):
-        if (source == self.GlobalLatCheckBox) and self.GlobalLatCheckBox.isChecked():
-            self.MicroLatCheckBox.setChecked(False)
-        elif (source == self.GlobalLatCheckBox) and not self.GlobalLatCheckBox.isChecked():
-            self.MicroLatCheckBox.setChecked(True)
-        elif (source == self.MicroLatCheckBox) and self.MicroLatCheckBox.isChecked():
-            self.GlobalLatCheckBox.setChecked(False)
-        elif (source == self.MicroLatCheckBox) and not self.MicroLatCheckBox.isChecked():
-            self.GlobalLatCheckBox.setChecked(True)
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
@@ -1726,7 +1699,7 @@ class Query:
                 include_postictals=semiology.include_postictals,
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,
-                Global_Lateralisation=semiology.Global_Lateralisation,
+                global_lateralisation=semiology.global_lateralisation,
             )
             content.append(semiology_dict)
         return content
