@@ -641,7 +641,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 include_paeds_and_adults=self.PaedsAndAdultsCheckBox.isChecked(),
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
-                Global_Lateralisation=self.GlobalLatCheckBox,
+                Global_Lateralisation=self.GlobalLatCheckBox.isChecked(),
             )
             semiologies.append(semiology)
         return semiologies
