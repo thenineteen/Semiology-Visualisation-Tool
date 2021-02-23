@@ -29,12 +29,12 @@ def top_level_lobes():
     return Lobes
 
 
-def normalise_top_level_localisation_cols(df):
+def normalise_top_level_localisation_cols(df, Bayesian=False):
     """ If the sum of datapoints in lobes is greater than localising col, normalise to localising semiology.
     Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.
     Should not run normalisation methods together """
 
-    Lobes = top_level_lobes()
+    Lobes = top_level_lobes(Bayesian=Bayesian)
     df_temp = df.copy()
     df_temp = df_temp[Lobes]
 
