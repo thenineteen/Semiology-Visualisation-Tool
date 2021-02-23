@@ -10,6 +10,7 @@ from mega_analysis.semiology import recursive_items
 from mega_analysis.Sankey_Functions import normalise_top_level_localisation_cols
 
 import pandas as pd
+from pandas.testing import assert_frame_equal
 import os
 import yaml
 import copy
@@ -188,8 +189,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
     marginal_loc_df = pd.DataFrame()
 
     if normalised:
-        # quick way
-        if test==True:
+        if test:
         # long test way
             query_results = summary_semio_loc_df_from_scripts(normalise=True)
             for semio, v in query_results[publication_prior].items():
@@ -204,10 +204,11 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                         query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
                 semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
                 marginal_semio_df_long_test.loc[semio, 'norm'] = semio_top_level_sum.sum()
-            for semio, v in query_results[publication_prior].items():
-                marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
-            if test==True:
-                assert marginal_semio_df_long_test.equals(marginal_semio_df)
+        # quick way
+        for semio, v in query_results[publication_prior].items():
+            marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
+        if test:
+            assert_frame_equal(marginal_semio_df_long_test, marginal_semio_df, check_exact=False, rtol=0.01)
 
     elif not normalised:
         query_results = summary_semio_loc_df_from_scripts(normalise=False)
