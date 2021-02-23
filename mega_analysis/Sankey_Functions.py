@@ -8,7 +8,7 @@ from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, i
 import cufflinks as cf
 cf.go_offline()
 init_notebook_mode()
-
+from .crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 
 def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
     """    Flattense nested dictionary to low level keys:values. Marvasti Nov 2020    """
@@ -21,23 +21,17 @@ def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
             yield from flatten_SemioDict(v)
 
 
-def top_level_lobes():
-    Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
-             'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
-             'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
-             'PO', 'FP']
-    return Lobes
-
-
-def normalise_top_level_localisation_cols(df, Bayesian=False):
+def normalise_top_level_localisation_cols(df, Bayesian=False, Localising=None):
     """ If the sum of datapoints in lobes is greater than localising col, normalise to localising semiology.
     Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.
     Should not run normalisation methods together """
 
     Lobes = top_level_lobes(Bayesian=Bayesian)
     df_temp = df.copy()
-    df_temp = df_temp[Lobes]
+    df_temp = df_temp[[locs for locs in Lobes if locs in df_temp.columns]]
 
+    if Localising:
+        df.loc[: , 'Localising'] = Localising
     df_temp.loc[:, 'ratio'] = df['Localising'] / (df[Lobes].sum(axis=1))
     df_temp = df_temp.astype({'ratio': 'float'})
 
