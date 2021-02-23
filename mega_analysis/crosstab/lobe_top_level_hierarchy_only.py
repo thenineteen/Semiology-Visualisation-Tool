@@ -15,6 +15,7 @@ def top_level_lobes(Bayesian=False):
              'PO', 'FP']
     if Bayesian:
         redistributed = ['FT', 'FTP', 'PO', 'Perisylvian', 'FP', 'Sub-Callosal Cortex', 'TO', 'TPO Junction', 'TP']
+        redistributed.append('Cerebellum')
         Lobes = [i for i in Lobes if i not in redistributed]
     return Lobes
 
