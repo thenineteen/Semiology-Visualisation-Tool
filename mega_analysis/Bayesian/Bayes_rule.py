@@ -1,15 +1,12 @@
 import pandas as pd
 import os
 os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
-from .Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation, summary_semio_loc_df_from_scripts
+from Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation, summary_semio_loc_df_from_scripts
 from mega_analysis import Semiology, Laterality
-from pathlib import Path
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from collections import Counter
 
-file = Path(__file__).parent/'resources'/'semiologies_neutral_only.txt'
-list_of_terms = list(open(file, 'r'))
 
 def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     """
@@ -122,4 +119,14 @@ p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
                                        )
 
 # %%
+import os
+os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
+from mega_analysis.Bayesian.Bayes_rule import Bayes_All
+import pandas as pd
+pd.options.mode.chained_assignment = None
 
+prob_GIF_given_S_norm, prob_GIF_given_S_notnorm = Bayes_All()
+
+# %%
+
+# %%

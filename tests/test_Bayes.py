@@ -10,9 +10,11 @@ class Test_BAYES(unittest.TestCase):
     def test_bayes(self):
         """ The results are very similar but not exactly the same when normalising to the localising value column,
         or to the (sum of sum) of the top level regions. This is after lots of redistribution, dropping cerebellum etc
-        so need to accept ~1% error rate. """
+        so need to accept ~1% error rate.
+
+        see assert_frame_equal in Bayesian_marginals for the test assertion and tolerance"""
         p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full',
-                                                                                        test=False)
+                                                                                        test=True)
         return None
 
 
