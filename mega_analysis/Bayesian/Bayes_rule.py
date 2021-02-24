@@ -122,8 +122,6 @@ p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
 import os
 os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
 from mega_analysis.Bayesian.Bayes_rule import Bayes_All
-import pandas as pd
-pd.options.mode.chained_assignment = None
 
 prob_GIF_given_S_norm, prob_GIF_given_S_notnorm = Bayes_All()
 

@@ -3,11 +3,11 @@ import numpy as np
 
 # import chart_studio.plotly as py
 # import plotly.io as pio
-from plotly import __version__
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
-import cufflinks as cf
-cf.go_offline()
-init_notebook_mode()
+# from plotly import __version__
+# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
+# import cufflinks as cf
+# cf.go_offline()
+# init_notebook_mode()
 from .crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 
 def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
@@ -45,6 +45,8 @@ def normalise_top_level_localisation_cols_OTHER(df, *args):
     """
     Compress the localisations to OTHER. Need to have made the OTHER lobe column. Should not run normalisation methods together.
     """
+    pd.options.mode.chained_assignment = None
+
     OTHER = ['Sub-Callosal Cortex', 'TPO Junction', 'TP', 'FTP', 'TO', 'FP', 'Perisylvian',
              'PO', 'FT', 'Cerebellum']
 
