@@ -152,7 +152,7 @@ def marginal_GIF_probabilities(all_combined_gifs):
 
 def marginal_Localisation_and_Semiology_probabilities(df=None,
                                                     normalised=True,
-                                                    global_loc_normalisation=True,
+                                                    global_loc_normalisation=False,
                                                     publication_prior='full',
                                                     test=False):
     """ Returns the marginal localisation and semiology probabilities
@@ -172,7 +172,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
 
     > publication_prior: 'full', 'spontaneous', or 'topological'
 
-    > global normalisation gets the localisations individually, then normalises to localising values
+    > global normalisation gets all the localisations, then normalises to localising values
     > normalised (micronormalisation) is the regular normalisation row by row (by semiology)
 
     returns:
@@ -189,7 +189,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
     marginal_loc_df = pd.DataFrame()
 
     if normalised:
-        if test:
+        if test==True:
         # long test way
             query_results = summary_semio_loc_df_from_scripts(normalise=True)
             for semio, v in query_results[publication_prior].items():
@@ -205,10 +205,11 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                 semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
                 marginal_semio_df_long_test.loc[semio, 'norm'] = semio_top_level_sum.sum()
         # quick way
+        query_results = summary_semio_loc_df_from_scripts()
         for semio, v in query_results[publication_prior].items():
             marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
-        if test:
-            assert_frame_equal(marginal_semio_df_long_test, marginal_semio_df, check_exact=False, rtol=0.01)
+        if test==True:
+            assert assert_frame_equal(marginal_semio_df_long_test, marginal_semio_df, check_exact=False, rtol=0.01)
 
     elif not normalised:
         query_results = summary_semio_loc_df_from_scripts(normalise=False)
