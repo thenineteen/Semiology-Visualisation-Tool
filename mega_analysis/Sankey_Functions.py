@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 
 # import chart_studio.plotly as py
 # import plotly.io as pio
@@ -27,7 +28,7 @@ def normalise_top_level_localisation_cols(df, Bayesian=False, Localising=None):
     Should not run normalisation methods together """
 
     Lobes = top_level_lobes(Bayesian=Bayesian)
-    df_temp = df.copy()
+    df_temp = copy.deepcopy(df)
     df_temp = df_temp[[locs for locs in Lobes if locs in df_temp.columns]]
 
     if Localising:
@@ -35,10 +36,12 @@ def normalise_top_level_localisation_cols(df, Bayesian=False, Localising=None):
     df_temp.loc[:, 'ratio'] = df['Localising'] / (df[Lobes].sum(axis=1))
     df_temp = df_temp.astype({'ratio': 'float'})
 
-    df.loc[:, Lobes] = (df_temp.loc[:, Lobes]).multiply(
-        df_temp.loc[:, 'ratio'], axis=0)
+    df_temp.loc[:, Lobes] = (df_temp.loc[:, Lobes]).multiply(df_temp.loc[:, 'ratio'], axis=0)
+    df_temp2 = copy.deepcopy(df)
+    df_temp2.loc[df_temp2.index==df_temp.index, Lobes] = df_temp.loc[:, Lobes]
+    # df[Lobes] = df_temp2[Lobes]
 
-    return df, Lobes
+    return df_temp2, Lobes
 
 
 def normalise_top_level_localisation_cols_OTHER(df, *args):
