@@ -209,7 +209,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
 
     returns:
         marginal_semio_prob: DataFrame with index of semiologies, and single column of marginal 'probability' (col df)
-        marginal_loc_prob: df with columns as localisations (row df)
+        marginal_loc_prob
     """
     # useful for both semio and unnormalised locs:
     Lobes = top_level_lobes(Bayesian=True)
@@ -261,7 +261,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
         #     marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
         #     marginal_loc_df.fillna(0, inplace=True)
         if test==True:
-            assert assert_frame_equal(
+            assert_frame_equal(
                 marginal_semio_df_long_test.rename(columns={'norm':'assert_test'}),
                 marginal_semio_df.rename(columns={'num_query_loc':'assert_test'}),
                                         check_exact=False, check_dtype=False,
@@ -362,8 +362,8 @@ def p_GIFs(global_lateralisation=False,
 def p_Semiology_and_Localisation(publication_prior='full', test=False):
     """
     Return the normalised and unnormalised marginal probabilities for ictal semiologies.
-    Returned probabilities for Semiologies are columns; and Localisations row DataFrames.
-        with index {Semiology} and a 'probability' column.
+    Returned marginal probabilities for Semiologies are pd.DataFrame; with index {Semiology} and a 'probability' column.
+    Returned marginal probabilities for Localisations are pd.Seroes; with index {Top level lobe}.
 
 
     """
