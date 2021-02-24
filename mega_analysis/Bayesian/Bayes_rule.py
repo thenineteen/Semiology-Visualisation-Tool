@@ -15,8 +15,8 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
 
     The marginals are from all data but can be tweaked as sensitivity analyses in future.
 
-    > p_Loc is pd.Series with index as {top level lobes}
-    > p_Semio is pd.DataFrame with index as {Semiology} and a probability columns
+    > p_Loc is pd.Series with columns as {top level lobes}
+    > p_Semio is pd.DataFrame with index as {Semiology} and a probability column
     > prob_S_given_L is index of semiologies and cols of lobes
 
     Alim-Marvasti Feb 2021
@@ -28,7 +28,7 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     # The simple case would be: prob_L_given_S = (prob_S_given_L * p_Loc) / p_Semio
     for semio in prob_S_given_L.index:
         for loc in prob_S_given_L.columns:
-            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc.loc[loc]) / p_Semio.loc[semio, 'probability']
+            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc[loc]) / p_Semio.loc[semio, 'probability']
 
     return prob_L_given_S
 
@@ -48,6 +48,7 @@ def wrapper_TS_GIFs(p_S_norm,
     pt = {}
     all_combined_gifs_superdict = {}
     added_all_gifs = {}
+    added_all_gifs = Counter(added_all_gifs)
     p_S_given_GIF = pd.DataFrame()
 
     for semiology in p_S_norm.index:
@@ -67,7 +68,9 @@ def wrapper_TS_GIFs(p_S_norm,
     # now add the dictionaries:
     for semio_dict_result, v in all_combined_gifs_superdict.items():  # equivalent: for semiology in p_S_norm.index:
         temp_dict = Counter(all_combined_gifs_superdict[semio_dict_result])
-        added_all_gifs.update(temp_dict)
+        added_all_gifs = added_all_gifs + temp_dict
+    # turn counter back to dict
+    added_all_gifs = dict(added_all_gifs)
 
     # so totals for each semiology, given a GIF, is added_all_gifs[GIF #]
     # now we need to look at each individual GIF and semio
@@ -79,8 +82,8 @@ def wrapper_TS_GIFs(p_S_norm,
 
 
 def Bayes_All():
-    """ Apply Bayes_rule to the GIFs """
-    # get marginal probabilities (p_S as DataFrames, p_Loc as Series):
+    """ Apply Bayes_rule to the GIFs and Top-Level Regions """
+    # get marginal probabilities (p_S as DataFrames, p_Loc as Series): takes <4 mins
     p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full', test=False)
     p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,  # p_GIF is a row df of marginal probabilities, cols as GIF #s and "probability"
                                        include_paeds_and_adults=True,
@@ -89,13 +92,13 @@ def Bayes_All():
                                        dominance='neutral',
                                        )
 
-    # get likelihoods from Topological data:
+    # get likelihoods from Topological data: takes >5mins per each call to summary_semio_loc_df_from_scripts
     query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
     query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
     prob_S_given_TopLevelLobes_norm = query_results_norm['topology']
     prob_S_given_TopLevelLobes_notnorm = query_results_notnorm['topology']
-    prob_S_given_GIFs_norm = wrapper_TS_GIFs(normalise_to_localising_values=True)
-    prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(normalise_to_localising_values=False)
+    prob_S_given_GIFs_norm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=True)
+    prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=False)
 
     # GIFS
     prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
