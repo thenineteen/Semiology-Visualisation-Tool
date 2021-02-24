@@ -11,10 +11,10 @@ from mega_analysis.Sankey_Functions import normalise_top_level_localisation_cols
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-import os
+# import os
 import yaml
 import copy
-os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
+# os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
 
 
 def query_semiology_wrapper_from_scripts(df, semiology_list, semiology_dict_path):

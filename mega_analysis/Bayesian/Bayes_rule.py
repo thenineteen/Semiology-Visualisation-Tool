@@ -1,6 +1,6 @@
 import pandas as pd
-import os
-os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
+# import os
+# os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
 from .Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation, summary_semio_loc_df_from_scripts
 from mega_analysis import Semiology, Laterality
 from mega_analysis.crosstab.file_paths import file_paths
