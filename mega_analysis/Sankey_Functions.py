@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-import chart_studio.plotly as py
-import plotly.io as pio
+# import chart_studio.plotly as py
+# import plotly.io as pio
 from plotly import __version__
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
 import cufflinks as cf
