@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
-from Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation, summary_semio_loc_df_from_scripts
+from .Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation, summary_semio_loc_df_from_scripts
 from mega_analysis import Semiology, Laterality
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
@@ -10,10 +10,14 @@ from collections import Counter
 
 def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     """
-    Give it p(S | L) from topological data (generative/likelihood).
+    Give it p(S | L) from topological data (generative/likelihood of semiologies).
     Returns p(L | S) Bayesian estimate (posterior) using marginal probabilities and Bayes' Rule.
 
     The marginals are from all data but can be tweaked as sensitivity analyses in future.
+
+    > p_Loc is pd.Series with index as {top level lobes}
+    > p_Semio is pd.DataFrame with index as {Semiology} and a probability columns
+    > prob_S_given_L is index of semiologies and cols of lobes
 
     Alim-Marvasti Feb 2021
     """
@@ -24,7 +28,7 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     # The simple case would be: prob_L_given_S = (prob_S_given_L * p_Loc) / p_Semio
     for semio in prob_S_given_L.index:
         for loc in prob_S_given_L.columns:
-            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc[loc]) / p_Semio[semio]
+            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc.loc[loc]) / p_Semio.loc[semio, 'probability']
 
     return prob_L_given_S
 
@@ -38,7 +42,7 @@ def wrapper_TS_GIFs(p_S_norm,
         normalise_to_localising_values=True,
         ):
     """
-    Get all Gifs for all semiologies
+    Get all Gifs for all semiologies from Toplogical (include_spontaneous_semiology=False) studies.
     """
     # initialise
     pt = {}
@@ -76,8 +80,8 @@ def wrapper_TS_GIFs(p_S_norm,
 
 def Bayes_All():
     """ Apply Bayes_rule to the GIFs """
-    # get marginal probabilities:
-    p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full')
+    # get marginal probabilities (p_S as DataFrames, p_Loc as Series):
+    p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full', test=False)
     p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,  # p_GIF is a row df of marginal probabilities, cols as GIF #s and "probability"
                                        include_paeds_and_adults=True,
                                        include_only_postictals=False,
@@ -85,46 +89,50 @@ def Bayes_All():
                                        dominance='neutral',
                                        )
 
-    # get likelihood from Topological data:
-    query_results = summary_semio_loc_df_from_scripts(normalise=True)
-    prob_S_given_L_TopLevelLobes = query_results['topology']
+    # get likelihoods from Topological data:
+    query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
+    query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
+    prob_S_given_TopLevelLobes_norm = query_results_norm['topology']
+    prob_S_given_TopLevelLobes_notnorm = query_results_notnorm['topology']
     prob_S_given_GIFs_norm = wrapper_TS_GIFs(normalise_to_localising_values=True)
     prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(normalise_to_localising_values=False)
-
-
 
     # GIFS
     prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
     prob_GIF_given_S_notnorm = Bayes_rule(prob_S_given_GIFs_notnorm, p_S_notnorm, p_GIF_notnorm)
 
     # TOP LEVEL LOCS
+    prob_TopLevel_given_S_norm = Bayes_rule(prob_S_given_TopLevelLobes_norm, p_S_norm, p_Loc_norm)
+    prob_TopLevel_given_S_notnorm = Bayes_rule(prob_S_given_TopLevelLobes_notnorm, p_S_notnorm, p_Loc_notnorm)
+
+    return prob_GIF_given_S_norm, prob_GIF_given_S_notnorm, prob_TopLevel_given_S_norm, prob_TopLevel_given_S_notnorm
 
 
-    return prob_GIF_given_S_norm, prob_GIF_given_S_notnorm
 
 
 
 
-# %%
-import os
-os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
-from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
 
-p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full', test=False)
-p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
-                                       include_paeds_and_adults=True,
-                                       include_only_postictals=False,
-                                       symptom_laterality='neutral',
-                                       dominance='neutral',
-                                       )
+# # %%
+# import os
+# os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
+# from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
 
-# %%
-import os
-os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
-from mega_analysis.Bayesian.Bayes_rule import Bayes_All
+# p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full', test=False)
+# p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
+#                                        include_paeds_and_adults=True,
+#                                        include_only_postictals=False,
+#                                        symptom_laterality='neutral',
+#                                        dominance='neutral',
+#                                        )
 
-prob_GIF_given_S_norm, prob_GIF_given_S_notnorm = Bayes_All()
+# # %%
+# import os
+# os.chdir('C:/Users/ali_m/AnacondaProjects/PhD/Semiology-Visualisation-Tool/')
+# from mega_analysis.Bayesian.Bayes_rule import Bayes_All
 
-# %%
+# prob_GIF_given_S_norm, prob_GIF_given_S_notnorm = Bayes_All()
 
-# %%
+# # %%
+
+# # %%
