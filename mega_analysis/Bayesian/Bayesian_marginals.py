@@ -190,11 +190,13 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
 
     if normalised:
         if test==True:
-        # long test way
+        # long test semio way
             query_results = summary_semio_loc_df_from_scripts(normalise=True)
             for semio, v in query_results[publication_prior].items():
-                # avoid postictals as they are empty dataframes
+                # avoid postictals as they are empty dataframes (ictal manifestations only)
                 if semio.startswith('Post'):
+                    continue
+                if semio.startswith('No Semiology'):
                     continue
                 # for e.g. Fear-Anxiety throws a no Hypothalamus in index error so set to zero first
                 for ind_lobe in Lobes:
@@ -204,33 +206,58 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                         query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
                 semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
                 marginal_semio_df_long_test.loc[semio, 'norm'] = semio_top_level_sum.sum()
-        # quick way
+
+        # quick semio way
         query_results = summary_semio_loc_df_from_scripts()
         for semio, v in query_results[publication_prior].items():
+            # avoid postictals as they are empty dataframes (ictal manifestations only)
+            if semio.startswith('Post'):
+                continue
+            if semio.startswith('No Semiology'):
+                    continue
+            # semio
             marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
+            # locs: first replace any non existing locs e.g. Hypothalamus for fear-anxiety
+            for ind_lobe in Lobes:
+                try:
+                    query_results[publication_prior][semio]['query_inspection'][ind_lobe]
+                except:
+                    query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
+            temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+            temp_df.fillna(0, inplace=True)
+            marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+            marginal_loc_df.fillna(0, inplace=True)
         if test==True:
             assert assert_frame_equal(marginal_semio_df_long_test, marginal_semio_df, check_exact=False, rtol=0.01)
 
     elif not normalised:
         query_results = summary_semio_loc_df_from_scripts(normalise=False)
         for semio, v in query_results[publication_prior].items():
+            # semio
             semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
             marginal_semio_df.loc[semio, 'not_norm'] = semio_top_level_sum.sum()
+            # locs
+            temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+            temp_df.fillna(0, inplace=True)
+            marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+            marginal_loc_df.fillna(0, inplace=True)
     # for each semiology, divide by the total, to get the marginal probability of that semiology i.e.
     marginal_semio_prob = marginal_semio_df / marginal_semio_df.sum()
     marginal_semio_prob.rename(columns={'num_query_loc':'probability',
                                         'not_norm':'probability'},
                                         inplace=True, errors='ignore')
 
-    # do the same for the localisations which takes normalised from above:
-    for semio, v in query_results[publication_prior].items():
-        temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
-        if global_loc_normalisation:  # redo without micro normalisation first
-            query_results = summary_semio_loc_df_from_scripts(normalise=False)
-            temp_df, _ = normalise_top_level_localisation_cols(temp_df, Bayesian=True, Localising=marginal_semio_df.loc[semio, 'num_query_loc'])
-        marginal_loc_df = (marginal_loc_df.add(temp_df, fill_value=0))
 
-    marginal_loc_df.fillna(0, inplace=True)
+    if global_loc_normalisation:  # redo without micro normalisation first
+        query_results = summary_semio_loc_df_from_scripts(normalise=False)
+        for semio, v in query_results[publication_prior].items():
+            temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+            temp_df.fillna(0, inplace=True)
+            temp_df, _ = normalise_top_level_localisation_cols(temp_df, Bayesian=True, Localising=marginal_semio_df.loc[semio, 'num_query_loc'])
+            marginal_loc_df = (marginal_loc_df.add(temp_df, fill_value=0))
+            marginal_loc_df.fillna(0, inplace=True)
+
+    # for each loc, divide by total to get marginal probabilities
     marginal_loc_prob = marginal_loc_df.sum(axis=0) / marginal_loc_df.sum().sum()
 
     return marginal_semio_prob, marginal_loc_prob
@@ -293,6 +320,8 @@ def p_Semiology_and_Localisation(publication_prior='full', test=False):
     Return the normalised and unnormalised marginal probabilities for ictal semiologies.
     Returned probabilities for Semiologies are columns; and Localisations row DataFrames.
         with index {Semiology} and a 'probability' column.
+
+
     """
     p_S_norm, p_Loc_norm = marginal_Localisation_and_Semiology_probabilities(normalised=True, publication_prior=publication_prior, test=test)
     p_S_notnorm, p_Loc_notnorm = marginal_Localisation_and_Semiology_probabilities(normalised=False, publication_prior=publication_prior, test=test)
