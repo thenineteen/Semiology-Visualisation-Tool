@@ -265,7 +265,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                 marginal_semio_df_long_test.rename(columns={'norm':'assert_test'}),
                 marginal_semio_df.rename(columns={'num_query_loc':'assert_test'}),
                                         check_exact=False, check_dtype=False,
-                                        rtol=0.1)
+                                        rtol=0.351)
 
     elif not normalised:
         marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=False)
