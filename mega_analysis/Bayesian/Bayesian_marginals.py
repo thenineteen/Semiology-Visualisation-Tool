@@ -131,7 +131,7 @@ def marginal_GIF_probabilities(all_combined_gifs):
             all_combined_gifs is a heatmap df i.e. from patient.get_num_datapoints_dict()  # for all data not for single semiology
             remember the cols of all_combined_gifs are "Gif Parcellations" and "pt #s"
 
-    Returns the marginal_probabilities.
+    Returns the marginal_probabilities (row DataFrame)
 
     Future: As sensitivity analyses, should check the variance of marginal prob when using different filters
         concretely: marginal_p should be using all the data without filters, but then when using filters, see if we
@@ -141,13 +141,45 @@ def marginal_GIF_probabilities(all_combined_gifs):
     Alim-Marvasti Feb 2021
     """
 
-    # Localisations
-    gif_df = all_combined_gifs.copy()
-    gif_df = gif_df.fillna(0)
-    gif_df['pt #s'] = gif_df['pt #s'] / (gif_df['pt #s'].sum())
-    marginal_GIF_prob = gif_df
+    all_comb_gifs = all_combined_gifs.copy()
 
-    return marginal_GIF_prob
+    # total of gif
+    gif_total = 0
+    for k,v in all_comb_gifs.items():
+        gif_total += v
+
+    # now again for the marginal probabilities
+    for k,v in all_comb_gifs.items():
+        all_comb_gifs[k] = v/gif_total
+
+    # make this a DataFrame
+    marginal_GIF_prob = pd.DataFrame.from_dict(all_comb_gifs, orient='index', columns=['probability'])
+    return marginal_GIF_prob.T
+
+
+def wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=True):
+    """ wrapper for marginal_Localisation_and_Semiology_probabilities"""
+    query_results = summary_semio_loc_df_from_scripts(normalise=normalise)
+    for semio, v in query_results[publication_prior].items():
+        # avoid postictals as they are empty dataframes (ictal manifestations only)
+        if semio.startswith('Post'):
+            continue
+        if semio.startswith('No Semiology'):
+            continue
+        # semio
+        marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
+        # locs: first replace any non existing locs e.g. Hypothalamus for fear-anxiety
+        for ind_lobe in Lobes:
+            try:
+                query_results[publication_prior][semio]['query_inspection'][ind_lobe]
+            except:
+                query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
+        temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+        temp_df.fillna(0, inplace=True)
+        marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+        marginal_loc_df.fillna(0, inplace=True)
+
+    return marginal_semio_df, marginal_loc_df
 
 
 def marginal_Localisation_and_Semiology_probabilities(df=None,
@@ -208,39 +240,45 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                 marginal_semio_df_long_test.loc[semio, 'norm'] = semio_top_level_sum.sum()
 
         # quick semio way
-        query_results = summary_semio_loc_df_from_scripts()
-        for semio, v in query_results[publication_prior].items():
-            # avoid postictals as they are empty dataframes (ictal manifestations only)
-            if semio.startswith('Post'):
-                continue
-            if semio.startswith('No Semiology'):
-                    continue
-            # semio
-            marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
-            # locs: first replace any non existing locs e.g. Hypothalamus for fear-anxiety
-            for ind_lobe in Lobes:
-                try:
-                    query_results[publication_prior][semio]['query_inspection'][ind_lobe]
-                except:
-                    query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
-            temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
-            temp_df.fillna(0, inplace=True)
-            marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
-            marginal_loc_df.fillna(0, inplace=True)
+        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes)
+        # query_results = summary_semio_loc_df_from_scripts()
+        # for semio, v in query_results[publication_prior].items():
+        #     # avoid postictals as they are empty dataframes (ictal manifestations only)
+        #     if semio.startswith('Post'):
+        #         continue
+        #     if semio.startswith('No Semiology'):
+        #         continue
+        #     # semio
+        #     marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
+        #     # locs: first replace any non existing locs e.g. Hypothalamus for fear-anxiety
+        #     for ind_lobe in Lobes:
+        #         try:
+        #             query_results[publication_prior][semio]['query_inspection'][ind_lobe]
+        #         except:
+        #             query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
+        #     temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+        #     temp_df.fillna(0, inplace=True)
+        #     marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+        #     marginal_loc_df.fillna(0, inplace=True)
         if test==True:
-            assert assert_frame_equal(marginal_semio_df_long_test, marginal_semio_df, check_exact=False, rtol=0.01)
+            assert assert_frame_equal(
+                marginal_semio_df_long_test.rename(columns={'norm':'assert_test'}),
+                marginal_semio_df.rename(columns={'num_query_loc':'assert_test'}),
+                                        check_exact=False, check_dtype=False,
+                                        rtol=0.1)
 
     elif not normalised:
-        query_results = summary_semio_loc_df_from_scripts(normalise=False)
-        for semio, v in query_results[publication_prior].items():
-            # semio
-            semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
-            marginal_semio_df.loc[semio, 'not_norm'] = semio_top_level_sum.sum()
-            # locs
-            temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
-            temp_df.fillna(0, inplace=True)
-            marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
-            marginal_loc_df.fillna(0, inplace=True)
+        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=False)
+        # query_results = summary_semio_loc_df_from_scripts(normalise=False)
+        # for semio, v in query_results[publication_prior].items():
+        #     # semio
+        #     semio_top_level_sum = query_results[publication_prior][semio]['query_inspection'][Lobes].sum()
+        #     marginal_semio_df.loc[semio, 'not_norm'] = semio_top_level_sum.sum()
+        #     # locs
+        #     temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
+        #     temp_df.fillna(0, inplace=True)
+        #     marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+        #     marginal_loc_df.fillna(0, inplace=True)
     # for each semiology, divide by the total, to get the marginal probability of that semiology i.e.
     marginal_semio_prob = marginal_semio_df / marginal_semio_df.sum()
     marginal_semio_prob.rename(columns={'num_query_loc':'probability',
@@ -266,8 +304,8 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
 def p_GIFs(global_lateralisation=False,
            include_paeds_and_adults=True,
            include_only_postictals=False,
-           symptom_laterality='neutral',
-           dominance='neutral',
+           symptom_laterality='NEUTRAL',
+           dominance='NEUTRAL',
            ):
     """
     Return the normalised/unnormalised marginal probabilities for each GIF parcellation.
@@ -301,13 +339,19 @@ def p_GIFs(global_lateralisation=False,
     # now not normalised version
     patient_all_semiology_notnorm = Semiology(
                                                 ".*",
-                                                symptoms_side=Laterality.symptom_laterality,
-                                                dominant_hemisphere=Laterality.dominance,
+                                                symptoms_side=Laterality.NEUTRAL,
+                                                dominant_hemisphere=Laterality.NEUTRAL,
                                                 include_postictals=False,
                                                 include_paeds_and_adults=include_paeds_and_adults,
                                                 normalise_to_localising_values=False,
                                                 global_lateralisation=global_lateralisation,
                                             )
+
+    if symptom_laterality == 'left':
+        patient_all_semiology_notnorm.symptoms_side = Laterality.LEFT
+    if dominance == 'left':
+        patient_all_semiology_notnorm.dominant_hemisphere = Laterality.LEFT
+
     patient_all_semiology_notnorm.include_only_postictals = include_only_postictals
     all_combined_gifs_notnorm = patient_all_semiology_notnorm.get_num_datapoints_dict()
     p_GIF_notnorm = marginal_GIF_probabilities(all_combined_gifs_notnorm)
