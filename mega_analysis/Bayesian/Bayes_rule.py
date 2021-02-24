@@ -23,12 +23,17 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     """
     # initialise posterior
     prob_L_given_S = pd.DataFrame()
+    # set non-exisiting GIF parcellations to zero:
+    prob_S_given_L[[loc for loc in p_Loc.columns if loc not in prob_S_given_L.columns]] = 0
+    p_Loc[[loc for loc in prob_S_given_L.columns if loc not in p_Loc.columns]] = 0
 
     # Bayes rule using two for loops for multiple cases.
     # The simple case would be: prob_L_given_S = (prob_S_given_L * p_Loc) / p_Semio
-    for semio in prob_S_given_L.index:
-        for loc in prob_S_given_L.columns:
-            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc[loc]) / p_Semio.loc[semio, 'probability']
+    for semio in p_Semio.index:
+        for loc in p_Loc.columns:
+            if "Unnamed" in loc:
+                continue
+            prob_L_given_S.loc[semio, loc] = (prob_S_given_L.loc[semio, loc] * p_Loc[loc].values) / p_Semio.loc[semio, 'probability']
 
     return prob_L_given_S
 
@@ -43,6 +48,7 @@ def wrapper_TS_GIFs(p_S_norm,
         ):
     """
     Get all Gifs for all semiologies from Toplogical (include_spontaneous_semiology=False) studies.
+    See below to make more efficient.
     """
     # initialise
     pt = {}
@@ -65,7 +71,7 @@ def wrapper_TS_GIFs(p_S_norm,
         pt[semiology].include_only_postictals = include_only_postictals
         all_combined_gifs_superdict[semiology] = pt[semiology].get_num_datapoints_dict(method='normalised')  # method=anything but default proportions
 
-    # now add the dictionaries:
+    # now add the dictionaries: this seems to repeat what marginal_GIF_probabilities does - can make more efficient
     for semio_dict_result, v in all_combined_gifs_superdict.items():  # equivalent: for semiology in p_S_norm.index:
         temp_dict = Counter(all_combined_gifs_superdict[semio_dict_result])
         added_all_gifs = added_all_gifs + temp_dict
