@@ -6,7 +6,11 @@ from mega_analysis import Semiology, Laterality
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from collections import Counter
+from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
+from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 
+
+Lobes = top_level_lobes(Bayesian=True)
 
 def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     """
@@ -87,6 +91,36 @@ def wrapper_TS_GIFs(p_S_norm,
     return p_S_given_GIF
 
 
+def multiple_melt_pivots(topology_results, p_S_norm):
+    pivot_result = {}  # dict of dfs
+    for semio in p_S_norm.index:
+        df_a = topology_results[semio]['query_inspection']
+        pivot_result[semio] = melt_then_pivot_query('', df_a, semio)
+        # list comprehension to keep top-level lobes only in df:
+        pivot_result[semio] = pivot_result[semio][[i for i in Lobes if i in pivot_result]]
+    return pivot_result
+
+
+def wrapper_generative_from_TS(pivot_result, p_S_norm):
+    # initialise
+    prob_S_given_TopLevelLobes_norm = pd.DataFrame()
+    prob_S_given_TopLevelLobes_notnorm = pd.DataFrame()
+    added_all_pivot_results = {}
+    added_all_pivot_results = Counter(added_all_pivot_results)
+    # # first find the total of top lobes:
+    for semio in p_S_norm.index:
+        temp_dict = Counter(pivot_result[semio].to_dict('index').pop(semio))
+        added_all_pivot_results = added_all_pivot_results + temp_dict
+    # turn counter back to dict: so totals for each lobe is added_all_pivot_results[lobe]
+    added_all_pivot_results = dict(added_all_pivot_results)
+
+    for semio in p_S_norm.index:
+        for toplobe in Lobes:
+            prob_S_given_TopLevelLobes_norm.loc[semio, toplobe] = \
+                pivot_result[semio][toplobe] / added_all_pivot_results[toplobe]
+    return prob_S_given_TopLevelLobes_norm
+
+
 def Bayes_All():
     """ Apply Bayes_rule to the GIFs and Top-Level Regions """
     # get marginal probabilities (p_S as DataFrames, p_Loc as Series): takes <4 mins
@@ -99,12 +133,17 @@ def Bayes_All():
                                        )
 
     # get likelihoods from Topological data: takes >5mins per each call to summary_semio_loc_df_from_scripts
-    query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
-    query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
-    prob_S_given_TopLevelLobes_norm = query_results_norm['topology']
-    prob_S_given_TopLevelLobes_notnorm = query_results_notnorm['topology']
     prob_S_given_GIFs_norm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=True)
     prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=False)
+
+    query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
+    query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
+    topology_results_norm = query_results_norm['topology']
+    topology_results_notnorm = query_results_notnorm['topology']
+    pivot_result_norm = multiple_melt_pivots(topology_results_norm, p_S_norm)
+    prob_S_given_TopLevelLobes_norm = wrapper_generative_from_TS(pivot_result_norm, p_S_norm)
+    pivot_result_notnorm = multiple_melt_pivots(topology_results_notnorm, p_S_norm)
+    prob_S_given_TopLevelLobes_notnorm = wrapper_generative_from_TS(pivot_result_notnorm, p_S_norm)
 
     # GIFS
     prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
