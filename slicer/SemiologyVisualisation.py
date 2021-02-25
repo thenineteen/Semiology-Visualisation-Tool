@@ -188,7 +188,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ezgtLayout.addWidget(self.invasiveEegCheckBox)
         ezgtLayout.addWidget(self.concordanceCheckBox)
 
-        publicationGroupBox = qt.QGroupBox('Publication Approaches (Bayesian)')
+        publicationGroupBox = qt.QGroupBox('Publication Approaches (Bayesian Data)')
         inclusionsLayout.addWidget(publicationGroupBox)
         publicationLayout = qt.QVBoxLayout(publicationGroupBox)
 
@@ -276,7 +276,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' For example, query "Spasms - epileptic/infantile" in paediatric patients under 7 yrs:'
             ' a very specific opercular part of the frontal lobe lights up. By using Low Resolution option,'
             ' we can investigate the nature of literature reporting of its localisation.'
-            ' Similarly for "Visual - Elementary" query with Bayesian filter: low resolution TLE, high resolution OL.'
+            ' Similarly for "Visual - Elementary" query with Bayesian data filter: low resolution TLE, high resolution OL.'
             ' This is due to localisation to many disparate TL regions which inidividually are less likely than the OL,'
             ' but together have more data.')
         self.TopLevelLobesCheckBox.toggled.connect(
@@ -412,7 +412,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         cacheLayout.addWidget(self.clearCacheButton)
 
         # Normalisation
-        normalisationGroupBox = qt.QGroupBox('Normalisation function')
+        normalisationGroupBox = qt.QGroupBox('Display and Combining Semiologies Functions')
         advancedTabLayout.addWidget(normalisationGroupBox)
         normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
 
@@ -455,8 +455,46 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' equally mapped to both sides.'
             )
         LatLayout.addWidget(self.MicroLatRadioButton)
-
         self.MicroLatRadioButton.setChecked(True)
+
+        # Bayesian posterior estimation
+        BayesianGroupBox = qt.QGroupBox('Bayesian Estimation')
+        advancedTabLayout.addWidget(BayesianGroupBox)
+        BayesLayout = qt.QHBoxLayout(BayesianGroupBox)
+
+        self.NonBayesRadioButton = qt.QRadioButton('Non-Bayesian')
+        self.NonBayesRadioButton.setToolTip(
+            'Normal data queries without using Bayesian corrections.'
+            ' By using "Database" tab\'s publication approaches, the data can still be filtered based on prior'
+            ' publications with prior knowledge of the seizure focus, but no posterior calculations are made.'
+        )
+        BayesLayout.addWidget(self.NonBayesRadioButton)
+        self.NonBayesRadioButton.setChecked(True)
+
+        self.BayesRadioButton = qt.QRadioButton('Bayesian Posterior Probability ')
+        self.BayesRadioButton.setToolTip(
+            'Queries the Toplogical Studies subset of the database (cortical stimulation and topology, see Publication Appraches under'
+            ' Database tab for further details on this).'
+            ' Using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            ' being the seizure focus, given any seizure semiology.'
+            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
+            ' displays the posterior estimation cortical heatmaps.'
+            ' However, all-data (including SS) is used in the calculation of the marginal probabilities.'
+        )
+        self.BayesRadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.BayesRadioButton))
+        BayesLayout.addWidget(self.BayesRadioButton)
+
+        self.Bayes_SS_RadioButton = qt.QRadioButton('Average Bayesian Posterior and SS data')
+        self.Bayes_SS_RadioButton.setToolTip(
+            'Queries the Toplogical Studies subset of the database (see Publication Appraches under'
+            ' Database tab for further details on this).'
+            ' Then using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            ' being the seizure focus, given any seizure semiology.'
+            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
+            ' displays the posterior estimation cortical heatmaps.'
+        )
+        BayesLayout.addWidget(self.Bayes_SS_RadioButton)
 
         advancedTabLayout.addStretch()
         return advancedTabWidget
@@ -661,16 +699,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         if dataFrame is None:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
-                    if self.minmaxRadioButton.isChecked():
+                    if self.BayesRadioButton.isChecked():
+                        method = 'Bayesian only'
+                    elif self.minmaxRadioButton.isChecked():
                         method = 'minmax'
                     elif self.softmaxRadioButton.isChecked():
                         method = 'softmax'
                     elif self.proportionsRadioButton.isChecked():
                         method = 'proportions'
-                    dataFrame = get_df_from_semiologies(
-                        semiologies, method=method)
-                    scores = Scores(dataFrame)
+                    dataFrame = get_df_from_semiologies(semiologies, method=method)
                     if self.useCacheCheckBox.isChecked():
+                        scores = Scores(dataFrame)
                         cache[hashedQuery] = scores.toDict()
                         self.logic.writeCache(cache)
                 except Exception as e:
@@ -931,6 +970,50 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         elif (source == self.PaedsAndAdultsCheckBox) and self.PaedsAndAdultsCheckBox.isChecked():
             self.paediatricCheckBox.setChecked(False)
 
+    def onBayesianRadioButton(self, source):
+        if not self.NonBayesRadioButton.isChecked() or self.BayesRadioButton.isChecked():
+            self.proportionsRadioButton.setChecked(True)
+            self.proportionsRadioButton.setEnabled(False)
+            self.softmaxRadioButton.setEnabled(False)
+            self.minmaxRadioButton.setEnabled(False)
+
+            self.MicroLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(False)
+            self.MicroLatRadioButton.setEnabled(False)
+            self.GlobalLatRadioButton.setEnabled(False)
+
+            self.postSurgicalSzFreedomCheckBox.setChecked(True)
+            self.invasiveEegCheckBox.setChecked(True)
+            self.concordanceCheckBox.setChecked(True)
+            self.postSurgicalSzFreedomCheckBox.setEnabled(False)
+            self.invasiveEegCheckBox.setEnabled(False)
+            self.concordanceCheckBox.setEnabled(False)
+
+            self.epilepsyTopologyCheckBox.setChecked(True)
+            self.seizureSemiologyCheckBox.setChecked(True)
+            self.brainStimulationCheckBox.setChecked(True)
+            self.epilepsyTopologyCheckBox.setEnabled(False)
+            self.seizureSemiologyCheckBox.setEnabled(False)
+            self.brainStimulationCheckBox.setEnabled(False)
+
+            self.PaedsAndAdultsCheckBox.setChecked(True)
+            self.PaedsAndAdultsCheckBox.setEnabled(False)
+            self.paediatricCheckBox.setChecked(False)
+            self.paediatricCheckBox.setEnabled(False)
+
+            self.granularCheckBox.setChecked(True)
+            self.NormaliseToLocalisingCheckBox.setChecked(True)
+            self.granularCheckBox.setEnabled(False)
+            self.NormaliseToLocalisingCheckBox.setEnabled(False)
+            self.TopLevelLobesCheckBox.setChecked(False)
+            self.TopLevelLobesCheckBox.setEnabled(False)
+
+            self.unknownDominantRadioButton.setChecked(True)
+            self.unknownDominantRadioButton.setEnabled(False)
+            self.leftDominantRadioButton.setEnabled(False)
+            self.rightDominantRadioButton.setEnabled(False)
+        else:
+            pass
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
