@@ -12,10 +12,12 @@ from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
 
 
-# to debug and test Posterior_only_cache.Bayes_posterior_GIF_only:
+# to debug and test SVT GIF - Posterior_only_cache.Bayes_posterior_GIF_only:
 num_datapoints_dict = Bayes_posterior_GIF_only('Epigastric', True)
 type(num_datapoints_dict)
 
+
+# to debug using saved GIF posteriors given Semiology.
 # --------------Load----------------------------
 directory = Path(__file__).parent/'resources' / 'Bayesian_resources'
 prob_S_given_GIFs_norm = pd.read_csv(directory / 'prob_S_given_GIFs_norm.csv', index_col=0)

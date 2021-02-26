@@ -3,6 +3,7 @@ from mega_analysis import Semiology, Laterality
 
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
+from mega_analysis.semiology import get_df_from_semiologies
 
 
 patient = Semiology(
@@ -26,8 +27,8 @@ patient = Semiology(
 
     'Tonic',
     symptoms_side=Laterality.LEFT,
-    dominant_hemisphere=Laterality.LEFT,
-    normalise_to_localising_values=False,  # default is False
+    dominant_hemisphere=Laterality.NEUTRAL,
+    normalise_to_localising_values=True,  # default is False
 )
 
 ###
@@ -51,9 +52,14 @@ patient = Semiology(
 ###
 ##
 # # if we want to set top_level_lobes to True:
-patient.granular = False
-patient.top_level_lobes = True
+# patient.granular = False
+# patient.top_level_lobes = True
 
-heatmap = patient.get_num_datapoints_dict()
+# num_datapoints_dict_Bayesian = patient.get_num_datapoints_dict(method='Bayesian only')
+# df_Bayesian = get_df_from_semiologies([patient], method='Bayesian only')
+
+num_datapoints_dict_proportions = patient.get_num_datapoints_dict(method='proportions')
+df_proportions = get_df_from_semiologies([patient], method='proportions')
+
 print("\nSemiology: ", patient.term)
 print('\nResult:', heatmap, '\n')
