@@ -343,7 +343,7 @@ def normalise_semiologies_df(
     data = table.T
     if method == 'minmax':
         from sklearn.preprocessing import MinMaxScaler
-        scaler = MinMaxScaler((0, 100))
+        scaler = MinMaxScaler((0, 1))
         scaler.fit(data)
         normalised = scaler.transform(data).T
     elif method == 'softmax':
@@ -367,7 +367,7 @@ def combine_semiologies_df(
     else:
         combined_df = df.sum()
         if normalise:
-            combined_df = combined_df / combined_df.max() * 100
+            combined_df = combined_df / combined_df.max()
     combined_df = pd.DataFrame(combined_df).T
     combined_df.index = ['Score']
     return combined_df
