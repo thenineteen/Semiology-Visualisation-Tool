@@ -28,17 +28,28 @@ p_Loc_notnorm = pd.read_csv(directory / 'p_Loc_notnorm.csv', index_col=0)
 
 
 def df_to_dict_like_allcombinedgifs(df, semio, method=2):
-    if method==1:
-        dd = defaultdict(list)
-        df.to_dict('records', into=dd)
-    else:
-        dd = df.to_dict()
+    # make the loaded df's astype SemiologyVisualisation and semiology handle:
+    # ensure df, fillna, index as int not string
+    if isinstance(df, pd.Series):
+        df = pd.DataFrame(df)
+    df.fillna(0, inplace=True)
+    df['GIF'] = df.index
+    df = df.astype({'GIF':int})
+    df.set_index(df['GIF'], inplace=True)
+    df.drop(columns='GIF', inplace=True)
 
-    # these GIFs are zero on marginal and p_GIF_given_S_etc:
-    zero_GIF = ['39', '40', '41', '42', '72', '73', '74']
+    if method==1:
+        num_datapoints_dict = defaultdict(list)
+        df.to_dict('records', into=num_datapoints_dict)
+    else:
+        num_datapoints_dict = df.to_dict().pop(semio)
+
+    # these GIFs are zero on marginal and p_GIF_given_S.. and SVT doesn't support these structures:
+    # all related to cerebellum exterior, white matter, and cerebellar vermal lobules
+    zero_GIF = [39, 40, 41, 42, 72, 73, 74]
     for gif in zero_GIF:
-        dd.update({gif : 0})
-    return dd
+        num_datapoints_dict.pop(gif)
+    return num_datapoints_dict
 
 
 def Bayes_posterior_GIF_only(ready_made_semiology, normalise_to_loc):

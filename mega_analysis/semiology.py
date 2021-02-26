@@ -253,27 +253,32 @@ class Semiology:
         return all_combined_gifs
 
     def get_num_datapoints_dict(self, method: str = 'proportions') -> Optional[dict]:
-        query_lateralisation_result = self.query_lateralisation()
-        if query_lateralisation_result is None:
-            message = f'No results generated for semiology term "{self.term}"'
-            raise ValueError(message)
-        array = np.array(query_lateralisation_result)
-        _, labels, patients = array.T
-        num_datapoints_dict = {
-            int(label): float(num_datapoints)
-            for (label, num_datapoints)
-            in zip(labels, patients)
-            if num_datapoints > 0
-        }
-
-        if method != 'proportions':
+        if method == 'Bayesian only':
+            from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
+            num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
             return num_datapoints_dict
+        else:
+            query_lateralisation_result = self.query_lateralisation()
+            if query_lateralisation_result is None:
+                message = f'No results generated for semiology term "{self.term}"'
+                raise ValueError(message)
+            array = np.array(query_lateralisation_result)
+            _, labels, patients = array.T
+            num_datapoints_dict = {
+                int(label): float(num_datapoints)
+                for (label, num_datapoints)
+                in zip(labels, patients)
+                if num_datapoints > 0
+            }
 
-        elif method == 'proportions':
-            total = sum(list(num_datapoints_dict.values()))
-            new_datatpoints = {
-                k: v*100/total for (k, v) in num_datapoints_dict.items()}
-            return new_datatpoints
+            if method != 'proportions':
+                return num_datapoints_dict
+
+            elif method == 'proportions':
+                total = sum(list(num_datapoints_dict.values()))
+                new_datatpoints = {
+                    k: v*100/total for (k, v) in num_datapoints_dict.items()}
+                return new_datatpoints
 
 
 def get_possible_lateralities(term) -> List[Laterality]:

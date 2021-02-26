@@ -675,6 +675,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
                 global_lateralisation=self.GlobalLatRadioButton.isChecked(),
+
             )
             semiologies.append(semiology)
         return semiologies
@@ -1002,9 +1003,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.paediatricCheckBox.setEnabled(False)
 
             self.granularCheckBox.setChecked(True)
-            self.NormaliseToLocalisingCheckBox.setChecked(True)
             self.granularCheckBox.setEnabled(False)
-            self.NormaliseToLocalisingCheckBox.setEnabled(False)
+            # self.NormaliseToLocalisingCheckBox.setChecked(True)
+            # self.NormaliseToLocalisingCheckBox.setEnabled(False)
             self.TopLevelLobesCheckBox.setChecked(False)
             self.TopLevelLobesCheckBox.setEnabled(False)
 
