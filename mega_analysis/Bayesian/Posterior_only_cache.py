@@ -25,6 +25,13 @@ p_GIF_notnorm = pd.read_csv(directory / 'p_GIF_notnorm.csv', index_col=0)
 p_Loc_norm = pd.read_csv(directory / 'p_Loc_norm.csv', index_col=0)
 p_Loc_notnorm = pd.read_csv(directory / 'p_Loc_notnorm.csv', index_col=0)
 # --------------^--------------------------------------------------------------
+# drop the zero GIFs:
+zero_GIF = ['39', '40', '41', '42', '72', '73', '74']
+zero_GIF_int = [39, 40, 41, 42, 72, 73, 74]
+p_GIF_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+p_GIF_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
 
 
 def df_to_dict_like_allcombinedgifs(df, semio, method=2):
@@ -44,11 +51,13 @@ def df_to_dict_like_allcombinedgifs(df, semio, method=2):
     else:
         num_datapoints_dict = df.to_dict().pop(semio)
 
-    # these GIFs are zero on marginal and p_GIF_given_S.. and SVT doesn't support these structures:
-    # all related to cerebellum exterior, white matter, and cerebellar vermal lobules
-    zero_GIF = [39, 40, 41, 42, 72, 73, 74]
-    for gif in zero_GIF:
-        num_datapoints_dict.pop(gif)
+    # # these GIFs are zero on marginal and p_GIF_given_S.. and SVT doesn't support these structures:
+    # # all related to cerebellum exterior, white matter, and cerebellar vermal lobules
+    # for gif in zero_GIF:
+    #     num_datapoints_dict.pop(gif)
+
+    # change to percentages:
+    num_datapoints_dict.update({gif: 100 * num_datapoints_dict[gif] for gif in num_datapoints_dict.keys()})
     return num_datapoints_dict
 
 

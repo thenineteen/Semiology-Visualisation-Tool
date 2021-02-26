@@ -27,9 +27,12 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     """
     # initialise posterior
     prob_L_given_S = pd.DataFrame()
-    # set non-exisiting GIF parcellations to zero:
-    prob_S_given_L[[loc for loc in p_Loc.columns if loc not in prob_S_given_L.columns]] = 0
-    p_Loc[[loc for loc in prob_S_given_L.columns if loc not in p_Loc.columns]] = 0
+    # set non-existing GIF parcellations to zero:
+    try:
+        prob_S_given_L[[loc for loc in p_Loc.columns if loc not in prob_S_given_L.columns]] = 0
+        p_Loc[[loc for loc in prob_S_given_L.columns if loc not in p_Loc.columns]] = 0
+    except:
+        pass
 
     # Bayes rule using two for loops for multiple cases.
     # The simple case would be: prob_L_given_S = (prob_S_given_L * p_Loc) / p_Semio
