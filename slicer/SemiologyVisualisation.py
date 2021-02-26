@@ -1032,9 +1032,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.invasiveEegCheckBox.setEnabled(True)
             self.concordanceCheckBox.setEnabled(True)
 
-            self.epilepsyTopologyCheckBox.setChecked(True)
+            self.epilepsyTopologyCheckBox.setChecked(False)
             self.seizureSemiologyCheckBox.setChecked(True)
-            self.brainStimulationCheckBox.setChecked(True)
+            self.brainStimulationCheckBox.setChecked(False)
             self.epilepsyTopologyCheckBox.setEnabled(True)
             self.seizureSemiologyCheckBox.setEnabled(True)
             self.brainStimulationCheckBox.setEnabled(True)
