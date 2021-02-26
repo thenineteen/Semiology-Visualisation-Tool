@@ -972,7 +972,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.paediatricCheckBox.setChecked(False)
 
     def onBayesianRadioButton(self, source):
-        if not self.NonBayesRadioButton.isChecked() or self.BayesRadioButton.isChecked():
+        if self.BayesRadioButton.isChecked() or self.Bayes_SS_RadioButton.isChecked():
             self.proportionsRadioButton.setChecked(True)
             self.proportionsRadioButton.setEnabled(False)
             self.softmaxRadioButton.setEnabled(False)
@@ -1008,6 +1008,48 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             # self.NormaliseToLocalisingCheckBox.setEnabled(False)
             self.TopLevelLobesCheckBox.setChecked(False)
             self.TopLevelLobesCheckBox.setEnabled(False)
+
+            self.unknownDominantRadioButton.setChecked(True)
+            self.unknownDominantRadioButton.setEnabled(False)
+            self.leftDominantRadioButton.setEnabled(False)
+            self.rightDominantRadioButton.setEnabled(False)
+
+        if self.NonBayesRadioButton.isChecked():
+            self.proportionsRadioButton.setChecked(True)
+            self.proportionsRadioButton.setEnabled(True)
+            self.softmaxRadioButton.setEnabled(True)
+            self.minmaxRadioButton.setEnabled(True)
+
+            self.MicroLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(False)
+            self.MicroLatRadioButton.setEnabled(True)
+            self.GlobalLatRadioButton.setEnabled(True)
+
+            self.postSurgicalSzFreedomCheckBox.setChecked(True)
+            self.invasiveEegCheckBox.setChecked(True)
+            self.concordanceCheckBox.setChecked(True)
+            self.postSurgicalSzFreedomCheckBox.setEnabled(True)
+            self.invasiveEegCheckBox.setEnabled(True)
+            self.concordanceCheckBox.setEnabled(True)
+
+            self.epilepsyTopologyCheckBox.setChecked(True)
+            self.seizureSemiologyCheckBox.setChecked(True)
+            self.brainStimulationCheckBox.setChecked(True)
+            self.epilepsyTopologyCheckBox.setEnabled(True)
+            self.seizureSemiologyCheckBox.setEnabled(True)
+            self.brainStimulationCheckBox.setEnabled(True)
+
+            self.PaedsAndAdultsCheckBox.setChecked(True)
+            self.PaedsAndAdultsCheckBox.setEnabled(True)
+            self.paediatricCheckBox.setChecked(False)
+            self.paediatricCheckBox.setEnabled(True)
+
+            self.granularCheckBox.setChecked(True)
+            self.granularCheckBox.setEnabled(True)
+            # self.NormaliseToLocalisingCheckBox.setChecked(True)
+            # self.NormaliseToLocalisingCheckBox.setEnabled(True)
+            self.TopLevelLobesCheckBox.setChecked(False)
+            self.TopLevelLobesCheckBox.setEnabled(True)
 
             self.unknownDominantRadioButton.setChecked(True)
             self.unknownDominantRadioButton.setEnabled(False)
