@@ -293,6 +293,9 @@ def get_possible_lateralities(term) -> List[Laterality]:
 
 
 def combine_semiologies(semiologies: List[Semiology], normalise_method: Optional[str] = 'proportions', normalise_zero_axis: bool = True) -> Dict[int, float]:
+    """
+    This function doesn't seem to be called. Instead UpdateColors calls both normalise_semiologies_df and combine_semiologies_df.
+    """
     df, all_combined_gif_dfs = get_df_from_semiologies(semiologies, normalise_method)
     if normalise_method is not None:
         df = normalise_semiologies_df(df, method=normalise_method)
@@ -369,17 +372,17 @@ def combine_semiologies_df(df: pd.DataFrame,
     if method == 'proportions':
         assert (df.sum(axis=1)).all() == 1
         if inverse_variance_method:
-            combination_technique = 'Inv Var Weighted'
+            combination_technique = 'Score'#'Inv Var Weighted'
             combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
             combined_df = df.mean(axis=0)
-            combination_technique = 'Mean of proportions'
+            combination_technique = 'Score'#'Mean of proportions'
     else:
         combination_technique = 'Score'
         combined_df = df.sum()
         if normalise:
-            combined_df = combined_df / combined_df.max()
+            combined_df = (combined_df / combined_df.max()) * 100
     combined_df = pd.DataFrame(combined_df).T
     combined_df.index = [combination_technique]
     combined_df.fillna(value=0, inplace=True)
