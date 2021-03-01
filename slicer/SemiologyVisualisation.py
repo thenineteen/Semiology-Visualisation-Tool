@@ -69,8 +69,7 @@ class SemiologyVisualisation(ScriptedLoadableModule):
             "Gloria Romagnoli",
             "John S. Duncan",
         ]
-        self.parent.helpText = """[This is the help text.]
-    """
+        self.parent.helpText = """[This is the help text.]"""
         self.parent.helpText += self.getDefaultModuleDocumentationLink()
         self.parent.acknowledgementText = """
     University College London.
@@ -98,6 +97,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.tableNode = None
         self.customSemiologies = []
         slicer.semiologyVisualisation = self
+        # self.all_combined_gif_dfs = None
+
 
     def makeGUI(self):
         self.makeLoadDataButton()
@@ -139,13 +140,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         patientQueryTabWidget = qt.QWidget()
         patientQueryLayout = qt.QVBoxLayout(patientQueryTabWidget)
 
-        dominantHemisphereLayout = qt.QHBoxLayout()
-        patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
-
         semiologiesGroupBox = qt.QGroupBox('Semiologies')
         semiologiesGroupBox.setLayout(self.getSemiologiesLayout())
         patientQueryLayout.addWidget(semiologiesGroupBox)
+        patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
 
+        patientQueryLayout.addStretch()
         return patientQueryTabWidget
 
     def getInclusionsWidget(self):
@@ -367,8 +367,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         dominantHemisphereLayout.addWidget(self.unknownDominantRadioButton)
         self.leftDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
         self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
-        self.unknownDominantRadioButton.toggled.connect(
-            self.onAutoUpdateButton)
+        self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
         return dominantHemisphereLayout
 
     def getSemiologiesLayout(self):
@@ -411,21 +410,20 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.clearCacheButton.clicked.connect(self.logic.clearCache)
         cacheLayout.addWidget(self.clearCacheButton)
 
-        # Normalisation
+        # Combining Semiologies and Colorbar Display
         normalisationGroupBox = qt.QGroupBox('Display and Combining Semiologies Functions')
         advancedTabLayout.addWidget(normalisationGroupBox)
         normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
         normalisationLayout.addWidget(self.minmaxRadioButton)
+        self.minmaxRadioButton.setChecked(True)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
         normalisationLayout.addWidget(self.softmaxRadioButton)
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
         normalisationLayout.addWidget(self.proportionsRadioButton)
-
-        self.minmaxRadioButton.setChecked(True)
 
         # Lateralising options
         LateralisationGroupBox = qt.QGroupBox('Lateralising options')
@@ -675,7 +673,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                 normalise_to_localising_values=self.NormaliseToLocalisingCheckBox.isChecked(),
                 top_level_lobes=self.TopLevelLobesCheckBox.isChecked(),
                 global_lateralisation=self.GlobalLatRadioButton.isChecked(),
-
             )
             semiologies.append(semiology)
         return semiologies
@@ -684,7 +681,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologies = self.getSemiologiesListFromGUI()
         if semiologies is None:  # No semiologies selected
             return
-        return self.getScoresFromCache(semiologies)
+        dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
+        return dataFrame, all_combined_gif_dfs
 
     def getScoresFromCache(self, semiologies):
         from mega_analysis.semiology import get_df_from_semiologies
@@ -708,7 +706,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                         method = 'softmax'
                     elif self.proportionsRadioButton.isChecked():
                         method = 'proportions'
-                    dataFrame = get_df_from_semiologies(semiologies, method=method)
+                    dataFrame, all_combined_gif_dfs = get_df_from_semiologies(semiologies, method=method)
+                    # self.all_combined_gif_dfs = all_combined_gif_dfs
                     if self.useCacheCheckBox.isChecked():
                         scores = Scores(dataFrame)
                         cache[hashedQuery] = scores.toDict()
@@ -723,7 +722,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                     slicer.util.errorDisplay(message)
                     dataFrame = None
                     raise
-        return dataFrame
+        return dataFrame, all_combined_gif_dfs
 
     def getDominantHemisphereFromGUI(self):
         from mega_analysis.semiology import Laterality
@@ -834,25 +833,26 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             slicer.util.errorDisplay('No color node is selected')
             return
 
-        semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
+        semiologiesDataFrame, all_combined_gif_dfs = self.getSemiologiesDataFrameFromGUI()
+        # ^semiologiesDataFrame is now a row/index of semiologies and columns of GIF regions
+        # if proportions, then for each row/semiology, the GIFs are a probability/proportion
+
         if self.minmaxRadioButton.isChecked():
             method = 'minmax'
         elif self.softmaxRadioButton.isChecked():
             method = 'softmax'
         elif self.proportionsRadioButton.isChecked():
             method = 'proportions'
+        num_df = all_combined_gif_dfs
 
-        normalise = len(semiologiesDataFrame) > 1
+        normalise = len(semiologiesDataFrame) > 1  # i.e. number of rows/semiologies > 1
         if normalise:
-            normalisedDataFrame = normalise_semiologies_df(
-                semiologiesDataFrame,
-                method=method,
-            )
+            normalisedDataFrame = normalise_semiologies_df(semiologiesDataFrame, method=method)
             dataFrameToCombine = normalisedDataFrame
         else:
             dataFrameToCombine = semiologiesDataFrame
-        combinedDataFrame = combine_semiologies_df(
-            dataFrameToCombine, method=method, normalise=normalise)
+        combinedDataFrame = combine_semiologies_df(dataFrameToCombine, method=method, normalise=normalise,
+                                                    num_df=num_df)
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
@@ -1014,7 +1014,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.leftDominantRadioButton.setEnabled(False)
             self.rightDominantRadioButton.setEnabled(False)
 
-        if self.NonBayesRadioButton.isChecked():
+        elif self.NonBayesRadioButton.isChecked():
             self.proportionsRadioButton.setChecked(True)
             self.proportionsRadioButton.setEnabled(True)
             self.softmaxRadioButton.setEnabled(True)
@@ -1052,9 +1052,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.TopLevelLobesCheckBox.setEnabled(True)
 
             self.unknownDominantRadioButton.setChecked(True)
-            self.unknownDominantRadioButton.setEnabled(False)
-            self.leftDominantRadioButton.setEnabled(False)
-            self.rightDominantRadioButton.setEnabled(False)
+            self.unknownDominantRadioButton.setEnabled(True)
+            self.leftDominantRadioButton.setEnabled(True)
+            self.rightDominantRadioButton.setEnabled(True)
         else:
             pass
 
@@ -1839,6 +1839,7 @@ class Query:
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,
                 global_lateralisation=semiology.global_lateralisation,
+                # all_combined_gif_df=semiology.all_combined_gif_df,
             )
             content.append(semiology_dict)
         return content
