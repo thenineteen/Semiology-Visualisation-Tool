@@ -121,6 +121,7 @@ class Semiology:
             normalise_to_localising_values: bool = False,
             top_level_lobes: bool = False,
             global_lateralisation: bool = False,
+            # all_combined_gif_df: Optional[pd.DataFrame] = None,
     ):
         self.term = term
         self.symptoms_side = symptoms_side
@@ -145,6 +146,7 @@ class Semiology:
         if self.include_only_postictals:
             self.include_postictals = True
         self.global_lateralisation = global_lateralisation
+        # self.all_combined_gif_df = all_combined_gif_df
 
     def is_postictals_only(self) -> bool:
         postictals = (
@@ -256,7 +258,7 @@ class Semiology:
         if method == 'Bayesian only':
             from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
             num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
-            return num_datapoints_dict
+            return num_datapoints_dict, None  # this None needs to go eventually otherwise doesn't support combining semiologies with proportions
         else:
             query_lateralisation_result = self.query_lateralisation()
             if query_lateralisation_result is None:
@@ -272,13 +274,13 @@ class Semiology:
             }
 
             if method != 'proportions':
-                return num_datapoints_dict
+                return num_datapoints_dict, None
 
             elif method == 'proportions':
                 total = sum(list(num_datapoints_dict.values()))
-                new_datatpoints = {
-                    k: v*100/total for (k, v) in num_datapoints_dict.items()}
-                return new_datatpoints
+                new_datatpoints = {k: v/total for (k, v) in num_datapoints_dict.items()}
+                all_combined_gif_df = pd.DataFrame.from_dict(dict(zip(labels, patients)), orient='index')
+                return new_datatpoints, all_combined_gif_df
 
 
 def get_possible_lateralities(term) -> List[Laterality]:
@@ -290,23 +292,20 @@ def get_possible_lateralities(term) -> List[Laterality]:
     return lateralities
 
 
-def combine_semiologies(
-        semiologies: List[Semiology],
-        normalise_method: Optional[str] = 'proportions',
-        normalise_zero_axis: bool = True,
-) -> Dict[int, float]:
-    df = get_df_from_semiologies(semiologies, normalise_method)
+def combine_semiologies(semiologies: List[Semiology], normalise_method: Optional[str] = 'proportions', normalise_zero_axis: bool = True) -> Dict[int, float]:
+    df, all_combined_gif_dfs = get_df_from_semiologies(semiologies, normalise_method)
     if normalise_method is not None:
         df = normalise_semiologies_df(df, method=normalise_method)
-    combined_df = combine_semiologies_df(
-        df, method=normalise_method, normalise=normalise_zero_axis)
+    combined_df = combine_semiologies_df(df, method=normalise_method, normalise=normalise_zero_axis, num_df=all_combined_gif_dfs)
     return combined_df
 
 
 def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proportions') -> pd.DataFrame:
     num_datapoints_dicts = {}
+    all_combined_gif_dfs = pd.DataFrame()
     for semiology in semiologies:
-        num_datapoints_dict = semiology.get_num_datapoints_dict(method=method)
+        num_datapoints_dict, all_combined_gif_df = semiology.get_num_datapoints_dict(method=method)
+        all_combined_gif_df.rename(columns={0:semiology.term}, inplace=True)
         if num_datapoints_dict is None:
             message = (
                 f'Information for semiology term "{semiology.term}"'
@@ -315,14 +314,13 @@ def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proport
             warnings.warn(message)
         else:
             num_datapoints_dicts[semiology.term] = num_datapoints_dict
+            all_combined_gif_dfs = all_combined_gif_dfs.join(all_combined_gif_df, how='outer')
     df = get_df_from_dicts(num_datapoints_dicts)
     df.fillna(value=0, inplace=True)
-    return df
+    return df, all_combined_gif_dfs
 
 
-def get_df_from_dicts(
-        semiologies_dicts: Dict[str, Dict[int, float]],
-) -> pd.DataFrame:
+def get_df_from_dicts(semiologies_dicts: Dict[str, Dict[int, float]]) -> pd.DataFrame:
     records = []
     semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
@@ -332,10 +330,7 @@ def get_df_from_dicts(
     return df
 
 
-def normalise_semiologies_df(
-        semiologies_df: pd.DataFrame,
-        method='proportions',
-) -> pd.DataFrame:
+def normalise_semiologies_df(semiologies_df: pd.DataFrame, method='proportions') -> pd.DataFrame:
     if method == 'proportions':
         return semiologies_df
 
@@ -349,25 +344,77 @@ def normalise_semiologies_df(
     elif method == 'softmax':
         from scipy.special import softmax
         normalised = softmax(semiologies_df, axis=1)
-    normalised_df = pd.DataFrame(
-        normalised,
-        columns=semiologies_df.columns,
-        index=semiologies_df.index,
-    )
+    normalised_df = pd.DataFrame(normalised, columns=semiologies_df.columns, index=semiologies_df.index)
     return normalised_df
 
 
-def combine_semiologies_df(
-        df: pd.DataFrame,
-        method: str = 'proportions',
-        normalise: bool = True,
-) -> Dict[int, float]:
+def combine_semiologies_df(df: pd.DataFrame,
+                        method: str = 'proportions',
+                        normalise: bool = True,
+                        num_df: pd.DataFrame = None,) -> Dict[int, float]:
+    """
+    df is rows of semiologies and columns of GIFs as proportions.
+
+    returns combined_df which is, after a transpose,
+    columns of semiologies and rows of 'Score' then GIFs.
+
+    If proportions, then using inverse variance weighted mean of proportions.
+
+    > num_df: all_combined_gif_dfs, rows as GIFs, cols as semios
+    """
     if method == 'proportions':
-        combined_df = df.mean(axis=0)
+
+        assert (df.sum(axis=1)).all() == 1
+        if num_df is None:
+            raise Exception("No patient numbers or datapoints DataFrame passed to combine semiologies")
+            # #  if variances between semiology observations were equal:
+            # combined_df = df.mean(axis=0)
+        # more generally: Inverse Variance Weighted Mean of Proportions pseudocode: each GIF is approximated as a binomial random variable
+        # combined_df.loc[0 ,j] = (df.loc[i, j] / variance[j]).sum(axis=0) /
+        #                                           (1/variance[j]).sum(axis=0)
+        #               where variance of binomial proportion is = p(1-p)/n;
+        #                   n is the number of trials for each semiology and
+        #                   p is the marginal prior probabilities obtained from .csv cache stored using the (Bayes_All()) debug script
+        #               http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
+        #               https://stats.stackexchange.com/questions/29641/standard-error-for-the-mean-of-a-sample-of-binomial-random-variables#:~:text=The%20standard%20error%20of%20%C2%AF,elsewhere%3A%20%E2%88%9Apqn
+
+        combination_technique = 'Binomial Inv Var Weighted'
+        n = num_df.sum(axis=0)  # sum each semiology separately as number of trials
+
+        # p_1_minus_p = df * (1-df)  # this was using the actual occurence per semiology as the probability, which was more a posterior likelihood. Had different probabilities per GIF per semio.
+        # get marginal probabilities instead: p per GIF is the same across semios
+        marginal_dir = resources_dir / 'Bayesian_resources'
+        if normalise:
+            marginal_path = marginal_dir / 'p_GIF_norm.csv'
+        if not normalise:
+            marginal_path = marginal_dir / 'p_GIF_notnorm.csv'
+        # load and clean:
+        p_GIF = pd.read_csv(marginal_path, index_col=0)
+        p_GIF.fillna(0, inplace=True)
+        p_GIF = p_GIF.T
+        p_GIF['GIF'] = p_GIF.index
+        p_GIF = p_GIF.astype({'GIF':int})
+        p_GIF.set_index(p_GIF['GIF'], inplace=True)
+        p_GIF.drop(columns='GIF', inplace=True)
+        p_GIF = p_GIF.T
+        p_1_minus_p = p_GIF * (1 - p_GIF)
+        # now repeat p_1_minus_p marginals as many times as there are semios and rename, ready for division :
+        p_1_minus_p = p_1_minus_p.loc[p_1_minus_p.index.repeat(df.shape[0])]
+        p_1_minus_p.reset_index(drop=True, inplace=True)
+        p_1_minus_p.rename(index={i:semio for i, semio in zip((range(0, df.shape[0])), df.index) }, inplace=True)
+            # dict comprehension ^ equivalent:
+            # for i in range(0, df.shape[0]):
+            #     for semio in df.index:
+            #         p_1_minus_p.rename(index={i:semio}, inplace=True)
+        variances_df = p_1_minus_p.div(n, axis='index')
+        inv_variances_df = 1 / variances_df
+        inv_var_weighted_df = (df / variances_df)
+        combined_df = (inv_var_weighted_df.sum(axis=0)) / (inv_variances_df.sum(axis=0))
     else:
+        combination_technique = 'Score'
         combined_df = df.sum()
         if normalise:
             combined_df = combined_df / combined_df.max()
     combined_df = pd.DataFrame(combined_df).T
-    combined_df.index = ['Score']
+    combined_df.index = [combination_technique]
     return combined_df
