@@ -510,6 +510,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' By using "Database" tab\'s publication approaches, the data can still be filtered based on prior'
             ' publications with prior knowledge of the seizure focus, but no posterior calculations are made.'
         )
+        self.NonBayesRadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.NonBayesRadioButton))
         BayesLayout.addWidget(self.NonBayesRadioButton)
         self.NonBayesRadioButton.setChecked(True)
 
@@ -536,6 +538,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
             ' displays the posterior estimation cortical heatmaps.'
         )
+        self.Bayes_SS_RadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.Bayes_SS_RadioButton))
         BayesLayout.addWidget(self.Bayes_SS_RadioButton)
 
         advancedTabLayout.addStretch()
