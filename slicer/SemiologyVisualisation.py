@@ -893,18 +893,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.logic.jumpToMax(self.scoresVolumeNode)
 
         with messageContextManager('Creating data points table...'):
-            self.parcellation.useNamesForDataFramesColumns(
-                semiologiesDataFrame,
-                combinedDataFrame,
-            )
-            stringsDataFrame = self.logic.getStringsDataFrame(
-                semiologiesDataFrame,
-                combinedDataFrame,
-            )
-            self.tableNode = self.logic.dataFrameToTable(
-                stringsDataFrame.T,
-                self.tableNode,
-            )
+            self.parcellation.useNamesForDataFramesColumns(semiologiesDataFrame, combinedDataFrame)
+            stringsDataFrame = self.logic.getStringsDataFrame(semiologiesDataFrame, combinedDataFrame, proportions=self.proportionsRadioButton.isChecked())
+            self.tableNode = self.logic.dataFrameToTable(stringsDataFrame.T, self.tableNode)
             self.tableCollapsibleButton.visible = True
             self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
             # self.logic.showTableInViewLayout(self.tableNode)
@@ -1309,6 +1300,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         scoresColumn = tableNode.AddColumn(vtk.vtkDoubleArray())
         scoresColumn.SetName('Score')
 
+
         # Fill columns
         table = tableNode.GetTable()
         for label, score in scoresDict.items():
@@ -1387,24 +1379,19 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         slicer.result = result
         return result
 
-    def getStringsDataFrame(
-        self,
-        semiologiesDataFrame,
-        combinedDataFrame,
-        removeScoresIfSingle=True,
-    ):
-        combinedDataFrame = combinedDataFrame.sort_values(
-            by='Score', axis=1, ascending=False)
-        combinedDataFrame = combinedDataFrame.apply(
-            lambda x: [f'{n:.2f}' for n in x])
-        semiologiesDataFrame = semiologiesDataFrame.T.reindex(
-            combinedDataFrame.T.index).T
+    def getStringsDataFrame(self, semiologiesDataFrame, combinedDataFrame, removeScoresIfSingle=True, proportions: bool=True):
+        combination_technique = combinedDataFrame.index.name  # unused yet to change name of column in Slicer
+        combinedDataFrame = combinedDataFrame.sort_values(by='Score', axis=1, ascending=False)
+        combinedDataFrame = combinedDataFrame.apply(lambda x: [f'{n:.2f}' if not proportions else f'{n:.3f}' for n in x])
+        semiologiesDataFrame = semiologiesDataFrame.T.reindex(combinedDataFrame.T.index).T
         semiologiesDataFrame = semiologiesDataFrame.fillna(0)
-        semiologiesDataFrame = semiologiesDataFrame.astype(int)
+        if not proportions:
+            semiologiesDataFrame = semiologiesDataFrame.astype(int)
+        else:
+            semiologiesDataFrame = semiologiesDataFrame.apply(lambda x: [f'{n:.3f}' for n in x])
         semiologiesDataFrame = semiologiesDataFrame.astype(str)
         stringsDataFrame = combinedDataFrame.append(semiologiesDataFrame)
-        stringsDataFrame.columns = [
-            n.replace('-', ' ') for n in stringsDataFrame.columns]
+        stringsDataFrame.columns = [n.replace('-', ' ') for n in stringsDataFrame.columns]
         if removeScoresIfSingle and len(stringsDataFrame) == 2:
             stringsDataFrame.drop(index='Score', inplace=True)
         return stringsDataFrame
