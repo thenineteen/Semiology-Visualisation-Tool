@@ -56,8 +56,8 @@ def df_to_dict_like_allcombinedgifs(df, semio, method=2):
     # for gif in zero_GIF:
     #     num_datapoints_dict.pop(gif)
 
-    # change to percentages:
-    num_datapoints_dict.update({gif: 100 * num_datapoints_dict[gif] for gif in num_datapoints_dict.keys()})
+    # # change to percentages:
+    # num_datapoints_dict.update({gif: 100 * num_datapoints_dict[gif] for gif in num_datapoints_dict.keys()})
     return num_datapoints_dict
 
 
