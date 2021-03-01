@@ -37,5 +37,5 @@ def test_postictal_neutral_only():
         ##
         ###
 
-        heatmap = patient.get_num_datapoints_dict()
+        heatmap, _ = patient.get_num_datapoints_dict()
         assert isinstance(heatmap, dict)

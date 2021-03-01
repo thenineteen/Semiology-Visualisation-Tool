@@ -255,6 +255,9 @@ class Semiology:
         return all_combined_gifs
 
     def get_num_datapoints_dict(self, method: str = 'proportions') -> Optional[dict]:
+        """
+        all_combined_gif_df is the normalised or not normalised frequency counts used for i;vnerse variance weighting. 
+        """
         if method == 'Bayesian only':
             from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
             num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)

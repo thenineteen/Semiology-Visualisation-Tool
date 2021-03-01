@@ -333,7 +333,7 @@ def p_GIFs(global_lateralisation=False,
         patient_all_semiology_norm.dominant_hemisphere = Laterality.LEFT
 
     patient_all_semiology_norm.include_only_postictals = include_only_postictals
-    all_combined_gifs_norm = patient_all_semiology_norm.get_num_datapoints_dict()
+    all_combined_gifs_norm, _  = patient_all_semiology_norm.get_num_datapoints_dict()
     p_GIF_norm = marginal_GIF_probabilities(all_combined_gifs_norm)
 
     # now not normalised version
@@ -353,7 +353,7 @@ def p_GIFs(global_lateralisation=False,
         patient_all_semiology_notnorm.dominant_hemisphere = Laterality.LEFT
 
     patient_all_semiology_notnorm.include_only_postictals = include_only_postictals
-    all_combined_gifs_notnorm = patient_all_semiology_notnorm.get_num_datapoints_dict()
+    all_combined_gifs_notnorm, _ = patient_all_semiology_notnorm.get_num_datapoints_dict()
     p_GIF_notnorm = marginal_GIF_probabilities(all_combined_gifs_notnorm)
 
     return p_GIF_norm, p_GIF_notnorm

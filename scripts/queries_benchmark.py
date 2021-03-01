@@ -30,7 +30,7 @@ for semiology_term in get_all_semiology_terms():
                 dominant_hemisphere,
             )
             try:
-                scores_dict = semiology.get_num_datapoints_dict()
+                scores_dict, _ = semiology.get_num_datapoints_dict()
             except Exception as e:
                 logging.error(e)
                 scores_dict = None
