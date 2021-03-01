@@ -433,6 +433,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             'Displays proportion of datapoints per parcellation.'
             ' Enables further options on combining semiologies.'
         )
+        self.proportionsRadioButton.toggled.connect(
+            lambda: self.on_proportions_InverseVarianceRadioButton(self.proportionsRadioButton))
         CombiningSemiologiesLayout.addWidget(self.proportionsRadioButton)
 
         # Combining Semiologies Technique
@@ -451,15 +453,15 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
         self.InverseVarianceMarginalsRadioButton.selfChecked(True)
 
-        self.InverseVariancePosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities')
-        self.InverseVariancePosteriorsRadioButton.setToolTip(
+        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities')
+        self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
             ' Uses the posterior probabilities of each parcellation, given by the live query results.'
             ' The variance is calculated as p(1-p)/n where p is the resulting proportions and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
             ' p is dependent on both parcellationa and queried semiology.'
             ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
         )
-        TechniqueLayout.addWidget(self.InverseVariancePosteriorsRadioButton)
+        TechniqueLayout.addWidget(self.InverseVarianceDataPosteriorsRadioButton)
 
         self.InverseVarianceEqualRadioButton = qt.QRadioButton('Equal Weightings')
         self.InverseVarianceEqualRadioButton.setToolTip(
@@ -1096,6 +1098,20 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.rightDominantRadioButton.setEnabled(True)
         else:
             pass
+
+
+    def on_proportions_InverseVarianceRadioButton(self, source):
+        if self.proportionsRadioButton.isChecked():
+            self.InverseVarianceMarginalsRadioButton.setChecked(True)
+            self.InverseVarianceMarginalsRadioButton.setEnabled(True)
+            self.InverseVarianceDataPosteriorsRadioButton.setEnabled(True)
+            self.InverseVarianceEqualRadioButton.setEnabled(True)
+        if not self.proportionsRadioButton.isChecked():
+            self.InverseVarianceMarginalsRadioButton.setChecked(False)
+            self.InverseVarianceMarginalsRadioButton.setEnabled(False)
+            self.InverseVarianceDataPosteriorsRadioButton.setEnabled(False)
+            self.InverseVarianceEqualRadioButton.setEnabled(False)
+
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
 
