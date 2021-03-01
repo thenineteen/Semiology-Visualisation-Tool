@@ -411,19 +411,63 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         cacheLayout.addWidget(self.clearCacheButton)
 
         # Combining Semiologies and Colorbar Display
-        normalisationGroupBox = qt.QGroupBox('Display and Combining Semiologies Functions')
-        advancedTabLayout.addWidget(normalisationGroupBox)
-        normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
+        CombiningSemiologiesGroupBox = qt.QGroupBox('Colourbar Display and Combining Semiologies')
+        advancedTabLayout.addWidget(CombiningSemiologiesGroupBox)
+        CombiningSemiologiesLayout = qt.QHBoxLayout(CombiningSemiologiesGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
-        normalisationLayout.addWidget(self.minmaxRadioButton)
+        self.minmaxRadioButton.setToolTip(
+            ' Rescales the datapoint scores for each semiology to range from 0 to 100, whether normalised or not-normalised.'
+            ' First, each semiologies datapoints are rescaled from 0 to 1 (Uses MinMaxScaler)'
+            ' Then, for each parcellation, the datapoints are summed across semiologies.'
+            ' Finally, the final scores are expressed as a percentage of the maximum parcellation\'s score.'
+        )
+        CombiningSemiologiesLayout.addWidget(self.minmaxRadioButton)
         self.minmaxRadioButton.setChecked(True)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
-        normalisationLayout.addWidget(self.softmaxRadioButton)
+        CombiningSemiologiesLayout.addWidget(self.softmaxRadioButton)
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
-        normalisationLayout.addWidget(self.proportionsRadioButton)
+        self.proportionsRadioButton.setToolTip(
+            'Displays proportion of datapoints per parcellation.'
+            ' Enables further options on combining semiologies.'
+        )
+        CombiningSemiologiesLayout.addWidget(self.proportionsRadioButton)
+
+        # Combining Semiologies Technique
+        TechniqueGroupBox = qt.QGroupBox('Combining Semiologies Probability Weightings: Binomial Inverse Variance')
+        advancedTabLayout.addWidget(TechniqueGroupBox)
+        TechniqueLayout = qt.QHBoxLayout(TechniqueGroupBox)
+
+        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Marginal Probabilities from All-data')
+        self.InverseVarianceMarginalsRadioButton.setToolTip(
+            ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
+            ' Uses the marginal probabilities of each parcellation, from all-data.'
+            ' The variance is calculated as p(1-p)/n where p is the marginal probability and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
+            ' p is constant for each parcellation irrespective of semiology.'
+            ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
+        )
+        TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
+        self.InverseVarianceMarginalsRadioButton.selfChecked(True)
+
+        self.InverseVariancePosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities')
+        self.InverseVariancePosteriorsRadioButton.setToolTip(
+            ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
+            ' Uses the posterior probabilities of each parcellation, given by the live query results.'
+            ' The variance is calculated as p(1-p)/n where p is the resulting proportions and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
+            ' p is dependent on both parcellationa and queried semiology.'
+            ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
+        )
+        TechniqueLayout.addWidget(self.InverseVariancePosteriorsRadioButton)
+
+        self.InverseVarianceEqualRadioButton = qt.QRadioButton('Equal Weightings')
+        self.InverseVarianceEqualRadioButton.setToolTip(
+            ' Takes the mean of proportions for each parcellation across semiologies.'
+            ' Special case where variances are equal.'
+            ' This option may be preferred as it does not bias against semiologies with low frequency counts.'
+        )
+        TechniqueLayout.addWidget(self.InverseVarianceEqualRadioButton)
 
         # Lateralising options
         LateralisationGroupBox = qt.QGroupBox('Lateralising options')
