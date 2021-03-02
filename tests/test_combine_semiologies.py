@@ -11,7 +11,7 @@ class CombineSemiolgies(unittest.TestCase):
     Test probabilities of all gifs per semiology add up to 1 before combining semiologies using proportions.
     """
 
-    def test_combine_semiologies_proportions_sum_to_1():
+    def test_combine_semiologies_proportions_sum_to_1(self):
         patient = Semiology(
             'Head Version',
             symptoms_side=Laterality.LEFT,
