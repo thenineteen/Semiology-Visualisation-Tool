@@ -438,7 +438,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         CombiningSemiologiesLayout.addWidget(self.proportionsRadioButton)
 
         # Combining Semiologies Technique
-        TechniqueGroupBox = qt.QGroupBox('Combining Semiologies Probability Weightings: Binomial Inverse Variance')
+        TechniqueGroupBox = qt.QGroupBox('Combining Semiologies: Binomial Inverse Variance Weights')
         advancedTabLayout.addWidget(TechniqueGroupBox)
         TechniqueLayout = qt.QHBoxLayout(TechniqueGroupBox)
 
@@ -452,7 +452,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         )
         TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
 
-        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities')
+        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities from Data Query')
         self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
             ' Uses the posterior probabilities of each parcellation, given by the live query results.'
