@@ -100,11 +100,11 @@ def clean_semiologies(labels):
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
        'Automatisms Combination - Manual LowerLimb Oral',
-       'Vocalisation: Unintelligible Noises', 'Aphasia',
+       'Vocalisation: Unintelligible Noises', 'Vocalisation - Unintelligible Noises', 'Aphasia',
        'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other',
        
        'Autonomic', 'Automatisms - Oral & Manual', 'Automatisms - Other',
-       'Dialeptic/LOA/LOC', 'Mimetic Automatisms', 'Vocalisation - Unintelligible Noises',
+       'Dialeptic/LOA/LOC', 'Mimetic Automatisms',
        'Ictal Speech - Formed Words',
        
        'Gustatory',
@@ -138,11 +138,11 @@ def clean_semiologies(labels):
        'Olfactory', 'Visual - Elementary', 'Somatosensory',
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
-       'Automatisms','Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other',
+       'Automatisms','Vocalisation', 'Vocalisation', 'Aphasia',
+       'Ictal Speech: Formed Words', 'Dialeptic/LOC', 'All other',
        
-       'Autonomic', 'Automatisms - O&M', 'Other Automatisms',
-       'Dialeptic', 'Mimetic Automatisms', 'Unintelligible Noises',
+       'Autonomic', 'Oral & Manual Automatisms', 'Other Automatisms',
+       'Dialeptic', 'Mimetic Automatisms',
        'Ictal Speech',
        
        
