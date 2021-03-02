@@ -1,8 +1,36 @@
 import sys
 import unittest
-from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
-from pandas.testing import assert_series_equal, assert_frame_equal
+import pandas as pd
+import Path
 
+from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
+from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
+from pandas.testing import assert_series_equal, assert_frame_equal
+from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, renormalised_probabilities
+
+# --------------Load----------------------------
+directory = Path(__file__).parent.parent.parent/'resources' / 'Bayesian_resources'
+prob_S_given_GIFs_norm = pd.read_csv(directory / 'prob_S_given_GIFs_norm.csv', index_col=0)
+p_S_norm = pd.read_csv(directory / 'p_S_norm.csv', index_col=0)
+p_GIF_norm = pd.read_csv(directory / 'p_GIF_norm.csv', index_col=0)
+prob_S_given_GIFs_notnorm = pd.read_csv(directory / 'prob_S_given_GIFs_notnorm.csv', index_col=0)
+p_S_notnorm = pd.read_csv(directory / 'p_S_notnorm.csv', index_col=0)
+p_GIF_notnorm = pd.read_csv(directory / 'p_GIF_notnorm.csv', index_col=0)
+p_Loc_norm = pd.read_csv(directory / 'p_Loc_norm.csv', index_col=0)
+p_Loc_notnorm = pd.read_csv(directory / 'p_Loc_notnorm.csv', index_col=0)
+# --------------^--------------------------------------------------------------
+# drop the zero GIFs:
+    # # these GIFs are zero on marginal and p_GIF_given_S.. and SVT doesn't support these structures:
+    # # all related to cerebellum exterior, white matter, and cerebellar vermal lobules
+    # for gif in zero_GIF:
+    #     num_datapoints_dict.pop(gif)
+zero_GIF = ['39', '40', '41', '42', '72', '73', '74']
+zero_GIF_int = [39, 40, 41, 42, 72, 73, 74]
+p_GIF_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+p_GIF_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+# --------------^--------------------------------------------------------------
 
 class Test_BAYES(unittest.TestCase):
     def setUp(self):
@@ -32,6 +60,10 @@ class Test_BAYES(unittest.TestCase):
         # normalised and notnormalised marginal probabilities of semiologies are exactly the same:
         assert_frame_equal(p_S_norm, p_S_notnorm, check_exact=True, check_dtype=True)
 
+    def test_renormalisation_of_posterior_from_Bayes_using_all_data_marginals(self):
+        prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
+        prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
+        assert (prob_GIF_given_S_norm.sum(axis=1) == prob_GIF_given_S_norm.shape[0])
 
 
 if __name__ == '__main__':
