@@ -65,7 +65,8 @@ def wrapper_TS_GIFs(p_S_norm,
         normalise_to_localising_values=True,
         ):
     """
-    Get all Gifs for all semiologies from Toplogical (include_spontaneous_semiology=False) studies.
+    Get all Gifs for all semiologies from Toplogical (include_spontaneous_semiology=False) studies, add their dict values and use this as the denominato to return p_S_given_GIF.
+    As it queries all semiologies, too labour intensive to do on the fly, hence results are cached for the double NEUTRAL case.
     See below to make more efficient.
     """
     # initialise
@@ -87,7 +88,7 @@ def wrapper_TS_GIFs(p_S_norm,
                                     global_lateralisation=global_lateralisation,
                                 )
         pt[semiology].include_only_postictals = include_only_postictals
-        all_combined_gifs_superdict[semiology] = pt[semiology].get_num_datapoints_dict(method='normalised')  # method=anything but default proportions
+        all_combined_gifs_superdict[semiology], all_combined_gif_df = pt[semiology].get_num_datapoints_dict(method='not proportions')  # method=anything but default proportions
 
     # now add the dictionaries: this seems to repeat what marginal_GIF_probabilities does - can make more efficient
     for semio_dict_result, v in all_combined_gifs_superdict.items():  # equivalent: for semiology in p_S_norm.index:
