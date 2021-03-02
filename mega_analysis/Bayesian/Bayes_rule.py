@@ -45,6 +45,17 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
     return prob_L_given_S
 
 
+def renormalised_probabilities(df):
+    """
+    To ensure the Bayes_rule() outputs are probabilities given a semiology.
+    This was not the case when erroneously using all-data for the marginals.
+        df rows: semiologies
+        df columns: localisations/GIF parcellations.
+    """
+    renormalised_prob = df.div(df.sum(axis=1), axis='index')
+    return renormalised_prob
+
+
 def wrapper_TS_GIFs(p_S_norm,
         global_lateralisation=False,
         include_paeds_and_adults=True,
@@ -128,7 +139,7 @@ def Bayes_All():
     """ Apply Bayes_rule to the GIFs and Top-Level Regions """
     # get marginal probabilities (p_S as DataFrames, p_Loc as Series): takes <4 mins
     p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm = p_Semiology_and_Localisation(publication_prior='full', test=False)
-    p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,  # p_GIF is a row df of marginal probabilities, cols as GIF #s and "probability"
+    p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,  # p_GIF is a row -vector df of marginal probabilities, cols as GIF #s and "probability"
                                        include_paeds_and_adults=True,
                                        include_only_postictals=False,
                                        symptom_laterality='neutral',
@@ -144,17 +155,22 @@ def Bayes_All():
     topology_results_norm = query_results_norm['topology']
     topology_results_notnorm = query_results_notnorm['topology']
     pivot_result_norm = multiple_melt_pivots(topology_results_norm, p_S_norm)
-    prob_S_given_TopLevelLobes_norm = wrapper_generative_from_TS(pivot_result_norm, p_S_norm)
     pivot_result_notnorm = multiple_melt_pivots(topology_results_notnorm, p_S_norm)
+    prob_S_given_TopLevelLobes_norm = wrapper_generative_from_TS(pivot_result_norm, p_S_norm)
     prob_S_given_TopLevelLobes_notnorm = wrapper_generative_from_TS(pivot_result_notnorm, p_S_norm)
 
     # GIFS
     prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
+    # if using marginals from all-data, need to renormalise
+    # prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
     prob_GIF_given_S_notnorm = Bayes_rule(prob_S_given_GIFs_notnorm, p_S_notnorm, p_GIF_notnorm)
+    # prob_GIF_given_S_notnorm = renormalised_probabilities(prob_GIF_given_S_notnorm)
 
     # TOP LEVEL LOCS
     prob_TopLevel_given_S_norm = Bayes_rule(prob_S_given_TopLevelLobes_norm, p_S_norm, p_Loc_norm)
+    # prob_TopLevel_given_S_norm = renormalised_probabilities(prob_TopLevel_given_S_norm)
     prob_TopLevel_given_S_notnorm = Bayes_rule(prob_S_given_TopLevelLobes_notnorm, p_S_notnorm, p_Loc_notnorm)
+    # prob_TopLevel_given_S_notnorm = renormalised_probabilities(prob_TopLevel_given_S_notnorm)
 
     return prob_GIF_given_S_norm, prob_GIF_given_S_notnorm, prob_TopLevel_given_S_norm, prob_TopLevel_given_S_notnorm
 
