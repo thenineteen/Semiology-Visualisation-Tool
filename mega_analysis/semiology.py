@@ -398,7 +398,10 @@ def inv_variance_combine_semiologies(df, num_df,
                                                (1/variance[j]).sum(axis=0)
                    where variance of binomial proportion is = p(1-p)/n;
                        n is the number of trials for each semiology and
-                       p is posterior likelihood probabilities (or the marginal prior obtained from .csv cache stored using the (Bayes_All()) debug script)
+                       p is posterior data-drive probabilities from the query
+                        or the marginal prior obtained from .csv cache stored using the (Bayes_All()) debug script.
+                        In the case of from_marginals, the marginal priors are used which means the variance per GIF is constant.
+                        If not from_marginals, then the variance is different for each pair of semiology-GIF as per the data query.
                    http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
                    https://stats.stackexchange.com/questions/29641/standard-error-for-the-mean-of-a-sample-of-binomial-random-variables#:~:text=The%20standard%20error%20of%20%C2%AF,elsewhere%3A%20%E2%88%9Apqn
 
@@ -409,11 +412,11 @@ def inv_variance_combine_semiologies(df, num_df,
     if from_marginals:
         # get marginal probabilities: p per GIF is the same across semios
 
-        marginal_dir = resources_dir / 'Bayesian_resources'
+        marginal_dir = resources_dir / 'Bayesian_resources' / 'SemioMarginals_fromSS_GIFmarginals_from_TS'
         if normalise:
-            marginal_path = marginal_dir / 'p_GIF_norm.csv'
+            marginal_path = marginal_dir / 'p_GIF_norm_TS.csv'
         if not normalise:
-            marginal_path = marginal_dir / 'p_GIF_notnorm.csv'
+            marginal_path = marginal_dir / 'p_GIF_notnorm_TS.csv'
         # load and clean:
         p_GIF = pd.read_csv(marginal_path, index_col=0)
         p_GIF.fillna(0, inplace=True)
