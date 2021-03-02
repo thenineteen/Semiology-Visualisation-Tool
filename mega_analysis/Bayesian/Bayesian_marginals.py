@@ -157,7 +157,8 @@ def marginal_GIF_probabilities(all_combined_gifs):
     return marginal_GIF_prob.T
 
 
-def wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=True):
+def wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=True,
+                        skip_L=False):
     """ wrapper for marginal_Localisation_and_Semiology_probabilities"""
     query_results = summary_semio_loc_df_from_scripts(normalise=normalise)
     for semio, v in query_results[publication_prior].items():
@@ -169,15 +170,19 @@ def wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, 
         # semio
         marginal_semio_df.loc[semio, 'num_query_loc'] = query_results[publication_prior][semio]['num_query_loc']
         # locs: first replace any non existing locs e.g. Hypothalamus for fear-anxiety
-        for ind_lobe in Lobes:
-            try:
-                query_results[publication_prior][semio]['query_inspection'][ind_lobe]
-            except:
-                query_results[publication_prior][semio]['query_inspection'].loc[:, ind_lobe] = 0
-        temp_df = query_results[publication_prior][semio]['query_inspection'][Lobes]
-        temp_df.fillna(0, inplace=True)
-        marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
-        marginal_loc_df.fillna(0, inplace=True)
+
+        marginal_loc_df = None
+        if not skip_L:
+            for ind_lobe in Lobes:
+                try:
+                    query_inspection = query_results[publication_prior][semio]['query_inspection']
+                    query_inspection[ind_lobe]
+                except:
+                    query_inspection.loc[:, ind_lobe] = 0
+            temp_df = query_inspection[Lobes]
+            temp_df.fillna(0, inplace=True)
+            marginal_loc_df = marginal_loc_df.add(temp_df, fill_value=0)
+            marginal_loc_df.fillna(0, inplace=True)
 
     return marginal_semio_df, marginal_loc_df
 
@@ -186,7 +191,8 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                                                     normalised=True,
                                                     global_loc_normalisation=False,
                                                     publication_prior='full',
-                                                    test=False):
+                                                    test=False,
+                                                    skip_L=False):
     """ Returns the marginal localisation and semiology probabilities
 
     > df (optional): preprocessed Semio2Brain DataFrame obtained from MEGA_ANALYSIS after hierarchy reversal.
@@ -240,7 +246,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                 marginal_semio_df_long_test.loc[semio, 'norm'] = semio_top_level_sum.sum()
 
         # quick semio way
-        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes)
+        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, skip_L=skip_L)
         # query_results = summary_semio_loc_df_from_scripts()
         # for semio, v in query_results[publication_prior].items():
         #     # avoid postictals as they are empty dataframes (ictal manifestations only)
@@ -268,7 +274,7 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
                                         rtol=0.351)
 
     elif not normalised:
-        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=False)
+        marginal_semio_df, marginal_loc_df = wrapper_marginal_L_S(publication_prior, marginal_semio_df, marginal_loc_df, Lobes, normalise=False, skip_L=skip_L)
         # query_results = summary_semio_loc_df_from_scripts(normalise=False)
         # for semio, v in query_results[publication_prior].items():
         #     # semio
@@ -296,7 +302,10 @@ def marginal_Localisation_and_Semiology_probabilities(df=None,
             marginal_loc_df.fillna(0, inplace=True)
 
     # for each loc, divide by total to get marginal probabilities
-    marginal_loc_prob = marginal_loc_df.sum(axis=0) / marginal_loc_df.sum().sum()
+    if skip_L:
+        marginal_loc_prob = None
+    else:
+        marginal_loc_prob = marginal_loc_df.sum(axis=0) / marginal_loc_df.sum().sum()
 
     return marginal_semio_prob, marginal_loc_prob
 
@@ -359,15 +368,15 @@ def p_GIFs(global_lateralisation=False,
     return p_GIF_norm, p_GIF_notnorm
 
 
-def p_Semiology_and_Localisation(publication_prior='full', test=False):
+def p_Semiology_and_Localisation(publication_prior='full', test=False, skip_L=False):
     """
     Return the normalised and unnormalised marginal probabilities for ictal semiologies.
     Returned marginal probabilities for Semiologies are pd.DataFrame; with index {Semiology} and a 'probability' column.
-    Returned marginal probabilities for Localisations are pd.Seroes; with index {Top level lobe}.
+    Returned marginal probabilities for Localisations are pd.Series; with index {Top level lobe}.
 
 
     """
-    p_S_norm, p_Loc_norm = marginal_Localisation_and_Semiology_probabilities(normalised=True, publication_prior=publication_prior, test=test)
-    p_S_notnorm, p_Loc_notnorm = marginal_Localisation_and_Semiology_probabilities(normalised=False, publication_prior=publication_prior, test=test)
+    p_S_norm, p_Loc_norm = marginal_Localisation_and_Semiology_probabilities(normalised=True, publication_prior=publication_prior, test=test, skip_L=skip_L)
+    p_S_notnorm, p_Loc_notnorm = marginal_Localisation_and_Semiology_probabilities(normalised=False, publication_prior=publication_prior, test=test, skip_L=skip_L)
 
     return p_S_norm, p_Loc_norm, p_S_notnorm, p_Loc_notnorm
