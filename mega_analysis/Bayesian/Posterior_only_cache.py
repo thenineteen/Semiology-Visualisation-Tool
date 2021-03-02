@@ -58,7 +58,7 @@ def df_to_dict_like_allcombinedgifs(df, semio, method=2):
 def Bayes_posterior_GIF_only(ready_made_semiology, normalise_to_loc):
     """
     This only shows the GIF #s and posterior probabilities, using TS data, without SS, for neutral lateralities.
-    All-data is used for the marginal probabilities.
+    SS-data is used for the Semiology and TS data for the GIF marginal (prior) probabilities.
 
     > ready_made_semiology: as this is in the form of pre-ran csv (takes time), semiology term can only be from the ready made SemioDict.
     > normalise to number of patients or not.
