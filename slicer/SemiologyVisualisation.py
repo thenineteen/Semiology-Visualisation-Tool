@@ -442,23 +442,24 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         advancedTabLayout.addWidget(TechniqueGroupBox)
         TechniqueLayout = qt.QHBoxLayout(TechniqueGroupBox)
 
-        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Marginal Probabilities from All-data')
+        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Marginal Probabilities')
         self.InverseVarianceMarginalsRadioButton.setToolTip(
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
-            ' Uses the marginal probabilities of each parcellation, from all-data.'
-            ' The variance is calculated as p(1-p)/n where p is the marginal probability and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
+            ' Uses the marginal probabilities of each parcellation, from TS-data.'
+            ' The variance is calculated as p(1-p)/n where p is the marginal probability and n the normalised or not normalised pairwise semiology-parcellation count.'
             ' p is constant for each parcellation irrespective of semiology.'
-            ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
+            ' Binomial modelling is an approximation as parcellations are not conditionally independent.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
 
-        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities from Data Query')
+        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Probabilities from Data Query')
         self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
-            ' Uses the posterior probabilities of each parcellation, given by the live query results.'
+            ' Estimates the probabilities of each parcellation as given by the specific query results (direct posterior).'
             ' The variance is calculated as p(1-p)/n where p is the resulting proportions and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
             ' p is dependent on both parcellationa and queried semiology.'
-            ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
+            ' Binomial modelling is an approximation as parcellations are not conditionally independent.'
+            ' This option is NOT RECOMMENDED. It flattens the heatmaps to zero in brain regions that are not present even in a single one of the semiologies to be combined.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceDataPosteriorsRadioButton)
 
@@ -466,7 +467,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.InverseVarianceEqualRadioButton.setToolTip(
             ' Takes the mean of proportions for each parcellation across semiologies.'
             ' This option and the others converge in the special case where variances are equal.'
-            ' This option may be preferred as it does not bias against semiologies with low frequency counts.'
+            ' This option may be preferred in cases where patients have equally frequent co-occuring semiologies, as it does not bias against semiologies with low frequency counts.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceEqualRadioButton)
 
@@ -516,7 +517,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         BayesLayout.addWidget(self.NonBayesRadioButton)
         self.NonBayesRadioButton.setChecked(True)
 
-        self.BayesRadioButton = qt.QRadioButton('Bayesian Posterior Probability ')
+        self.BayesRadioButton = qt.QRadioButton('Bayesian Posterior Probability Only')
         self.BayesRadioButton.setToolTip(
             'Queries the Toplogical Studies subset of the database (cortical stimulation and topology, see Publication Appraches under'
             ' Database tab for further details on this).'
@@ -524,7 +525,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' being the seizure focus, given any seizure semiology.'
             ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
             ' displays the posterior estimation cortical heatmaps.'
-            ' However, all-data (including SS) is used in the calculation of the marginal probabilities.'
+            ' SS data is used in the calculation of the marginal semiology probabilities, and TS data for marginal GIF probabilities.'
+            ' This option gives a symmetric localisation estimate only, as it uses cached queries from non-lateralised semiologies with unknown hemispheric dominance.'
         )
         self.BayesRadioButton.toggled.connect(
             lambda: self.onBayesianRadioButton(self.BayesRadioButton))
