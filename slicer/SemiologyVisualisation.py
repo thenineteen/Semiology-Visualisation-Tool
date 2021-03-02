@@ -451,7 +451,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' Binomial modelling is an approximation as the parcellations are not conditionally independent.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
-        self.InverseVarianceMarginalsRadioButton.selfChecked(True)
 
         self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Posterior Probabilities')
         self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
@@ -466,7 +465,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.InverseVarianceEqualRadioButton = qt.QRadioButton('Equal Weightings')
         self.InverseVarianceEqualRadioButton.setToolTip(
             ' Takes the mean of proportions for each parcellation across semiologies.'
-            ' Special case where variances are equal.'
+            ' This option and the others converge in the special case where variances are equal.'
             ' This option may be preferred as it does not bias against semiologies with low frequency counts.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceEqualRadioButton)
@@ -484,7 +483,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' language dominance and the side of semiology. This is used to '
             ' determine simple proportions of the localising GIF values.'
             ' If left and right are symmetric, the full localising values are split'
-            ' equally between both sides (cf micro-lateralisation)'
+            ' half and half equally between both sides (cf micro-lateralisation)'
             )
         LatLayout.addWidget(self.GlobalLatRadioButton)
 
@@ -902,7 +901,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             dataFrameToCombine = semiologiesDataFrame
         combinedDataFrame = combine_semiologies_df(dataFrameToCombine, method=method, normalise=normalise,
-                                                    num_df=num_df)
+                                                    inverse_variance_method=not self.InverseVarianceEqualRadioButton.isChecked(),
+                                                    from_marginals=self.InverseVarianceMarginalsRadioButton.isChecked(),
+                                                    num_df=num_df)  # if not Equal and not Marginals, then must be either not proportions, or DataPosterior method.
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
@@ -1099,7 +1100,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         else:
             pass
 
-
     def on_proportions_InverseVarianceRadioButton(self, source):
         if self.proportionsRadioButton.isChecked():
             self.InverseVarianceMarginalsRadioButton.setChecked(True)
@@ -1108,6 +1108,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.InverseVarianceEqualRadioButton.setEnabled(True)
         if not self.proportionsRadioButton.isChecked():
             self.InverseVarianceMarginalsRadioButton.setChecked(False)
+            self.InverseVarianceDataPosteriorsRadioButton.setChecked(False)
+            self.InverseVarianceEqualRadioButton.setChecked(False)
             self.InverseVarianceMarginalsRadioButton.setEnabled(False)
             self.InverseVarianceDataPosteriorsRadioButton.setEnabled(False)
             self.InverseVarianceEqualRadioButton.setEnabled(False)
