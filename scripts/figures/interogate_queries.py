@@ -206,13 +206,13 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
     temporal_only_normalised = temporal_only.multiply(ratio, axis = 'rows')
     split_normalised = pd.concat([temporal_only_normalised, top_level_normalised.drop('TL', 1)], 1).fillna(0)
     both_normalised = pd.concat([temporal_only_normalised, top_level_normalised], 1).fillna(0)
-    
+
     normalised_counts = {
         'top_level': top_level_normalised,
         'split': split_normalised,
         'both': both_normalised,
     }
-    
+
     for counts in raw_counts, normalised_counts:
         if merge_other_regions:
             counts['top_level'] = merge_all_other_zones(counts['top_level'],
@@ -225,13 +225,13 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
                 counts['top_level'] = counts['top_level'].drop('All other', 1)
                 counts['split'] = counts['split'].drop('All other', 1)
                 counts['both'] = counts['both'].drop('All other', 1)
-        
+    
         if semiologies_of_interest:
             for key in counts.keys():
                 counts[key] = merge_all_other_semiologies(
                     counts[key], semiologies_of_interest)
                 if drop_other_semiology:
-                    counts[key] = counts[key].drop('All other')
+                    counts[key] = counts[key].drop('All other') 
     
     
     if normalise:
