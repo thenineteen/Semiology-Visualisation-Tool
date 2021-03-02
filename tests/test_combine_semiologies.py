@@ -46,7 +46,7 @@ class CombineSemiolgies(unittest.TestCase):
         # patient.granular = False
         # patient.top_level_lobes = True
 
-        df, all_combined_gif_df = combine_semiologies([patient, patient2], normalise_method='proportions')
+        df = combine_semiologies([patient, patient2], normalise_method='proportions')
 
         assert (df.sum(axis=1)).all() == 1
 
