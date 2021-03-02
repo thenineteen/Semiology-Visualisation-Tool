@@ -12,11 +12,10 @@ from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, renormalised_probabili
 # --------------Load----------------------------
 directory = Path(__file__).parent.parent.parent/'resources' / 'Bayesian_resources'
 marginal_folder = 'SemioMarginals_fromSS_GIFmarginals_from_TS'
-variables_folder = 'Variables_from_all_data_not_renormalised'
-prob_S_given_GIFs_norm = pd.read_csv(directory / variables_folder / 'prob_S_given_GIFs_norm.csv', index_col=0)
+prob_S_given_GIFs_norm = pd.read_csv(directory / 'prob_S_given_GIFs_norm.csv', index_col=0)
 p_S_norm = pd.read_csv(directory / marginal_folder / 'p_S_norm_SS.csv', index_col=0)
 p_GIF_norm = pd.read_csv(directory / marginal_folder / 'p_GIF_norm_TS.csv', index_col=0)
-prob_S_given_GIFs_notnorm = pd.read_csv(directory / variables_folder / 'prob_S_given_GIFs_notnorm.csv', index_col=0)
+prob_S_given_GIFs_notnorm = pd.read_csv(directory / 'prob_S_given_GIFs_notnorm.csv', index_col=0)
 p_S_notnorm = pd.read_csv(directory / marginal_folder / 'p_S_notnorm_SS.csv', index_col=0)
 p_GIF_notnorm = pd.read_csv(directory / marginal_folder / 'p_GIF_notnorm_TS.csv', index_col=0)
 
