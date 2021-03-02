@@ -1020,6 +1020,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.softmaxRadioButton.setEnabled(False)
             self.minmaxRadioButton.setEnabled(False)
 
+            self.InverseVarianceMarginalsRadioButton.setChecked(True)
+
             self.MicroLatRadioButton.setChecked(False)
             self.GlobalLatRadioButton.setChecked(False)
             self.MicroLatRadioButton.setEnabled(False)
