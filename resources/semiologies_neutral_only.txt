@@ -3,7 +3,7 @@ Astatic
 Atonic
 Autonomic
 Complex Behavioural
-Dialeptic/LOA/LOC
+Dialeptic-LOA-LOC
 Dysphasia
 Epigastric
 Fear-Anxiety
