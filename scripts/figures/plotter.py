@@ -18,7 +18,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                                    ax_titles=None,
                                    xlim=[-0.05, 1],
                                    xticks=np.arange(0, 1.1, 0.2),
-                                   vline='proportion',
+                                   vline=None,
                                    xlabel='P (Localisation | Semiology)',
                                    figsize=(7, 8),
                                    plotter_settings=None,
@@ -71,7 +71,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                     markerfacecolor='white',
                     **plotter_settings)
 
-        total_row_1 = int(counts_df_1.loc[row_name].sum())
+        total_row_1 = int(counts_df_1.loc[:, counts_df_1.columns != 'TL'].loc[row_name].sum())
         n_label_text = f' (N = {total_row_1}'
 
         # Plot second set of datapoints (usually second colour, might be SS only)
@@ -87,7 +87,7 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                         transform=transforms[1],
                         **plotter_settings)
 
-            total_row_2 = int(counts_df_2.loc[row_name].sum())
+            total_row_2 = int(counts_df_2.loc[:, counts_df_2.columns != 'TL'].loc[row_name].sum())
             n_label_text += f', {total_row_2}'
             if localising_n:
                 txt1 = str(int(localising_n['full']
@@ -96,27 +96,23 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                 txt2 = str(
                     int(localising_n['spontaneous'][row_name]['num_query_loc']))
                 n_label_text += f', {txt2}'
+        try:
+            ax.set_title(ax_titles[i] + n_label_text + ')', fontdict={'fontsize': fontsize})
+        except TypeError:
+            ax.set_title(row_name + n_label_text + ')', fontdict={'fontsize': fontsize})
 
-        if not localising_n:
-            try:
-                ax.title.set_text(ax_titles[i] + n_label_text + ')')
-            except TypeError:
-                ax.title.set_text(row_name + n_label_text + ')')
-        elif localising_n:
-            ax.set_title(row_name + n_label_text + ')',
-                         fontdict={'fontsize': fontsize})
+        if vline == 'proportion':
+            ax.axvline(x=1/len(x), ymin=0, ymax=1, c='darkgray',
+                       linewidth=1, zorder=1, clip_on=False,)
+        elif isinstance(vline, float) or isinstance(vline, int):
+            ax.axvline(x=vline, ymin=0, ymax=1, c='darkgray',
+                       linewidth=1, zorder=2, clip_on=False,)
+
+        ax.axhline(y=6.5, xmin=0, xmax=1, c='white',
+                       linewidth=1, zorder=3, clip_on=False)
 
         ax.set_xlim(xlim)
         plt.xticks(xticks)
-        if vline == 'proportion':
-            ax.axvline(x=1/len(x), ymin=0, ymax=1, c='darkgray',
-                       linewidth=1, zorder=3, clip_on=False,)
-        else:
-            ax.axvline(x=vline, ymin=0, ymax=1, c='darkgray',
-                       linewidth=1, zorder=3, clip_on=False,)
-
-        ax.axhline(y=7.5, xmin=0, xmax=1, c='white',
-                       linewidth=1, zorder=3, clip_on=False)
 
     if special_y_titles is not None:
         for ax_n in range(subplot_width):
@@ -128,7 +124,9 @@ def plot_proportion_ci_forest_plot(proportion_df_1,
                 pass
     ax.invert_yaxis()
 
+    ax.set_xlim(xlim)
     axs[subplot_width-1, 1].set_xlabel(xlabel, ha='center')
+
     plt.tight_layout()
 
     return fig, axs
