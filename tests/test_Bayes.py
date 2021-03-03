@@ -72,7 +72,10 @@ class Test_BAYES(unittest.TestCase):
         prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
 
         assert prob_GIF_given_S_norm.shape[0] == 35  # number of semiologies
-        assert round((prob_GIF_given_S_norm.sum().sum(), 1)  == 34)  # semiologies minus the zero for hypomotor as doesn't occur in SS dataset
+        assert (
+            round(
+            (prob_GIF_given_S_norm.sum().sum()), 1
+            ) == round(34, 1))  # semiologies minus the zero for hypomotor as doesn't occur in SS dataset
         # # they all add up to 1 (probabilities)
         # assert (prob_GIF_given_S_norm.sum(axis=1).sum() == prob_GIF_given_S_norm.shape[0])
 
