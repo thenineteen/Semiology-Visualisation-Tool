@@ -426,6 +426,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.minmaxRadioButton.setChecked(True)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
+        self.softmaxRadioButton.setToolTip(
+            'NOT RECOMMENDED.'
+            ' Takes the softmax of the GIF parcellations as a generalisation of the logistic function.'
+        )
         CombiningSemiologiesLayout.addWidget(self.softmaxRadioButton)
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
@@ -442,7 +446,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         advancedTabLayout.addWidget(TechniqueGroupBox)
         TechniqueLayout = qt.QHBoxLayout(TechniqueGroupBox)
 
-        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Marginal Probabilities')
+        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Inverse Variance Marginal Probabilities')
         self.InverseVarianceMarginalsRadioButton.setToolTip(
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
             ' Uses the marginal probabilities of each parcellation, from TS-data.'
@@ -454,12 +458,13 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Probabilities from Data Query')
         self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
+            ' This option is NOT RECOMMENDED.'
             ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
             ' Estimates the probabilities of each parcellation as given by the specific query results (direct posterior).'
             ' The variance is calculated as p(1-p)/n where p is the resulting proportions and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
             ' p is dependent on both parcellationa and queried semiology.'
             ' Binomial modelling is an approximation as parcellations are not conditionally independent.'
-            ' This option is NOT RECOMMENDED. It flattens the heatmaps to zero in brain regions that are not present even in a single one of the semiologies to be combined.'
+            ' It flattens the heatmaps to zero in brain regions that are not present even in a single one of the semiologies to be combined.'
         )
         TechniqueLayout.addWidget(self.InverseVarianceDataPosteriorsRadioButton)
 
@@ -732,7 +737,32 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologies = self.getSemiologiesListFromGUI()
         if semiologies is None:  # No semiologies selected
             return
-        dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
+        if not self.Bayes_SS_RadioButton.isChecked():
+            dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
+        else:
+            # average posterior TS est with SS data
+            # first run Bayes posterior only from TS:
+            self.BayesRadioButton.setChecked(True)
+            dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
+            logging.debug(f'\n\n\n!!! getSemiologiesDataFrameFromGUI \ndataFrame_TS.shape= {dataFrame_TS.shape} \n dataFrame_TS sum = {(dataFrame_TS.sum(axis=0))}' )
+            # now run SS only:
+            self.NonBayesRadioButton.setChecked(True)
+            self.epilepsyTopologyCheckBox.setChecked(False)
+            self.brainStimulationCheckBox.setChecked(False)
+            self.seizureSemiologyCheckBox.setChecked(True)
+            self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
+            dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
+            logging.debug(f'\n\n!!!probabilities don\'t add up to 1. \n\n dataFrame_SS.shape= {dataFrame_SS.shape} \n\n dataFrame_SS sums = {(dataFrame_SS.sum(axis=0))}' )
+            # now take their average:
+            df_BayesTS_SS = dataFrame_TS.append(dataFrame_SS)
+            df_BayesTS_SS = df_BayesTS_SS.mean(axis=0)
+            dataFrame = df_BayesTS_SS
+            import pandas as pd
+            if isinstance(dataFrame, pd.Series):
+                dataFrame = pd.DataFrame(dataFrame)
+            # not sure if need to take the mean or add, but if frequencies, add?:
+            all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
+            # may need to set radiobutton settings back:
         return dataFrame, all_combined_gif_dfs
 
     def getScoresFromCache(self, semiologies):
@@ -1016,7 +1046,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.paediatricCheckBox.setChecked(False)
 
     def onBayesianRadioButton(self, source):
-        if self.BayesRadioButton.isChecked() or self.Bayes_SS_RadioButton.isChecked():
+        if not self.NonBayesRadioButton.isChecked():
             self.proportionsRadioButton.setChecked(True)
             self.proportionsRadioButton.setEnabled(False)
             self.softmaxRadioButton.setEnabled(False)
@@ -1029,16 +1059,18 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.MicroLatRadioButton.setEnabled(False)
             self.GlobalLatRadioButton.setEnabled(False)
 
-            self.postSurgicalSzFreedomCheckBox.setChecked(True)
-            self.invasiveEegCheckBox.setChecked(True)
-            self.concordanceCheckBox.setChecked(True)
             self.postSurgicalSzFreedomCheckBox.setEnabled(False)
             self.invasiveEegCheckBox.setEnabled(False)
             self.concordanceCheckBox.setEnabled(False)
 
-            self.epilepsyTopologyCheckBox.setChecked(True)
-            self.seizureSemiologyCheckBox.setChecked(True)
-            self.brainStimulationCheckBox.setChecked(True)
+            if self.BayesRadioButton.isChecked():
+                self.epilepsyTopologyCheckBox.setChecked(True)
+                self.seizureSemiologyCheckBox.setChecked(False)
+                self.brainStimulationCheckBox.setChecked(True)
+            if self.Bayes_SS_RadioButton.isChecked():
+                self.epilepsyTopologyCheckBox.setChecked(True)
+                self.seizureSemiologyCheckBox.setChecked(True)
+                self.brainStimulationCheckBox.setChecked(True)
             self.epilepsyTopologyCheckBox.setEnabled(False)
             self.seizureSemiologyCheckBox.setEnabled(False)
             self.brainStimulationCheckBox.setEnabled(False)
@@ -1110,10 +1142,10 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.InverseVarianceMarginalsRadioButton.setEnabled(True)
             self.InverseVarianceDataPosteriorsRadioButton.setEnabled(True)
             self.InverseVarianceEqualRadioButton.setEnabled(True)
-        if not self.proportionsRadioButton.isChecked():
+        else:
             self.InverseVarianceMarginalsRadioButton.setChecked(False)
             self.InverseVarianceDataPosteriorsRadioButton.setChecked(False)
-            self.InverseVarianceEqualRadioButton.setChecked(False)
+            self.InverseVarianceEqualRadioButton.setChecked(True)
             self.InverseVarianceMarginalsRadioButton.setEnabled(False)
             self.InverseVarianceDataPosteriorsRadioButton.setEnabled(False)
             self.InverseVarianceEqualRadioButton.setEnabled(False)
