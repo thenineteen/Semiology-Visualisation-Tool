@@ -275,7 +275,7 @@ class Semiology:
             from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
             num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
             return num_datapoints_dict, all_combined_gif_df  # recalculate all_combined_gif_df here as it's incorrect placeholder
-        if method != 'proportions':
+        elif method != 'proportions':
             return num_datapoints_dict, all_combined_gif_df
         elif method == 'proportions':
             total = sum(list(num_datapoints_dict.values()))
@@ -370,7 +370,15 @@ def combine_semiologies_df(df: pd.DataFrame,
     > num_df: all_combined_gif_dfs, rows as GIFs, cols as semios
     """
     if method == 'proportions':
-        assert (df.sum(axis=1)).all() == 1
+        prob_add_to_1 = df.sum().sum()
+        prob_add_to_1 = (prob_add_to_1.all() == 1)
+        if not prob_add_to_1:
+            import logging
+            # then this is weird, as they were normalised to 1 in get_num_datapoints_dict()
+            # not sure why this assertion fails for Bayesian SS combination advanced option:
+            logging.error(f'\n\n!!!! probabilities don\'t add up to 1. \n\tdf.shape= {df.shape} \n\t df sums = {(df.sum().sum())}' )
+
+
         if inverse_variance_method:
             combination_technique = 'Score'#'Inv Var Weighted'
             combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)

@@ -739,17 +739,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
         if not self.Bayes_SS_RadioButton.isChecked():
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
-            logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
+            # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
             import pandas as pd
             # average posterior TS est with SS data
             # first run Bayes posterior only from TS:
             self.BayesRadioButton.setChecked(True)
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
-            if isinstance(dataFrame_TS, pd.Series):
-                logging.debug(f'!! pd.Series')
-                dataFrame_TS = pd.DataFrame(dataFrame_TS)
-            logging.debug(f'!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())}' )
+            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS cols = {dataFrame_TS.columns}' )
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
             self.epilepsyTopologyCheckBox.setChecked(False)
@@ -757,10 +754,25 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.seizureSemiologyCheckBox.setChecked(True)
             self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
-            logging.debug(f'\n\n!!!probabilities don\'t add up to 1. \n\n dataFrame_SS.shape= {dataFrame_SS.shape} \n\n dataFrame_SS sums = {(dataFrame_SS.sum(axis=0))}' )
+            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> SS only \n\n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS cols = {dataFrame_SS.columns}' )
             # now take their average:
-            df_BayesTS_SS = dataFrame_TS.append(dataFrame_SS)
-            df_BayesTS_SS = df_BayesTS_SS.mean(axis=0)
+            TS_SS_append = dataFrame_TS.append(dataFrame_SS)
+            TS_SS_append.fillna(0, inplace=True)
+            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\TS_SS_append APPEND = {TS_SS_append}')
+            df_BayesTS_SS = pd.DataFrame(TS_SS_append.mean(axis=0))
+            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+
+            # # check the average and set index:
+            if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
+                df_BayesTS_SS = df_BayesTS_SS.T
+                # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
+            df_BayesTS_SS.index = dataFrame_SS.index
+            df_BayesTS_SS.fillna(value=0, inplace=True)
+            average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
+            average_bayesian_sums_to_1 = ((round(average_bayesian_sums_to_1, 1)) == round(1.0, 1))
+            # if not average_bayesian_sums_to_1:
+                # shouldn't occur but if it does, use renormalise():
+                # logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
             dataFrame = df_BayesTS_SS
 
             # not sure if need to take the mean or add, but if frequencies, add?:
@@ -1375,6 +1387,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         indexColumn.SetName(indexName)
 
         for columnName in dataFrame.columns:
+            # logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
             column = tableNode.AddColumn()
             column.SetName(columnName)
 
