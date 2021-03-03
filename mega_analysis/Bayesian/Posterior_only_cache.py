@@ -71,13 +71,13 @@ def Bayes_posterior_GIF_only(ready_made_semiology, normalise_to_loc):
     # GIFS
     if normalise_to_loc:
         prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
-        # prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
+        prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
         df = prob_GIF_given_S_norm.loc[ready_made_semiology]
         num_datapoints_dict = df_to_dict_like_allcombinedgifs(df, ready_made_semiology, method=2)
 
     elif not normalise_to_loc:
         prob_GIF_given_S_notnorm = Bayes_rule(prob_S_given_GIFs_notnorm, p_S_notnorm, p_GIF_notnorm)
-        # prob_GIF_given_S_notnorm = renormalised_probabilities(prob_GIF_given_S_notnorm)
+        prob_GIF_given_S_notnorm = renormalised_probabilities(prob_GIF_given_S_notnorm)
         df = prob_GIF_given_S_notnorm.loc[ready_made_semiology]
         num_datapoints_dict = df_to_dict_like_allcombinedgifs(df, ready_made_semiology, method=2)
 

@@ -739,12 +739,17 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
         if not self.Bayes_SS_RadioButton.isChecked():
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
+            logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
+            import pandas as pd
             # average posterior TS est with SS data
             # first run Bayes posterior only from TS:
             self.BayesRadioButton.setChecked(True)
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
-            logging.debug(f'\n\n\n!!! getSemiologiesDataFrameFromGUI \ndataFrame_TS.shape= {dataFrame_TS.shape} \n dataFrame_TS sum = {(dataFrame_TS.sum(axis=0))}' )
+            if isinstance(dataFrame_TS, pd.Series):
+                logging.debug(f'!! pd.Series')
+                dataFrame_TS = pd.DataFrame(dataFrame_TS)
+            logging.debug(f'!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())}' )
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
             self.epilepsyTopologyCheckBox.setChecked(False)
@@ -757,9 +762,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             df_BayesTS_SS = dataFrame_TS.append(dataFrame_SS)
             df_BayesTS_SS = df_BayesTS_SS.mean(axis=0)
             dataFrame = df_BayesTS_SS
-            import pandas as pd
-            if isinstance(dataFrame, pd.Series):
-                dataFrame = pd.DataFrame(dataFrame)
+
             # not sure if need to take the mean or add, but if frequencies, add?:
             all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
             # may need to set radiobutton settings back:

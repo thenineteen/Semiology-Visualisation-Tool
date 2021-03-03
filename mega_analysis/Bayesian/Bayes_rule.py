@@ -48,7 +48,8 @@ def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
 def renormalised_probabilities(df):
     """
     To ensure the Bayes_rule() outputs are probabilities given a semiology.
-    This was not the case when erroneously using all-data for the marginals.
+    As we use Bayes rule for across all possible GIFs, the psoterior sum is no longer a probabilitiy adding to 1.
+    Doesn't matter whether using all-data or SS only for the p_S priors (and all-data or TS only for p_GIF priors)
         df rows: semiologies
         df columns: localisations/GIF parcellations.
     """
