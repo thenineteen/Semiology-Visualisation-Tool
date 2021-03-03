@@ -1,0 +1,36 @@
+,probability
+Epigastric,0.060760931
+Fear-Anxiety,0.022714367
+Psychic,0.017603634
+Autonomic,0.047416241
+Olfactory,0.045996593
+Gustatory,0.002555366
+Auditory,0.00681431
+Visual,0.008517888
+Somatosensory,0.028960818
+Vestibular,0.001419648
+Non-Specific Aura,0.017319705
+Head or Body Turn,0.038898353
+Head Version,0.043157297
+Eye Movements,0.009085747
+Tonic,0.098239637
+Asymmetric Tonic,0.031516184
+Dystonic,0.03407155
+Clonic,0.024985804
+Tonic-Clonic,0.001419648
+Myoclonic,0.00709824
+Hypermotor,0.047132311
+Complex Behavioural,0.041737649
+Atonic,0.003975014
+Ictal Limb Paresis,0.00681431
+Astatic,0.002271437
+Hypomotor,0
+Spasms,0.020159001
+Automatisms - Oral & Manual,0.097387848
+Automatisms - Other,0.030948325
+Ictal Pout,0.002839296
+Mimetic Automatisms,0.030664395
+Vocalisation - Unintelligible Noises,0.05479841
+Aphasia,0.023850085
+Dysphasia - Ictal Speech,0.005962521
+Dialeptic-LOA-LOC,0.082907439

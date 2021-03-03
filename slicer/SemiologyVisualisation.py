@@ -69,8 +69,7 @@ class SemiologyVisualisation(ScriptedLoadableModule):
             "Gloria Romagnoli",
             "John S. Duncan",
         ]
-        self.parent.helpText = """[This is the help text.]
-    """
+        self.parent.helpText = """[This is the help text.]"""
         self.parent.helpText += self.getDefaultModuleDocumentationLink()
         self.parent.acknowledgementText = """
     University College London.
@@ -98,6 +97,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.tableNode = None
         self.customSemiologies = []
         slicer.semiologyVisualisation = self
+        # self.all_combined_gif_dfs = None
+
 
     def makeGUI(self):
         self.makeLoadDataButton()
@@ -139,13 +140,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         patientQueryTabWidget = qt.QWidget()
         patientQueryLayout = qt.QVBoxLayout(patientQueryTabWidget)
 
-        dominantHemisphereLayout = qt.QHBoxLayout()
-        patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
-
         semiologiesGroupBox = qt.QGroupBox('Semiologies')
         semiologiesGroupBox.setLayout(self.getSemiologiesLayout())
         patientQueryLayout.addWidget(semiologiesGroupBox)
+        patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
 
+        patientQueryLayout.addStretch()
         return patientQueryTabWidget
 
     def getInclusionsWidget(self):
@@ -188,7 +188,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         ezgtLayout.addWidget(self.invasiveEegCheckBox)
         ezgtLayout.addWidget(self.concordanceCheckBox)
 
-        publicationGroupBox = qt.QGroupBox('Publication Approaches (Bayesian)')
+        publicationGroupBox = qt.QGroupBox('Publication Approaches (Bayesian Data)')
         inclusionsLayout.addWidget(publicationGroupBox)
         publicationLayout = qt.QVBoxLayout(publicationGroupBox)
 
@@ -276,7 +276,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' For example, query "Spasms - epileptic/infantile" in paediatric patients under 7 yrs:'
             ' a very specific opercular part of the frontal lobe lights up. By using Low Resolution option,'
             ' we can investigate the nature of literature reporting of its localisation.'
-            ' Similarly for "Visual - Elementary" query with Bayesian filter: low resolution TLE, high resolution OL.'
+            ' Similarly for "Visual - Elementary" query with Bayesian data filter: low resolution TLE, high resolution OL.'
             ' This is due to localisation to many disparate TL regions which inidividually are less likely than the OL,'
             ' but together have more data.')
         self.TopLevelLobesCheckBox.toggled.connect(
@@ -367,8 +367,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         dominantHemisphereLayout.addWidget(self.unknownDominantRadioButton)
         self.leftDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
         self.rightDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
-        self.unknownDominantRadioButton.toggled.connect(
-            self.onAutoUpdateButton)
+        self.unknownDominantRadioButton.toggled.connect(self.onAutoUpdateButton)
         return dominantHemisphereLayout
 
     def getSemiologiesLayout(self):
@@ -411,21 +410,71 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         self.clearCacheButton.clicked.connect(self.logic.clearCache)
         cacheLayout.addWidget(self.clearCacheButton)
 
-        # Normalisation
-        normalisationGroupBox = qt.QGroupBox('Normalisation function')
-        advancedTabLayout.addWidget(normalisationGroupBox)
-        normalisationLayout = qt.QHBoxLayout(normalisationGroupBox)
+        # Combining Semiologies and Colorbar Display
+        CombiningSemiologiesGroupBox = qt.QGroupBox('Colourbar Display and Combining Semiologies')
+        advancedTabLayout.addWidget(CombiningSemiologiesGroupBox)
+        CombiningSemiologiesLayout = qt.QHBoxLayout(CombiningSemiologiesGroupBox)
 
         self.minmaxRadioButton = qt.QRadioButton('Rescaling')
-        normalisationLayout.addWidget(self.minmaxRadioButton)
+        self.minmaxRadioButton.setToolTip(
+            ' Rescales the datapoint scores for each semiology to range from 0 to 100, whether normalised or not-normalised.'
+            ' First, each semiologies datapoints are rescaled from 0 to 1 (Uses MinMaxScaler)'
+            ' Then, for each parcellation, the datapoints are summed across semiologies.'
+            ' Finally, the final scores are expressed as a percentage of the maximum parcellation\'s score.'
+        )
+        CombiningSemiologiesLayout.addWidget(self.minmaxRadioButton)
+        self.minmaxRadioButton.setChecked(True)
 
         self.softmaxRadioButton = qt.QRadioButton('Softmax')
-        normalisationLayout.addWidget(self.softmaxRadioButton)
+        self.softmaxRadioButton.setToolTip(
+            'NOT RECOMMENDED.'
+            ' Takes the softmax of the GIF parcellations as a generalisation of the logistic function.'
+        )
+        CombiningSemiologiesLayout.addWidget(self.softmaxRadioButton)
 
         self.proportionsRadioButton = qt.QRadioButton('Proportions')
-        normalisationLayout.addWidget(self.proportionsRadioButton)
+        self.proportionsRadioButton.setToolTip(
+            'Displays proportion of datapoints per parcellation.'
+            ' Enables further options on combining semiologies.'
+        )
+        self.proportionsRadioButton.toggled.connect(
+            lambda: self.on_proportions_InverseVarianceRadioButton(self.proportionsRadioButton))
+        CombiningSemiologiesLayout.addWidget(self.proportionsRadioButton)
 
-        self.minmaxRadioButton.setChecked(True)
+        # Combining Semiologies Technique
+        TechniqueGroupBox = qt.QGroupBox('Combining Semiologies: Binomial Inverse Variance Weights')
+        advancedTabLayout.addWidget(TechniqueGroupBox)
+        TechniqueLayout = qt.QHBoxLayout(TechniqueGroupBox)
+
+        self.InverseVarianceMarginalsRadioButton = qt.QRadioButton('Inverse Variance Marginal Probabilities')
+        self.InverseVarianceMarginalsRadioButton.setToolTip(
+            ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
+            ' Uses the marginal probabilities of each parcellation, from TS-data.'
+            ' The variance is calculated as p(1-p)/n where p is the marginal probability and n the normalised or not normalised pairwise semiology-parcellation count.'
+            ' p is constant for each parcellation irrespective of semiology.'
+            ' Binomial modelling is an approximation as parcellations are not conditionally independent.'
+        )
+        TechniqueLayout.addWidget(self.InverseVarianceMarginalsRadioButton)
+
+        self.InverseVarianceDataPosteriorsRadioButton = qt.QRadioButton('Probabilities from Data Query')
+        self.InverseVarianceDataPosteriorsRadioButton.setToolTip(
+            ' This option is NOT RECOMMENDED.'
+            ' Approximates each brain parcellation, given a semiology, as a binomial random variable.'
+            ' Estimates the probabilities of each parcellation as given by the specific query results (direct posterior).'
+            ' The variance is calculated as p(1-p)/n where p is the resulting proportions and n the normalised or not normalised pairwise semiology-parcellation frequency count.'
+            ' p is dependent on both parcellationa and queried semiology.'
+            ' Binomial modelling is an approximation as parcellations are not conditionally independent.'
+            ' It flattens the heatmaps to zero in brain regions that are not present even in a single one of the semiologies to be combined.'
+        )
+        TechniqueLayout.addWidget(self.InverseVarianceDataPosteriorsRadioButton)
+
+        self.InverseVarianceEqualRadioButton = qt.QRadioButton('Equal Weightings')
+        self.InverseVarianceEqualRadioButton.setToolTip(
+            ' Takes the mean of proportions for each parcellation across semiologies.'
+            ' This option and the others converge in the special case where variances are equal.'
+            ' This option may be preferred in cases where patients have equally frequent co-occuring semiologies, as it does not bias against semiologies with low frequency counts.'
+        )
+        TechniqueLayout.addWidget(self.InverseVarianceEqualRadioButton)
 
         # Lateralising options
         LateralisationGroupBox = qt.QGroupBox('Lateralising options')
@@ -440,7 +489,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' language dominance and the side of semiology. This is used to '
             ' determine simple proportions of the localising GIF values.'
             ' If left and right are symmetric, the full localising values are split'
-            ' equally between both sides (cf micro-lateralisation)'
+            ' half and half equally between both sides (cf micro-lateralisation)'
             )
         LatLayout.addWidget(self.GlobalLatRadioButton)
 
@@ -455,8 +504,51 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             ' equally mapped to both sides.'
             )
         LatLayout.addWidget(self.MicroLatRadioButton)
-
         self.MicroLatRadioButton.setChecked(True)
+
+        # Bayesian posterior estimation
+        BayesianGroupBox = qt.QGroupBox('Bayesian Estimation')
+        advancedTabLayout.addWidget(BayesianGroupBox)
+        BayesLayout = qt.QHBoxLayout(BayesianGroupBox)
+
+        self.NonBayesRadioButton = qt.QRadioButton('Non-Bayesian')
+        self.NonBayesRadioButton.setToolTip(
+            'Normal data queries without using Bayesian corrections.'
+            ' By using "Database" tab\'s publication approaches, the data can still be filtered based on prior'
+            ' publications with prior knowledge of the seizure focus, but no posterior calculations are made.'
+        )
+        self.NonBayesRadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.NonBayesRadioButton))
+        BayesLayout.addWidget(self.NonBayesRadioButton)
+        self.NonBayesRadioButton.setChecked(True)
+
+        self.BayesRadioButton = qt.QRadioButton('Bayesian Posterior Probability Only')
+        self.BayesRadioButton.setToolTip(
+            'Queries the Toplogical Studies subset of the database (cortical stimulation and topology, see Publication Appraches under'
+            ' Database tab for further details on this).'
+            ' Using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            ' being the seizure focus, given any seizure semiology.'
+            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
+            ' displays the posterior estimation cortical heatmaps.'
+            ' SS data is used in the calculation of the marginal semiology probabilities, and TS data for marginal GIF probabilities.'
+            ' This option gives a symmetric localisation estimate only, as it uses cached queries from non-lateralised semiologies with unknown hemispheric dominance.'
+        )
+        self.BayesRadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.BayesRadioButton))
+        BayesLayout.addWidget(self.BayesRadioButton)
+
+        self.Bayes_SS_RadioButton = qt.QRadioButton('Average Bayesian Posterior and SS data')
+        self.Bayes_SS_RadioButton.setToolTip(
+            'Queries the Toplogical Studies subset of the database (see Publication Appraches under'
+            ' Database tab for further details on this).'
+            ' Then using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            ' being the seizure focus, given any seizure semiology.'
+            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
+            ' displays the posterior estimation cortical heatmaps.'
+        )
+        self.Bayes_SS_RadioButton.toggled.connect(
+            lambda: self.onBayesianRadioButton(self.Bayes_SS_RadioButton))
+        BayesLayout.addWidget(self.Bayes_SS_RadioButton)
 
         advancedTabLayout.addStretch()
         return advancedTabWidget
@@ -645,7 +737,48 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologies = self.getSemiologiesListFromGUI()
         if semiologies is None:  # No semiologies selected
             return
-        return self.getScoresFromCache(semiologies)
+        if not self.Bayes_SS_RadioButton.isChecked():
+            dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
+            # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
+        else:
+            import pandas as pd
+            # average posterior TS est with SS data
+            # first run Bayes posterior only from TS:
+            self.BayesRadioButton.setChecked(True)
+            dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
+            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS cols = {dataFrame_TS.columns}' )
+            # now run SS only:
+            self.NonBayesRadioButton.setChecked(True)
+            self.epilepsyTopologyCheckBox.setChecked(False)
+            self.brainStimulationCheckBox.setChecked(False)
+            self.seizureSemiologyCheckBox.setChecked(True)
+            self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
+            dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
+            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> SS only \n\n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS cols = {dataFrame_SS.columns}' )
+            # now take their average:
+            TS_SS_append = dataFrame_TS.append(dataFrame_SS)
+            TS_SS_append.fillna(0, inplace=True)
+            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\TS_SS_append APPEND = {TS_SS_append}')
+            df_BayesTS_SS = pd.DataFrame(TS_SS_append.mean(axis=0))
+            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+
+            # # check the average and set index:
+            if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
+                df_BayesTS_SS = df_BayesTS_SS.T
+                # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
+            df_BayesTS_SS.index = dataFrame_SS.index
+            df_BayesTS_SS.fillna(value=0, inplace=True)
+            average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
+            average_bayesian_sums_to_1 = ((round(average_bayesian_sums_to_1, 1)) == round(1.0, 1))
+            # if not average_bayesian_sums_to_1:
+                # shouldn't occur but if it does, use renormalise():
+                # logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
+            dataFrame = df_BayesTS_SS
+
+            # not sure if need to take the mean or add, but if frequencies, add?:
+            all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
+            # may need to set radiobutton settings back:
+        return dataFrame, all_combined_gif_dfs
 
     def getScoresFromCache(self, semiologies):
         from mega_analysis.semiology import get_df_from_semiologies
@@ -661,16 +794,18 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         if dataFrame is None:
             with messageContextManager('Querying mega_analysis module...'):
                 try:
-                    if self.minmaxRadioButton.isChecked():
+                    if self.BayesRadioButton.isChecked():
+                        method = 'Bayesian only'
+                    elif self.minmaxRadioButton.isChecked():
                         method = 'minmax'
                     elif self.softmaxRadioButton.isChecked():
                         method = 'softmax'
                     elif self.proportionsRadioButton.isChecked():
                         method = 'proportions'
-                    dataFrame = get_df_from_semiologies(
-                        semiologies, method=method)
-                    scores = Scores(dataFrame)
+                    dataFrame, all_combined_gif_dfs = get_df_from_semiologies(semiologies, method=method)
+                    # self.all_combined_gif_dfs = all_combined_gif_dfs
                     if self.useCacheCheckBox.isChecked():
+                        scores = Scores(dataFrame)
                         cache[hashedQuery] = scores.toDict()
                         self.logic.writeCache(cache)
                 except Exception as e:
@@ -683,7 +818,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                     slicer.util.errorDisplay(message)
                     dataFrame = None
                     raise
-        return dataFrame
+        return dataFrame, all_combined_gif_dfs
 
     def getDominantHemisphereFromGUI(self):
         from mega_analysis.semiology import Laterality
@@ -794,25 +929,28 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             slicer.util.errorDisplay('No color node is selected')
             return
 
-        semiologiesDataFrame = self.getSemiologiesDataFrameFromGUI()
+        semiologiesDataFrame, all_combined_gif_dfs = self.getSemiologiesDataFrameFromGUI()
+        # ^semiologiesDataFrame is now a row/index of semiologies and columns of GIF regions
+        # if proportions, then for each row/semiology, the GIFs are a probability/proportion
+
         if self.minmaxRadioButton.isChecked():
             method = 'minmax'
         elif self.softmaxRadioButton.isChecked():
             method = 'softmax'
         elif self.proportionsRadioButton.isChecked():
             method = 'proportions'
+        num_df = all_combined_gif_dfs
 
-        normalise = len(semiologiesDataFrame) > 1
+        normalise = len(semiologiesDataFrame) > 1  # i.e. number of rows/semiologies > 1
         if normalise:
-            normalisedDataFrame = normalise_semiologies_df(
-                semiologiesDataFrame,
-                method=method,
-            )
+            normalisedDataFrame = normalise_semiologies_df(semiologiesDataFrame, method=method)
             dataFrameToCombine = normalisedDataFrame
         else:
             dataFrameToCombine = semiologiesDataFrame
-        combinedDataFrame = combine_semiologies_df(
-            dataFrameToCombine, method=method, normalise=normalise)
+        combinedDataFrame = combine_semiologies_df(dataFrameToCombine, method=method, normalise=normalise,
+                                                    inverse_variance_method=not self.InverseVarianceEqualRadioButton.isChecked(),
+                                                    from_marginals=self.InverseVarianceMarginalsRadioButton.isChecked(),
+                                                    num_df=num_df)  # if not Equal and not Marginals, then must be either not proportions, or DataPosterior method.
 
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
@@ -853,18 +991,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.logic.jumpToMax(self.scoresVolumeNode)
 
         with messageContextManager('Creating data points table...'):
-            self.parcellation.useNamesForDataFramesColumns(
-                semiologiesDataFrame,
-                combinedDataFrame,
-            )
-            stringsDataFrame = self.logic.getStringsDataFrame(
-                semiologiesDataFrame,
-                combinedDataFrame,
-            )
-            self.tableNode = self.logic.dataFrameToTable(
-                stringsDataFrame.T,
-                self.tableNode,
-            )
+            self.parcellation.useNamesForDataFramesColumns(semiologiesDataFrame, combinedDataFrame)
+            stringsDataFrame = self.logic.getStringsDataFrame(semiologiesDataFrame, combinedDataFrame, proportions=self.proportionsRadioButton.isChecked())
+            self.tableNode = self.logic.dataFrameToTable(stringsDataFrame.T, self.tableNode)
             self.tableCollapsibleButton.visible = True
             self.logic.showTableInModuleLayout(self.tableView, self.tableNode)
             # self.logic.showTableInViewLayout(self.tableNode)
@@ -930,6 +1059,111 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.PaedsAndAdultsCheckBox.setChecked(False)
         elif (source == self.PaedsAndAdultsCheckBox) and self.PaedsAndAdultsCheckBox.isChecked():
             self.paediatricCheckBox.setChecked(False)
+
+    def onBayesianRadioButton(self, source):
+        if not self.NonBayesRadioButton.isChecked():
+            self.proportionsRadioButton.setChecked(True)
+            self.proportionsRadioButton.setEnabled(False)
+            self.softmaxRadioButton.setEnabled(False)
+            self.minmaxRadioButton.setEnabled(False)
+
+            self.InverseVarianceMarginalsRadioButton.setChecked(True)
+
+            self.MicroLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(False)
+            self.MicroLatRadioButton.setEnabled(False)
+            self.GlobalLatRadioButton.setEnabled(False)
+
+            self.postSurgicalSzFreedomCheckBox.setEnabled(False)
+            self.invasiveEegCheckBox.setEnabled(False)
+            self.concordanceCheckBox.setEnabled(False)
+
+            if self.BayesRadioButton.isChecked():
+                self.epilepsyTopologyCheckBox.setChecked(True)
+                self.seizureSemiologyCheckBox.setChecked(False)
+                self.brainStimulationCheckBox.setChecked(True)
+            if self.Bayes_SS_RadioButton.isChecked():
+                self.epilepsyTopologyCheckBox.setChecked(True)
+                self.seizureSemiologyCheckBox.setChecked(True)
+                self.brainStimulationCheckBox.setChecked(True)
+            self.epilepsyTopologyCheckBox.setEnabled(False)
+            self.seizureSemiologyCheckBox.setEnabled(False)
+            self.brainStimulationCheckBox.setEnabled(False)
+
+            self.PaedsAndAdultsCheckBox.setChecked(True)
+            self.PaedsAndAdultsCheckBox.setEnabled(False)
+            self.paediatricCheckBox.setChecked(False)
+            self.paediatricCheckBox.setEnabled(False)
+
+            self.granularCheckBox.setChecked(True)
+            self.granularCheckBox.setEnabled(False)
+            # self.NormaliseToLocalisingCheckBox.setChecked(True)
+            # self.NormaliseToLocalisingCheckBox.setEnabled(False)
+            self.TopLevelLobesCheckBox.setChecked(False)
+            self.TopLevelLobesCheckBox.setEnabled(False)
+
+            self.unknownDominantRadioButton.setChecked(True)
+            self.unknownDominantRadioButton.setEnabled(False)
+            self.leftDominantRadioButton.setEnabled(False)
+            self.rightDominantRadioButton.setEnabled(False)
+
+        elif self.NonBayesRadioButton.isChecked():
+            self.proportionsRadioButton.setChecked(True)
+            self.proportionsRadioButton.setEnabled(True)
+            self.softmaxRadioButton.setEnabled(True)
+            self.minmaxRadioButton.setEnabled(True)
+
+            self.MicroLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(False)
+            self.MicroLatRadioButton.setEnabled(True)
+            self.GlobalLatRadioButton.setEnabled(True)
+
+            self.postSurgicalSzFreedomCheckBox.setChecked(True)
+            self.invasiveEegCheckBox.setChecked(True)
+            self.concordanceCheckBox.setChecked(True)
+            self.postSurgicalSzFreedomCheckBox.setEnabled(True)
+            self.invasiveEegCheckBox.setEnabled(True)
+            self.concordanceCheckBox.setEnabled(True)
+
+            self.epilepsyTopologyCheckBox.setChecked(False)
+            self.seizureSemiologyCheckBox.setChecked(True)
+            self.brainStimulationCheckBox.setChecked(False)
+            self.epilepsyTopologyCheckBox.setEnabled(True)
+            self.seizureSemiologyCheckBox.setEnabled(True)
+            self.brainStimulationCheckBox.setEnabled(True)
+
+            self.PaedsAndAdultsCheckBox.setChecked(True)
+            self.PaedsAndAdultsCheckBox.setEnabled(True)
+            self.paediatricCheckBox.setChecked(False)
+            self.paediatricCheckBox.setEnabled(True)
+
+            self.granularCheckBox.setChecked(True)
+            self.granularCheckBox.setEnabled(True)
+            # self.NormaliseToLocalisingCheckBox.setChecked(True)
+            # self.NormaliseToLocalisingCheckBox.setEnabled(True)
+            self.TopLevelLobesCheckBox.setChecked(False)
+            self.TopLevelLobesCheckBox.setEnabled(True)
+
+            self.unknownDominantRadioButton.setChecked(True)
+            self.unknownDominantRadioButton.setEnabled(True)
+            self.leftDominantRadioButton.setEnabled(True)
+            self.rightDominantRadioButton.setEnabled(True)
+        else:
+            pass
+
+    def on_proportions_InverseVarianceRadioButton(self, source):
+        if self.proportionsRadioButton.isChecked():
+            self.InverseVarianceMarginalsRadioButton.setChecked(True)
+            self.InverseVarianceMarginalsRadioButton.setEnabled(True)
+            self.InverseVarianceDataPosteriorsRadioButton.setEnabled(True)
+            self.InverseVarianceEqualRadioButton.setEnabled(True)
+        else:
+            self.InverseVarianceMarginalsRadioButton.setChecked(False)
+            self.InverseVarianceDataPosteriorsRadioButton.setChecked(False)
+            self.InverseVarianceEqualRadioButton.setChecked(True)
+            self.InverseVarianceMarginalsRadioButton.setEnabled(False)
+            self.InverseVarianceDataPosteriorsRadioButton.setEnabled(False)
+            self.InverseVarianceEqualRadioButton.setEnabled(False)
 
 
 class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
@@ -1153,6 +1387,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         indexColumn.SetName(indexName)
 
         for columnName in dataFrame.columns:
+            # logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
             column = tableNode.AddColumn()
             column.SetName(columnName)
 
@@ -1182,6 +1417,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         structuresColumn.SetName('Structure')
         scoresColumn = tableNode.AddColumn(vtk.vtkDoubleArray())
         scoresColumn.SetName('Score')
+
 
         # Fill columns
         table = tableNode.GetTable()
@@ -1261,24 +1497,19 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         slicer.result = result
         return result
 
-    def getStringsDataFrame(
-        self,
-        semiologiesDataFrame,
-        combinedDataFrame,
-        removeScoresIfSingle=True,
-    ):
-        combinedDataFrame = combinedDataFrame.sort_values(
-            by='Score', axis=1, ascending=False)
-        combinedDataFrame = combinedDataFrame.apply(
-            lambda x: [f'{n:.2f}' for n in x])
-        semiologiesDataFrame = semiologiesDataFrame.T.reindex(
-            combinedDataFrame.T.index).T
+    def getStringsDataFrame(self, semiologiesDataFrame, combinedDataFrame, removeScoresIfSingle=True, proportions: bool=True):
+        combination_technique = combinedDataFrame.index.name  # unused yet to change name of column in Slicer
+        combinedDataFrame = combinedDataFrame.sort_values(by='Score', axis=1, ascending=False)
+        combinedDataFrame = combinedDataFrame.apply(lambda x: [f'{n:.2f}' if not proportions else f'{n:.3f}' for n in x])
+        semiologiesDataFrame = semiologiesDataFrame.T.reindex(combinedDataFrame.T.index).T
         semiologiesDataFrame = semiologiesDataFrame.fillna(0)
-        semiologiesDataFrame = semiologiesDataFrame.astype(int)
+        if not proportions:
+            semiologiesDataFrame = semiologiesDataFrame.astype(int)
+        else:
+            semiologiesDataFrame = semiologiesDataFrame.apply(lambda x: [f'{n:.3f}' for n in x])
         semiologiesDataFrame = semiologiesDataFrame.astype(str)
         stringsDataFrame = combinedDataFrame.append(semiologiesDataFrame)
-        stringsDataFrame.columns = [
-            n.replace('-', ' ') for n in stringsDataFrame.columns]
+        stringsDataFrame.columns = [n.replace('-', ' ') for n in stringsDataFrame.columns]
         if removeScoresIfSingle and len(stringsDataFrame) == 2:
             stringsDataFrame.drop(index='Score', inplace=True)
         return stringsDataFrame
@@ -1713,6 +1944,7 @@ class Query:
                 normalise_to_localising_values=semiology.normalise_to_localising_values,
                 top_level_lobes=semiology.top_level_lobes,
                 global_lateralisation=semiology.global_lateralisation,
+                # all_combined_gif_df=semiology.all_combined_gif_df,
             )
             content.append(semiology_dict)
         return content

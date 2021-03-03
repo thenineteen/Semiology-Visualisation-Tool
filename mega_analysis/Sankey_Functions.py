@@ -1,14 +1,15 @@
 import pandas as pd
 import numpy as np
+import copy
 
-import chart_studio.plotly as py
-import plotly.io as pio
-from plotly import __version__
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
-import cufflinks as cf
-cf.go_offline()
-init_notebook_mode()
-
+# import chart_studio.plotly as py
+# import plotly.io as pio
+# from plotly import __version__
+# from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot, init_notebook_mode
+# import cufflinks as cf
+# cf.go_offline()
+# init_notebook_mode()
+from .crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 
 def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
     """    Flattense nested dictionary to low level keys:values. Marvasti Nov 2020    """
@@ -21,36 +22,34 @@ def flatten_SemioDict(SemioDict, flat_SemioDict_gen={}):
             yield from flatten_SemioDict(v)
 
 
-def top_level_lobes():
-    Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
-             'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
-             'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
-             'PO', 'FP']
-    return Lobes
-
-
-def normalise_top_level_localisation_cols(df):
+def normalise_top_level_localisation_cols(df, Bayesian=False, Localising=None):
     """ If the sum of datapoints in lobes is greater than localising col, normalise to localising semiology.
     Akin to Normalise_to_localising value in main mega analysis module, but uses only top level lobes.
     Should not run normalisation methods together """
 
-    Lobes = top_level_lobes()
-    df_temp = df.copy()
-    df_temp = df_temp[Lobes]
+    Lobes = top_level_lobes(Bayesian=Bayesian)
+    df_temp = copy.deepcopy(df)
+    df_temp = df_temp[[locs for locs in Lobes if locs in df_temp.columns]]
 
+    if Localising:
+        df.loc[: , 'Localising'] = Localising
     df_temp.loc[:, 'ratio'] = df['Localising'] / (df[Lobes].sum(axis=1))
     df_temp = df_temp.astype({'ratio': 'float'})
 
-    df.loc[:, Lobes] = (df_temp.loc[:, Lobes]).multiply(
-        df_temp.loc[:, 'ratio'], axis=0)
+    df_temp.loc[:, Lobes] = (df_temp.loc[:, Lobes]).multiply(df_temp.loc[:, 'ratio'], axis=0)
+    df_temp2 = copy.deepcopy(df)
+    df_temp2.loc[df_temp2.index==df_temp.index, Lobes] = df_temp.loc[:, Lobes]
+    # df[Lobes] = df_temp2[Lobes]
 
-    return df, Lobes
+    return df_temp2, Lobes
 
 
 def normalise_top_level_localisation_cols_OTHER(df, *args):
     """
     Compress the localisations to OTHER. Need to have made the OTHER lobe column. Should not run normalisation methods together.
     """
+    pd.options.mode.chained_assignment = None
+
     OTHER = ['Sub-Callosal Cortex', 'TPO Junction', 'TP', 'FTP', 'TO', 'FP', 'Perisylvian',
              'PO', 'FT', 'Cerebellum']
 

@@ -55,7 +55,7 @@ def run_query():
         Laterality.symptoms_side,
         Laterality.dominant_hemisphere,
         )
-    num_patients_dict = heatmap.get_num_datapoints_dict()
+    num_patients_dict, _ = heatmap.get_num_datapoints_dict()
     print('Result:', num_patients_dict)
 
     # output2 = output1.SOMEFUNCTION(arguments.true)

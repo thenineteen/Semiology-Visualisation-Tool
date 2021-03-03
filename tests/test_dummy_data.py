@@ -308,7 +308,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
                 == lat_not_loc_gifsclean.shape[0])
 
         # test MTG on right 155 gif # gives 1:
-        heatmap = patient.get_num_datapoints_dict(method='minmax')
+        heatmap, _ = patient.get_num_datapoints_dict(method='minmax')
         assert 156 not in heatmap  # left
         assert heatmap[155] == 1  # right
 
@@ -359,7 +359,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
                 == lat_not_loc_gifsclean.shape[0])
 
         # check that latnotloc gives 1 and latandloc adds zero to right MTG GIF #155
-        heatmap = patient.get_num_datapoints_dict(method='minmax')
+        heatmap, _ = patient.get_num_datapoints_dict(method='minmax')
         assert heatmap[155] == 1  # right
 
     def test_latexceedsloc_3(self):
@@ -376,7 +376,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient.data_frame = self.df
 
         # (part 1) test latexceedsloc alone using norm_ratio/oddsratio method of Q_L:
-        heatmap = patient.get_num_datapoints_dict(method='minmax')
+        heatmap, _ = patient.get_num_datapoints_dict(method='minmax')
         assert heatmap[156] == 200.0
         assert heatmap[155] == 300.0
 
@@ -448,7 +448,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         assert (lat_allgifs.loc[165, 'pt #s'] == 0)
 
         lat_allgifs = lat_allgifs.loc[lat_allgifs['pt #s'] != 0, :]
-        SVT_output = patient.get_num_datapoints_dict(method='minmax')
+        SVT_output, _ = patient.get_num_datapoints_dict(method='minmax')
         assert SVT_output == dict((lat_allgifs)['pt #s'])
 
 

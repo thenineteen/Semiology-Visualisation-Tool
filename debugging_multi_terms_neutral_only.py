@@ -17,8 +17,8 @@ list_of_terms = list(open(file, 'r'))
 for term in tqdm(list_of_terms, desc='Neutral Only Semiologies', bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.RED, Fore.RESET)):
     patient = Semiology(
         term.strip(),
-        symptoms_side=Laterality.LEFT,
-        dominant_hemisphere=Laterality.LEFT,
+        symptoms_side=Laterality.NEUTRAL,
+        dominant_hemisphere=Laterality.NEUTRAL,
     )
 
     ###

@@ -34,7 +34,7 @@ class MultipleNeutralOnly(unittest.TestCase):
             symptoms_side=Laterality.LEFT,
             dominant_hemisphere=Laterality.LEFT,
         )
-        heatmap = patient.get_num_datapoints_dict()
+        heatmap, _ = patient.get_num_datapoints_dict()
         assert isinstance(heatmap, dict)
 
 

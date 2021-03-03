@@ -8,11 +8,15 @@ all_localisations = all_localisations()
 # list of top level localisations we want to keep
 
 
-def top_level_lobes():
+def top_level_lobes(Bayesian=False):
     Lobes = ['TL', 'FL', 'CING', 'PL', 'OL', 'INSULA',
              'Hypothalamus', 'Sub-Callosal Cortex', 'Cerebellum', 'Perisylvian',
              'FT', 'TO', 'TP', 'FTP', 'TPO Junction',
              'PO', 'FP']
+    if Bayesian:
+        redistributed = ['FT', 'FTP', 'PO', 'Perisylvian', 'FP', 'Sub-Callosal Cortex', 'TO', 'TPO Junction', 'TP']
+        redistributed.append('Cerebellum')
+        Lobes = [i for i in Lobes if i not in redistributed]
     return Lobes
 
 

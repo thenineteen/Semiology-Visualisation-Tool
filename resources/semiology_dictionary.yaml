@@ -655,7 +655,7 @@
         "((?<!postictal )(?<!no ))unable to talk",
         "((?<!postictal )(?<!no ))speech arrest",
       ]
-    "Dysphasia": # McGonigal suggests merge dysphasia and ictal speech and rename
+    "Dysphasia - Ictal Speech": # McGonigal suggests merge dysphasia and ictal speech and rename
       [
         "((?<!postictal )(?<!no ))dysphasia",
         "(?<!no )difficulty speak(?:ing)?",
@@ -675,9 +675,7 @@
         "articulation",
         "articulatory",
         "paraphasia",
-      ]
-    "Ictal Speech - Formed Words":
-      [
+        # ictal speech:
         "ictal speech((?! arrest)(?! impairment))",
         "speech \\(ictal\\)",
         "ictal talk",
@@ -687,11 +685,22 @@
         "swear",
         "expletive",
       ]
+    # "Ictal Speech - Formed Words":
+    #   [
+    #     "ictal speech((?! arrest)(?! impairment))",
+    #     "speech \\(ictal\\)",
+    #     "ictal talk",
+    #     "palilalia",
+    #     "coprolalia",
+    #     "corprolalia",
+    #     "swear",
+    #     "expletive",
+    #   ]
   silent SOZ:
     "No Semiology - Only Stimulation Studies":
       ["no semiology", "non-? ?manifest", "silent seizure", "Silent SOZ on ES"]
   consciousness:
-    "Dialeptic/LOA/LOC": [
+    "Dialeptic-LOA-LOC": [
         "dialeptic",
         "Impaired consciousness",
         "(?<!no )blank",
