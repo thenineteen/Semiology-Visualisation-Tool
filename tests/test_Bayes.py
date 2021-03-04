@@ -87,7 +87,7 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
     def setUp(self):
         print('setup')
 
-    def test_control(self):
+    def test_SS_control(self):
         """
         control: right visual global lateralisation gives left hemisphere > right hemisphere for SS-database query.
         #32 RIGHT ANYGDALA
@@ -104,7 +104,11 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
             include_cortical_stimulation=False,
             include_spontaneous_semiology=True,
         )
-        df_proportions, all_combind_gif_df = get_df_from_semiologies([Patient_VisualRight], method=method)
+        df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
+        try:
+            df_proportions.loc['Visual', 32] > 0
+        except KeyError:  # re,oved as it was zero
+            df_proportions.loc['Visual', 32] = 0
         assert round(df_proportions.loc['Visual', 32], 3) < round(df_proportions.loc['Visual', 33], 3)
 
 
@@ -121,11 +125,17 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
             symptoms_side=Laterality.RIGHT,
             dominant_hemisphere=Laterality.NEUTRAL,
             normalise_to_localising_values=True,
-            global_lateralisation=True,
-            include_et_topology_ez=False,
-            include_cortical_stimulation=False,
-            include_spontaneous_semiology=True,
+            global_lateralisation=True,  # again not relevant as using BAyesian only - not using the df from this, but just the lateralising values
+            # include_et_topology_ez=False,  # not relevant as using Bayesian only
+            # include_cortical_stimulation=False,
+            # include_spontaneous_semiology=True,
         )
-        df_proportions, all_combind_gif_df = get_df_from_semiologies([Patient_VisualRight], method=method)
-        # we want <:
-        assert round(df_proportions.loc['Visual', 32], 3) < round(df_proportions.loc['Visual', 33], 3)
+        df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
+        # df_proportions is the symmetric posterior from TS:
+        assert round(df_proportions.loc['Visual', 32], 3) == round(df_proportions.loc['Visual', 33], 3)
+
+        # we want <. all_combind_gif_dfs is globally-laterlised df_proportions
+        #   but get_df_from_semiologies is a function and doesn't store the self.symptoms_side information
+        #   so use the next function down the chain:
+        num_datapoints_dict, all_combined_gif_df = Patient_VisualRight.get_num_datapoints_dict(method=method)
+        assert round(all_combined_gif_df.loc[32, 'pt #s'], 3) < round(all_combined_gif_df.loc[33, 'pt #s'], 3)
