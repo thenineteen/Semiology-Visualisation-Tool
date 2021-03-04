@@ -234,7 +234,7 @@ class Semiology:
                 if Bayesian_global_lat:
                     # need to return the raw lateralising numnbers for posterior-TS Bayes global lateralisation:
                     _ = all_combined_gifs
-                    return _, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
+                    return _, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH, num_query_loc
             elif not self.global_lateralisation:
                 all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
                     QUERY_LATERALISATION(
@@ -267,7 +267,7 @@ class Semiology:
         if method == 'Bayesian only':
             # keep only lateralising info from here not the localising 'query_lateralisation_result':
             Bayesian_global_lat=True
-            query_lateralisation_result, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = self.query_lateralisation(Bayesian_global_lat=Bayesian_global_lat)
+            query_lateralisation_result, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH, num_query_loc = self.query_lateralisation(Bayesian_global_lat=Bayesian_global_lat)
         else:
             Bayesian_global_lat=False
             query_lateralisation_result = self.query_lateralisation()
