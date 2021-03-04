@@ -391,7 +391,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
             RR_norm = RR
 
         # -------------Scenario 2: Unequal lateralising data: RR_norm and 1-RR_norm---------------
-        df_lower_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_lower))].copy()
+        df_lower_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs.index.isin(list(isin_lower))].copy()
         # now make these values lower by a proportion = RR_norm (in this case RR_norm = RR as denom is 1)
         reduce_these = df_lower_lat_to_be_reduced.loc[:, 'pt #s'].copy()
         df_lower_lat_to_be_reduced.loc[:, 'pt #s'] = RR_norm * reduce_these
@@ -399,7 +399,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
         all_combined_gifs.loc[df_lower_lat_to_be_reduced.index, :] = df_lower_lat_to_be_reduced
 
         # now repeat the above steps for the higher values i.e. contralateral side
-        df_higher_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs['Gif Parcellations'].isin(list(isin_higher))].copy()
+        df_higher_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs.index.isin(list(isin_higher))].copy()
         reduce_these = df_higher_lat_to_be_reduced.loc[:, 'pt #s'].copy()
         df_higher_lat_to_be_reduced.loc[:, 'pt #s'] = (1-RR_norm) * reduce_these
         all_combined_gifs.loc[df_higher_lat_to_be_reduced.index, :] = df_higher_lat_to_be_reduced
