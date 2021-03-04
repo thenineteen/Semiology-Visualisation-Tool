@@ -298,7 +298,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
     # whereas the previous versions of Q_L calculated it using pivot_result_to_one_map()
         # so need to make cols the same
     if 'pt #s' not in all_combined_gifs.columns:
-        all_combined_gifs.rename(columns={0 : 'pt #s'})
+        all_combined_gifs.rename(columns={0 : 'pt #s'}, inplace=True)
 
     # -------------LOTS OF CHECKS-------------
     # ensure there is patient's lateralised signs and check dominant known or not
@@ -406,12 +406,12 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
 
         # -------------END----------------------------------------------
 
-    # pivot_table the values
-    fixed = all_combined_gifs.pivot_table(
-        columns='Gif Parcellations', values='pt #s', aggfunc='sum')
-    fixed2 = fixed.melt(value_name='pt #s')
-    fixed2.insert(0, 'Semiology Term', np.nan)
-    all_combined_gifs = fixed2
-    all_combined_gifs
+    # # pivot_table the values
+    # fixed = all_combined_gifs.pivot_table(
+    #     columns='Gif Parcellations', values='pt #s', aggfunc='sum')
+    # fixed2 = fixed.melt(value_name='pt #s')
+    # fixed2.insert(0, 'Semiology Term', np.nan)
+    # all_combined_gifs = fixed2
+
 
     return all_combined_gifs
