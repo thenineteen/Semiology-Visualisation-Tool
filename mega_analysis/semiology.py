@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 import yaml
 import numpy as np
 import pandas as pd
+import logging
 
 from .crosstab.file_paths import file_paths
 from .crosstab.hierarchy_class import Hierarchy
@@ -201,10 +202,10 @@ class Semiology:
             inspect_result = drop_minor_localisations(inspect_result)
             if self.normalise_to_localising_values:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
-        return inspect_result
+        return inspect_result, num_query_loc
 
     def query_lateralisation(self, one_map=one_map, Bayesian_global_lat=False) -> Optional[pd.DataFrame]:
-        query_semiology_result = self.query_semiology()
+        query_semiology_result, num_query_loc = self.query_semiology()
         if query_semiology_result is None:
             print('No such semiology found')
             return None
@@ -232,7 +233,8 @@ class Semiology:
                     )
                 if Bayesian_global_lat:
                     # need to return the raw lateralising numnbers for posterior-TS Bayes global lateralisation:
-                    return all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
+                    _ = all_combined_gifs
+                    return _, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
             elif not self.global_lateralisation:
                 all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
                     QUERY_LATERALISATION(
@@ -291,6 +293,8 @@ class Semiology:
                                 side_of_symptoms_signs=self.symptoms_side.value,
                                 pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
                                 normalise_lat_to_loc=False)
+            logging.debug(f'\n\nSSS get_num_datapoints_dict: \n\tnum_datapoints_dict={num_datapoints_dict} \
+                            \n\n\t all_combined_gif_df = {all_combined_gif_df}')
             return num_datapoints_dict, all_combined_gif_df
 
         elif method != 'proportions':
@@ -325,6 +329,7 @@ def combine_semiologies(semiologies: List[Semiology], normalise_method: Optional
 def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proportions') -> pd.DataFrame:
     num_datapoints_dicts = {}
     all_combined_gif_dfs = pd.DataFrame()
+    a_c_g_dfs_join = pd.DataFrame()
     for semiology in semiologies:
         num_datapoints_dict, all_combined_gif_df = semiology.get_num_datapoints_dict(method=method)
         if num_datapoints_dict is None:
@@ -339,7 +344,10 @@ def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proport
             if all_combined_gif_dfs.empty:
                 all_combined_gif_dfs = all_combined_gif_df
             else:
-                all_combined_gif_dfs = all_combined_gif_dfs.join(all_combined_gif_df, how='outer')
+                a_c_g_dfs_join = a_c_g_dfs_join.join(all_combined_gif_df, how='outer')
+                all_combined_gif_dfs = all_combined_gif_dfs.merge(all_combined_gif_df, how='outer', left_index=True, right_index=True)  #join or merge
+                logging.debug(f'\n\n!! a_c_g_dfs_join = {a_c_g_dfs_join}')
+                logging.debug(f'\n\n!! all_combined_gif_dfs = {all_combined_gif_dfs}')
     df = get_df_from_dicts(num_datapoints_dicts)
     df.fillna(value=0, inplace=True)
     return df, all_combined_gif_dfs
@@ -392,15 +400,15 @@ def combine_semiologies_df(df: pd.DataFrame,
         prob_add_to_1 = df.sum().sum()
         prob_add_to_1 = (prob_add_to_1.all() == 1)
         if not prob_add_to_1:
-            import logging
             # then this is weird, as they were normalised to 1 in get_num_datapoints_dict()
             # not sure why this assertion fails for Bayesian SS combination advanced option:
-            logging.error(f'\n\n!!!! probabilities don\'t add up to 1. \n\tdf.shape= {df.shape} \n\t df sums = {(df.sum().sum())}' )
-
+            logging.error(f'\n\nSSS combine_semiologies_df \n\tprobabilities don\'t add up to 1. \n\tdf.shape= {df.shape} \n\t df sums = {(df.sum().sum())}' )
 
         if inverse_variance_method:
+            logging.debug(f'\n\nSSS combine_semiologies_df\n\tBUG: before inv_variance_combine_semiologies: \n\tdf = {df}')
             combination_technique = 'Score'#'Inv Var Weighted'
             combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)
+            logging.debug(f'\n\nSSS combine_semiologies_df\n\tBUG: zero after \n\t combine_semiologies_df > inv_variance_combine_semiologies \n\tcombined_df = \n\t{combined_df}')
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
             combined_df = df.mean(axis=0)
@@ -448,6 +456,7 @@ def inv_variance_combine_semiologies(df, num_df,
         p_GIF = pd.read_csv(marginal_path, index_col=0)
         p_GIF.fillna(0, inplace=True)
         p_GIF = p_GIF.T
+        logging.debug(f'\n\nSSS inv_variance_combine_semiologies\n\t p_GIF.T = {p_GIF}\n\n\t p_GIF.index = {p_GIF.index}')
         p_GIF['GIF'] = p_GIF.index
         p_GIF = p_GIF.astype({'GIF':int})
         p_GIF.set_index(p_GIF['GIF'], inplace=True)

@@ -70,7 +70,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         patient.data_frame = self.df
         # default behaviour of query_semiology changed to use granular hierarchy reversal:
         patient.granular = False
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
         assert(inspect_result['TL'].sum() == 12)
         assert(inspect_result['Anterior (temporal pole)'].sum() == 5)
         assert(inspect_result['Lateral Temporal'].sum() == 4)
@@ -89,7 +89,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
         patient.granular = False
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         # # the three lines below were integrated into default query_semiology() using.granular = True
         hierarchy_df = Hierarchy(inspect_result)
@@ -110,7 +110,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
         hierarchy_df.frontal_hierarchy_reversal()  # deafult max option
@@ -128,7 +128,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
         patient.granular = False
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
         hierarchy_df.temporal_hierarchy_reversal()  # deafult max option
@@ -154,7 +154,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
         hierarchy_df.all_hierarchy_reversal()  # deafult max option
@@ -201,7 +201,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
 
         patient.data_frame = self.use_SemioBrainBeta_notDummyData()
         patient.granular = False
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
         hierarchy_df.all_hierarchy_reversal()  # deafult max option
@@ -231,7 +231,7 @@ class TestDummyDataHierarchyReversal(unittest.TestCase):
 
         patient.data_frame = self.use_SemioBrainBeta_notDummyData()
         patient.granular = False
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         hierarchy_df = Hierarchy(inspect_result)
         hierarchy_df.all_hierarchy_reversal()  # deafult max option

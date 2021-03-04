@@ -84,7 +84,7 @@ class PipelineSequenceTesting(unittest.TestCase):
         patient = Semiology('pipeline_laateralises_semioA',
                             Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
@@ -102,7 +102,7 @@ class PipelineSequenceTesting(unittest.TestCase):
         patient = Semiology('pipeline_notlaat_semioB',
                             Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty

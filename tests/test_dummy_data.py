@@ -151,7 +151,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('Aphasia', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, num_query_loc = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
@@ -212,7 +212,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient.data_frame = self.df
         # revert default paed exclusions
         patient.include_only_paediatric_cases = True
-        inspect_result = patient.query_semiology()
+        inspect_result, num_query_loc = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
@@ -226,7 +226,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('spasm', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, num_query_loc = patient.query_semiology()
         inspect_result = exclude_paediatric_cases(inspect_result)
 
         self.assertIs(type(inspect_result), pd.DataFrame)
@@ -243,7 +243,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         """
         patient = Semiology('Tonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient.data_frame = self.df
-        tonic_result = patient.query_semiology()
+        tonic_result, num_query_loc = patient.query_semiology()
 
         self.assertIs(type(tonic_result), pd.DataFrame)
         assert not tonic_result.empty
@@ -254,7 +254,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
         patient_two = Semiology(
             'Atonic', Laterality.NEUTRAL, Laterality.NEUTRAL)
         patient_two.data_frame = self.df
-        atonic_result = patient_two.query_semiology()
+        atonic_result, num_query_loc = patient_two.query_semiology()
 
         self.assertIs(type(atonic_result), pd.DataFrame)
         assert not atonic_result.empty
@@ -274,7 +274,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             one_map_dummy)
 
         # inspect result
-        lat_not_loc_result = patient.query_semiology()
+        lat_not_loc_result, num_query_loc = patient.query_semiology()
 
         self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
         assert not lat_not_loc_all_combined_gifs.empty
@@ -323,7 +323,7 @@ class TestDummyDataDummyDictionary(unittest.TestCase):
             one_map_dummy)
 
         # inspect result
-        lat_not_loc_result = patient.query_semiology()
+        lat_not_loc_result, _ = patient.query_semiology()
 
         self.assertIs(type(lat_not_loc_all_combined_gifs), pd.DataFrame)
         assert not lat_not_loc_all_combined_gifs.empty

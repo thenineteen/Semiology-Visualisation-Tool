@@ -68,7 +68,7 @@ class NormaliseLocalisingValues(unittest.TestCase):
         patient = Semiology('ILV_1',
                             Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
@@ -85,7 +85,7 @@ class NormaliseLocalisingValues(unittest.TestCase):
         patient = Semiology('ILV_4',
                             Laterality.LEFT, Laterality.LEFT)
         patient.data_frame = self.df
-        inspect_result = patient.query_semiology()
+        inspect_result, _ = patient.query_semiology()
 
         self.assertIs(type(inspect_result), pd.DataFrame)
         assert not inspect_result.empty
