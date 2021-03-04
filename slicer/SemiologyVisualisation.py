@@ -1070,7 +1070,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.InverseVarianceMarginalsRadioButton.setChecked(True)
 
             self.MicroLatRadioButton.setChecked(False)
-            self.GlobalLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(True)
             self.MicroLatRadioButton.setEnabled(False)
             self.GlobalLatRadioButton.setEnabled(False)
 
@@ -1114,7 +1114,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.minmaxRadioButton.setEnabled(True)
 
             self.MicroLatRadioButton.setChecked(False)
-            self.GlobalLatRadioButton.setChecked(False)
+            self.GlobalLatRadioButton.setChecked(True)  # even if false would still be checked
             self.MicroLatRadioButton.setEnabled(True)
             self.GlobalLatRadioButton.setEnabled(True)
 
