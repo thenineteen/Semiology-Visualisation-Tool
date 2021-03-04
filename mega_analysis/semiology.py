@@ -29,7 +29,7 @@ from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
-from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL
+from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL, QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
 from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
@@ -203,7 +203,7 @@ class Semiology:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
         return inspect_result
 
-    def query_lateralisation(self, one_map=one_map) -> Optional[pd.DataFrame]:
+    def query_lateralisation(self, one_map=one_map, Bayesian_global_lat=False) -> Optional[pd.DataFrame]:
         query_semiology_result = self.query_semiology()
         if query_semiology_result is None:
             print('No such semiology found')
@@ -230,6 +230,9 @@ class Semiology:
                         side_of_symptoms_signs=self.symptoms_side.value,
                         pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
                     )
+                if Bayesian_global_lat:
+                    # need to return the raw lateralising numnbers for posterior-TS Bayes global lateralisation:
+                    return all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
             elif not self.global_lateralisation:
                 all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
                     QUERY_LATERALISATION(
@@ -254,29 +257,45 @@ class Semiology:
                     )
         return all_combined_gifs
 
+
     def get_num_datapoints_dict(self, method: str = 'proportions') -> Optional[dict]:
         """
-        all_combined_gif_df is the normalised or not normalised frequency counts used for i;vnerse variance weighting.
+        all_combined_gif_df is the normalised or not normalised frequency counts used for invnerse variance weighting.
         """
-        query_lateralisation_result = self.query_lateralisation()
+        if method == 'Bayesian only':
+            # keep only lateralising info from here not the localising 'query_lateralisation_result':
+            Bayesian_global_lat=True
+            query_lateralisation_result, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = self.query_lateralisation(Bayesian_global_lat=Bayesian_global_lat)
+        else:
+            Bayesian_global_lat=False
+            query_lateralisation_result = self.query_lateralisation()
         if query_lateralisation_result is None:
             message = f'No results generated for semiology term "{self.term}"'
             raise ValueError(message)
         array = np.array(query_lateralisation_result)
         _, labels, patients = array.T
-        num_datapoints_dict = {
-            int(label): float(num_datapoints)
-            for (label, num_datapoints)
-            in zip(labels, patients)
-            if num_datapoints > 0}
-        # all_combined_gif_df = pd.DataFrame.from_dict(dict(zip(labels, patients)), orient='index')
+        num_datapoints_dict = {int(label): float(num_datapoints) for (label, num_datapoints) in zip(labels, patients) if num_datapoints > 0}
         all_combined_gif_df = pd.DataFrame.from_dict(num_datapoints_dict, orient='index')
         if method == 'Bayesian only':
+            # instead of query_lateralisation_result above, use cached result and Bayes rule for symmetric result:
             from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
             num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
-            return num_datapoints_dict, all_combined_gif_df  # recalculate all_combined_gif_df here as it's incorrect placeholder
+            all_combined_gif_df = pd.DataFrame.from_dict(num_datapoints_dict, orient='index')
+
+            # now use: num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
+            # to alter the values in num_datapoints_dict and its pd.DataFrame pair just as QUERY_LATERALISATION_GLOBAL does:
+            all_combined_gif_df = QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs=all_combined_gif_df,
+                                num_QL_lat=num_QL_lat, num_QL_CL=num_QL_CL, num_QL_IL=num_QL_IL, num_QL_BL=num_QL_BL,
+                                num_QL_DomH=num_QL_DomH, num_QL_NonDomH=num_QL_NonDomH,
+                                gif_lat_file=gif_lat_file,
+                                side_of_symptoms_signs=self.symptoms_side.value,
+                                pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                                normalise_lat_to_loc=False)
+            return num_datapoints_dict, all_combined_gif_df
+
         elif method != 'proportions':
             return num_datapoints_dict, all_combined_gif_df
+
         elif method == 'proportions':
             total = sum(list(num_datapoints_dict.values()))
             new_datatpoints = {k: v/total for (k, v) in num_datapoints_dict.items()}
