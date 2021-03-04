@@ -5,8 +5,8 @@ from collections import Counter
 
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
-from mega_analysis.Bayesian.Bayesian_marginals import summary_semio_loc_df_from_scripts
-from mega_analysis.Bayesian.Bayes_rule import Bayes_rule
+from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
+from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, Bayes_All, renormalised_probabilities
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
@@ -14,89 +14,60 @@ from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
 
 # to debug and test SVT GIF - Posterior_only_cache.Bayes_posterior_GIF_only:
 num_datapoints_dict = Bayes_posterior_GIF_only('Epigastric', True)
-type(num_datapoints_dict)
+
 
 
 # to debug using saved GIF posteriors given Semiology.
 # --------------Load----------------------------
 directory = Path(__file__).parent/'resources' / 'Bayesian_resources'
+marginal_folder = 'SemioMarginals_fromSS_GIFmarginals_from_TS'
 prob_S_given_GIFs_norm = pd.read_csv(directory / 'prob_S_given_GIFs_norm.csv', index_col=0)
-p_S_norm = pd.read_csv(directory / 'p_S_norm.csv', index_col=0)
-p_GIF_norm = pd.read_csv(directory / 'p_GIF_norm.csv', index_col=0)
+p_S_norm = pd.read_csv(directory / marginal_folder / 'p_S_norm_SS.csv', index_col=0)
+p_GIF_norm = pd.read_csv(directory / marginal_folder / 'p_GIF_norm_TS.csv', index_col=0)
 prob_S_given_GIFs_notnorm = pd.read_csv(directory / 'prob_S_given_GIFs_notnorm.csv', index_col=0)
-p_S_notnorm = pd.read_csv(directory / 'p_S_notnorm.csv', index_col=0)
-p_GIF_notnorm = pd.read_csv(directory / 'p_GIF_notnorm.csv', index_col=0)
-p_Loc_norm = pd.read_csv(directory / 'p_Loc_norm.csv', index_col=0)
-p_Loc_notnorm = pd.read_csv(directory / 'p_Loc_notnorm.csv', index_col=0)
-
-
+p_S_notnorm = pd.read_csv(directory / marginal_folder / 'p_S_notnorm_SS.csv', index_col=0)
+p_GIF_notnorm = pd.read_csv(directory / marginal_folder / 'p_GIF_notnorm_TS.csv', index_col=0)
 # --------------^--------------------------------------------------------------
+# drop the zero GIFs:
+    # # these GIFs are zero on marginal and p_GIF_given_S.. and SVT doesn't support these structures:
+    # # all related to cerebellum exterior, white matter, and cerebellar vermal lobules
+    # for gif in zero_GIF:
+    #     num_datapoints_dict.pop(gif)
+zero_GIF = ['39', '40', '41', '42', '72', '73', '74']
+zero_GIF_int = [39, 40, 41, 42, 72, 73, 74]
+p_GIF_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+p_GIF_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_norm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+prob_S_given_GIFs_notnorm.drop(columns=zero_GIF, inplace=True, errors='ignore')
+# # --------------^--------------------------------------------------------------
 
 
-# marginal top level lobe localisations are equal to within 3.7% aboslute tolerance or within 35.1% of relative tolerance
-# worse for cingulate (35.1% less on normalisation), then for Parietal lobe (16.8% less on normalisation) and then for frontal lobe (13.7% less on normalisation) all others are within 7 % error
-assert_frame_equal(p_Loc_norm, p_Loc_notnorm, check_exact=False, check_dtype=False, atol=0.037)
-assert_frame_equal(p_Loc_norm, p_Loc_notnorm, check_exact=False, check_dtype=False, rtol=0.351)
-# normalised and notnormalised marginal probabilities of semiologies are exactly the same:
-assert_frame_equal(p_S_norm, p_S_notnorm, check_exact=True, check_dtype=True)
-
-
-
-
-
-# --------------Copy more Bayes_All() here----------------------------
-# get likelihood from Topological data:
-query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
-query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
-topology_results_norm = query_results_norm['topology']
-topology_results_notnorm = query_results_notnorm['topology']
-prob_S_given_TopLevelLobes_norm = pd.DataFrame()
-prob_S_given_TopLevelLobes_notnorm = pd.DataFrame()
-
-Lobes = top_level_lobes(Bayesian=True)
-
-def multiple_melt_pivots(topology_results, p_S_norm):
-    pivot_result = {}  # dict of dfs
-    for semio in p_S_norm.index:
-        df_a = topology_results[semio]['query_inspection']
-        df_b = melt_then_pivot_query('', df_a, semio)
-        # list comprehension to keep top-level lobes only in df:
-        new_dict = {semio : df_b[[i for i in Lobes if i in df_b]]}
-        pivot_result.update(new_dict)
-    return pivot_result
-
-def wrapper_generative_from_TS(pivot_result, p_S_norm):
-    # initialise
-    added_all_pivot_results = {}
-    added_all_pivot_results = Counter(added_all_pivot_results)
-    pivot_result_copy = pivot_result.copy()
-    # # first find the total of top lobes:
-    for semio in p_S_norm.index:
-        temp_dict = Counter(pivot_result_copy[semio].to_dict('index')) #.pop(semio))
-        added_all_pivot_results = added_all_pivot_results + temp_dict
-    # turn counter back to dict: so totals for each lobe is added_all_pivot_results[lobe]
-    added_all_pivot_results = dict(added_all_pivot_results)
-
-    for semio in p_S_norm.index:
-        for toplobe in Lobes:
-            prob_S_given_TopLevelLobes_norm.loc[semio, toplobe] = \
-                pivot_result[semio][toplobe] / added_all_pivot_results[toplobe]
-    return prob_S_given_TopLevelLobes_norm
-
-
-pivot_result_norm = multiple_melt_pivots(topology_results_norm, p_S_norm)
-prob_S_given_TopLevelLobes_norm = wrapper_generative_from_TS(pivot_result_norm, p_S_norm)
-pivot_result_notnorm = multiple_melt_pivots(topology_results_notnorm, p_S_norm)
-prob_S_given_TopLevelLobes_notnorm = wrapper_generative_from_TS(pivot_result_notnorm), p_S_norm
-
-# GIFS
 prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
-prob_GIF_given_S_notnorm = Bayes_rule(prob_S_given_GIFs_notnorm, p_S_notnorm, p_GIF_notnorm)
+prob_GIF_given_S_norm = renormalised_probabilities(prob_GIF_given_S_norm)
 
-# TOP LEVEL LOCS: currently this is incorrectly curated: prob_S_given_TopLevelLobes_norm
-prob_TopLevel_given_S_norm = Bayes_rule(prob_S_given_TopLevelLobes_norm, p_S_norm, p_Loc_norm)
-prob_TopLevel_given_S_notnorm = Bayes_rule(prob_S_given_TopLevelLobes_notnorm, p_S_notnorm, p_Loc_notnorm)
+assert prob_GIF_given_S_norm.shape[0] == 35  # number of semiologies
+assert (prob_GIF_given_S_norm.sum(axis=1)).values.sum()  == 35
+# they all add up to 1 (probabilities)
+assert (prob_GIF_given_S_norm.sum(axis=1).sum() == prob_GIF_given_S_norm.shape[0])
 
 
-# --------------^--------------------------------------------------------------
-print('stop')
+
+
+
+# # marginal top level lobe localisations are equal to within 3.7% aboslute tolerance or within 35.1% of relative tolerance
+# # worse for cingulate (35.1% less on normalisation), then for Parietal lobe (16.8% less on normalisation) and then for frontal lobe (13.7% less on normalisation) all others are within 7 % error
+# assert_frame_equal(p_Loc_norm, p_Loc_notnorm, check_exact=False, check_dtype=False, atol=0.037)
+# assert_frame_equal(p_Loc_norm, p_Loc_notnorm, check_exact=False, check_dtype=False, rtol=0.351)
+# # normalised and notnormalised marginal probabilities of semiologies are exactly the same:
+# assert_frame_equal(p_S_norm, p_S_notnorm, check_exact=True, check_dtype=True)
+
+
+
+# # get marginal probabilities (p_S as DataFrames, p_Loc as Series): takes <4 mins
+# p_S_norm_SS, _, p_S_notnorm_SS, _ = p_Semiology_and_Localisation(publication_prior='spontaneous', test=False, skip_L=True)
+# p_GIF_norm_TS, p_GIF_notnorm_TS = p_GIFs(global_lateralisation=False,  # p_GIF is a row-vector df of marginal probabilities, cols as GIF #s and "probability"
+#                                     include_paeds_and_adults=True,
+#                                     include_only_postictals=False,
+#                                     symptom_laterality='neutral',
+#                                     dominance='neutral',
+#                                     )
