@@ -739,40 +739,46 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
         if not self.Bayes_SS_RadioButton.isChecked():
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
-            # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
+            logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
             import pandas as pd
-            # average posterior TS est with SS data
+        # average posterior TS est with SS data
             # first run Bayes posterior only from TS:
+            logging.debug(f'\n\n\n!!! Bayes_SS_RadioButton initialised.')
             self.BayesRadioButton.setChecked(True)
+            logging.debug(f'\n\n\n!!! Bayes only RadioButton initialised:')
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
+            logging.debug(f'\n\n\n!!! Bayes only completed.')
             # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS cols = {dataFrame_TS.columns}' )
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
+            logging.debug(f'\n\n\n!!! NonBayes SS initialised')
             self.epilepsyTopologyCheckBox.setChecked(False)
             self.brainStimulationCheckBox.setChecked(False)
             self.seizureSemiologyCheckBox.setChecked(True)
             self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
+            self.GlobalLatRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
+            logging.debug(f'\n\n\n!!! NonBayes SS completed.')
             # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> SS only \n\n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS cols = {dataFrame_SS.columns}' )
             # now take their average:
             TS_SS_append = dataFrame_TS.append(dataFrame_SS)
             TS_SS_append.fillna(0, inplace=True)
-            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\TS_SS_append APPEND = {TS_SS_append}')
+            logging.debug(f'\n\n?! TS_SS_append = {TS_SS_append}')
             df_BayesTS_SS = pd.DataFrame(TS_SS_append.mean(axis=0))
-            # logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+            logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
 
             # # check the average and set index:
             if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
                 df_BayesTS_SS = df_BayesTS_SS.T
-                # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
+                logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
             df_BayesTS_SS.index = dataFrame_SS.index
             df_BayesTS_SS.fillna(value=0, inplace=True)
             average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
             average_bayesian_sums_to_1 = ((round(average_bayesian_sums_to_1, 1)) == round(1.0, 1))
-            # if not average_bayesian_sums_to_1:
+            if not average_bayesian_sums_to_1:
                 # shouldn't occur but if it does, use renormalise():
-                # logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
+                logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
             dataFrame = df_BayesTS_SS
 
             # not sure if need to take the mean or add, but if frequencies, add?:
@@ -929,9 +935,22 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             slicer.util.errorDisplay('No color node is selected')
             return
 
+        logging.debug(f'\n\n\n!!!updateColors: running getSemiologiesDataFrameFromGUI...')
         semiologiesDataFrame, all_combined_gif_dfs = self.getSemiologiesDataFrameFromGUI()
         # ^semiologiesDataFrame is now a row/index of semiologies and columns of GIF regions
         # if proportions, then for each row/semiology, the GIFs are a probability/proportion
+        logging.debug(f'\n\n!updateColors: completed getSemiologiesDataFrameFromGUI.')
+        logging.debug(f'\n!updateColors: \n\tsemiologiesDataFrame \n\t{semiologiesDataFrame}')
+        logging.debug(f'\n!updateColors: \n\tall_combined_gif_dfs \n\t{all_combined_gif_dfs}')
+        # but if used Bayesian_posterior_only, then we need to use all_combined_gif_dfs instead of semiologiesDataFrame.
+        #   all_combined_gif_dfs is the global lateralised version of semiologiesDataFrame. It should be raw numbers for inverse_variance_weighting and proportions for bayesian_global_lat.
+        #   all_combined_gif_dfs has GIFs as indices and 'pt #s' as column. so reformat and use this:
+        if self.BayesRadioButton.isChecked():
+            reformat = all_combined_gif_dfs.copy()
+            reformat = reformat.T
+            reformat.index = semiologiesDataFrame.index
+            reformat.index.name = semiologiesDataFrame.index.name
+            semiologiesDataFrame = reformat
 
         if self.minmaxRadioButton.isChecked():
             method = 'minmax'
@@ -947,11 +966,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             dataFrameToCombine = normalisedDataFrame
         else:
             dataFrameToCombine = semiologiesDataFrame
+        logging.debug(f'\n\n! updateColors: \n\tdataFrameToCombine = \n\t{dataFrameToCombine}')
+        logging.debug(f'\n\n!!! updateColors: running combine_semiologies_df...')
         combinedDataFrame = combine_semiologies_df(dataFrameToCombine, method=method, normalise=normalise,
                                                     inverse_variance_method=not self.InverseVarianceEqualRadioButton.isChecked(),
                                                     from_marginals=self.InverseVarianceMarginalsRadioButton.isChecked(),
                                                     num_df=num_df)  # if not Equal and not Marginals, then must be either not proportions, or DataPosterior method.
-
+        logging.debug(f'\n\n! updateColors: completed combine_semiologies_df.')
+        logging.debug(f'\n!!!!!updateColors: \n\tthis is erroneously zero with bayesian only:\n\tcombinedDataFrame = \n{combinedDataFrame}')
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
             return
@@ -1387,7 +1409,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         indexColumn.SetName(indexName)
 
         for columnName in dataFrame.columns:
-            # logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
+            logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
             column = tableNode.AddColumn()
             column.SetName(columnName)
 

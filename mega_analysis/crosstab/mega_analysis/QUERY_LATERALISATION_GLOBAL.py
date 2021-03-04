@@ -278,7 +278,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
                                 pts_dominant_hemisphere_R_or_L=None,
                                 normalise_lat_to_loc=False):
     """
-    After obtaining the symmetric posterior-TS only estimate, this function applied global lateralisation.
+    After obtaining the symmetric posterior-TS only estimate, this function applies global lateralisation.
     This has to be done separately as the posterior-from-TS uses cached data, then we can't run QUERY_LATERALISATION_GLOBAL separately
         because it won't be able to use the bayes rule from cached results.
         i.e., the source of all_combined_gifs argument and the num_QL_lat etc are separate.
@@ -300,15 +300,14 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
     if 'pt #s' not in all_combined_gifs.columns:
         all_combined_gifs.rename(columns={0 : 'pt #s'}, inplace=True)
 
-    # -------------LOTS OF CHECKS-------------
+    # -------------A FEW CHECKS-------------
     # ensure there is patient's lateralised signs and check dominant known or not
     if not side_of_symptoms_signs and not pts_dominant_hemisphere_R_or_L:
         no_lateralising_data = True
-
     # check there is lateralising value
     if num_QL_lat > 0:
         no_lateralising_data = False
-        logging.debug(f'\n\nLateralisation based on: {num_QL_lat.sum()} datapoints')
+        logging.debug(f'\n\n(Bayesian) Global Lateralising data: {num_QL_lat.sum()} datapoints')
     else:
         # no lateralising data
         no_lateralising_data = True
@@ -316,7 +315,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
 
     # summarise lat values
     total_QL_lat = num_QL_CL + num_QL_IL + num_QL_DomH + num_QL_NonDomH
-    logging.debug(f'\n\nBayesian values carried over: Overall Contralateral= {num_QL_CL} datapoints')
+    logging.debug(f'\n\nBayesian values carried over: \nOverall Contralateral= {num_QL_CL} datapoints')
     logging.debug(f'Ipsilateral: {num_QL_IL} datapoints')
     logging.debug(f'Bilateral/Non-lateralising: {num_QL_BL} datapoints. This is not utilised.')
     logging.debug(f'Dominant Hemisphere: {num_QL_DomH} datapoints')
@@ -413,5 +412,5 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
     # fixed2.insert(0, 'Semiology Term', np.nan)
     # all_combined_gifs = fixed2
 
-
+    logging.debug(f'\n\n!!Bayesian Global lat returns: all_combined_gifs = {all_combined_gifs}')
     return all_combined_gifs

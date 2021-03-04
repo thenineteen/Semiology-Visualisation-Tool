@@ -115,7 +115,8 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
     def test_Bayesian_global_lateralisation(self):
         """
         For Bayesian Global Lateralisation, we want right-sided visual-TS-posterior estimate to not have symmetrical GIF values.
-        When this test passes, we have global lateralisation enabled for bayesian-posterior-TS-only estimate (but not yet combining with SS).
+        When this test passes, we have global lateralisation enabled for bayesian-posterior-TS-only estimate
+            [and also work when combining with SS, because posteror-from-TS is averaged (mean) with SS, and both will now be lateralised.]
         #32 RIGHT ANYGDALA
         #33 LEFT AMYGDALA
         """
