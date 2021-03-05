@@ -34,6 +34,7 @@ from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISA
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
 from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
+# from .Bayesian.Bayes_rule import renormalised_probabilities
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -418,17 +419,14 @@ def combine_semiologies_df(df: pd.DataFrame,
     """
     if method == 'proportions':
         prob_add_to_1 = df.sum().sum()
-        prob_add_to_1 = (prob_add_to_1.all() == 1)
-        if not prob_add_to_1:
-            # then this is weird, as they were normalised to 1 in get_num_datapoints_dict()
-            # not sure why this assertion fails for Bayesian SS combination advanced option:
-            logging.error(f'\n\nSSS combine_semiologies_df \n\tprobabilities don\'t add up to 1. \n\tdf.shape= {df.shape} \n\t df sums = {(df.sum().sum())}' )
-
+        prob_add_to_1 = (round(prob_add_to_1, 1) == df.shape[0])
+        # logging.debug(f'\nxxxxxxxx\n df sum axis 1 = \n{df.sum(axis=1)}')
+        renormalised = df.apply(lambda x: x/(df.sum(axis=1)))  # equivalent to = df.div(df.sum(axis=1), axis='index')
         if inverse_variance_method:
-            logging.debug(f'\n\nSSS combine_semiologies_df\n\tBUG: before inv_variance_combine_semiologies: \n\tdf = {df}')
+            # logging.debug(f'\n\nSSS combine_semiologies_df\n\ before inv_variance_combine_semiologies: \n\tdf = {df}')
             combination_technique = 'Score'#'Inv Var Weighted'
             combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)
-            logging.debug(f'\n\nSSS combine_semiologies_df\n\tBUG: zero after \n\t combine_semiologies_df > inv_variance_combine_semiologies \n\tcombined_df = \n\t{combined_df}')
+            # logging.debug(f'\n\nSSS combine_semiologies_df\n\ zero after \n\t combine_semiologies_df > inv_variance_combine_semiologies \n\tcombined_df = \n\t{combined_df}')
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
             combined_df = df.mean(axis=0)
