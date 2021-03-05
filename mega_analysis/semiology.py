@@ -423,7 +423,7 @@ def combine_semiologies_df(df: pd.DataFrame,
         if inverse_variance_method:
             # logging.debug(f'\n\nSSS combine_semiologies_df\n\ before inv_variance_combine_semiologies: \n\tdf = {df}')
             combination_technique = 'Score'#'Inv Var Weighted'
-            combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)
+            combined_df = inv_variance_combine_semiologies(renormalised, num_df, normalise=normalise, from_marginals=from_marginals)
             # logging.debug(f'\n\nSSS combine_semiologies_df\n\ zero after \n\t combine_semiologies_df > inv_variance_combine_semiologies \n\tcombined_df = \n\t{combined_df}')
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
