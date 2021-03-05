@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
 import numpy as np
+import pandas as pd
 import SimpleITK as sitk
 
 import vtk
@@ -54,6 +55,16 @@ COLORMAPS = [
     'Cyan',
     'Magenta',
 ]
+
+def rename_idx(df: pd.DataFrame, suffix: str):
+                    """
+                    rename idx of rows of semiologies and cols of GIFs when using TS-Bayesian and SS and multiple semiologies.
+                    """
+                    import copy
+                    dftemp = copy.deepcopy(df)
+                    for idx in list(df.index):
+                        dftemp.rename(index={idx: idx + suffix}, inplace=True)
+                    return dftemp
 
 
 class SemiologyVisualisation(ScriptedLoadableModule):
@@ -741,7 +752,6 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
             # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
-            import pandas as pd
         # average posterior TS est with SS data
             # first run Bayes posterior only from TS:
             logging.debug(f'\n\n\nSVT \tBayes_SS_RadioButton initialised...')
@@ -749,7 +759,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             logging.debug(f'\n\n\nSVT \tBayes only RadioButton initialised...')
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
             logging.debug(f'\n\tSVT Bayes only completed.')
-            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS cols = {dataFrame_TS.columns}' )
+            # logging.debug(f'\n\n!!! Bayes_SS_RadioButton > TS only: \n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS indx = {dataFrame_TS.index}' )
+            logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_TS = {all_combined_gif_dfs_TS}')
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
             logging.debug(f'\n\n\nSVT \tNonBayes SS query initialised...')
@@ -760,29 +771,44 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.GlobalLatRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
             logging.debug(f'\n\tSVT NonBayes SS query completed.')
-            # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> SS only \n\n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS cols = {dataFrame_SS.columns}' )
-            # now take their average:
-            TS_SS_append = dataFrame_TS.append(dataFrame_SS)
-            TS_SS_append.fillna(0, inplace=True)
-            logging.debug(f'\n\nSVT TS_SS_append = {TS_SS_append}')
-            df_BayesTS_SS = pd.DataFrame(TS_SS_append.mean(axis=0))
-            logging.debug(f'\n\nSVT \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+            # logging.debug(f'\n\n!!! Bayes_SS_RadioButton --> SS only \n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS indx = {dataFrame_SS.index}' )
+            logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_SS = {all_combined_gif_dfs_SS}')
+            # now append and rename in case there are multiple semiologies as names will be duplicated in two datasets:
+            TS_SS_appended = dataFrame_TS.append(dataFrame_SS)
+            TS_SS_appended.fillna(0, inplace=True)
+            logging.debug(f'\n\nSVT TS_SS_appended = {TS_SS_appended}')
+            # df_BayesTS_SS = pd.DataFrame(TS_SS_appended.mean(axis=0))  # leave mean for inverse variance weighting later
+            # logging.debug(f'\n\nSVT \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+            if np.any(TS_SS_appended.index.duplicated(keep=False)):
+                # then there are semio combos appended from TS and SS
+                #   https://stackoverflow.com/questions/43095955/rename-duplicated-index-values-pandas-dataframe
+                #   or rename then reappend:
+                dataFrame_TS = rename_idx(dataFrame_TS, suffix='TS')
+                dataFrame_SS = rename_idx(dataFrame_SS, 'SS')
+                TS_SS_appended = dataFrame_TS.append(dataFrame_SS)
+                dataFrame = TS_SS_appended
+                all_combined_gif_dfs_TS = rename_idx(all_combined_gif_dfs_TS.T, 'TS')
+                all_combined_gif_dfs_SS = rename_idx(all_combined_gif_dfs_SS.T, 'SS')
+                all_combined_gif_dfs = all_combined_gif_dfs_TS.append(all_combined_gif_dfs_SS)
+                all_combined_gif_dfs = all_combined_gif_dfs.T
+                logging.debug(f'YYYYYYYYYYYYY \n\tTS_SS_appended={TS_SS_appended}')
+                logging.debug(f'YYYYYYYYYYYYY \n\all_combined_gif_dfs={all_combined_gif_dfs}')
 
-            # # check the average and set index:
-            if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
-                df_BayesTS_SS = df_BayesTS_SS.T
-                # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
-            df_BayesTS_SS.index = dataFrame_SS.index
-            df_BayesTS_SS.fillna(value=0, inplace=True)
-            average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
-            average_bayesian_sums_to_1 = ((round(average_bayesian_sums_to_1, 1)) == round(1.0, 1))
-            if not average_bayesian_sums_to_1:
-                # shouldn't occur but if it does, use renormalise():
-                logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
-            dataFrame = df_BayesTS_SS
+            # # # # check the average and set index:
+            # # if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
+            # #     df_BayesTS_SS = df_BayesTS_SS.T
+            # #     # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
+            # df_BayesTS_SS.index = dataFrame_SS.index
+            # df_BayesTS_SS.fillna(value=0, inplace=True)
+            # average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
+            # average_bayesian_sums_to_1 = ((round(average_bayesian_sums_to_1, 1)) == round(1.0, 1))
+            # if not average_bayesian_sums_to_1:
+            #     # shouldn't occur at this stage but if it does, use renormalise():
+            #     logging.debug(f'\n\n!!! AVERAGE doesn\'t sum to 1 \taverage_bayesian_sums_to_1={average_bayesian_sums_to_1} \ngetSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> AVERAGE \n\n\t df_BayesTS_SS.shape= {df_BayesTS_SS.shape} \n\t df_BayesTS_SS sums = {(df_BayesTS_SS.sum().sum())} \n\t df_BayesTS_SS cols = {df_BayesTS_SS.columns}' )
+            # dataFrame = df_BayesTS_SS
 
-            # not sure if need to take the mean or add, but if frequencies, add?:
-            all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
+            # # not sure if need to take the mean or add, but if frequencies, add?:
+            # all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
             # may need to set radiobutton settings back:
         return dataFrame, all_combined_gif_dfs
 
@@ -1089,7 +1115,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.softmaxRadioButton.setEnabled(False)
             self.minmaxRadioButton.setEnabled(False)
 
-            self.InverseVarianceMarginalsRadioButton.setChecked(True)
+            # self.InverseVarianceMarginalsRadioButton.setChecked(True)
 
             self.MicroLatRadioButton.setChecked(False)
             self.GlobalLatRadioButton.setChecked(True)
