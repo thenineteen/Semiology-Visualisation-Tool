@@ -428,7 +428,10 @@ def combine_semiologies_df(df: pd.DataFrame,
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
             combined_df = df.mean(axis=0)
-            combination_technique = 'Score'#'Mean of proportions'
+            combination_technique = 'Score'  #'Mean of proportions'
+    elif method == 'softmax':
+        combined_df = df.mean(axis=0)
+        combination_technique = 'Score'
     else:
         combination_technique = 'Score'
         combined_df = df.sum()
