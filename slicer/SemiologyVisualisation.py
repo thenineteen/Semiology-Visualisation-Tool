@@ -744,34 +744,34 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             import pandas as pd
         # average posterior TS est with SS data
             # first run Bayes posterior only from TS:
-            logging.debug(f'\n\n\n!!! Bayes_SS_RadioButton initialised.')
+            logging.debug(f'\n\n\nSVT \tBayes_SS_RadioButton initialised...')
             self.BayesRadioButton.setChecked(True)
-            logging.debug(f'\n\n\n!!! Bayes only RadioButton initialised:')
+            logging.debug(f'\n\n\nSVT \tBayes only RadioButton initialised...')
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
-            logging.debug(f'\n\n\n!!! Bayes only completed.')
+            logging.debug(f'\n\tSVT Bayes only completed.')
             # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI: \n\tBayes_SS_RadioButton --> BayesRadioButton \n\n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS cols = {dataFrame_TS.columns}' )
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
-            logging.debug(f'\n\n\n!!! NonBayes SS initialised')
+            logging.debug(f'\n\n\nSVT \tNonBayes SS query initialised...')
             self.epilepsyTopologyCheckBox.setChecked(False)
             self.brainStimulationCheckBox.setChecked(False)
             self.seizureSemiologyCheckBox.setChecked(True)
             self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             self.GlobalLatRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
-            logging.debug(f'\n\n\n!!! NonBayes SS completed.')
+            logging.debug(f'\n\tSVT NonBayes SS query completed.')
             # logging.debug(f'\n\n!!! getSemiologiesDataFrameFromGUI Bayes_SS_RadioButton --> SS only \n\n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS cols = {dataFrame_SS.columns}' )
             # now take their average:
             TS_SS_append = dataFrame_TS.append(dataFrame_SS)
             TS_SS_append.fillna(0, inplace=True)
-            logging.debug(f'\n\n?! TS_SS_append = {TS_SS_append}')
+            logging.debug(f'\n\nSVT TS_SS_append = {TS_SS_append}')
             df_BayesTS_SS = pd.DataFrame(TS_SS_append.mean(axis=0))
-            logging.debug(f'\n\n?! getSemiologiesDataFrameFromGUI \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
+            logging.debug(f'\n\nSVT \n\tdf_BayesTS_SS MEAN = {df_BayesTS_SS}')
 
             # # check the average and set index:
             if df_BayesTS_SS.shape[0] > df_BayesTS_SS.shape[1]:
                 df_BayesTS_SS = df_BayesTS_SS.T
-                logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
+                # logging.debug(f'\n!! after transpose: \tdf_BayesTS_SS = {df_BayesTS_SS}')
             df_BayesTS_SS.index = dataFrame_SS.index
             df_BayesTS_SS.fillna(value=0, inplace=True)
             average_bayesian_sums_to_1 = (df_BayesTS_SS.sum().sum())
@@ -930,6 +930,16 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             combine_semiologies_df,
         )
 
+        #loggings
+        logging.debug(f'----------------------------------------------------------------')
+        logging.debug(f'\nSVT Runing Status\nBayes and SS status:   \t{self.Bayes_SS_RadioButton.isChecked()}')
+        logging.debug(f'Bayes-only status: \t{self.BayesRadioButton.isChecked()}')
+        logging.debug(f'Non-Bayes status: \t{self.NonBayesRadioButton.isChecked()}')
+        logging.debug(f'Global lateralisation status: \t{self.GlobalLatRadioButton.isChecked()}')
+        logging.debug(f'Combining Semiology Inverse Variance Using Marginals status: \t{self.InverseVarianceMarginalsRadioButton.isChecked()}')
+
+        logging.debug(f'----------------------------------------------------------------')
+
         colorNode = self.getColorNode()
         if colorNode is None:
             slicer.util.errorDisplay('No color node is selected')
@@ -942,7 +952,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         # logging.debug(f'\n\n!updateColors: completed getSemiologiesDataFrameFromGUI.')
         # logging.debug(f'\n!updateColors: \n\tsemiologiesDataFrame \n\t{semiologiesDataFrame}')
         # logging.debug(f'\n!updateColors: \n\tall_combined_gif_dfs \n\t{all_combined_gif_dfs}')
-            if self.minmaxRadioButton.isChecked():
+        if self.minmaxRadioButton.isChecked():
             method = 'minmax'
         elif self.softmaxRadioButton.isChecked():
             method = 'softmax'
