@@ -285,9 +285,9 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
 
     This is just an adapted version of QUERY_LATERALISATION_GLOBAL.
 
-    > all_combined_gifs as pd.DataFrame
+    > all_combined_gifs as pd.DataFrame THIS IS ALTERED IN PLACE AND CHANGES PROPAGATE
 
-    returns as QUERY_LATERALISATION_GLOBAL
+    returns as QUERY_LATERALISATION_GLOBAL but probailities not pt #s despite the misnomer in the col names below
     ---
     NB should factorise both functions in future.
     Alim-Marvasti March 2021
