@@ -359,9 +359,7 @@ def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proport
             if all_combined_gif_dfs.empty:
                 all_combined_gif_dfs = all_combined_gif_df
             else:
-                a_c_g_dfs_join = a_c_g_dfs_join.join(all_combined_gif_df, how='outer')
                 all_combined_gif_dfs = all_combined_gif_dfs.merge(all_combined_gif_df, how='outer', left_index=True, right_index=True)  #join or merge
-                logging.debug(f'\n\n!! a_c_g_dfs_join = {a_c_g_dfs_join}')
                 logging.debug(f'\n\n!! all_combined_gif_dfs = {all_combined_gif_dfs}')
     # logging.debug(f'\n\n SSSSS \n\tget_df_from_semiologies(): num_datapoints_dicts = \n{type(num_datapoints_dicts)}')
     # logging.debug(f'\n\n SSSSS \n\tnum_datapoints_dicts = \n{num_datapoints_dicts}')
