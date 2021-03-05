@@ -350,6 +350,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
     # the localising values should be split equally in half between the right and left GIFs
     # this is different to the default behaviour of the original QUERY_LATERALISTION, but more intuitive
     if no_lateralising_data or Right_equal_Left:
+        logging.debug('\n\nMEGA Q_L_G_B: no_lateralising_data or Right_equal_Left')
         all_combined_gifs['pt #s'] = all_combined_gifs['pt #s']/2
     # -------------END---------------------------------------------------------
 
@@ -388,6 +389,7 @@ def QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs,
         elif normalise_lat_to_loc == False:
             # default counter argument: clinically we treat lat and loc entirely separately
             RR_norm = RR
+            logging.debug(f'\n\nMEGA Q_LAT_GLOBAL\n\tRR_norm - \t{RR_norm}')
 
         # -------------Scenario 2: Unequal lateralising data: RR_norm and 1-RR_norm---------------
         df_lower_lat_to_be_reduced = all_combined_gifs.loc[all_combined_gifs.index.isin(list(isin_lower))].copy()
