@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 import yaml
 import numpy as np
 import pandas as pd
+import logging
 
 from .crosstab.file_paths import file_paths
 from .crosstab.hierarchy_class import Hierarchy
@@ -29,10 +30,11 @@ from .crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from .crosstab.mega_analysis.pivot_result_to_pixel_intensities import \
     pivot_result_to_pixel_intensities
 from .crosstab.mega_analysis.QUERY_LATERALISATION import QUERY_LATERALISATION
-from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL
+from .crosstab.mega_analysis.QUERY_LATERALISATION_GLOBAL import QUERY_LATERALISATION_GLOBAL, QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR
 from .crosstab.mega_analysis.QUERY_SEMIOLOGY import QUERY_SEMIOLOGY
 from .crosstab.NORMALISE_TO_LOCALISING_VALUES import NORMALISE_TO_LOCALISING_VALUES
 from .crosstab.lobe_top_level_hierarchy_only import drop_minor_localisations
+# from .Bayesian.Bayes_rule import renormalised_probabilities
 
 
 GIF_SHEET_NAMES = gif_sheet_names()
@@ -201,10 +203,10 @@ class Semiology:
             inspect_result = drop_minor_localisations(inspect_result)
             if self.normalise_to_localising_values:
                 inspect_result = NORMALISE_TO_LOCALISING_VALUES(inspect_result)
-        return inspect_result
+        return inspect_result, num_query_loc
 
-    def query_lateralisation(self, one_map=one_map) -> Optional[pd.DataFrame]:
-        query_semiology_result = self.query_semiology()
+    def query_lateralisation(self, one_map=one_map, Bayesian_global_lat=False) -> Optional[pd.DataFrame]:
+        query_semiology_result, num_query_loc = self.query_semiology()
         if query_semiology_result is None:
             print('No such semiology found')
             return None
@@ -230,7 +232,36 @@ class Semiology:
                         side_of_symptoms_signs=self.symptoms_side.value,
                         pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
                     )
-            elif not self.global_lateralisation:
+                # logging.debug(f'\n\nSSS query_lat():\all_combined_gifs=\n{all_combined_gifs}')
+                if Bayesian_global_lat:
+                    # need the raw lateralising numbers for posterior-TS Bayes global lateralisation but not the actual results yet:
+                    _ = all_combined_gifs  # not useful as used TS-data instead of bayesian posterior
+                    # instead of all_combined_gifs aove, use cached result and Bayes rule for symmetric result:
+                    from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
+                    num_datapoints_dict_Bayes_probabilities = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
+                    all_combined_gif_df_Bayes_probabilities = pd.DataFrame.from_dict(num_datapoints_dict_Bayes_probabilities, orient='index')
+                    # logging.debug(f'\n\n SSS \n\tall_combined_gif_df_Bayes_probabilities: \n{all_combined_gif_df_Bayes_probabilities}')
+                    all_combined_gif_df = all_combined_gif_df_Bayes_probabilities.copy()
+                    # now use: num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH
+                    #    to alter the values in all_combined_gif_df_Bayes_probabilities just as QUERY_LATERALISATION_GLOBAL does: see docstrings for get_num_datapoints_dict
+                    all_comb_gifs_probBayesLat = QUERY_LAT_GLOBAL_BAYESIANPOSTERIOR(all_combined_gifs=all_combined_gif_df_Bayes_probabilities,
+                                        num_QL_lat=num_QL_lat, num_QL_CL=num_QL_CL, num_QL_IL=num_QL_IL, num_QL_BL=num_QL_BL,
+                                        num_QL_DomH=num_QL_DomH, num_QL_NonDomH=num_QL_NonDomH,
+                                        gif_lat_file=gif_lat_file,
+                                        side_of_symptoms_signs=self.symptoms_side.value,
+                                        pts_dominant_hemisphere_R_or_L=self.dominant_hemisphere.value,
+                                        normalise_lat_to_loc=False)
+                    # logging.debug(f'\n\nSSS quer_lat() Bayes Global lat:\nall_comb_gifs_probBayesLat=\n{all_comb_gifs_probBayesLat}')
+
+                    # may need to tranpose all_comb_gifs_probBayesLat and/or alter Q_L_G_B:
+
+                    # now make all_combined_gif_df into frequencies again using patient numbers data for inverse variance uses:
+                    all_combined_gif_df = all_combined_gif_df * num_query_loc  # always normalised as localising values = patient numbers
+                    # logging.debug(f'\n\n SSS final frequencies of all_combined_gif_df : \n{all_combined_gif_df}')
+                    return all_comb_gifs_probBayesLat, all_combined_gif_df
+
+            else:
+                # not self.global_lateralisation:
                 all_combined_gifs, num_QL_lat, num_QL_CL, num_QL_IL, num_QL_BL, num_QL_DomH, num_QL_NonDomH = \
                     QUERY_LATERALISATION(
                         query_semiology_result,
@@ -252,35 +283,42 @@ class Semiology:
                         pivot_result, one_map,
                         # map_df_dict=map_df_dict,
                     )
+        # logging.debug(f'\n\n SSS NONBAYESIAN frequencies of all_combined_gifs : \n{all_combined_gifs}')
         return all_combined_gifs
+
 
     def get_num_datapoints_dict(self, method: str = 'proportions') -> Optional[dict]:
         """
-        all_combined_gif_df is the normalised or not normalised frequency counts used for i;vnerse variance weighting.
+        all_combined_gif_df is the (normalised or not normalised to patient numbers) frequency counts used for inverse variance weighting as "num_df".
+            indices are GIF parcellations.
+        num_datapoints_dict can be proportions or frequency counts: columns of predecessor from q_l were GIF parcellations. Used for visualisation.
         """
-        query_lateralisation_result = self.query_lateralisation()
-        if query_lateralisation_result is None:
-            message = f'No results generated for semiology term "{self.term}"'
-            raise ValueError(message)
-        array = np.array(query_lateralisation_result)
-        _, labels, patients = array.T
-        num_datapoints_dict = {
-            int(label): float(num_datapoints)
-            for (label, num_datapoints)
-            in zip(labels, patients)
-            if num_datapoints > 0}
-        # all_combined_gif_df = pd.DataFrame.from_dict(dict(zip(labels, patients)), orient='index')
-        all_combined_gif_df = pd.DataFrame.from_dict(num_datapoints_dict, orient='index')
         if method == 'Bayesian only':
-            from .Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
-            num_datapoints_dict = Bayes_posterior_GIF_only(self.term, normalise_to_loc=self.normalise_to_localising_values)
-            return num_datapoints_dict, all_combined_gif_df  # recalculate all_combined_gif_df here as it's incorrect placeholder
-        elif method != 'proportions':
-            return num_datapoints_dict, all_combined_gif_df
-        elif method == 'proportions':
+            # keep only lateralising info from here not the localising 'query_lateralisation_result':
+            all_comb_gifs_probBayesLat, all_combined_gif_df  = self.query_lateralisation(Bayesian_global_lat=True)
+            logging.debug(f'\n\n\nSSS \n\tall_comb_gifs_probBayesLat  =  {all_comb_gifs_probBayesLat}')
+            labels = all_comb_gifs_probBayesLat.index
+            patients = all_comb_gifs_probBayesLat['pt #s']
+            num_datapoints_dict = {int(label): float(num_datapoints) for (label, num_datapoints) in zip(labels, patients) if num_datapoints > 0}
+
+        else:
+            query_lateralisation_result = self.query_lateralisation()
+            if query_lateralisation_result is None:
+                message = f'No results generated for semiology term "{self.term}"'
+                raise ValueError(message)
+            array = np.array(query_lateralisation_result)
+            _, labels, patients = array.T
+            num_datapoints_dict = {int(label): float(num_datapoints) for (label, num_datapoints) in zip(labels, patients) if num_datapoints > 0}
+            # logging.debug(f'SSS! \nNONBAYES num_datapoints_dict = \n{num_datapoints_dict}')
+            all_combined_gif_df = pd.DataFrame.from_dict(num_datapoints_dict, orient='index')
+        if method == 'proportions':
             total = sum(list(num_datapoints_dict.values()))
             new_datatpoints = {k: v/total for (k, v) in num_datapoints_dict.items()}
             return new_datatpoints, all_combined_gif_df
+
+        else:
+            # method != 'proportions':
+            return num_datapoints_dict, all_combined_gif_df
 
 
 def get_possible_lateralities(term) -> List[Laterality]:
@@ -306,6 +344,7 @@ def combine_semiologies(semiologies: List[Semiology], normalise_method: Optional
 def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proportions') -> pd.DataFrame:
     num_datapoints_dicts = {}
     all_combined_gif_dfs = pd.DataFrame()
+    a_c_g_dfs_join = pd.DataFrame()
     for semiology in semiologies:
         num_datapoints_dict, all_combined_gif_df = semiology.get_num_datapoints_dict(method=method)
         if num_datapoints_dict is None:
@@ -320,19 +359,26 @@ def get_df_from_semiologies(semiologies: List[Semiology], method: str = 'proport
             if all_combined_gif_dfs.empty:
                 all_combined_gif_dfs = all_combined_gif_df
             else:
-                all_combined_gif_dfs = all_combined_gif_dfs.join(all_combined_gif_df, how='outer')
+                all_combined_gif_dfs = all_combined_gif_dfs.merge(all_combined_gif_df, how='outer', left_index=True, right_index=True)  #join or merge
+                logging.debug(f'\n\n!! all_combined_gif_dfs = {all_combined_gif_dfs}')
+    # logging.debug(f'\n\n SSSSS \n\tget_df_from_semiologies(): num_datapoints_dicts = \n{type(num_datapoints_dicts)}')
+    # logging.debug(f'\n\n SSSSS \n\tnum_datapoints_dicts = \n{num_datapoints_dicts}')
     df = get_df_from_dicts(num_datapoints_dicts)
+    # logging.debug(f'\n\n\n SSS get_df_from_semiologies wanted final df format: {df}')
     df.fillna(value=0, inplace=True)
     return df, all_combined_gif_dfs
 
 
 def get_df_from_dicts(semiologies_dicts: Dict[str, Dict[int, float]]) -> pd.DataFrame:
+    """ wants to return df in the format where the index name is Semiology, the indices are the semiology_term, and columns as GIFs."""
     records = []
     semiologies_dicts = copy.deepcopy(semiologies_dicts)
     for term, num_datapoints_dict in semiologies_dicts.items():
+        # logging.debug(f'\n\n SSS!!! KeyError:\nterm ={term} \nnum_datapoints_dict ={num_datapoints_dict}\nsemiologies_dicts={semiologies_dicts}\n')
         num_datapoints_dict['Semiology'] = term
         records.append(num_datapoints_dict)
     df = pd.DataFrame.from_records(records, index='Semiology')
+    # logging.debug(f'\n\n\n SSSSS !! df = {df}')
     return df
 
 
@@ -371,17 +417,14 @@ def combine_semiologies_df(df: pd.DataFrame,
     """
     if method == 'proportions':
         prob_add_to_1 = df.sum().sum()
-        prob_add_to_1 = (prob_add_to_1.all() == 1)
-        if not prob_add_to_1:
-            import logging
-            # then this is weird, as they were normalised to 1 in get_num_datapoints_dict()
-            # not sure why this assertion fails for Bayesian SS combination advanced option:
-            logging.error(f'\n\n!!!! probabilities don\'t add up to 1. \n\tdf.shape= {df.shape} \n\t df sums = {(df.sum().sum())}' )
-
-
+        prob_add_to_1 = (round(prob_add_to_1, 1) == df.shape[0])
+        # logging.debug(f'\nxxxxxxxx\n df sum axis 1 = \n{df.sum(axis=1)}')
+        renormalised = df.apply(lambda x: x/(df.sum(axis=1)))  # equivalent to = df.div(df.sum(axis=1), axis='index')
         if inverse_variance_method:
+            # logging.debug(f'\n\nSSS combine_semiologies_df\n\ before inv_variance_combine_semiologies: \n\tdf = {df}')
             combination_technique = 'Score'#'Inv Var Weighted'
-            combined_df = inv_variance_combine_semiologies(df, num_df, normalise=normalise, from_marginals=from_marginals)
+            combined_df = inv_variance_combine_semiologies(renormalised, num_df, normalise=normalise, from_marginals=from_marginals)
+            # logging.debug(f'\n\nSSS combine_semiologies_df\n\ zero after \n\t combine_semiologies_df > inv_variance_combine_semiologies \n\tcombined_df = \n\t{combined_df}')
         else:
             # Equal weights to each semiology i.e., variances between semiology observations per GIF assumed equal:
             combined_df = df.mean(axis=0)
@@ -429,6 +472,7 @@ def inv_variance_combine_semiologies(df, num_df,
         p_GIF = pd.read_csv(marginal_path, index_col=0)
         p_GIF.fillna(0, inplace=True)
         p_GIF = p_GIF.T
+        # logging.debug(f'\n\nSSS inv_variance_combine_semiologies\n\t p_GIF.T = {p_GIF}\n\n\t p_GIF.index = {p_GIF.index}')
         p_GIF['GIF'] = p_GIF.index
         p_GIF = p_GIF.astype({'GIF':int})
         p_GIF.set_index(p_GIF['GIF'], inplace=True)

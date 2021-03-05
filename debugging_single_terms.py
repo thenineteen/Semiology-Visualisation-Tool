@@ -6,6 +6,28 @@ from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.semiology import get_df_from_semiologies, combine_semiologies
 
 
+
+
+method = 'Bayesian only'
+Patient_VisualRight = Semiology(
+    'Visual',
+    symptoms_side=Laterality.RIGHT,
+    dominant_hemisphere=Laterality.NEUTRAL,
+    normalise_to_localising_values=True,
+    global_lateralisation=True,  # again not relevant as using BAyesian only - not using the df from this, but just the lateralising values
+    # include_et_topology_ez=False,  # not relevant as using Bayesian only
+    # include_cortical_stimulation=False,
+    # include_spontaneous_semiology=True,
+)
+# df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
+# # we want <:
+# assert round(all_combind_gif_dfs.loc['Visual', 32], 3) < round(all_combind_gif_dfs.loc['Visual', 33], 3)
+
+num_datapoints_dict, all_combined_gif_df = Patient_VisualRight.get_num_datapoints_dict(method=method)
+assert round(all_combined_gif_df.loc[32, 'pt #s'], 3) < round(all_combined_gif_df.loc[33, 'pt #s'], 3)
+
+
+# new query
 patient = Semiology(
     # 'Figure of 4',
     # symptoms_side=Laterality.LEFT,

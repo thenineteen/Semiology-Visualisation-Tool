@@ -7,6 +7,9 @@ from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Lo
 from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
 from pandas.testing import assert_series_equal, assert_frame_equal
 from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, renormalised_probabilities
+from mega_analysis import Semiology, Laterality
+from mega_analysis.semiology import get_df_from_semiologies, combine_semiologies
+
 
 # --------------Load----------------------------
 directory = Path(__file__).parent.parent/'resources' / 'Bayesian_resources'
@@ -79,3 +82,58 @@ class Test_BAYES(unittest.TestCase):
         # # they all add up to 1 (probabilities)
         # assert (prob_GIF_given_S_norm.sum(axis=1).sum() == prob_GIF_given_S_norm.shape[0])
 
+
+class Bayesian_Global_Lateralisation(unittest.TestCase):
+    def setUp(self):
+        print('setup')
+
+    def test_SS_control(self):
+        """
+        control: right visual global lateralisation gives left hemisphere > right hemisphere for SS-database query.
+        #32 RIGHT ANYGDALA
+        #33 LEFT AMYGDALA
+        """
+        method='proportions'
+        Patient_VisualRight = Semiology(
+            'Visual',
+            symptoms_side=Laterality.RIGHT,
+            dominant_hemisphere=Laterality.NEUTRAL,
+            normalise_to_localising_values=True,
+            global_lateralisation=True,
+            include_et_topology_ez=False,
+            include_cortical_stimulation=False,
+            include_spontaneous_semiology=True,
+        )
+        df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
+        try:
+            df_proportions.loc['Visual', 32] > 0
+        except KeyError:  # re,oved as it was zero
+            df_proportions.loc['Visual', 32] = 0
+        assert round(df_proportions.loc['Visual', 32], 3) < round(df_proportions.loc['Visual', 33], 3)
+
+
+    def test_Bayesian_global_lateralisation(self):
+        """
+        For Bayesian Global Lateralisation, we want right-sided visual-TS-posterior estimate to not have symmetrical GIF values.
+        When this test passes, we have global lateralisation enabled for bayesian-posterior-TS-only estimate
+            [and also work when combining with SS, because posteror-from-TS is averaged (mean) with SS, and both will now be lateralised.]
+        #32 RIGHT ANYGDALA
+        #33 LEFT AMYGDALA
+        """
+        method = 'Bayesian only'
+        Patient_VisualRight = Semiology(
+            'Visual',
+            symptoms_side=Laterality.RIGHT,
+            dominant_hemisphere=Laterality.LEFT,
+            normalise_to_localising_values=True,
+            global_lateralisation=True,  # again not relevant as using BAyesian only - not using the df from this, but just the lateralising values
+            # include_et_topology_ez=False,  # not relevant as using Bayesian only
+            # include_cortical_stimulation=False,
+            # include_spontaneous_semiology=True,
+        )
+        df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
+        # we want <. all_combind_gif_dfs is globally-laterlised df_proportions
+        #   but get_df_from_semiologies is a function and doesn't store the self.symptoms_side information
+        #   so use the next function down the chain:
+        num_datapoints_dict, all_combined_gif_df = Patient_VisualRight.get_num_datapoints_dict(method=method)
+        assert round(num_datapoints_dict[32], 3) < round(num_datapoints_dict[33], 3)
