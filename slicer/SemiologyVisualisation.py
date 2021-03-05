@@ -739,7 +739,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             return
         if not self.Bayes_SS_RadioButton.isChecked():
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
-            logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
+            # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
             import pandas as pd
         # average posterior TS est with SS data
@@ -935,24 +935,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             slicer.util.errorDisplay('No color node is selected')
             return
 
-        logging.debug(f'\n\n\n!!!updateColors: running getSemiologiesDataFrameFromGUI...')
+        # logging.debug(f'\n\n\n!!!updateColors: running getSemiologiesDataFrameFromGUI...')
         semiologiesDataFrame, all_combined_gif_dfs = self.getSemiologiesDataFrameFromGUI()
         # ^semiologiesDataFrame is now a row/index of semiologies and columns of GIF regions
         # if proportions, then for each row/semiology, the GIFs are a probability/proportion
-        logging.debug(f'\n\n!updateColors: completed getSemiologiesDataFrameFromGUI.')
-        logging.debug(f'\n!updateColors: \n\tsemiologiesDataFrame \n\t{semiologiesDataFrame}')
-        logging.debug(f'\n!updateColors: \n\tall_combined_gif_dfs \n\t{all_combined_gif_dfs}')
-        # but if used Bayesian_posterior_only, then we need to use all_combined_gif_dfs instead of semiologiesDataFrame.
-        #   all_combined_gif_dfs is the global lateralised version of semiologiesDataFrame. It should be raw numbers for inverse_variance_weighting and proportions for bayesian_global_lat.
-        #   all_combined_gif_dfs has GIFs as indices and 'pt #s' as column. so reformat and use this:
-        if self.BayesRadioButton.isChecked():
-            reformat = all_combined_gif_dfs.copy()
-            reformat = reformat.T
-            reformat.index = semiologiesDataFrame.index
-            reformat.index.name = semiologiesDataFrame.index.name
-            semiologiesDataFrame = reformat
-
-        if self.minmaxRadioButton.isChecked():
+        # logging.debug(f'\n\n!updateColors: completed getSemiologiesDataFrameFromGUI.')
+        # logging.debug(f'\n!updateColors: \n\tsemiologiesDataFrame \n\t{semiologiesDataFrame}')
+        # logging.debug(f'\n!updateColors: \n\tall_combined_gif_dfs \n\t{all_combined_gif_dfs}')
+            if self.minmaxRadioButton.isChecked():
             method = 'minmax'
         elif self.softmaxRadioButton.isChecked():
             method = 'softmax'
@@ -966,14 +956,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             dataFrameToCombine = normalisedDataFrame
         else:
             dataFrameToCombine = semiologiesDataFrame
-        logging.debug(f'\n\n! updateColors: \n\tdataFrameToCombine = \n\t{dataFrameToCombine}')
-        logging.debug(f'\n\n!!! updateColors: running combine_semiologies_df...')
+        # logging.debug(f'\n\n! updateColors: \n\tdataFrameToCombine = \n\t{dataFrameToCombine}')
+        # logging.debug(f'\n\n!!! updateColors: running combine_semiologies_df...')
         combinedDataFrame = combine_semiologies_df(dataFrameToCombine, method=method, normalise=normalise,
                                                     inverse_variance_method=not self.InverseVarianceEqualRadioButton.isChecked(),
                                                     from_marginals=self.InverseVarianceMarginalsRadioButton.isChecked(),
                                                     num_df=num_df)  # if not Equal and not Marginals, then must be either not proportions, or DataPosterior method.
-        logging.debug(f'\n\n! updateColors: completed combine_semiologies_df.')
-        logging.debug(f'\n!!!!!updateColors: \n\tthis is erroneously zero with bayesian only:\n\tcombinedDataFrame = \n{combinedDataFrame}')
+        # logging.debug(f'\n\n! updateColors: completed combine_semiologies_df.')
+        # logging.debug(f'\n!!!!!updateColors: \n\tthis is erroneously zero with bayesian only:\n\tcombinedDataFrame = \n{combinedDataFrame}')
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
             return
@@ -1409,7 +1399,7 @@ class SemiologyVisualisationLogic(ScriptedLoadableModuleLogic):
         indexColumn.SetName(indexName)
 
         for columnName in dataFrame.columns:
-            logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
+            # logging.debug(f'\n\n?!!? dataFrameToTable columnName = {columnName} ')
             column = tableNode.AddColumn()
             column.SetName(columnName)
 
@@ -1647,10 +1637,10 @@ class Parcellation(ABC):
         stem = self.segmentationPath.name.split('.')[0]
         try:
             node = slicer.util.getNode(stem)
-            logging.info(f'Segmentation found in scene: {stem}')
+            # logging.info(f'Segmentation found in scene: {stem}')
         except slicer.util.MRMLNodeNotFoundException:
-            logging.info(f'Segmentation not found in scene: {stem}')
-            logging.info(f'Loading from {self.segmentationPath}...')
+            # logging.info(f'Segmentation not found in scene: {stem}')
+            # logging.info(f'Loading from {self.segmentationPath}...')
             node = slicer.util.loadSegmentation(str(self.segmentationPath))
         self.segmentationNode = node
         self.segmentationNode.GetDisplayNode().SetOpacity2DFill(1)
