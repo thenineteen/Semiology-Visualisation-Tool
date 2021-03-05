@@ -124,7 +124,7 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
         Patient_VisualRight = Semiology(
             'Visual',
             symptoms_side=Laterality.RIGHT,
-            dominant_hemisphere=Laterality.NEUTRAL,
+            dominant_hemisphere=Laterality.LEFT,
             normalise_to_localising_values=True,
             global_lateralisation=True,  # again not relevant as using BAyesian only - not using the df from this, but just the lateralising values
             # include_et_topology_ez=False,  # not relevant as using Bayesian only
@@ -132,11 +132,8 @@ class Bayesian_Global_Lateralisation(unittest.TestCase):
             # include_spontaneous_semiology=True,
         )
         df_proportions, all_combind_gif_dfs = get_df_from_semiologies([Patient_VisualRight], method=method)
-        # df_proportions is the symmetric posterior from TS:
-        assert round(df_proportions.loc['Visual', 32], 3) == round(df_proportions.loc['Visual', 33], 3)
-
         # we want <. all_combind_gif_dfs is globally-laterlised df_proportions
         #   but get_df_from_semiologies is a function and doesn't store the self.symptoms_side information
         #   so use the next function down the chain:
         num_datapoints_dict, all_combined_gif_df = Patient_VisualRight.get_num_datapoints_dict(method=method)
-        assert round(all_combined_gif_df.loc[32, 'pt #s'], 3) < round(all_combined_gif_df.loc[33, 'pt #s'], 3)
+        assert round(num_datapoints_dict[32], 3) < round(num_datapoints_dict[33], 3)
