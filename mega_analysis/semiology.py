@@ -394,8 +394,10 @@ def normalise_semiologies_df(semiologies_df: pd.DataFrame, method='proportions')
         scaler.fit(data)
         normalised = scaler.transform(data).T
     elif method == 'softmax':
+        # probabilities if more than one semiology:
+        renormalised = semiologies_df.apply(lambda x: x/(semiologies_df.sum(axis=1)))
         from scipy.special import softmax
-        normalised = softmax(semiologies_df, axis=1)
+        normalised = softmax(renormalised, axis=1)
     normalised_df = pd.DataFrame(normalised, columns=semiologies_df.columns, index=semiologies_df.index)
     return normalised_df
 
@@ -430,6 +432,8 @@ def combine_semiologies_df(df: pd.DataFrame,
             combined_df = df.mean(axis=0)
             combination_technique = 'Score'  #'Mean of proportions'
     elif method == 'softmax':
+        # would have skipped normalise_semiologies_df() if there was only one semio, so get probabilities again first, then mean equal weights
+        renormalised = df.apply(lambda x: x/(df.sum(axis=1))) # probabilities
         combined_df = df.mean(axis=0)
         combination_technique = 'Score'
     else:
