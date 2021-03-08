@@ -38,7 +38,7 @@ def get_region_names():
 def clean_localisations(labels):
     if type(labels) == str:
         labels = [labels,]
-        
+
     pre_localisation = ['Anterior (temporal pole)',
              'Lateral Temporal',
              'Mesial Temporal',
@@ -86,7 +86,7 @@ def clean_localisations(labels):
     post_pl = ['Primary Sensory Cortex',
        'Medial Anterior Parietal', 'Superior Parietal',
        'Inferior Parietal']
-    
+
     look_up_dict.update(zip(pre_cing+pre_sma+pre_pl, post_cing+post_sma+post_pl))
 
     return [look_up_dict[label] for label in labels]
@@ -95,18 +95,16 @@ def clean_localisations(labels):
 def clean_semiologies(labels):
     if type(labels) == str:
         labels = [labels,]
-    pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomous-Vegetative',
-       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+    pre_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic',
+       'Olfactory', 'Somatosensory',
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
-       'Automatisms Combination - Manual LowerLimb Oral',
-       'Vocalisation: Unintelligible Noises', 'Vocalisation - Unintelligible Noises', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOA', 'All other',
-       
-       'Autonomic', 'Automatisms - Oral & Manual', 'Automatisms - Other',
-       'Dialeptic/LOA/LOC', 'Mimetic Automatisms',
-       'Ictal Speech - Formed Words',
-       
+       'Vocalisation', 'Aphasia',
+       'LOA', 'All other',
+
+       'Autonomic', 'Oral & Manual Automatisms', 'Automatisms - Other',
+       'Mimetic Automatisms',
+
        'Gustatory',
         'Auditory',
         'Visual',
@@ -133,43 +131,42 @@ def clean_semiologies(labels):
             'legend'
 
        ]
-    
-    post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic', 'Autonomic',
-       'Olfactory', 'Visual - Elementary', 'Somatosensory',
+
+    post_semiology = ['Epigastric', 'Fear-Anxiety', 'Psychic',
+       'Olfactory', 'Somatosensory',
        'Non-Specific Aura', 'Head or Body Turn', 'Head Version', 'Tonic',
        'Dystonic', 'Clonic', 'Hypermotor', 'Complex Behavioural',
-       'Automatisms','Vocalisation', 'Vocalisation', 'Aphasia',
-       'Ictal Speech: Formed Words', 'Dialeptic/LOC', 'All other',
-       
-       'Autonomic', 'Oral & Manual Automatisms', 'Other Automatisms',
-       'Dialeptic', 'Mimetic Automatisms',
-       'Ictal Speech',
-       
-       
+       'Vocalisation', 'Aphasia',
+       'LOA', 'All other',
+
+       'Autonomic', 'Oral & Manual', 'Other Automatisms',
+       'Mimetic Automatisms',
+
+
        'Gustatory',
- 'Auditory',
- 'Visual',
- 'Vestibular',
- 'Eye Movements',
- 'Asymmetric Tonic',
- 'Tonic-Clonic',
- 'Myoclonic',
- 'Atonic',
- 'Ictal Limb Paresis',
- 'Astatic',
- 'Hypomotor',
- 'Spasms',
- 'Postictal Hemiparesis or Hemiplegia',
- 'Postictal Nose-wiping',
- 'Postictal Oral or Manual Automatisms',
- 'Postictal Dysphasia',
- 'Postictal Aphasia',
- 'Postictal Cough',
- 'Postictal Aggressive',
- 'Ictal Pout',
- 'Dysphasia',
- 'No Semiology - Only Stimulation Studies',
- 'legend']
+        'Auditory',
+        'Visual',
+        'Vestibular',
+        'Eye Movements',
+        'Asymmetric Tonic',
+        'Tonic-Clonic',
+        'Myoclonic',
+        'Atonic',
+        'Ictal Limb Paresis',
+        'Astatic',
+        'Hypomotor',
+        'Spasms',
+        'Postictal Hemiparesis or Hemiplegia',
+        'Postictal Nose-wiping',
+        'Postictal Oral or Manual Automatisms',
+        'Postictal Dysphasia',
+        'Postictal Aphasia',
+        'Postictal Cough',
+        'Postictal Aggressive',
+        'Ictal Pout',
+        'Dysphasia',
+        'No Semiology - Only Stimulation Studies',
+        'legend']
 
     look_up_dict = dict(zip(pre_semiology, post_semiology))
 
