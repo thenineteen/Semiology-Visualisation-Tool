@@ -225,20 +225,20 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
                 counts['top_level'] = counts['top_level'].drop('All other', 1)
                 counts['split'] = counts['split'].drop('All other', 1)
                 counts['both'] = counts['both'].drop('All other', 1)
-    
+
         if semiologies_of_interest:
             for key in counts.keys():
                 counts[key] = merge_all_other_semiologies(
                     counts[key], semiologies_of_interest)
                 if drop_other_semiology:
-                    counts[key] = counts[key].drop('All other') 
-    
-    
+                    counts[key] = counts[key].drop('All other')
+
+
     if normalise:
         counts_of_use = normalised_counts
     else:
         counts_of_use = raw_counts
-    
+
     proportions = {
         'top_level': calculate_proportions(counts_of_use['top_level'], axis),
         'split': calculate_proportions(counts_of_use['split'], axis)
@@ -249,7 +249,7 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
         'split': calculate_confint(counts_of_use['split'], axis=axis, method=confint_method, alpha=0.05, n_samples=bootstrapping_samples)
     }
 
-    
+
     if temporal_status == 'both':
         proportion_both = pd.concat([proportions['top_level']['TL'], proportions['split']], 1)
         confint_both = [None, None]
@@ -264,20 +264,20 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
         'proportion': proportion_both,
         'confints': confint_both
         }
-    
+
     elif temporal_status == 'split' or temporal_status == 'top_level':
-        
+
         processed_dfs = {
         'counts': normalised_counts[temporal_status],
         'raw_counts': raw_counts[temporal_status],
-        'proportion': confints[temporal_status],
+        'proportion': proportions[temporal_status],
         'confints': confints[temporal_status]
         }
     if order_of_regions is not None:
         processed_dfs = order_regions(processed_dfs, order_of_regions)
-    
+
     return processed_dfs
-        
+
 
     #     'proportion': proportion_df,
     #     'confints': confint_dfs,
@@ -291,8 +291,8 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
     #     'temporal_only': ,
     #     'both': ,
     # }
-    
-    
+
+
     # if normalise:
     #     # normalise top level according to localising values
     #     localising = get_counts(query_results, ['Localising'])
@@ -319,7 +319,7 @@ def summarise_query(query_results, axis, region_names, normalise=True, temporal_
     #             region_names['low_level_temporal_of_interest']
     #     elif temporal_status == 'temporal_only':
     #         regions_of_interest = region_names['low_level_temporal_of_interest']
-        
+
     #     counts_df = merge_all_other_zones(counts_df, regions_of_interest)
     #     if temporal_status == 'both':
     #         regions_of_interest += ['TL']
