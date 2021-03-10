@@ -760,8 +760,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             semiologies = self.getSemiologiesListFromGUI()
             logging.debug(f'\n\n\nSVT \tBayes only RadioButton initialised...')
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
+            if self.proportionsRadioButton:
+                sum = dataFrame_TS.sum(axis=1)
+                dataFrame_TS = dataFrame_TS.apply(lambda x: x/sum)
             logging.debug(f'\n\tSVT Bayes only completed.')
-            # logging.debug(f'\n\n!!! Bayes_SS_RadioButton > TS only: \n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS indx = {dataFrame_TS.index}' )
+            logging.debug(f'\n\n!!! Bayes_SS_RadioButton > TS only: \n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS indx = {dataFrame_TS.index}' )
             # logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_TS = {all_combined_gif_dfs_TS}')
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
@@ -773,6 +776,9 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.GlobalLatRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             semiologies = self.getSemiologiesListFromGUI()
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
+            if self.proportionsRadioButton:
+                sum = dataFrame_SS.sum(axis=1)
+                dataFrame_SS = dataFrame_SS.apply(lambda x: x/sum)
             logging.debug(f'\n\tSVT NonBayes SS query completed.')
             # logging.debug(f'\n\n!!! Bayes_SS_RadioButton --> SS only \n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS indx = {dataFrame_SS.index}' )
             logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_SS = {all_combined_gif_dfs_SS}')
