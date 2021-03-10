@@ -744,11 +744,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             semiologies.append(semiology)
         return semiologies
 
+
     def getSemiologiesDataFrameFromGUI(self):
-        semiologies = self.getSemiologiesListFromGUI()
-        if semiologies is None:  # No semiologies selected
-            return
         if not self.Bayes_SS_RadioButton.isChecked():
+            semiologies = self.getSemiologiesListFromGUI()
+            if semiologies is None:  # No semiologies selected
+                return
             dataFrame, all_combined_gif_dfs = self.getScoresFromCache(semiologies)
             # logging.debug(f'! getSemiologiesDataFrameFromGUI \n\n\n dataFrame.shape= {dataFrame.shape} \n dataFrame sum = {(dataFrame.sum().sum())}' )
         else:
@@ -756,11 +757,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             # first run Bayes posterior only from TS:
             logging.debug(f'\n\n\nSVT \tBayes_SS_RadioButton initialised...')
             self.BayesRadioButton.setChecked(True)
+            semiologies = self.getSemiologiesListFromGUI()
             logging.debug(f'\n\n\nSVT \tBayes only RadioButton initialised...')
             dataFrame_TS, all_combined_gif_dfs_TS = self.getScoresFromCache(semiologies)
             logging.debug(f'\n\tSVT Bayes only completed.')
             # logging.debug(f'\n\n!!! Bayes_SS_RadioButton > TS only: \n\t dataFrame_TS.shape= {dataFrame_TS.shape} \n\t dataFrame_TS sum = {(dataFrame_TS.sum().sum())} \n\t dataFrame_TS indx = {dataFrame_TS.index}' )
-            logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_TS = {all_combined_gif_dfs_TS}')
+            # logging.debug(f'\n\nYYYYYYYYYYYYYYYYYYY all_combined_gif_dfs_TS = {all_combined_gif_dfs_TS}')
             # now run SS only:
             self.NonBayesRadioButton.setChecked(True)
             logging.debug(f'\n\n\nSVT \tNonBayes SS query initialised...')
@@ -769,6 +771,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.seizureSemiologyCheckBox.setChecked(True)
             self.proportionsRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
             self.GlobalLatRadioButton.setChecked(True)  # should already have been done by onBayesianRadioButton
+            semiologies = self.getSemiologiesListFromGUI()
             dataFrame_SS, all_combined_gif_dfs_SS = self.getScoresFromCache(semiologies)
             logging.debug(f'\n\tSVT NonBayes SS query completed.')
             # logging.debug(f'\n\n!!! Bayes_SS_RadioButton --> SS only \n\t dataFrame_SS.shape= {dataFrame_SS.shape} \n\t dataFrame_SS sums = {(dataFrame_SS.sum().sum())} \n\t dataFrame_SS indx = {dataFrame_SS.index}' )
@@ -811,6 +814,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             # all_combined_gif_dfs = all_combined_gif_dfs_TS.add(all_combined_gif_dfs_SS, fill_value=0)
             # may need to set radiobutton settings back:
         return dataFrame, all_combined_gif_dfs
+
 
     def getScoresFromCache(self, semiologies):
         from mega_analysis.semiology import get_df_from_semiologies
@@ -943,12 +947,14 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     def onAutoUpdateCheckBox(self):
         self.updateButton.setDisabled(self.autoUpdateCheckBox.isChecked())
 
+
     # def updateColorsWithProfile(self):
     #     p = cProfile.Profile()
     #     p.runcall(self.updateColors)
     #     p.dump_stats(
     #         'C:\\Users\\ali_m\\AnacondaProjects\\PhD\\Semiology-Visualisation-Tool\\svt.profile')
     #     logging.debug('Wrote profile file')
+
 
     def updateColors(self):
         from mega_analysis.semiology import (
@@ -998,8 +1004,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
                                                     inverse_variance_method=not self.InverseVarianceEqualRadioButton.isChecked(),
                                                     from_marginals=self.InverseVarianceMarginalsRadioButton.isChecked(),
                                                     num_df=num_df)  # if not Equal and not Marginals, then must be either not proportions, or DataPosterior method.
-        # logging.debug(f'\n\n! updateColors: completed combine_semiologies_df.')
-        # logging.debug(f'\n!!!!!updateColors: \n\tthis is erroneously zero with bayesian only:\n\tcombinedDataFrame = \n{combinedDataFrame}')
+        logging.debug(f'\n\n! updateColors: completed combine_semiologies_df.')
+        logging.debug(f'\n!!!!!updateColors: \n\tthis was previously erroneously zero with bayesian only:\n\tcombinedDataFrame = \n{combinedDataFrame}')
         if self.logic.dataFrameIsEmpty(combinedDataFrame):
             slicer.util.errorDisplay('The combined results are empty')
             return
@@ -1048,6 +1054,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         # self.settingsCollapsibleButton.setChecked(False)
         self.tableCollapsibleButton.setChecked(True)
+
 
     def onColorBlindCheckBox(self):
         self.colorSelector.setDisabled(self.colorBlindCheckbox.isChecked())
