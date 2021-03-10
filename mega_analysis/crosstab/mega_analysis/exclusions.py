@@ -120,7 +120,7 @@ def exclusions(df,
 
 def exclude_ET(df):
     """
-    Exclude ALL epilepsy topology cases EVEN if there are other selection priors.
+    Exclude ALL epilepsy topology cases EVEN if there are other selection priors (as part of TS filter).
     e.g. some articles may pre-select patients with TLE then also look at ictal cough.
     This exclusion, removes this data even though it was both ET and SS.
     (on the fly as the data grows, rather than using the pickled resources)
@@ -132,25 +132,28 @@ def exclude_ET(df):
 
 def exclude_spontaneous_semiology(df):
     """
-    Exclude cases ALL spontaneous semiology cases.
+    Exclude cases spontaneous semiology cases if this is the only publication approach.
     """
     SS = 'Spontaneous Semiology (SS)'
-    df_exclusions_SS = df.loc[~df[SS].notnull(), :]
+    ET = 'Epilepsy Topology (ET)'
+    CES = 'Cortical Stimulation (CS)'
+    subset = [SS, ET, CES]
+    df_exclusions_SS = df.copy()
+    mask_SS_True = df_exclusions_SS[SS].notnull()
+    df_exclusions_SS.loc[mask_SS_True, SS] = np.nan
+    df_exclusions_SS = df_exclusions_SS.dropna(subset=subset, thresh=1, axis=0, inplace=False)
     return df_exclusions_SS
 
 
 def exclude_cortical_stimulation(df):
     """
-    Exclude electrical stimulation cases when this is the only ground truth.
-    will need a test to ensure all SEEG_ES = 'ES' have CES.notnull() in the data.
-    if they don't, then needs a manual check. See tests.
+    Exclude all cortical electrical stimulation publication approaches (as part of TS filter)
     """
     # df_excl = df.copy()
     # mask_string = df_excl[SEEG_ES].str.contains('ES', case=False, na=False)
     # df_excl.loc[mask_string, SEEG_ES] = np.nan
     # subset = [POST_OP, CONCORDANT, SEEG_ES]
-    # df_exclusions_CES = df_excl.dropna(
-    #     subset=subset, thresh=1, axis=0, inplace=False)
+    # df_exclusions_CES = df_excl.dropna(subset=subset, thresh=1, axis=0, inplace=False)
     # return df_exclusions_CES
     # second part for test later
     CES = 'Cortical Stimulation (CS)'
