@@ -154,6 +154,8 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
         semiologiesGroupBox = qt.QGroupBox('Semiologies')
         semiologiesGroupBox.setLayout(self.getSemiologiesLayout())
         patientQueryLayout.addWidget(semiologiesGroupBox)
+
+        # dominantHemisphereLayout = qt.QHBoxLayout()
         patientQueryLayout.addLayout(self.getDominantHemisphereLayout())
 
         patientQueryLayout.addStretch()
@@ -1128,7 +1130,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
     def onBayesianRadioButton(self, source):
         if not self.NonBayesRadioButton.isChecked():
             self.proportionsRadioButton.setChecked(True)
-            self.proportionsRadioButton.setEnabled(False)
+            self.proportionsRadioButton.setEnabled(True)
             self.softmaxRadioButton.setEnabled(False)
             self.minmaxRadioButton.setEnabled(False)
 
@@ -1137,7 +1139,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.MicroLatRadioButton.setChecked(False)
             self.GlobalLatRadioButton.setChecked(True)
             self.MicroLatRadioButton.setEnabled(False)
-            self.GlobalLatRadioButton.setEnabled(False)
+            self.GlobalLatRadioButton.setEnabled(True)
 
             self.postSurgicalSzFreedomCheckBox.setEnabled(False)
             self.invasiveEegCheckBox.setEnabled(False)
@@ -1161,16 +1163,16 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             self.paediatricCheckBox.setEnabled(False)
 
             self.granularCheckBox.setChecked(True)
-            self.granularCheckBox.setEnabled(False)
+            self.granularCheckBox.setEnabled(True)
             # self.NormaliseToLocalisingCheckBox.setChecked(True)
             # self.NormaliseToLocalisingCheckBox.setEnabled(False)
             self.TopLevelLobesCheckBox.setChecked(False)
             self.TopLevelLobesCheckBox.setEnabled(False)
 
-            self.unknownDominantRadioButton.setChecked(True)
-            self.unknownDominantRadioButton.setEnabled(False)
-            self.leftDominantRadioButton.setEnabled(False)
-            self.rightDominantRadioButton.setEnabled(False)
+            # self.unknownDominantRadioButton.setChecked(True)
+            self.unknownDominantRadioButton.setEnabled(True)
+            self.leftDominantRadioButton.setEnabled(True)
+            self.rightDominantRadioButton.setEnabled(True)
 
         elif self.NonBayesRadioButton.isChecked():
             self.proportionsRadioButton.setChecked(True)
