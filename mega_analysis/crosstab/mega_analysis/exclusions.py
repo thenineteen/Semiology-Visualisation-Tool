@@ -132,16 +132,10 @@ def exclude_ET(df):
 
 def exclude_spontaneous_semiology(df):
     """
-    Exclude cases spontaneous semiology cases if this is the only publication approach.
+    Exclude cases ALL spontaneous semiology cases.
     """
     SS = 'Spontaneous Semiology (SS)'
-    ET = 'Epilepsy Topology (ET)'
-    CES = 'Cortical Stimulation (CS)'
-    subset = [SS, ET, CES]
-    df_exclusions_SS = df.copy()
-    mask_SS_True = df_exclusions_SS[SS].notnull()
-    df_exclusions_SS.loc[mask_SS_True, SS] = np.nan
-    df_exclusions_SS = df_exclusions_SS.dropna(subset=subset, thresh=1, axis=0, inplace=False)
+    df_exclusions_SS = df.loc[~df[SS].notnull(), :]
     return df_exclusions_SS
 
 
