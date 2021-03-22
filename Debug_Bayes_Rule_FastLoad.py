@@ -12,6 +12,30 @@ from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
 
 
+
+# curate the prior marginals for the GIFs, wit hierarchy reversal, just from TS:
+p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
+                                    include_paeds_and_adults=True,
+                                    include_only_postictals=False,
+                                    symptom_laterality='NEUTRAL',
+                                    dominance='NEUTRAL',
+                                    hierarchy_reversal=True,  # new 22nd March
+                                    include_spontaneous_semiology=False,  # TS only new
+                                    )
+dir = Path(__file__).parent/'resources' / 'Bayesian_resources' / 'SemioMarginals_fromSS_GIFmarginals_from_TS'
+p_GIF_norm.to_csv(dir / 'p_GIF_norm_TS_granular.csv')
+p_GIF_notnorm.to_csv(dir / 'p_GIF_notnorm_TS_granular.csv')
+print('Curated the neutral hierarchy reversed (granular) prior GIFs')
+
+
+
+
+
+
+
+
+
+
 # to debug and test SVT GIF - Posterior_only_cache.Bayes_posterior_GIF_only:
 num_datapoints_dict = Bayes_posterior_GIF_only('Epigastric', True)
 
