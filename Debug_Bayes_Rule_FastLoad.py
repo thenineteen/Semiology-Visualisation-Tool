@@ -6,30 +6,40 @@ from collections import Counter
 from mega_analysis.crosstab.file_paths import file_paths
 from mega_analysis.crosstab.mega_analysis.MEGA_ANALYSIS import MEGA_ANALYSIS
 from mega_analysis.Bayesian.Bayesian_marginals import p_GIFs, p_Semiology_and_Localisation
-from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, Bayes_All, renormalised_probabilities
+from mega_analysis.Bayesian.Bayes_rule import Bayes_rule, Bayes_All, renormalised_probabilities, wrapper_TS_GIFs
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.Bayesian.Posterior_only_cache import Bayes_posterior_GIF_only
 
 
 
-# curate the prior marginals for the GIFs, wit hierarchy reversal, just from TS:
-p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
-                                    include_paeds_and_adults=True,
-                                    include_only_postictals=False,
-                                    symptom_laterality='NEUTRAL',
-                                    dominance='NEUTRAL',
-                                    hierarchy_reversal=True,  # new 22nd March
-                                    include_spontaneous_semiology=False,  # TS only new
-                                    )
-dir = Path(__file__).parent/'resources' / 'Bayesian_resources' / 'SemioMarginals_fromSS_GIFmarginals_from_TS'
-p_GIF_norm.to_csv(dir / 'p_GIF_norm_TS_granular.csv')
-p_GIF_notnorm.to_csv(dir / 'p_GIF_notnorm_TS_granular.csv')
-print('Curated the neutral hierarchy reversed (granular) prior GIFs')
+
+# # curate the prior marginals for the GIFs, wit hierarchy reversal, just from TS:
+# p_GIF_norm, p_GIF_notnorm = p_GIFs(global_lateralisation=False,
+#                                     include_paeds_and_adults=True,
+#                                     include_only_postictals=False,
+#                                     symptom_laterality='NEUTRAL',
+#                                     dominance='NEUTRAL',
+#                                     hierarchy_reversal=True,  # new 22nd March
+#                                     include_spontaneous_semiology=False,  # TS only new
+#                                     )
+# dir = Path(__file__).parent/'resources' / 'Bayesian_resources' / 'SemioMarginals_fromSS_GIFmarginals_from_TS'
+# p_GIF_norm.to_csv(dir / 'p_GIF_norm_TS_granular.csv')
+# p_GIF_notnorm.to_csv(dir / 'p_GIF_notnorm_TS_granular.csv')
+# print('Curated the neutral hierarchy reversed (granular) prior GIFs')
 
 
-
-
+# curate the p_S_given_GIF using TS, hierarchy reversal
+directory = Path(__file__).parent/'resources' / 'Bayesian_resources'
+marginal_folder = 'SemioMarginals_fromSS_GIFmarginals_from_TS'
+p_S_norm = pd.read_csv(directory / marginal_folder / 'p_S_norm_SS.csv', index_col=0)
+p_S_notnorm = pd.read_csv(directory / marginal_folder / 'p_S_notnorm_SS.csv', index_col=0)
+prob_S_given_GIFs_norm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=True)
+prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(p_S_notnorm, normalise_to_localising_values=False)
+dir = dir / marginal_folder
+prob_S_given_GIFs_norm.to_csv(dir / 'prob_S_given_GIFs_norm_TS_granular.csv')
+prob_S_given_GIFs_notnorm.to_csv(dir / 'prob_S_given_GIFs_notnorm_TS_granular.csv')
+print('Curated prob S given GIF from TS')
 
 
 
