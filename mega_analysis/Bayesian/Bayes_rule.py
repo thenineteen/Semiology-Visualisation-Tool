@@ -9,7 +9,6 @@ from collections import Counter
 from mega_analysis.crosstab.lobe_top_level_hierarchy_only import top_level_lobes
 from mega_analysis.crosstab.mega_analysis.melt_then_pivot_query import melt_then_pivot_query
 
-
 Lobes = top_level_lobes(Bayesian=True)
 
 def Bayes_rule(prob_S_given_L, p_Semio, p_Loc):
@@ -58,12 +57,13 @@ def renormalised_probabilities(df):
 
 
 def wrapper_TS_GIFs(p_S_norm,
-        global_lateralisation=False,
-        include_paeds_and_adults=True,
-        include_only_postictals=False,
+        global_lateralisation:bool=False,
+        include_paeds_and_adults:bool=True,
+        include_only_postictals:bool=False,
         symptom_laterality='NEUTRAL',
         dominance='NEUTRAL',
         normalise_to_localising_values=True,
+        hierarchy_reversal:bool=True,
         ):
     """
     Get all Gifs for all semiologies from Toplogical (include_spontaneous_semiology=False) studies, add their dict values and use this as the denominator to return p_S_given_GIF.
@@ -89,6 +89,7 @@ def wrapper_TS_GIFs(p_S_norm,
                                     global_lateralisation=global_lateralisation,
                                 )
         pt[semiology].include_only_postictals = include_only_postictals
+        pt[semiology].granular = hierarchy_reversal
         all_combined_gifs_superdict[semiology], all_combined_gif_df = pt[semiology].get_num_datapoints_dict(method='not proportions')  # method=anything but default proportions
 
     # now add the dictionaries: this seems to repeat what marginal_GIF_probabilities does - can make more efficient
@@ -150,16 +151,16 @@ def Bayes_All():
 
     # get likelihoods from Topological data: takes >5mins per each call to summary_semio_loc_df_from_scripts
     prob_S_given_GIFs_norm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=True)
-    prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(p_S_norm, normalise_to_localising_values=False)
+    prob_S_given_GIFs_notnorm = wrapper_TS_GIFs(p_S_notnorm, normalise_to_localising_values=False)
 
     query_results_norm = summary_semio_loc_df_from_scripts(normalise=True)
     query_results_notnorm = summary_semio_loc_df_from_scripts(normalise=False)
     topology_results_norm = query_results_norm['topology']
     topology_results_notnorm = query_results_notnorm['topology']
     pivot_result_norm = multiple_melt_pivots(topology_results_norm, p_S_norm)
-    pivot_result_notnorm = multiple_melt_pivots(topology_results_notnorm, p_S_norm)
+    pivot_result_notnorm = multiple_melt_pivots(topology_results_notnorm, p_S_notnorm)
     prob_S_given_TopLevelLobes_norm = wrapper_generative_from_TS(pivot_result_norm, p_S_norm)
-    prob_S_given_TopLevelLobes_notnorm = wrapper_generative_from_TS(pivot_result_notnorm, p_S_norm)
+    prob_S_given_TopLevelLobes_notnorm = wrapper_generative_from_TS(pivot_result_notnorm, p_S_notnorm)
 
     # GIFS
     prob_GIF_given_S_norm = Bayes_rule(prob_S_given_GIFs_norm, p_S_norm, p_GIF_norm)
