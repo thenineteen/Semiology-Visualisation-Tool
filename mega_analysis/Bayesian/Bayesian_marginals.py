@@ -315,6 +315,8 @@ def p_GIFs(global_lateralisation=False,
            include_only_postictals=False,
            symptom_laterality='NEUTRAL',
            dominance='NEUTRAL',
+           hierarchy_reversal: bool =True,
+           include_spontaneous_semiology: bool=False,  # TS only
            ):
     """
     Return the normalised/unnormalised marginal probabilities for each GIF parcellation.
@@ -334,6 +336,7 @@ def p_GIFs(global_lateralisation=False,
                                             include_paeds_and_adults=include_paeds_and_adults,
                                             normalise_to_localising_values=True,
                                             global_lateralisation=global_lateralisation,
+                                            include_spontaneous_semiology=include_spontaneous_semiology,
                                         )
 
     if symptom_laterality == 'left':
@@ -342,6 +345,7 @@ def p_GIFs(global_lateralisation=False,
         patient_all_semiology_norm.dominant_hemisphere = Laterality.LEFT
 
     patient_all_semiology_norm.include_only_postictals = include_only_postictals
+    patient_all_semiology_norm.granular = hierarchy_reversal
     all_combined_gifs_norm, _  = patient_all_semiology_norm.get_num_datapoints_dict()
     p_GIF_norm = marginal_GIF_probabilities(all_combined_gifs_norm)
 
@@ -362,6 +366,7 @@ def p_GIFs(global_lateralisation=False,
         patient_all_semiology_notnorm.dominant_hemisphere = Laterality.LEFT
 
     patient_all_semiology_notnorm.include_only_postictals = include_only_postictals
+    patient_all_semiology_notnorm.granular = hierarchy_reversal
     all_combined_gifs_notnorm, _ = patient_all_semiology_notnorm.get_num_datapoints_dict()
     p_GIF_notnorm = marginal_GIF_probabilities(all_combined_gifs_notnorm)
 
