@@ -16,13 +16,10 @@ list_of_terms2 = list(open(file2, 'r'))
 list_of_terms3 = list(open(file3, 'r'))
 semiologies = list_of_terms + list_of_terms2 + list_of_terms3
 
-
- # initialise
+# initialise
 num_datapoints_dict = {}
-p_GIF_given_S = pd.DataFrame()
 
-
-for term in tqdm(semiologies, desc='Semiologies', bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.RED, Fore.RESET)):
+for term in tqdm(['Epigastric'], desc='Semiologies', bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.RED, Fore.RESET)):
     if term.strip() in ["No Semiology - Only Stimulation Studies", "Hypomotor"]:
         continue
     patient = Semiology(
@@ -42,8 +39,11 @@ for term in tqdm(semiologies, desc='Semiologies', bar_format="{l_bar}%s{bar}%s{r
 
 
 # set the zero ones:
-num_datapoints_dict['Hypomotor'] = num_datapoints_dict['Epigastric']
+num_datapoints_dict['Hypomotor'] = num_datapoints_dict['Epigastric'].copy()
 for k, v in num_datapoints_dict['Hypomotor'].items():
     num_datapoints_dict['Hypomotor'][k] = 0
+
+ali = pd.DataFrame.from_dict(num_datapoints_dict, orient='index')
+ali.to_csv(folder_filename.csv)
 print('done')
 
