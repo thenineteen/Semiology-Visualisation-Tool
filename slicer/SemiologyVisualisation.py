@@ -1018,7 +1018,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             slicer.util.errorDisplay('The combined results are empty')
             return
 
-        if self.proportionsRadioButton:
+        if self.proportionsRadioButton.isChecked():
             sum = combinedDataFrame.sum(axis=1)
             combinedDataFrame = combinedDataFrame.apply(lambda x: x/sum)
 
