@@ -1000,7 +1000,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
             method = 'proportions'
         num_df = all_combined_gif_dfs
 
-        normalise = len(semiologiesDataFrame) > 1  # i.e. number of rows/semiologies > 1
+        normalise = len(semiologiesDataFrame) > 1  # i.e. number of rows/semiologies > 1 doesn't MinMaxScale single semios
         if normalise:
             normalisedDataFrame = normalise_semiologies_df(semiologiesDataFrame, method=method)
             dataFrameToCombine = normalisedDataFrame
