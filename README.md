@@ -1,13 +1,17 @@
 <p align="center">
   <img src="images/SVT%20branding%20purple%20medium%202.png">
 </p>
+<p align="center"> v 1.8.1 </p> 
+
+<h1 align="center"> Seizure Semiology-to-Brain Visualisation Tool (SVT) </h1>
 
 
-# Epilepsy Seizure Semiology-to-Brain Visualisation Tool (SVT) - v 1.8.1
-## Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 309 included original journal papers
-### 11230 localising and 2391 lateralising datapoints
+  
+<h2 align="center"> Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 309 included original journal papers
+<h3 align="center"> 11230 localising and 2391 lateralising datapoints
 
-For research purposes only. Not for clinical use.
+<p align="center"> For research purposes only. Not for clinical use (yet). </p> 
+
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)  [![Coverage Status](https://coveralls.io/repos/github/thenineteen/Semiology-Visualisation-Tool/badge.svg?branch=master)](https://coveralls.io/github/thenineteen/Semiology-Visualisation-Tool?branch=master)
 
