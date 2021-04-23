@@ -30,7 +30,8 @@ Figure 1: SVT Resolution
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%202.png">
-<br><\br>Figure 2: Bayesian inference corrects visual aura localisation from topological studies. For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki) 
+<br>
+Figure 2: Bayesian inference corrects visual aura localisation from topological studies. For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki) 
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%203.png">
