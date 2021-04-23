@@ -11,8 +11,10 @@
   <br> 11230 localising and 2391 lateralising datapoints
   <br> 4,643 patients' data from 309 included original journal articles
 <\h2>
+  <\h2>
+    <\h2>
   
-For research purposes only. Not for clinical use (yet).
+<p align="center"> For research purposes only. Not for clinical use (yet). <\p>
 
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)  [![Coverage Status](https://coveralls.io/repos/github/thenineteen/Semiology-Visualisation-Tool/badge.svg?branch=master)](https://coveralls.io/github/thenineteen/Semiology-Visualisation-Tool?branch=master)
