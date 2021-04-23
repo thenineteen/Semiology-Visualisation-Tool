@@ -27,6 +27,10 @@ Below: Sankey Diagram overview of Semio2Brain Database, Filters, SemioDict, and 
 
 
 
+[See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
+
+
+
 ## Installation Guide
 1. Clone (or [download](https://github.com/thenineteen/Semiology-Visualisation-Tool/archive/master.zip) and extract) this repository
 2. Download a [**Preview Release** of 3D Slicer](https://download.slicer.org/) (not the Stable version)
