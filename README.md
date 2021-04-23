@@ -7,9 +7,9 @@
 
 
   
-<h2 align="center"> Seizure Semiology lateralisation and localisation values 
+<h2 align="center"> Seizure Semiology lateralisation and localisation values
 <br> 11230 localising and 2391 lateralising datapoints
-<br> 4,643 patients' data from 309 included original journal articles
+<br> 4,643 patients' data from 309 included original journal articles <\h2>
 
 <p align="center"> For research purposes only. Not for clinical use (yet). </p>
 
@@ -20,7 +20,7 @@
 
 
 
-<h3> SVT has low and high-resolution visualisations, using Bayesian inference to mitigate publication bias and can combine semiologies and data-subsets using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology as demonstrated below:
+<h3> SVT has low and high-resolution visualisations, using Bayesian inference to mitigate publication bias and can combine semiologies and data-subsets using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology as demonstrated below: <\h3>
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
