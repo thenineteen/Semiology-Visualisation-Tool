@@ -28,6 +28,10 @@
 
 
 
+
+<img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
+
+
 ## Installation Guide
 1. Clone (or [download](https://github.com/thenineteen/Semiology-Visualisation-Tool/archive/master.zip) and extract) this repository
 2. Download a [**Preview Release** of 3D Slicer](https://download.slicer.org/) (not the Stable version)
