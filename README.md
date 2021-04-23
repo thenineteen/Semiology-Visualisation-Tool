@@ -26,13 +26,13 @@ SVT has low and high-resolution visualisations, using Bayesian inference to miti
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
 Figure 1: SVT Resolution
-<br>
-<br>
+
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%202.png">
 <br>
-Figure 2: Bayesian inference corrects visual aura localisation from topological studies. For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki) 
+Figure 2: Bayesian inference corrects visual aura localisation from topological studies. 
+For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki) 
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%203.png">
