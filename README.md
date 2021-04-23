@@ -23,7 +23,7 @@
 
 
 
-[See our Wiki page for more details, including on the software and on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
+[See our Wiki page for more software details, including on semiological categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 
 
 
