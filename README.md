@@ -15,19 +15,15 @@
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)  [![Coverage Status](https://coveralls.io/repos/github/thenineteen/Semiology-Visualisation-Tool/badge.svg?branch=master)](https://coveralls.io/github/thenineteen/Semiology-Visualisation-Tool?branch=master)
 
-![3D Slicer module screenshot](images/all_automatisms.png)
-Above Figure from beta-version:
-849 Patients with automatisms have an epileptogenic zone localising mostly to the mesial temporal lobe.
-124 of these lateralise, mainly ipsilaterally.
-
-
-Below: Sankey Diagram overview of Semio2Brain Database, Filters, SemioDict, and broad localisation mapppings. SVT uses finer GIF localisation parcellations. 
-![Sankey Marvasti Modarres Diagram](images/Sankey/Beautified%206%20layer%20colour%20coded%20lumped%20semiology%20and%20TL%20subregions.png)
 
 
 
 
-[See our Wiki page for more details on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
+
+
+
+
+[See our Wiki page for more details, including on the software and on the semiology categories and their semantic synonyms.](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki)
 
 
 
