@@ -7,8 +7,9 @@
 
 
   
-<h2 align="center"> Seizure Semiology lateralisation and localisation information from 4,643 patients' data from 309 included original journal papers
+<h2 align="center"> Seizure Semiology lateralisation and localisation values 
 <h3 align="center"> 11230 localising and 2391 lateralising datapoints
+<h3 align="center"> 4,643 patients' data from 309 included original journal articles
 
 <p align="center"> For research purposes only. Not for clinical use (yet). </p> 
 
