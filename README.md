@@ -11,23 +11,21 @@
   <br> 11230 localising and 2391 lateralising datapoints
   <br> 4,643 patients' data from 309 included original journal articles
   </h2>
-  
+</h2>  
 
 <br>  
-<p align="center"> For research purposes only. Not for clinical use (yet). <\p>
+<p align="center"> For research purposes only. Not for clinical use (yet). 
 
 
 [![Build status](https://img.shields.io/travis/thenineteen/Semiology-Visualisation-Tool/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/thenineteen/Semiology-Visualisation-Tool)  [![Coverage Status](https://coveralls.io/repos/github/thenineteen/Semiology-Visualisation-Tool/badge.svg?branch=master)](https://coveralls.io/github/thenineteen/Semiology-Visualisation-Tool?branch=master)
 
 
 
-
-
-<h3> SVT has low and high-resolution visualisations, using Bayesian inference to mitigate publication bias and can combine semiologies and data-subsets using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology as demonstrated below: <\h3>
+<h3 align="center"> SVT has low and high-resolution visualisations, using Bayesian inference to mitigate publication bias and can combine semiologies and data-subsets using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology as demonstrated below: 
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
-## Figure 1: SVT Resolution
+Figure 1: SVT Resolution
 
 
 
