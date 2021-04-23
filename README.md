@@ -21,22 +21,21 @@
 
 
 
-<h3 align="center"> SVT has low and high-resolution visualisations, using Bayesian inference to mitigate publication bias and can combine semiologies and data-subsets using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology as demonstrated below: 
+<h3 align="center"> SVT has low and high-resolution visualisations, uses Bayesian inference to mitigate publication bias and can combine semiologies and data-subset queries using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology. Bayesian inference corrects visual aura localisation from topological studies. For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki). 
+These are demonstrated below: 
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
-Figure 1: SVT Resolution
+
 
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%202.png">
 <br>
-Figure 2: Bayesian inference corrects visual aura localisation from topological studies. 
-For more information on topological studies see [wiki page](https://github.com/thenineteen/Semiology-Visualisation-Tool/wiki) 
+
 
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021%203.png">
-Figure 3: Inverse Varaince Weighted Means of data susbet queries (topological and non topological).
 
 
 
