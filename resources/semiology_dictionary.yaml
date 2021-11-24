@@ -1,6 +1,6 @@
 # SemioDict v 1.2.1
 # 36 ictal semiologies, 7 postictal semiologies, 1 no-semiology on stimulation
-# 13/02/21 KD comment out postictals and no semiology 
+# 13/02/21 KD comment out postictals and no semiology
 
 "semiology":
   # "temporal": auras["epigastric"]
@@ -494,7 +494,7 @@
       #     "foot autom",
       #     "pedal((?!ing)(?!ling)) automatism",
       #   ]
-      "Automatisms - Oral & Manual": [
+      "Oral & Manual Automatisms": [
           "(?<!postictal )upper limb autom",
           "(?<!postictal )Automatisms? \\(Upper Limb\\)",
           "(?<!postictal )Automatisms? \\(UL\\)",
@@ -635,7 +635,7 @@
         ]
 
   speech:
-    "Vocalisation - Unintelligible Noises": # non-sensical sounds or "non-verbal vocalisation" McGonigal
+    "Vocalisation": # non-sensical sounds or "non-verbal vocalisation" McGonigal
       [
         "Vocalisation",
         "Vocalization",
@@ -676,9 +676,7 @@
         "articulation",
         "articulatory",
         "paraphasia",
-      ]
-    "Ictal Speech - Formed Words":
-      [
+        # Ictal Speech:
         "ictal speech((?! arrest)(?! impairment))",
         "speech \\(ictal\\)",
         "ictal talk",
@@ -688,11 +686,22 @@
         "swear",
         "expletive",
       ]
+    # "Ictal Speech - Formed Words":
+    #   [
+    #     "ictal speech((?! arrest)(?! impairment))",
+    #     "speech \\(ictal\\)",
+    #     "ictal talk",
+    #     "palilalia",
+    #     "coprolalia",
+    #     "corprolalia",
+    #     "swear",
+    #     "expletive",
+    #   ]
   # silent SOZ:
   #   "No Semiology - Only Stimulation Studies":
   #     ["no semiology", "non-? ?manifest", "silent seizure", "Silent SOZ on ES"]
   consciousness:
-    "Dialeptic/LOA/LOC": [
+    "LOA": [
         "dialeptic",
         "Impaired consciousness",
         "(?<!no )blank",
