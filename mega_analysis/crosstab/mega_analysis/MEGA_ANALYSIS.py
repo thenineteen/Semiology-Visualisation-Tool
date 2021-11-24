@@ -6,7 +6,7 @@ import pandas as pd
 import seaborn as sns
 
 from .cleaning import cleaning
-from .exclusions import exclusions
+from .exclusions import exclusions, only_paediatric_cases, exclude_paediatric_cases
 from .group_columns import (anatomical_regions, full_id_vars,
                             lateralisation_vars)
 from .missing_columns import missing_columns
@@ -21,6 +21,8 @@ def MEGA_ANALYSIS(
     header=1,
     exclude_data=False,
     plot=True,
+    paediatric_only = False,
+    adult_only = False,
     **kwargs,
 ):
     """
@@ -79,6 +81,11 @@ def MEGA_ANALYSIS(
                             PET_hypermetabolism=kwargs['PET_hypermetabolism'],
                             SPECT_PET=kwargs['SPECT_PET'],
                             CONCORDANCE=kwargs['CONCORDANCE'])
+    
+    if paediatric_only:
+        df = only_paediatric_cases(df)
+    elif adult_only:
+        df = exclude_paediatric_cases(df)
 
         # logging.debug('\ndf.shape after exclusions: {}'.format(df.shape))
     else:
