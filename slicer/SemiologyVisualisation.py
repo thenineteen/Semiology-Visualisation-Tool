@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
 import numpy as np
-import pandas as pd
 import SimpleITK as sitk
 
 import vtk
@@ -56,7 +55,7 @@ COLORMAPS = [
     'Magenta',
 ]
 
-def rename_idx(df: pd.DataFrame, suffix: str):
+def rename_idx(df, suffix: str):
                     """
                     rename idx of rows of semiologies and cols of GIFs when using TS-Bayesian and SS and multiple semiologies.
                     """
