@@ -55,7 +55,7 @@ COLORMAPS = [
     'Magenta',
 ]
 
-def rename_idx(suffix: str):  # df: pd.DataFrame,
+def rename_idx(df, suffix: str):
                     """
                     rename idx of rows of semiologies and cols of GIFs when using TS-Bayesian and SS and multiple semiologies.
                     """
