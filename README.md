@@ -23,6 +23,9 @@
 
 SVT has low and high-resolution visualisations, uses Bayesian inference to mitigate publication bias from **Topological Studies (TS)** and can combine semiologies and data-subset queries using inverse variance weighted means by modelling brain parcellations as binomial random variables for each semiology. For more information on topological studies see our wiki page. 
 
+# Citing
+If you use this database please cite the original paper describing the database and localisation results:
+**Ali Alim-Marvasti, Gloria Romagnoli, Karan Dahele, Hadi Modarres, Fernando Pérez-García, Rachel Sparks, Sebastien Ourselin, Matthew J Clarkson, Fahmida Chowdhury, Beate Diehl, John S Duncan. Probabilistic Landscape of Seizure Semiology Localising Values. Brain Communications. 2022 (In Press)**
 
 <img src="https://github.com/thenineteen/Semiology-Visualisation-Tool/blob/master/images/GOSH%20April%202021.png">
 
