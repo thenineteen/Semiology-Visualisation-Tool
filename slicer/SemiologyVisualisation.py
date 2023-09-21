@@ -536,13 +536,12 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.BayesRadioButton = qt.QRadioButton('Bayesian Posterior Probability Only')
         self.BayesRadioButton.setToolTip(
-            'Queries the Toplogical Studies subset of the database (cortical stimulation and topology, see Publication Appraches under'
-            ' Database tab for further details on this).'
-            ' Using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            'Queries the Toplogical Studies subset of the database,'
+            ' using Bayesian inference, estimates the posterior probability of a brain region'
             ' being the seizure focus, given any seizure semiology.'
-            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
-            ' displays the posterior estimation cortical heatmaps.'
-            ' SS data is used in the calculation of the marginal semiology probabilities, and TS data for marginal GIF probabilities.'
+            ' This excludes Semiological studies (non-topological data)'
+            ' altogether and only displays the posterior estimation cortical heatmaps.'
+            ' Semiologica data was used in the calculation of the marginal semiology probabilities (cached), and topological data for marginal brain region probabilities (cached).'
             ' This option gives a symmetric localisation estimate only, as it uses cached queries from non-lateralised semiologies with unknown hemispheric dominance.'
         )
         self.BayesRadioButton.toggled.connect(
@@ -551,12 +550,11 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         self.Bayes_SS_RadioButton = qt.QRadioButton('Average Bayesian Posterior and SS data')
         self.Bayes_SS_RadioButton.setToolTip(
-            'Queries the Toplogical Studies subset of the database (see Publication Appraches under'
-            ' Database tab for further details on this).'
-            ' Then using Bayesian inference, estimates the posterior probability of a GIF parcellation'
+            'Queries the Toplogical Studies subset of the database.'
+            ' Then using Bayesian inference, estimates the posterior probability of a brain region'
             ' being the seizure focus, given any seizure semiology.'
-            ' This excludes SS (spontaneous semiology) publication approaches altogheter and only'
-            ' displays the posterior estimation cortical heatmaps.'
+            ' Then uses inverse variance weighting to combine with Semiological (non-toplogical)'
+            ' data query.'
         )
         self.Bayes_SS_RadioButton.toggled.connect(
             lambda: self.onBayesianRadioButton(self.Bayes_SS_RadioButton))
@@ -971,7 +969,7 @@ class SemiologyVisualisationWidget(ScriptedLoadableModuleWidget):
 
         #loggings
         logging.debug(f'----------------------------------------------------------------')
-        logging.debug(f'\nSVT Runing Status\nBayes and SS status:   \t{self.Bayes_SS_RadioButton.isChecked()}')
+        logging.debug(f'\nSVT Running Status\nBayes and SS status:   \t{self.Bayes_SS_RadioButton.isChecked()}')
         logging.debug(f'Bayes-only status: \t{self.BayesRadioButton.isChecked()}')
         logging.debug(f'Non-Bayes status: \t{self.NonBayesRadioButton.isChecked()}')
         logging.debug(f'Global lateralisation status: \t{self.GlobalLatRadioButton.isChecked()}')
